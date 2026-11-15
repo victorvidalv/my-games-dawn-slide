@@ -5,6 +5,7 @@ import { saveRun } from '../game/session.js';
 import { S, heroOf } from '../state.js';
 import { afterMove, cancelDrag, layout, updateHud } from './board.js';
 import { icon } from './icons.js';
+import { AWAKENING_MS, prepareAwakening } from './power-art.js';
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -19,11 +20,8 @@ export async function activatePower() {
   S.busy = true; saveRun(); updateHud();
   $('bShop').disabled = true;
   const name = action.kind === 'rewind' ? 'Rebobinar' : 'Trazar destino';
-  fx.dataset.hero = h.id; fx.classList.add('show');
-  // A fresh image node restarts the GIF once on every activation, including after saving/reloading.
-  const portrait=document.createElement('img');portrait.id='powerPortrait';portrait.alt='';
-  portrait.src=`heroes/${h.id}-power.${reduced?'webp':'gif'}`;
-  $('powerPortrait').replaceWith(portrait);
+  fx.dataset.hero = h.id;
+  let art;
   const rect=$('bPower').getBoundingClientRect();
   const height=Math.max(80,Math.min(288,rect.top-32,innerHeight-48)),width=height/2;
   fx.style.setProperty('--awakening-height',height+'px');
@@ -37,7 +35,16 @@ export async function activatePower() {
   tone(action.kind === 'rewind' ? 880 : 440, .4, 'triangle', .05, 0, action.kind === 'rewind' ? -500 : 400);
   vib([20, 30, 35]);
   try {
-    await wait(reduced ? 100 : 1000);
+    try {
+      art = await prepareAwakening(h.id, reduced);
+      $('powerPortrait').replaceWith(art.img);
+    } catch {
+      // Keep the power usable if an asset failed to download.
+      $('powerPortrait').src = `heroes/${h.id}-power.webp`;
+    }
+    fx.classList.add('show');
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    await wait(reduced ? 100 : AWAKENING_MS + 80);
     fx.classList.remove('show');
     for (let n = 0; n < action.steps.length; n++) {
       if (S.G !== G || S.run !== run || G.done) break;
@@ -68,6 +75,7 @@ export async function activatePower() {
       await wait(reduced ? 40 : 280);
     }
   } finally {
+    art?.release();
     fx.classList.remove('show'); board.classList.remove('hero-power', 'rewind', 'destiny');
     board.removeAttribute('aria-busy'); G.els.forEach(el => el.classList.remove('power-piece'));
     if (S.G === G && S.run === run && !G.done) { S.busy = false; saveRun(); updateHud(); }
