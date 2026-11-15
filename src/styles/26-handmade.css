@@ -298,27 +298,18 @@ button:disabled{opacity:.62}
   #menu .cont{min-height:52px}
 }
 
-/* ---------- Botón de sonido: siempre a la vista, con estado (suena / silencio / bloqueado) ---------- */
-.snd-btn{flex:none;position:relative;display:flex;align-items:center;justify-content:center;gap:8px;min-width:46px;height:46px;padding:0 11px;color:#fff5e0;
+/* ---------- Botón de sonido: un solo icono (con ondas = suena, tachado = no suena) ---------- */
+.snd-btn{flex:none;display:flex;align-items:center;justify-content:center;width:50px;height:50px;padding:0;color:#fff5e0;
   border:3px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(175deg,#2c7585,#215666);box-shadow:inset 0 0 0 1.5px #ffffff22,3px 5px 0 #150e0c}
-.snd-btn .snd-ico{width:26px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 0 #150e0c)}
+.snd-btn .snd-ico{width:28px;height:26px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 0 #150e0c)}
 .snd-btn .snd-ico path:first-child{fill:currentColor}
-.snd-btn .snd-cap{display:none;font:800 12px/1.1 var(--font-ui);letter-spacing:.03em;text-shadow:0 2px 0 #150e0c88}
-.snd-btn[data-state=on] .snd-x,.snd-btn[data-state=blocked] .snd-x{display:none}
+.snd-btn[data-state=on] .snd-x{display:none}
 .snd-btn[data-state=off] .snd-waves{display:none}
 .snd-btn[data-state=off]{background:var(--hatch),linear-gradient(175deg,#5a3a4f,#40283d)}
-.snd-btn[data-state=blocked]{background:var(--hatch),linear-gradient(175deg,#c2402a,#9e2b15);box-shadow:inset 0 0 0 2px #f2c45c,3px 5px 0 #150e0c,0 0 18px #ee6a4699;animation:snd-pulse 1.4s ease-in-out infinite}
-.snd-btn[data-state=blocked] .snd-cap{display:block}
-.snd-btn[data-state=blocked] .snd-ico{animation:snd-wiggle 1.4s ease-in-out infinite}
 .snd-btn:active{transform:translate(2px,3px);box-shadow:1px 2px 0 #150e0c}
 .snd-btn:focus-visible{outline:3px solid #ffdb8f;outline-offset:3px}
-@keyframes snd-pulse{50%{box-shadow:inset 0 0 0 2px #ffdb8f,3px 5px 0 #150e0c,0 0 30px #ee6a46dd}}
-@keyframes snd-wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
-@media(prefers-reduced-motion:reduce){.snd-btn[data-state=blocked],.snd-btn[data-state=blocked] .snd-ico{animation:none}}
-.snd-hud{margin-left:auto;margin-right:2px;height:52px;min-width:52px}
-.snd-hud[data-state=blocked]{position:absolute;top:calc(100% + 8px);right:0;z-index:5;max-width:min(70vw,260px);height:auto;min-height:46px;padding:8px 12px;margin:0}
+.snd-hud{margin-left:auto;margin-right:2px}
 .top{position:relative}
-.snd-menu{height:46px}
 .lang-switch{flex-wrap:wrap;align-items:center}
 
 /* ---------- Compartir: botón bajo el menú y ventana con el QR ---------- */

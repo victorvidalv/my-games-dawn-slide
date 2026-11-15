@@ -145,8 +145,7 @@ soundLabel();
    Retry resume directly inside every trusted gesture; never await before it. */
 export function clearAudioRecoveryHint(){clearTimeout(audioRecoveryTimer);audioRecoveryTimer=0;const hint=$('audioRecover');if(hint)hint.hidden=true}
 function queueAudioRecoveryHint(){
- if(audioRecoveryTimer||document.hidden||audioPageHidden||muted||!Music.playing)return;
- audioRecoveryTimer=setTimeout(()=>{audioRecoveryTimer=0;if(audioNeedsRecovery&&!document.hidden&&!audioPageHidden&&!muted&&Music.playing)$('audioRecover').hidden=false},700);
+ // Ya no se muestra un aviso aparte: el botón de sonido (un solo icono) indica y arregla el estado del audio
 }
 function completeAudioRecovery(owner=AC){
  if(owner!==AC||!owner||owner.state!=='running'||document.hidden||audioPageHidden||muted)return;
