@@ -317,3 +317,7 @@ TEST_THREADS=2 npm run simulate:seals -- --full --seeds=3
 ```
 
 La simulación de la versión 46 está en [`seal-simulation-report.json`](seal-simulation-report.json): 1.710 tableros reales, 5.130 comprobaciones de héroe y 1.458 rutas de sello certificadas, sin fallos. En esa muestra 31 rutas necesitaron ampliar el límite, como máximo cinco turnos. El presupuesto determinista de búsqueda puede recortar la exploración de candidatos; todos los objetivos emitidos conservan una ruta completa y validada. El modelo probabilístico antiguo de `npm run simulate` sigue separado de esta comprobación exacta de alcanzabilidad.
+
+## Posicionamiento (SEO)
+
+`index.html` incluye título y descripción, URL canónica, Open Graph y Twitter Card (imagen `public/og-image.jpg`, 1200×630), datos estructurados `VideoGame` (JSON-LD) y un texto de respaldo `<noscript>`. Al compilar se generan `robots.txt` y `sitemap.xml`. La dirección pública se define al construir: `SITE_URL=https://dawnslide.com npm run build` (por defecto `https://dawnslide.com`). Tras publicar: dar de alta el sitio en Google Search Console y enviar `sitemap.xml`.

@@ -8,6 +8,17 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 // En local (npm run dev) y para un dominio propio queda './' (rutas relativas, funciona en cualquier carpeta).
 const base = process.env.BASE_PATH || './';
 
+/** Dirección pública del juego (para canonical, Open Graph, sitemap…). Se cambia al publicar: SITE_URL=https://mi-dominio.com npm run build */
+const SITE_URL = (process.env.SITE_URL || 'https://dawnslide.com').replace(/\/$/, '');
+const seo = () => ({
+  name: 'seo',
+  transformIndexHtml: { order: 'pre', handler: (html) => html.replaceAll('%SITE_URL%', SITE_URL) },
+  generateBundle() {
+    this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `User-agent: *\nAllow: /\nDisallow: /melodies.html\n\nSitemap: ${SITE_URL}/sitemap.xml\n` });
+    this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${SITE_URL}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>\n</urlset>\n` });
+  },
+});
+
 export default defineConfig({
   base,
   define: { __APP_VERSION__: JSON.stringify(pkg.version.split('.')[0]) },
@@ -17,6 +28,7 @@ export default defineConfig({
     rollupOptions: { input: { main: 'index.html', melodies: 'melodies.html' } }, // melodies.html: visor de las melodías
   },
   plugins: [
+    seo(),
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src',
