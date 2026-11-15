@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import { tr, isEnglish } from '../src/i18n.js';
 import { EN } from '../src/i18n/en.js';
 import { CHAPTERS, HERO_LORE, HERO_TALK, HERO_TUTORIAL_TALK } from '../src/data/story.js';
@@ -38,5 +40,30 @@ describe('idioma: el inglés es el idioma por defecto y cubre la historia', () =
   });
   it('ninguna traducción está vacía', () => {
     for (const [es, en] of Object.entries(EN)) expect(en.trim().length, es).toBeGreaterThan(0);
+  });
+
+  it('no queda ningún texto en español del código sin traducción al inglés (vigilante de futuros textos)', () => {
+    const norm = (x) => x.replace(/\s+/g, ' ').trim();
+    const keys = new Set(Object.keys(EN).map(norm));
+    const pats = Object.keys(EN).filter((k) => /\{\w+\}/.test(k)).map((k) => new RegExp('^' + norm(k).replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\\\{\w+\\\}|\{\w+\}/g, '(.+?)') + '$'));
+    const known = (x) => keys.has(x) || pats.some((p) => p.test(x));
+    const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
+    const spanish = /[áéíóúñ¿¡ÁÉÍÓÚÑ]|\b(el|la|los|las|de|del|un|una|tu|tus|que|con|para|por|se|te|al|nivel|niveles|pista|turnos?|puntos?|tienda|elige|volver|siguiente|jugar|salir|héroe|camino|tablero|pieza|movimientos?|llave|sello|aventura|partida|ahora|aquí|cada|más|sin|ya|como|pero|este|esta|todo|hasta|sobre|solo|muy|bien|otra|otro)\b/i;
+    // Textos que se componen por trozos (se traducen por separado en pantalla) o que no se ven: se revisaron a mano con scripts/i18n-diff.js
+    const REVIEWED = /(Pieza ilegible|^Lía$|^Don Dublón$|X\+X puntos|es propio de tu héroe|XXX Sellos|XArrastra|Mueve la pieza brillante|Pagaste por revivir|XNivel máx)/;
+    const missing = [];
+    for (const f of walk('src').filter((x) => x.endsWith('.js') && !/i18n|tools|audio[\\/]themes|qr\.js/.test(x))) {
+      const re = /(['"`])((?:\\.|(?!\1)[^\\\n])*?)\1/g;
+      const src = fs.readFileSync(f, 'utf8');
+      for (let m; (m = re.exec(src));) {
+        const lit = m[2].replace(/\$\{[^}]*\}/g, 'X');
+        if (lit.length < 3 || !/[A-Za-zÁ-ú]/.test(lit) || /^(\.|#|\/|http|data:|M\d)/.test(lit) || /\.(webp|png|gif|js|css)$/.test(lit)) continue;
+        if (!spanish.test(lit.replace(/<[^>]+>/g, ' '))) continue;
+        if (known(norm(lit)) || REVIEWED.test(lit)) continue;
+        const bad = lit.split(/<[^>]+>/).map(norm).filter((x) => x && /[A-Za-zÁ-ú]/.test(x) && spanish.test(x) && !known(x));
+        if (bad.length) missing.push(`${f}: ${bad.join(' | ').slice(0, 100)}`);
+      }
+    }
+    expect(missing).toEqual([]);
   });
 });

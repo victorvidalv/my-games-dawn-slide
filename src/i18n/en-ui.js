@@ -154,4 +154,14 @@ export const EN_UI = {
   'Copiar enlace': 'Copy link', '¡Enlace copiado!': 'Link copied!', 'Compartir': 'Share', 'Cerrar': 'Close',
   'Compartir y jugar en el móvil': 'Share / play on your phone',
   'Prueba DAWNSLIDE: un puzle de bloques con tres héroes y cien niveles.': 'Try DAWNSLIDE: a block puzzle with three heroes and one hundred levels.',
+  /* revisión final */
+  '★ NUEVO RÉCORD ★': '★ NEW RECORD ★',
+  'Pagaste por revivir. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas. Te queda {n} revivir guardado.': 'You paid to revive. You replay this same board from scratch and keep your points and hints. You have {n} saved revive left.',
+  '{p} · AVENTURA': '{p} · ADVENTURE', 'DIFÍCIL': 'HARD', 'EXPERTO': 'EXPERT',
+  '«{t}»': '“{t}”', 'Lía:': 'Lía:', 'Jean:': 'Jean:', 'Juth:': 'Juth:',
+  'LA NOCHE SE CIERRA · {p}': 'THE NIGHT CLOSES IN · {p}',
+  /* minijuegos y accesibilidad */
+  '/4 parejas': '/4 pairs', '/6 errores': '/6 mistakes', 'Rondas': 'Rounds', 'Errores': 'Mistakes', 'Luz': 'Light',
+  'Carta {n}, oculta': 'Card {n}, hidden', '{s}, pareja encontrada': '{s}, pair found',
+  'Lía, Portadora de la Brasa': 'Lía, Ember Bearer', 'Jean, Vigía del Péndulo': 'Jean, Pendulum Watcher', 'Juth, Escriba de las Runas': 'Juth, Rune Scribe',
 };

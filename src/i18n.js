@@ -28,7 +28,11 @@ for (const [es, en] of Object.entries(EN)) {
     const names = [];
     const source = esc(norm(es)).replace(/\{(\w+)\}/g, (_, n) => { names.push(n); return '(.+?)'; });
     patterns.push({ re: new RegExp(`^${source}$`), names, en, literal: norm(es).replace(/\{\w+\}/g, '').length });
-  } else exact.set(norm(es), en.trim());
+  } else {
+    exact.set(norm(es), en.trim());
+    const quoted = norm(es).match(/^«(.+)»$/);   // una frase entre «» también se reconoce sin las comillas (se cita dentro de otros textos)
+    if (quoted) exact.set(quoted[1], en.trim().replace(/^[“"]|[”"]$/g, ''));
+  }
 }
 patterns.sort((a, b) => b.literal - a.literal);   // las plantillas más específicas se prueban primero
 const memo = new Map();

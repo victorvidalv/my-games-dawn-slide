@@ -17,7 +17,7 @@ function open() {
   $('shareQr').innerHTML = qrSvg(url);
   $('shareUrl').textContent = url.replace(/^https?:\/\//, '');
   $('shareNative').hidden = !canShare();
-  $('shareCopy').textContent = t('Copiar enlace');
+  $('shareCopy').textContent = 'Copiar enlace';
   $('share').classList.add('show');
   $('shareCopy').focus();
 }
@@ -31,9 +31,9 @@ async function copy() {
     try { document.execCommand('copy'); } catch { /* sin portapapeles */ }
     box.remove();
   }
-  $('shareCopy').textContent = t('¡Enlace copiado!');
+  $('shareCopy').textContent = '¡Enlace copiado!';
   sfx.hint();
-  setTimeout(() => { $('shareCopy').textContent = t('Copiar enlace'); }, 1800);
+  setTimeout(() => { $('shareCopy').textContent = 'Copiar enlace'; }, 1800);
 }
 
 $('bShare').addEventListener('click', async () => {
