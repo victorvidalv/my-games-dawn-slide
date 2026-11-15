@@ -12,6 +12,7 @@ import { coachOnMove } from './coach.js';
 import { updateHeroHud } from './heroes.js';
 import { lowState, renderTurns } from './turns.js';
 import { renderSeal, processSealMove } from './seals.js';
+import { numLocale } from '../i18n.js';
 export const boardEl=$('board'), cellPx=()=>boardEl.clientWidth/6;
 /* Mide el espacio libre real y da al tablero el mayor tamaño posible (sin scroll) */
 export function fitBoard(){
@@ -184,7 +185,7 @@ export function recLine(){            // refresca camino, puntaje actual y máxi
   }
   $('scoreLbl').textContent='PUNTOS';
   $('maxLbl').textContent=S.run.recBroken?'NUEVO RÉCORD':'RÉCORD';
-  $('scoreMax').textContent=Math.max(rec.score,S.run.score).toLocaleString('de-DE');
+  $('scoreMax').textContent=Math.max(rec.score,S.run.score).toLocaleString(numLocale());
   $('scMax').classList.toggle('broken',!!S.run.recBroken);
   fitScores();
 }
@@ -209,7 +210,7 @@ export function updateHud(){
   const over=Math.max(0,S.G.moves-S.G.opt)/S.G.opt,hue=140*(1-Math.min(1,over));
   f.style.background=`hsl(${hue} 85% 52%)`;f.style.color=`hsl(${hue} 85% 52%)`;
   const prac=S.run.mode==='p',cg=gainNow();
-  $('pot').textContent=prac?'sin puntaje':'+'+cg.total.toLocaleString('de-DE');
+  $('pot').textContent=prac?'sin puntaje':'+'+cg.total.toLocaleString(numLocale());
   $('meter').classList.toggle('danger',!prac&&isLow(S.G.moves,S.G.limit));
   const {low,last}=lowState();                          // pocos turnos: solo aviso visual, la música no cambia
   setTensionFx(low,last);

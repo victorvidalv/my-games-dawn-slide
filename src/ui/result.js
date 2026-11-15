@@ -1,13 +1,14 @@
 import { sfx, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { burst, countUp } from './fx.js';
+import { numLocale } from '../i18n.js';
 
 const CONFETTI = ['#f2c45c', '#ee6a46', '#58b3b8', '#a07bc6', '#f6e6bd', '#9dbb5f'];
 /** Frase corta según la eficiencia (la racha, si la hay, manda). */
-const chipText = (gain) => (gain.mult > 1 ? `Racha ×${gain.mult.toFixed(1).replace('.', ',')}` : gain.eff >= 0.9 ? 'Muy bien' : gain.eff >= 0.6 ? 'Bien hecho' : 'Nivel superado');
+const chipText = (gain) => (gain.mult > 1 ? `Racha ×${gain.mult.toLocaleString(numLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` : gain.eff >= 0.9 ? 'Muy bien' : gain.eff >= 0.6 ? 'Bien hecho' : 'Nivel superado');
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-const fmt = (n) => n.toLocaleString('de-DE');
+const fmt = (n) => n.toLocaleString(numLocale());
 
 /** Aviso minimalista de «PERFECTO»: sonido de éxito y un sutil destello dorado dorado en el marco. */
 function perfectFx() {

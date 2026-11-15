@@ -25,6 +25,7 @@ import { chooseHero, showRescue, showReviveOffer, syncHero } from '../ui/heroes.
 import { applyZone, renderStage, showMap } from '../ui/map.js';
 import { openMenu } from '../ui/menu.js';
 import { heroArt, storyFor } from '../ui/story.js';
+import { numLocale } from '../i18n.js';
 export function saveRun(){
  if(S.run&&S.G&&!S.G.done&&S.G.n===S.run.level&&!S.run.pendingClear&&!S.run.rescue&&!S.run.pendingRevive){
   S.run.board={level:S.G.n,rate:S.G.rate,pieces:S.G.pieces.map(p=>({...p})),walls:(S.G.walls||[]).map(w=>w.slice()),pos:S.G.pos.slice(),start:S.G.start.slice(),opt:S.G.opt,limit:S.G.limit,bought:S.G.bought||0,tutorial:S.G.tutorial||null,moves:S.G.moves,hist:S.G.hist.map(p=>p.slice()),colors:S.G.colors?.slice(),family:S.G.family,seal:S.G.seal?{...S.G.seal,cell:S.G.seal.cell.slice()}:null};
@@ -48,7 +49,7 @@ async function startLevel(){
   $('lvl').textContent=S.G.tutorial?`${S.G.n} · TUTORIAL`:S.G.n;$('mn').textContent=S.G.opt;$('base').textContent=S.run.mode==='p'?'—':baseScore(S.G.rate);
   applyZone(zoneIdx(S.G.n));renderStage();
   const prac=S.run.mode==='p';
-  $('score').textContent=prac?'—':S.run.score.toLocaleString('de-DE');recLine();
+  $('score').textContent=prac?'—':S.run.score.toLocaleString(numLocale());recLine();
   $('lim').textContent=prac?'∞':S.G.limit;
   $('bUndo').disabled=!S.G.hist.length;
   $('msg').textContent=S.G.n===1?'Desliza los bloques y saca la llave roja ➜ Cada movimiento cuenta.':tipFor(S.G);
@@ -169,9 +170,9 @@ async function offerPaidRevive(why){
     const r=payRevive(S.run);
     if(r.ok){
       S.G.pos=S.G.start.slice();S.G.moves=0;S.G.hist=[];S.G.done=false;S.G.bought=0;S.G.limit=sealLimit(S.G.seal,heroLimit(S.run.hero,S.G.opt,S.run.start,S.run.level,S.run.route==='brave'));
-      $('score').textContent=S.run.score.toLocaleString('de-DE');$('lim').textContent=S.G.limit;recLine();
+      $('score').textContent=S.run.score.toLocaleString(numLocale());$('lim').textContent=S.G.limit;recLine();
       saveRun();boardEl.classList.remove('board-lock');S.busy=false;$('bUndo').disabled=true;layout();updateHud();
-      Music.duck(1);playReviveEffect('¡RENACER!',false);$('msg').textContent=`Renaciste (−${r.cost.toLocaleString('de-DE')} pts). ¡Este tablero empieza de nuevo!`;
+      Music.duck(1);playReviveEffect('¡RENACER!',false);$('msg').textContent=`Renaciste (−${r.cost.toLocaleString(numLocale())} pts). ¡Este tablero empieza de nuevo!`;
       return;
     }
   }

@@ -6,6 +6,7 @@ import { recordBest } from '../game/session.js';
 import { S } from '../state.js';
 import { icon } from './icons.js';
 import { burst } from './fx.js';
+import { numLocale } from '../i18n.js';
 
 const TIER_COLORS=[['#e0a468','#f3c996','#b8703a'],['#e3edf5','#aebdc9','#7fa3bf'],['#ffe9a0','#f1ce82','#e9b73a','#d6483f']];
 /** Un sonido por tipo: bronce corto y grave, plata con tres notas, oro con arpegio brillante y campanilla. */
@@ -31,7 +32,7 @@ export function renderSeal() {
   const covered=occupancy(G.pieces,G.pos,G.walls)[seal.cell[0]*6+seal.cell[1]]>=0;
   floor.classList.toggle('covered',covered);floor.classList.toggle('collected',seal.collected);
   marker.hidden=seal.collected;G.els[seal.piece]?.classList.toggle('seal-carrier',!seal.collected);G.els[seal.piece]?.classList.remove('seal-t1','seal-t2','seal-t3');G.els[seal.piece]?.classList.add('seal-t'+sealTier(seal));
-  const value=sealReward(S.run,seal).toLocaleString('de-DE');
+  const value=sealReward(S.run,seal).toLocaleString(numLocale());
   const labelKey=`${G.n}:${value}:${seal.collected}`;
   if(status.dataset.sealKey!==labelKey){status.className=`seal-status seal-t${sealTier(seal)}`;status.innerHTML=`${icon('seal'+sealTier(seal))}<span>${seal.collected?SEAL_TIERS[sealTier(seal)-1].name+' obtenido':SEAL_TIERS[sealTier(seal)-1].name} <b>+${value}</b>${seal.collected?'':'<small>Lleva la pieza de borde discontinuo al sello</small>'}</span>`;status.dataset.sealKey=labelKey;}
   status.classList.toggle('claimed',seal.collected);status.hidden=false;
@@ -43,10 +44,10 @@ export function processSealMove(before=S.G?.hist.at(-1)) {
   const value=collectSeal(S.run,S.G,before);if(!value)return 0;
   const G=S.G,board=$('board'),rect=board.getBoundingClientRect(),size=board.clientWidth/6;
   const x=rect.left+(G.seal.cell[1]+.5)*size,y=rect.top+(G.seal.cell[0]+.5)*size;
-  $('score').textContent=S.run.score.toLocaleString('de-DE');recordBest();
-  $('msg').textContent=`Sello obtenido: +${value.toLocaleString('de-DE')} puntos.`;
+  $('score').textContent=S.run.score.toLocaleString(numLocale());recordBest();
+  $('msg').textContent=`Sello obtenido: +${value.toLocaleString(numLocale())} puntos.`;
   const pop=document.createElement('div');pop.className=`seal-points-pop seal-t${sealTier(G.seal)}`;pop.setAttribute('aria-hidden','true');
-  pop.innerHTML=`${icon('seal'+sealTier(G.seal))}<b>+${value.toLocaleString('de-DE')}</b>`;pop.style.left=Math.max(72,Math.min(innerWidth-72,x))+'px';pop.style.top=y+'px';document.body.appendChild(pop);
+  pop.innerHTML=`${icon('seal'+sealTier(G.seal))}<b>+${value.toLocaleString(numLocale())}</b>`;pop.style.left=Math.max(72,Math.min(innerWidth-72,x))+'px';pop.style.top=y+'px';document.body.appendChild(pop);
   board.classList.add('seal-reward');setTimeout(()=>{pop.remove();board.classList.remove('seal-reward')},1100);
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches)burst(x,y,[14,22,38][sealTier(G.seal)-1],TIER_COLORS[sealTier(G.seal)-1],[3.4,4.2,5.4][sealTier(G.seal)-1]);
   playSealTone(sealTier(G.seal));vib([[10,16,10],[12,22,12],[16,26,16,26,22]][sealTier(G.seal)-1]);

@@ -3,6 +3,7 @@
  * La lógica pura (tableros, solver, dificultad, puntaje) vive en src/engine y src/game/heroes.js;
  * el resto son módulos de interfaz que se comunican mediante el estado compartido de src/state.js.
  */
+import './i18n.js';
 import './styles/01-base.css';
 import './styles/02-hud.css';
 import './styles/03-board.css';

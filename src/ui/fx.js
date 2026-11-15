@@ -1,4 +1,5 @@
 import { $ } from '../dom.js';
+import { numLocale } from '../i18n.js';
 /* ============================ Partículas ============================ */
 const cv=$('fx'),cx=cv.getContext('2d');let parts=[],raf=0;
 function fit(){const d=devicePixelRatio||1;cv.width=innerWidth*d;cv.height=innerHeight*d;cx.setTransform(d,0,0,d,0,0)}
@@ -15,7 +16,7 @@ function tick(){
     cx.save();cx.globalAlpha=Math.min(1,p.life/30);cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillStyle=p.c;cx.fillRect(-p.r,-p.r/2,p.r*2,p.r);cx.restore()}
   raf=parts.length?requestAnimationFrame(tick):0;
 }
-export function countUp(el,from,to,ms=900,fmt=v=>Math.round(v).toLocaleString('de-DE')){
+export function countUp(el,from,to,ms=900,fmt=v=>Math.round(v).toLocaleString(numLocale())){
   const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)requestAnimationFrame(f)})(t0);
 }
 

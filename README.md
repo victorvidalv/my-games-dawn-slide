@@ -1,4 +1,4 @@
-# SLIDE & SLAY
+# DAWNSLIDE
 
 Un puzle de bloques con tres héroes y cien niveles. Abre el camino entre los diez reinos de Thyes (año 4133)
 y devuelve la luz al Faro del Alba. Funciona en el navegador y se puede instalar como app (PWA, también sin conexión).

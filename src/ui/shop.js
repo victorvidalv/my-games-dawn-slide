@@ -10,8 +10,9 @@ import { updateHeroHud } from './heroes.js';
 import { ask } from './menu.js';
 import { icon } from './icons.js';
 import { playBuyEffect, playRewindEffect } from './turns.js';
+import { numLocale } from '../i18n.js';
 
-const fmt = (n) => n.toLocaleString('de-DE');
+const fmt = (n) => n.toLocaleString(numLocale());
 /** Nombre con los turnos reales que da en este tablero (son un % del límite). */
 const nameOf = (item) => (item.share ? `+${extraTurns(item.id, S.G.limit)} turnos` : item.name);   // la cifra real, nunca un porcentaje
 const priceNow = (id) => priceOf(id, S.G.rate, S.run.start, S.run);

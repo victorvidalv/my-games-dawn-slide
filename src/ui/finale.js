@@ -10,6 +10,7 @@ import { endingStory } from './story.js';
 import { CHAPTERS } from '../data/story.js';
 import { WORLD } from '../data/lore.js';
 import { zoneIdx } from '../data/zones.js';
+import { numLocale } from '../i18n.js';
 /* Final del nivel 100: felicitación + reto al siguiente camino (o aplausos si fue Experto) */
 let crowdTimer=0;
 function stopCrowd(){clearInterval(crowdTimer);setTimeout(()=>{$('crowd').innerHTML=''},3600)}
@@ -48,7 +49,7 @@ export function endRun(victory,why){
   $('overTitle').textContent='Sin turnos';
   $('overTxt').textContent=`Te quedaste sin movimientos en el nivel ${S.run.level}. El Sello de ${CHAPTERS[zoneIdx(S.run.level)].seal} resiste… por ahora. Thyes, año ${WORLD.year}.`;
   $('overRec').innerHTML=(!prac&&S.run.recBroken)?'<span class="rec">★ NUEVO RÉCORD ★</span>':'';
-  $('overLvl').textContent=S.run.level;$('overBest').textContent=rec.score.toLocaleString('de-DE');
+  $('overLvl').textContent=S.run.level;$('overBest').textContent=rec.score.toLocaleString(numLocale());
   $('over').classList.add('show');countUp($('overScore'),0,S.run.score,1200);$('bToMenu').focus();
   store.run=null;persist();S.run=null;
 }

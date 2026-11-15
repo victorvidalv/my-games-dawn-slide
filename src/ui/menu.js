@@ -18,7 +18,7 @@ function renderPaths(){
   $('modeInfo').textContent=MODE_INFO[mode];
   PATHS.forEach(p=>{
     const rec=store.paths[mode+p.s],lvl=rec?rec.level:0,prog=lvl?Math.max(4,lvl):0;
-    const big=mode==='c'?(rec&&rec.score?rec.score.toLocaleString('de-DE'):'—'):(lvl?lvl:'—');
+    const big=mode==='c'?(rec&&rec.score?rec.score.toLocaleString(numLocale()):'—'):(lvl?lvl:'—');
     const lbl=mode==='c'?'RÉCORD':'NIVEL MÁX.';
     const txt=`${lvl>=100?'👑 ':''}Nivel máximo ${lvl}/100`;
     const d=document.createElement('div');d.className='path';d.style.setProperty('--pc',p.c);
@@ -32,6 +32,7 @@ function renderPaths(){
 }
 /* ---------- Ventana de confirmación con diseño propio ---------- */
 import { ICON_NAMES, icon } from './icons.js';
+import { lang, numLocale, setLang } from '../i18n.js';
 export function ask({ico='❓',title,text,yes='Aceptar',no='Cancelar',danger=false}){
   return new Promise(res=>{
     $('askIco').innerHTML=ICON_NAMES.includes(ico)?icon(ico):ico;$('askTitle').textContent=title;$('askText').innerHTML=text;
@@ -48,7 +49,7 @@ async function pickPath(s,mode){
     const cur=active?S.run:store.run;
     const ok=await ask({ico:'🗺️',danger:true,yes:'Sí, empezar',no:'Volver',
       title:active?'¿Abandonar esta partida?':'¿Descartar la partida guardada?',
-      text:(active?'Dejas la partida en curso.':'Se pierde la partida guardada.')+` Lo conseguido (${cur.mode==='p'?'nivel '+cur.level:cur.score.toLocaleString('de-DE')+' pts, nivel '+cur.level}) cuenta para tu máximo.<br><br>Empezarás <b>${p.n}</b> · Aventura.`});
+      text:(active?'Dejas la partida en curso.':'Se pierde la partida guardada.')+` Lo conseguido (${cur.mode==='p'?'nivel '+cur.level:cur.score.toLocaleString(numLocale())+' pts, nivel '+cur.level}) cuenta para tu máximo.<br><br>Empezarás <b>${p.n}</b> · Aventura.`});
     if(!ok) return;
   }
   $('menu').classList.remove('show');$('pause').classList.remove('show');Music.muffle(false);
@@ -83,12 +84,13 @@ $('pQuit').onclick=()=>{
  $('pause').classList.remove('show');Music.stop(.2);setTensionFx(0,false);openMenu();
 };
 $('pSound').onclick=toggleSound;
+const continueLabel=(sr)=>`▶ Continuar<small>${pathOf(sr.start||1).n} · Nivel ${sr.level}`+(sr.mode==='p'?' · Práctica':` · ${sr.score.toLocaleString(numLocale())} pts`)+'</small>';
 export function openMenu(){
   syncRouteStyle();
   renderPaths();
   const active=S.run&&S.G&&!S.G.done, canCont=!!store.run&&!active;
   const b=$('bContinue');b.style.display=canCont?'':'none';
-  if(canCont){const sr=store.run;b.innerHTML=`▶ Continuar<small>${pathOf(sr.start||1).n} · Nivel ${sr.level}`+(sr.mode==='p'?' · Práctica':` · ${sr.score.toLocaleString('de-DE')} pts`)+'</small>'}
+  if(canCont)b.innerHTML=continueLabel(store.run);
   $('bResume').style.display=active?'':'none';
   $('menu').classList.add('show');
   if(active)Music.muffle(true);        // hay un nivel en pausa debajo: su música suena apagada
@@ -103,3 +105,13 @@ $('bContinue').onclick=()=>{
   resumeAdventure();
 };
 
+
+/* Selector de idioma (bajo el menú): inglés por defecto; el cambio es instantáneo y la música sigue sonando */
+const paintLang=()=>document.querySelectorAll('.lang-btn').forEach((b)=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
+document.querySelectorAll('.lang-btn').forEach((b)=>{b.onclick=()=>setLang(b.dataset.lang)});
+paintLang();
+document.addEventListener('langchange',()=>{
+  paintLang();
+  renderPaths();                                  // récords y niveles con el formato de números del idioma
+  const sr=store.run;if($('bContinue').style.display!=='none'&&sr)$('bContinue').innerHTML=continueLabel(sr);
+});
