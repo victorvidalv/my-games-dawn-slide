@@ -119,6 +119,7 @@ function iceTrail(p,x0,lo,hi,s,before){
   };
 }
 
+export function cancelDrag(){activeDrag?.cancel()}
 let activeDrag=null;                           // arrastre en curso: solo puede haber uno (evita dos dedos a la vez)
 function attach(el,i){
   el.addEventListener('pointerdown',e=>{
@@ -145,7 +146,7 @@ function attach(el,i){
       try{el.releasePointerCapture(e.pointerId)}catch(_){}
       el.classList.remove('drag');
       const x=commit&&S.G&&!S.G.done?snapDrag(x0,lo,hi,delta,p.kind):x0;
-      if(x!==x0){S.G.hist.push(S.G.pos.slice());S.G.pos[i]=x;S.G.moves++;(p.kind==='heavy'?sfx.heavyMove:p.kind==='gate'?sfx.gateMove:p.kind==='ice'?sfx.iceMove:sfx.move)();$('bUndo').disabled=false;if(p.kind==='ice')flashEl(el,'sliding',220)}
+      if(x!==x0){S.G.hist.push(S.G.pos.slice());S.G.pos[i]=x;S.G.moves++;(p.kind==='heavy'?sfx.heavyMove:p.kind==='gate'?sfx.gateMove:p.kind==='ice'?sfx.iceMove:sfx.move)();if(p.kind==='ice')flashEl(el,'sliding',220)}
       trail?.clear(x!==x0?380:0);
       if(S.G&&S.G.els[i]===el){place(i);syncSpecials();updateLinks()}
       if(x!==x0) afterMove();
@@ -155,7 +156,7 @@ function attach(el,i){
     activeDrag={cancel:()=>end(false)};
   });
 }
-function afterMove(){
+export function afterMove(){
   if(!S.run||!S.G||S.G.done)return;
   updateHud();saveRun();coachOnMove();
   const prac=S.run.mode==='p';

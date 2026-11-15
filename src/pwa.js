@@ -12,7 +12,7 @@ function showUpdate(w){pendingWorker=w;$('upd').classList.add('show');sfx.hint()
 async function applyUpdate(){
   if(S.G&&!S.G.done&&S.G.moves>0&&S.run){
     const ok=await ask({ico:'⬆️',title:'¿Actualizar ahora?',yes:'Actualizar',no:'Más tarde',
-      text:'Hay una versión nueva. Tu partida se guarda, pero <b>el nivel actual se reinicia</b>.'});
+      text:'Hay una versión nueva. Tu tablero y los poderes usados se guardan para continuar donde estabas.'});
     if(!ok) return;
   }
   if(S.run) saveRun();

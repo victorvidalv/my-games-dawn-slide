@@ -7,8 +7,8 @@ import { moveLimit } from '../engine/difficulty.js';
 /* Ojo: el identificador interno de Juth sigue siendo 'van' (imágenes heroes/van*.webp y partidas guardadas). Solo cambia el nombre que se ve. */
 export const HEROES = [
   { id: 'lia', name: 'Lía', role: 'Portadora de la Brasa', icon: 'heart', color: '#68d8bd', power: 'Turnos de reserva', short: 'Más turnos en cada tablero', detail: 'Cada tablero te da un margen extra de turnos para perdonar los errores pequeños sin quitarte el reto.', quote: '«Incluso la ceniza recuerda el calor.»' },
-  { id: 'jean', name: 'Jean', role: 'Vigía del Péndulo', icon: 'clock', color: '#8fb9ff', power: 'Pasos atrás', short: 'Algunos deshacer gratis', detail: 'Desanda tus movimientos sin penalización: un error no tiene por qué costarte el tablero.', quote: '«Todo error deja una grieta por donde volver.»' },
-  { id: 'van', name: 'Juth', role: 'Escriba de las Runas', icon: 'stars', color: '#c5a2ff', power: 'Una luz en cada tablero', short: 'Algunas pistas gratis', detail: 'Revela un paso seguro sin gastar tu reserva de pistas.', quote: '«Lo que no se nombra sigue buscando salida.»' },
+  { id: 'jean', name: 'Jean', role: 'Vigía del Péndulo', icon: 'clock', color: '#8fb9ff', power: 'Rebobinar', short: 'Retrocede hasta cinco movimientos', detail: 'Una vez por tablero, devuelve las piezas y los turnos a cinco movimientos atrás. Si llevas menos, regresas al inicio.', quote: '«Todo error deja una grieta por donde volver.»' },
+  { id: 'van', name: 'Juth', role: 'Escriba de las Runas', icon: 'stars', color: '#c5a2ff', power: 'Trazar destino', short: 'Ejecuta tres movimientos óptimos', detail: 'Una vez por tablero, las runas mueven las piezas tres pasos hacia la salida. Consume turnos y requiere más de tres pasos pendientes.', quote: '«Lo que no se nombra sigue buscando salida.»' },
 ];
 
 export const heroById = (id) => HEROES.find((h) => h.id === id) || HEROES[0];
@@ -114,16 +114,11 @@ export function freeHintsLeft(heroId, run, level, opt) {
 }
 
 /**
- * Gasta una pista: la gratis de Juth si le queda en este tablero; si no, una de la reserva.
+ * Gasta una pista de la reserva. El poder de Juth es independiente de las pistas.
  * Devuelve {ok, free}. (ok=false si no hay ninguna.) En Práctica no gasta nada.
  */
 export function spendHint({ heroId, run, mode, level, opt }) {
   if (isPractice(mode)) return { ok: true, free: true };
-  if (freeHintsLeft(heroId, run, level, opt) > 0) {
-    run.freeHintCount = (run.freeHintLevel === level ? run.freeHintCount || 0 : 0) + 1;
-    run.freeHintLevel = level;
-    return { ok: true, free: true };
-  }
   if ((run.hints || 0) > 0) {
     run.hints--;
     return { ok: true, free: false };
@@ -132,7 +127,7 @@ export function spendHint({ heroId, run, mode, level, opt }) {
 }
 
 /** ¿Se puede pedir una pista ahora? (gratis o de la reserva) */
-export const canHint = (heroId, run, mode, level, opt) => isPractice(mode) || freeHintsLeft(heroId, run, level, opt) > 0 || (run.hints || 0) > 0;
+export const canHint = (heroId, run, mode, level, opt) => isPractice(mode) || (run?.hints || 0) > 0;
 
 /**
  * Pistas ganadas al completar `level`; suma a run.hints y devuelve cuántas.

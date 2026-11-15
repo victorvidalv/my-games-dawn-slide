@@ -2,6 +2,9 @@ import { sfx, tone, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { isLow, isWon, movesLeft } from '../engine/rules.js';
 import { S } from '../state.js';
+import { bonusTurns } from '../game/heroes.js';
+import { moveLimit } from '../engine/difficulty.js';
+import { reserveState } from '../game/powers.js';
 import { burst } from './fx.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -33,6 +36,17 @@ function announceLow(last) {
 export function renderTurns() {
   const G = S.G;
   const bought = G.bought || 0;
+  const reserve = bonusTurns(S.run.hero, moveLimit(G.opt,S.run.start,G.n,S.run.route==='brave'),S.run.start);
+  const segment=$('liaReserve'),label=$('liaReserveLabel');segment.hidden=label.hidden=!reserve;
+  if(reserve){
+    const r=reserveState(G,reserve);
+    segment.style.left=`${r.start/G.limit*100}%`;segment.style.width=`${reserve/G.limit*100}%`;
+    segment.setAttribute('aria-label',`Reserva de Lía: ${r.left} de ${reserve} turnos`);
+    label.textContent=`Brasa de Lía · ${r.left}/${reserve} turnos de reserva`;
+    label.classList.toggle('active',G.moves>=r.start&&r.left>0);
+    if(G.moves>=r.start&&r.left>0&&!G.reserveLit){G.reserveLit=true;flash($('meter'),'reserve-awaken',800);tone(440,.25,'triangle',.05);tone(660,.3,'sine',.05,.1)}
+    if(G.moves<r.start)G.reserveLit=false;
+  }
   $('left').textContent = movesLeft(G.moves, G.limit);
   const { low, last } = lowState();
   $('meter').classList.toggle('low', low);
@@ -42,7 +56,7 @@ export function renderTurns() {
   G.lastShown = last;
   const box = $('bought');
   box.hidden = !bought;
-  if (!bought) { G.usedShown = 0; return; }
+  if (!bought) { G.usedShown = 0; $('meter').style.setProperty('--bought','0%'); return; }
   const base = G.limit - bought;
   const used = Math.max(0, Math.min(bought, G.moves - base));
   const pips = $('boughtPips');

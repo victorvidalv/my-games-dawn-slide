@@ -1,0 +1,27 @@
+/* The same worn brass and ink as the portraits, with one recognizable effect per hero. */
+#bUndo,[hidden]#bPower,[hidden]#liaReserve,[hidden]#liaReserveLabel{display:none!important}
+#bPower{--power:#a5c8ed;display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;border:1px solid #a5c8ed66;background:#203849;box-shadow:inset 0 1px 0 #e7dcc322}
+#bPower[data-hero=van]{--power:#d1b2ec;background:#352c43;border-color:#d1b2ec66}
+#bPower>span{display:flex;flex-direction:column;gap:3px;min-width:0}
+#bPower b{font-size:12px;color:#f0e5ce}#bPower small{font-size:9px;line-height:1.3;font-weight:500;color:var(--power);white-space:normal}
+#bPower .ic{width:26px;height:26px}#bPower:disabled{opacity:.52}
+.lia-reserve{position:absolute;top:0;bottom:0;z-index:3;pointer-events:none;border-left:2px solid #c9f0c1;background:repeating-linear-gradient(120deg,#68d8bd70 0 4px,#305d4b70 4px 8px);box-shadow:inset 0 0 5px #9ee3bb55}
+.reserve-label{font-size:10px;text-align:right;color:#a9d6bd;margin-top:6px;letter-spacing:.025em;font-variant-numeric:tabular-nums}
+.reserve-label.active{color:#e0f6cf}.reserve-awaken{animation:brasa-awaken .8s ease-out}
+@keyframes brasa-awaken{40%{box-shadow:0 0 22px #68d8bd77}}
+#heroPowerFx{position:fixed;z-index:54;display:none;pointer-events:none;width:calc(var(--awakening-height,260px)/2);height:var(--awakening-height,260px);transform:translateX(-50%);--spell:#a5c8ed}
+#heroPowerFx.show{display:block}#heroPowerFx[data-hero=van]{--spell:#d1b2ec}
+.power-sigil{position:relative;width:100%;height:100%;border:1px solid var(--spell);border-radius:13px;overflow:hidden;background:#142631;box-shadow:0 0 24px color-mix(in srgb,var(--spell) 35%,transparent),0 10px 28px #0008;animation:spell-arrive .22s ease-out}
+.power-sigil img{display:block;width:100%;height:100%;object-fit:cover}
+.power-sigil>b{position:absolute;left:0;right:0;bottom:0;padding:18px 6px 10px;background:linear-gradient(transparent,#10202bf5);font-family:Georgia,serif;font-size:14px;line-height:1.2;color:#f0e5ce;text-align:center}
+.power-sigil>span,.power-sigil>i{display:none}
+.hero-power .piece{transition:left .29s ease-in-out,top .29s ease-in-out}
+.hero-power .piece.power-piece{z-index:12;filter:drop-shadow(0 0 9px #a5c8ed);outline:2px solid #d8eaff;outline-offset:-3px;border-radius:9px}
+.hero-power.destiny .piece.power-piece{filter:drop-shadow(0 0 10px #d1b2ec);outline-color:#ecd7ff}
+.hero-power::after{content:'';position:absolute;inset:-4px;z-index:15;border:2px solid #a5c8ed88;border-radius:12px;box-shadow:0 0 22px #a5c8ed44;pointer-events:none;animation:spell-border 1.2s ease-in-out infinite alternate}
+.hero-power.destiny::after{border-color:#d1b2ecaa;box-shadow:0 0 22px #d1b2ec55}
+@keyframes spell-arrive{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@keyframes spell-orbit{to{transform:rotate(-360deg)}}
+@keyframes spell-border{to{opacity:.4}}
+@media(max-width:360px){#bPower{padding:7px 5px;gap:4px}#bPower b{font-size:11px}#bPower small{font-size:8px}#bPower .ic{width:21px;height:21px}}
+@media(prefers-reduced-motion:reduce){.power-sigil,.hero-power::after,.reserve-awaken{animation:none}.hero-power .piece{transition:none}}

@@ -36,9 +36,10 @@
   <div class="meter" id="meter">
     <div class="mrow"><span>Hecho <b id="mv">0</b></span><span>Límite <b id="lim">–</b></span></div>
     <div class="barwrap">
-      <div class="bar"><b class="pzone" id="pzone"></b><i id="fill"></i></div>
+      <div class="bar"><b class="pzone" id="pzone"></b><i id="fill"></i><span id="liaReserve" class="lia-reserve" hidden></span></div>
       <i class="bi crown" id="crown" data-icon="crown" title="Zona perfecta: termina sin pasarte del mínimo"></i>
     </div>
+    <div id="liaReserveLabel" class="reserve-label" hidden></div>
     <div class="bought" id="bought" hidden><span class="bl"><i class="bi" data-icon="crystal"></i> TURNOS COMPRADOS</span><span class="pips" id="boughtPips"></span><span class="bq">quedan <b id="boughtLeft">0</b></span></div>
   </div>
 
@@ -47,11 +48,12 @@
     <div id="board"><div class="slot-row"></div></div>
   </div>
 
-  <div class="hint-text" id="msg"></div>
+  <div class="hint-text" id="msg" role="status" aria-live="polite"></div>
   <div class="legend" id="legend"></div>
 
   <div class="controls">
-    <button id="bUndo"><i class="bi" data-icon="undo"></i> Deshacer <em>+1 mov</em></button>
+    <button id="bUndo" hidden aria-hidden="true" tabindex="-1"></button>
+    <button id="bPower" hidden><i class="bi" id="powerIcon"></i><span><b id="powerName"></b><small id="powerNote"></small></span></button>
     <button id="bHint"><i class="bi" data-icon="hint"></i> Pista <span class="badge" id="hintN">3</span></button>
     <button id="bShop" aria-label="Tienda"><i class="bi" data-icon="purse"></i> <span>Tienda</span></button>
   </div>
@@ -153,6 +155,7 @@
 </div>
 <div id="result" role="status"><div class="res-card"><i class="bi res-crown" data-icon="crown" aria-hidden="true"></i><strong id="resTitle"></strong><div class="res-prize"><i class="bi res-ico" data-icon="trophy" aria-hidden="true"></i><b id="resPts">+0</b></div><small id="resLevel" hidden></small><span id="resLine" hidden></span><em id="resTotal" hidden></em><u id="resBar" hidden></u></div></div>
 <div id="lowBanner" aria-live="assertive"><i data-icon="alert"></i><div><b id="lowTitle"></b><span id="lowSub"></span></div></div>
+<div id="heroPowerFx" aria-hidden="true"><div class="power-sigil"><img id="powerPortrait" alt=""><i id="powerSeal"></i><b id="powerFxName"></b><span id="powerStep"></span></div></div>
 <div id="rewindFx" aria-hidden="true"><span>↺</span><i></i></div>
 <div id="skipFx" aria-hidden="true"><div class="chev"><b>»</b><b>»</b><b>»</b></div><strong>NIVEL SALTADO</strong><small>Sin puntos · sin racha</small></div>
 <div id="reviveFx" aria-hidden="true"><div class="revive-fx-ring"></div><strong id="reviveFxLabel">¡PODER ACTIVADO!</strong></div>

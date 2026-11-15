@@ -25,6 +25,7 @@ import './styles/19-specials.css';
 import './styles/20-icons.css';
 import './styles/21-minimal-hud.css';
 import './styles/22-travel.css';
+import './styles/23-powers.css';
 import { hooks } from './audio/sound.js';
 import { saveRun } from './game/session.js';
 import { S, persist, store } from './state.js';

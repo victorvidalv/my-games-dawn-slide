@@ -2,16 +2,17 @@ import { Music, setTensionFx } from '../audio/music.js';
 import { playVoice } from '../audio/voice.js';
 import { $, cssUrl } from '../dom.js';
 import { saveRun } from '../game/session.js';
-import { HEROES, canHint, freeHintsLeft, bonusTurns } from '../game/heroes.js';
+import { HEROES, canHint, bonusTurns } from '../game/heroes.js';
 import { moveLimit } from '../engine/difficulty.js';
 import { reviveCost } from '../game/shop.js';
-import { S, undosLeft, heroOf, pathOf, persist, store } from '../state.js';
+import { S, heroOf, pathOf, persist, store } from '../state.js';
 import { boardEl, layout, updateHud } from './board.js';
 import { heroArt } from './story.js';
 import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
+import { powerState } from '../game/powers.js';
 export function heroMarkup(h,pose='start'){return `<svg xmlns="http://www.w3.org/2000/svg" class="hero-art" viewBox="0 0 100 145" role="img" aria-label="${h.name}, ${h.role}"><defs><clipPath id="portrait-${h.id}-${pose}"><rect width="100" height="145" rx="16"/></clipPath></defs><image href="${heroArt(h.id,pose)}" width="100" height="145" preserveAspectRatio="xMidYMin slice" clip-path="url(#portrait-${h.id}-${pose})"/><rect x="1" y="1" width="98" height="143" rx="16" fill="none" stroke="${h.color}" stroke-opacity=".65" stroke-width="2"/></svg>`}
-export function syncHero(id=S.run?.hero){const h=heroOf(id);const art=document.querySelector('#travel .traveler>.hero-art');if(art)art.outerHTML=heroMarkup(h,'map');document.documentElement.style.setProperty('--hero-color',h.color)}
+export function syncHero(id=S.run?.hero){const h=heroOf(id);const art=document.querySelector('#travel .traveler>.hero-art');if(art)art.outerHTML=heroMarkup(h,'map');document.documentElement.style.setProperty('--hero-color',h.color);if(h.id!=='lia'){const preload=new Image();preload.src=`heroes/${h.id}-power.${matchMedia('(prefers-reduced-motion: reduce)').matches?'webp':'gif'}`}}
 export function chooseHero(start,mode){
  return new Promise(resolve=>{
   const modal=$('heroSelect'),cards=$('heroCards');let selected=heroOf(store.heroChoice||S.run?.hero).id;
@@ -30,9 +31,15 @@ export function chooseHero(start,mode){
 export function updateHeroHud(){
  if(!S.run||!S.G)return;const h=heroOf(),prac=S.run.mode==='p';
  $('heroHudImg').src=`heroes/${h.id}.webp`;$('heroHudImg').alt=h.name;$('heroHudName').textContent=h.name;
- $('heroHudPower').textContent=prac?'Práctica · ayudas ilimitadas':h.id==='lia'?`+${bonusTurns('lia',moveLimit(S.G.opt,S.run.start,S.run.level,S.run.route==='brave'),S.run.start)} turnos de reserva`:h.id==='jean'?`${undosLeft()} deshacer gratis`:(freeHintsLeft(h.id,S.run,S.G.n,S.G.opt)>0?'Pista gratis disponible':'Pista gratis usada');
- $('hintN').textContent=prac?'∞':freeHintsLeft(h.id,S.run,S.G.n,S.G.opt)>0?'gratis':S.run.hints;$('bHint').disabled=!canHint(h.id,S.run,S.run.mode,S.G.n,S.G.opt);
- $('bUndo').querySelector('em').textContent=prac?'gratis':h.id==='jean'&&undosLeft()>0?undosLeft()+' gratis':'+1 mov';
+ const status=powerState(S.run,S.G);
+ $('heroHudPower').textContent=h.id==='lia'?`+${bonusTurns('lia',moveLimit(S.G.opt,S.run.start,S.run.level,S.run.route==='brave'),S.run.start)} turnos de reserva`:status.reason;
+ $('hintN').textContent=prac?'∞':S.run.hints;$('bHint').disabled=S.busy||!canHint(h.id,S.run,S.run.mode,S.G.n,S.G.opt);
+ $('bUndo').hidden=true;
+ const button=$('bPower');button.hidden=h.id==='lia';button.disabled=S.busy||!status.ok;
+ button.dataset.hero=h.id;$('powerIcon').innerHTML=icon(h.id==='jean'?'clock':'stars');
+ $('powerName').textContent=h.power;$('powerNote').textContent=status.reason;
+ button.setAttribute('aria-label',`${h.power}. ${status.reason}`);
+
 }
 /** Pantalla de «otra oportunidad»: la vida gratis de Lía o un revivir comprado (se repite el tablero con 0 movimientos). */
 export function showRescue(kind=S.run?.rescue?.kind||'lia'){

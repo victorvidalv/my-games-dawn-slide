@@ -190,11 +190,14 @@ Elegir héroe es permanente durante la aventura. Las reglas están en [`src/game
 
 | Héroe | Poder | Función |
 |---|---|---|
-| **Lía** | Turnos de reserva: +23 % de turnos en cada tablero (mínimo 2), calibrado con `npm run simulate` para igualar a Jean y Juth. | `bonusTurns`, `heroLimit` |
-| **Jean** | Pasos atrás: deshacer gratis en proporción al tablero (15 % del mínimo, entre 1 y 6; el movimiento se descuenta). | `freeUndosLeft`, `applyUndo` |
-| **Juth** | Una luz en cada tablero: pistas gratis en proporción al tablero (1 por cada ~24 movimientos del mínimo, entre 1 y 3: 2 desde ~36); no gasta tu reserva. | `freeHintsLeft`, `spendHint` |
+| **Lía** | Conserva su proporción actual de turnos de reserva. La barra distingue el tramo verde y muestra cuántos quedan, antes de los turnos comprados. | `bonusTurns`, `heroLimit`, `reserveState` |
+| **Jean** | Rebobinar: una vez por tablero devuelve hasta cinco movimientos reales, pieza a pieza, y recupera los turnos. Con menos de cinco vuelve al inicio. No devuelve compras ni pistas. | `powerState`, `beginPower` |
+| **Juth** | Trazar destino: una vez por tablero ejecuta tres movimientos de una solución óptima desde la posición actual, consumiendo turnos. Solo se habilita con más de tres pasos pendientes y al menos tres turnos disponibles. | `destinyPlan`, `beginPower` |
 
-Reglas comunes: sin poder, deshacer cuesta **+1 movimiento**; todos ganan **+1 pista cada 5 niveles**.
+Reglas comunes: el botón Poder sustituye Deshacer; Lía tiene poder pasivo y no muestra botón. Todos conservan las pistas de su reserva y ganan **+1 pista cada 5 niveles**. Guardar, recargar, rehacer en tienda o revivir no renueva una carga gastada en el mismo nivel. Los pasos se guardan durante la animación; al recargar se conserva lo ya ejecutado y la carga gastada.
+
+`src/game/balance.js` y sus funciones auxiliares proporcionales conservan el modelo histórico anterior a estos poderes. `npm run simulate` aún no representa el rebobinado de cinco pasos ni la ejecución de tres movimientos; no usar sus resultados como calibración de estos nuevos poderes.
+
 En **Práctica** todo es gratis y no se gasta nada. Los poderes se leen del objeto `run`, así que sobreviven
 a recargar la página y a las partidas guardadas antiguas.
 
@@ -209,7 +212,7 @@ a recargar la página y a las partidas guardadas antiguas.
 - **Banco de niveles:** las 100 dificultades × 12 tableros son válidos, resolubles y alcanzan su objetivo.
 - **Construcción de niveles:** el mínimo anunciado es el real para cada ajuste adaptativo y ruta, y crece a lo largo de cada camino.
 - **Partida completa:** 3 caminos × 100 niveles jugados de forma óptima; siempre se gana con el mínimo y puntos perfectos.
-- **Poderes:** turnos de reserva de Lía, deshacer de Jean proporcional al tablero (y migración de guardados antiguos), bono de Juth sin duplicarse, Práctica sin consumo.
+- **Poderes:** turnos de reserva de Lía, rebobinado de Jean y tres movimientos óptimos de Juth, una carga guardada por tablero, Práctica sin consumo.
 - **Reglas:** movimientos restantes y estados ok / aviso / último / eliminado.
 
 ## Mundo e historia
@@ -232,7 +235,7 @@ En los niveles 15, 25… 95 hay un descanso con un minijuego que da **pistas**. 
 
 ## Tienda
 
-El botón **🛒 Tienda** (junto a Deshacer y Pista) vende ayudas que se pagan con los **puntos de la aventura**: lo que gastas
+El botón **🛒 Tienda** (junto a Poder y Pista) vende ayudas que se pagan con los **puntos de la aventura**: lo que gastas
 se resta de tu puntaje, así que cada compra duele. Los precios son **proporcionales**: se miden en «niveles» (los puntos base de un nivel a la dificultad actual), así que suben a medida que avanzas, y además el camino los encarece (Normal ×1, Difícil ×1,25, Experto ×1,5). No suben al comprar ni dependen de cómo juegues. Están calibrados con el simulador (`npm run simulate`, sección Tienda): un jugador que compra a fondo gana unos 20 niveles en Normal y unos 8 en Experto, pero su puntaje se hunde: ayuda y duele.
 Los turnos comprados aparecen como cristales de hielo bajo el medidor, y se «derriten» uno a uno al usarlos. Rehacer rebobina el tablero y saltar nivel lo lanza fuera de la pantalla, ambos con efecto:
 

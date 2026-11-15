@@ -18,7 +18,7 @@ import { minMoves } from '../engine/solver.js';
 import { baseScore } from '../engine/scoring.js';
 import { clearRewards, heroLimit } from './heroes.js';
 import { canPaidRevive, hasRevive, payRevive, useRevive } from './shop.js';
-import { S, gainNow, heroOf, persist, rkey, store, undosLeft } from '../state.js';
+import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
 import { boardEl, buildPieces, cellPx, fitBoard, layout, recLine, syncRouteStyle, updateHud } from '../ui/board.js';
 import { isBonusLevel, showBonus } from '../ui/bonus.js';
 import { endRun } from '../ui/finale.js';
@@ -77,7 +77,7 @@ export async function startLevel(){
   if(S.run.rescue){showRescue();return}
   if(S.run.pendingRevive&&canPaidRevive(S.run,S.run.mode)){offerPaidRevive(S.run.pendingRevive);return}
   delete S.run.pendingRevive;
-  S.busy=false;boardEl.classList.remove('board-lock');saveRun();
+  S.busy=false;boardEl.classList.remove('board-lock');updateHud();saveRun();
   greetCity();
   startCoach();                                        // avisos y guía de los primeros niveles / mecánicas nuevas
 }
@@ -90,8 +90,8 @@ function greetCity(){
   playVoice(heroOf().id,city);
 }
 function tipFor(g){
-  if(heroOf().id==='jean'&&undosLeft()>0)return `Jean puede deshacer ${undosLeft()} veces gratis en este tablero.`;
-  const t=['Piensa antes de mover: cada movimiento de más resta puntos.','Los bloques largos bloquean más: libéralos primero.','Un solo arrastre largo cuenta como 1 movimiento.','Deshacer cuesta 1 movimiento. Úsalo con cabeza.','La pista no cuesta movimientos, pero es limitada.'];
+  if(heroOf().id==='jean')return 'Rebobinar devuelve hasta cinco movimientos. Un uso por tablero.';
+  const t=['Piensa antes de mover: cada movimiento de más resta puntos.','Los bloques largos bloquean más: libéralos primero.','Un solo arrastre largo cuenta como 1 movimiento.','Cada héroe abre el camino a su manera.','La pista no cuesta movimientos, pero es limitada.'];
   return t[(g.n*7)%t.length];
 }
 

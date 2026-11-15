@@ -121,20 +121,14 @@ describe('pistas · recompensas de nivel y la pista gratis de Juth', () => {
     expect(freeHintsLeft('lia', newRun(), 7)).toBe(0);
     expect(freeHintsLeft('jean', newRun(), 7)).toBe(0);
   });
-  it('la pista gratis se gasta primero y no toca la reserva; después se gasta la reserva', () => {
+  it('las pistas normales de Juth gastan la reserva: su poder tiene una carga independiente', () => {
     const run = newRun({ hints: 2 });
-    expect(spendHint({ heroId: 'van', run, mode: 'c', level: 7 })).toEqual({ ok: true, free: true });
-    expect(run.hints).toBe(2);
-    expect(freeHintsLeft('van', run, 7)).toBe(0);
     expect(spendHint({ heroId: 'van', run, mode: 'c', level: 7 })).toEqual({ ok: true, free: false });
     expect(run.hints).toBe(1);
-  });
-  it('la pista gratis se renueva en cada tablero nuevo', () => {
-    const run = newRun({ hints: 0 });
+    expect(run.powerUsedLevel).toBeUndefined();
     spendHint({ heroId: 'van', run, mode: 'c', level: 7 });
     expect(canHint('van', run, 'c', 7)).toBe(false);
-    expect(canHint('van', run, 'c', 8)).toBe(true);
-    expect(freeHintsLeft('van', run, 8)).toBe(1);
+    expect(canHint('van', run, 'c', 8)).toBe(false);
   });
   it('sin reserva ni pista gratis no se puede pedir una pista', () => {
     const run = newRun({ hints: 0 });

@@ -34,7 +34,7 @@ export function renderLegend() {
 const DEMO = {
   drag: '<div class="mini"><div class="mp red"></div><div class="mexit">➜</div><span class="finger">👆</span></div>',
   score: '<div class="mini meter-demo"><div class="mbar"><i></i><u></u></div><div class="mlbl"><span>Mínimo 5</span><span>Límite 10</span></div></div>',
-  tools: `<div class="mini tools-demo"><span>${icon('undo')}</span><span>${icon('hint')}</span><span>${icon('purse')}</span></div>`,
+  tools: `<div class="mini tools-demo"><span>${icon('stars')}</span><span>${icon('hint')}</span><span>${icon('purse')}</span></div>`,
   hero: '<div class="mini hero-demo"></div>',
   wall: '<div class="mini"><div class="wall demo"><i></i></div><div class="mp red bump"></div></div>',
   gate: '<div class="mini gate-demo"><div class="plate demo"><i></i></div><div class="mp blk slide-onto"></div><div class="mp gate-p"><span class="lock-shut">🔒</span><span class="lock-free">🔓</span></div></div>',
@@ -48,7 +48,7 @@ function tipFor(id) {
   return {
     drag: { tag: 'PRIMEROS PASOS', title: '¡Saca la llave roja!', text: 'Desliza los bloques para abrirle camino a la llave roja 🔑 hasta la salida ➜. <b>Arrastra el bloque que brilla.</b>', demo: 'drag' },
     score: { tag: 'PUNTOS', title: 'Cada movimiento cuenta', text: '<b>Mínimo</b> es la mejor solución: si la igualas, ¡<b>PERFECTO</b>! y más puntos. Si agotas los turnos del <b>Límite</b> (el doble del mínimo) sin sacar la llave, ya no puedes mover más y la aventura termina.', demo: 'score', glow: '#meter' },
-    tools: { tag: 'AYUDAS', title: 'Si te atoras', text: `${icon('undo')} <b>Deshacer</b> vuelve atrás (cuesta 1 movimiento). ${icon('hint')} <b>Pista</b> te enseña el mejor movimiento. ${icon('purse')} <b>Tienda</b>: ayudas muy caras que se pagan con tus puntos.`, demo: 'tools', glow: '.controls' },
+    tools: { tag: 'AYUDAS', title: 'Si te atoras', text: `<b>Poder</b> es propio de tu héroe: Jean rebobina y Juth traza tres pasos; un uso por tablero. ${icon('hint')} <b>Pista</b> te enseña el mejor movimiento. ${icon('purse')} <b>Tienda</b>: ayudas muy caras que se pagan con tus puntos.`, demo: 'tools', glow: '.controls' },
     hero: { tag: 'TU HÉROE', title: `${icon(h.icon)} ${h.name}: ${h.power}`, text: `${h.detail} <b>${h.short}.</b>`, demo: 'hero', glow: '#heroHudName' },
   }[id];
 }
