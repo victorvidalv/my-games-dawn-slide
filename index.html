@@ -195,12 +195,12 @@
 <!-- Tienda: escena con el fondo y el mercader (los textos y las ayudas se dibujan encima) -->
 <div class="modal" id="shop" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
   <div class="shop-world">
+    <div id="shopDiscount" class="shop-discount" hidden>Camino de las Runas · −33 %</div>
     <div class="shop-scene">
-      <img class="shop-bg" src="/tienda/fondo-tienda.webp" alt="" draggable="false">
+      <img class="shop-bg" id="shopBg" src="/tienda/fondo-tienda.webp" alt="" draggable="false">
       <h2 class="shop-sign" id="shopTitle">Tienda de Don Dublón</h2>
-      <div id="shopDiscount" class="shop-discount" hidden>Camino de las Runas · −33 %</div>
 <div class="shop-list" id="shopList"></div>
-      <div class="shop-merchant" id="merchant"><img src="/heroes/vendedor.webp" alt="Don Dublón, el mercader" draggable="false"></div>
+      <div class="shop-merchant" id="merchant"><img id="shopMerchant" src="/heroes/vendedor.webp" alt="Don Dublón, el mercader" draggable="false"></div>
       <div class="shop-bubble" id="shopBubble" aria-live="polite"></div>
       <div class="shop-counter">
         <div class="shop-wallet"><span class="coin" aria-hidden="true"></span><span><small>TUS PUNTOS</small><b id="shopScore">0</b></span></div>
@@ -233,15 +233,16 @@
 
 
 <!-- Nivel superado -->
-<!-- Parada sorpresa: uno de tres minijuegos, siempre con Lía. -->
-<div class="modal" id="bonus" role="dialog" aria-modal="true" aria-labelledby="bTitle">
+<!-- Tres retos por héroe, en ciclo 1 → 2 → 3. -->
+<div class="modal" data-version="2" id="bonus" role="dialog" aria-modal="true" aria-labelledby="bTitle">
  <div class="card bonuscard">
   <div class="btag" id="bTag"></div>
   <div class="bonus-heading"><div id="bHero" aria-hidden="true"></div><div><h2 id="bTitle"></h2><p id="bSpeech"></p></div></div>
   <div class="bonus-wallet"><span>PISTAS PARA EL CAMINO</span><b><span id="bHints">0</span></b></div>
-  <p id="bSub"></p><div id="bStage" class="bonus-stage"></div>
+  <p id="bSub"></p><p id="bState" role="status" aria-live="polite"></p><div id="bStage" class="bonus-stage"></div>
   <div class="bonus-legend" id="bLegend"></div>
   <button id="bAction">Jugar</button>
+  <button class="mini-leave" id="bLeave">Terminar reto</button>
   <div class="bres" id="bRes" role="status" aria-live="polite"></div>
   <button class="primary" id="bGo" hidden style="width:100%">Continuar ➜</button>
  </div>

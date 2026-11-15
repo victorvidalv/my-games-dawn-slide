@@ -1,75 +1,93 @@
-/** Reglas puras de los minijuegos de descanso (sin DOM, con pruebas). */
+import { hash32, mulberry32 } from '../engine/rng.js';
 
-/** Seis minijuegos de descanso; las luciérnagas (activas y rápidas) salen un poco más que los demás. */
-export const BONUS_KINDS = ['cards', 'wheel', 'slots', 'catch', 'runes', 'pendulum'];
-export const BONUS_WEIGHTS = { catch: 2.5, cards: 2, wheel: 1.5, slots: 2, runes: 2, pendulum: 2 };
+export const BONUS_KINDS = ['memory', 'sequence', 'timing'];
+export const HERO_GAMES = {
+  lia: [
+    { kind: 'memory', title: 'Brasas del Juramento' },
+    { kind: 'sequence', title: 'El Canto del Alba' },
+    { kind: 'timing', title: 'El Latido de la Forja' },
+  ],
+  jean: [
+    { kind: 'timing', title: 'La Última Campanada' },
+    { kind: 'memory', title: 'Fragmentos de la Hora' },
+    { kind: 'sequence', title: 'El Eco del Péndulo' },
+  ],
+  van: [
+    { kind: 'sequence', title: 'El Nombre de las Estrellas' },
+    { kind: 'timing', title: 'El Sello del Firmamento' },
+    { kind: 'memory', title: 'El Códice de los Nombres' },
+  ],
+};
+export const GAME_SYMBOLS = {
+  lia: [{ icon: 'flame', name: 'Brasa' }, { icon: 'hint', name: 'Farol' }, { icon: 'heart', name: 'Corazón' }, { icon: 'crown', name: 'Corona' }],
+  jean: [{ icon: 'clock', name: 'Reloj' }, { icon: 'hourglass', name: 'Arena' }, { icon: 'rewind', name: 'Retorno' }, { icon: 'crystal', name: 'Cristal' }],
+  van: [{ icon: 'stars', name: 'Estrella' }, { icon: 'crystal', name: 'Cristal' }, { icon: 'lock', name: 'Sello' }, { icon: 'hint', name: 'Luz' }],
+};
+export const isBonusLevel = level => level >= 15 && level < 100 && level % 10 === 5;
+export const bonusIndex = level => Math.max(0, Math.floor((level - 15) / 10));
+export const gameFor = (hero, level) => (HERO_GAMES[hero] || HERO_GAMES.lia)[bonusIndex(level) % 3];
+export const maxPrize = (level = 15) => Math.max(3, Math.min(10, Math.round(3 + 7 * (level - 15) / 80)));
+export const scalePrize = (part, level = 15) => part <= 0 ? 0 : Math.max(1, Math.round(Math.min(3, part) * maxPrize(level) / 3));
+export const bonusPrize = (part, level) => Math.max(1, scalePrize(part, level));
+export const MEMORY = { pairs: 4, misses: 6 };
+export const SEQUENCE = { rounds: 3, mistakes: 2, lengths: [2, 3, 4] };
+export const TIMING = { tries: 3, period: 2400, zone: .25, center: .08 };
 
-/** Elige un minijuego según los pesos (`roll` entre 0 y 1, para poder probarlo). */
-export function pickBonusKind(roll = Math.random()) {
-  const total = Object.values(BONUS_WEIGHTS).reduce((a, b) => a + b, 0);
-  let x = roll * total;
-  for (const [k, w] of Object.entries(BONUS_WEIGHTS)) {
-    if ((x -= w) < 0) return k;
-  }
-  return 'cards';
+/** Order is fixed; only card positions and sequences vary deterministically with the adventure seed. */
+export function createBonusPlan(hero, level, seed = 0) {
+  const heroId = HERO_GAMES[hero] ? hero : 'lia';
+  const rng = mulberry32(hash32(seed, level, Object.keys(HERO_GAMES).indexOf(heroId), 507));
+  const deck = [0, 0, 1, 1, 2, 2, 3, 3];
+  for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
+  return { version: 2, hero: heroId, level, kind: gameFor(heroId, level).kind, deck, matched: [], flipped: [], mistakes: 0,
+    sequence: Array.from({ length: 4 }, () => Math.floor(rng() * 4)), round: 0, input: 0, hits: [], phase: 'ready' };
 }
-
-/**
- * Premios proporcionales al nivel: el premio MÁXIMO de un minijuego sube de 3 pistas (nivel 15) a 10 (nivel 95).
- * Cada juego define sus premios en «partes» de 0 a 3 (0 = nada, 1 = pequeño, 3 = máximo) y `scalePrize` las convierte.
- */
-export const PRIZE_MAX_FIRST = 3;
-export const PRIZE_MAX_LAST = 10;
-export const maxPrize = (level = 15) => Math.max(PRIZE_MAX_FIRST, Math.min(PRIZE_MAX_LAST, Math.round(PRIZE_MAX_FIRST + ((PRIZE_MAX_LAST - PRIZE_MAX_FIRST) * (level - 15)) / 80)));
-export const scalePrize = (part, level = 15) => (part <= 0 ? 0 : Math.max(1, Math.round((part * maxPrize(level)) / 3)));
-
-/**
- * Luciérnagas: 12 s, cada vez más rápidas y más numerosas. Atrapadas (las doradas valen 3, y cada 5 seguidas sin dejar
- * escapar ninguna dan +2) → pistas: 12 → 1, 24 → 2, 36 → 3.
- */
-export const CATCH = { duration: 12000, tiers: [12, 24, 36], goldChance: 0.16, goldValue: 3, comboEvery: 5, comboBonus: 2 };
-export const catchBase = (score) => (score >= CATCH.tiers[2] ? 3 : score >= CATCH.tiers[1] ? 2 : score >= CATCH.tiers[0] ? 1 : 0);
-export const catchPrize = (score, level = 15) => scalePrize(catchBase(score), level);
-
-/** Ritmo según el avance de la partida (p de 0 a 1): tiempo entre apariciones, segundos que tarda en subir y cuántas salen a la vez. */
-export const catchPace = (p) => {
-  const t = Math.max(0, Math.min(1, p));
-  return { delay: Math.round(300 - 140 * t), rise: Math.round((2.5 - 1.0 * t) * 100) / 100, group: t < 0.35 ? 1 : t < 0.75 ? 2 : 3 };
-};
-/** Puntos extra por llevar `streak` luciérnagas seguidas sin que se escape ninguna. */
-export const comboBonus = (streak) => (streak > 0 && streak % CATCH.comboEvery === 0 ? CATCH.comboBonus : 0);
-
-/**
- * Tragaperras interactiva: tres rodillos giran sin parar y tú los paras uno a uno.
- * Cada rodillo recorre 3 símbolos (0, 1, 2) a `msPer` ms por símbolo; al parar se queda en el símbolo más cercano.
- */
-export const REEL_SPEEDS = [150, 120, 95];      // ms por símbolo (cada rodillo más rápido que el anterior)
-export const reelPosition = (elapsedMs, msPer, start = 0) => start + elapsedMs / msPer;
-export const reelStopSymbol = (position) => ((Math.round(position) % 3) + 3) % 3;
-/** Premio (en partes) de los tres símbolos: tres iguales 3, dos iguales 1, todos distintos 0. */
-export const slotPart = (symbols) => {
-  const n = Math.max(...[0, 1, 2].map((i) => symbols.filter((v) => v === i).length));
-  return n === 3 ? 3 : n === 2 ? 1 : 0;
-};
-export const slotPrize = (symbols, level = 15) => scalePrize(slotPart(symbols), level);
-
-/**
- * Runas de memoria: repite la secuencia de runas que se ilumina; cada ronda añade una. Rondas superadas → pistas:
- * 3 → 1 parte, 5 → 2, 7 → 3 (el juego termina con el primer error o a las 8 rondas).
- */
-export const RUNES = { start: 2, tiers: [3, 5, 7], maxRounds: 8, count: 4 };
-export const runesPart = (rounds) => (rounds >= RUNES.tiers[2] ? 3 : rounds >= RUNES.tiers[1] ? 2 : rounds >= RUNES.tiers[0] ? 1 : 0);
-export const runesPrize = (rounds, level = 15) => scalePrize(runesPart(rounds), level);
-/** Milisegundos que dura cada runa al mostrarse (más rápido cuanto más avanzas). */
-export const runeShowMs = (round) => Math.max(260, 560 - round * 40);
-
-/**
- * Péndulo: 5 lanzamientos; detén la bola dentro de la zona dorada (el centro vale 2, el resto de la zona 1).
- * Cada lanzamiento es más rápido y con la zona más estrecha. Puntos totales (máx. 10) → pistas: 4 → 1 parte, 7 → 2, 9 → 3.
- */
-export const PENDULUM = { throws: 5, tiers: [4, 7, 9] };
-export const pendulumZone = (i) => Math.max(0.1, 0.28 - 0.035 * i);        // media anchura de la zona (−1 a 1 es todo el recorrido)
-export const pendulumPeriod = (i) => Math.max(900, 1700 - 170 * i);       // ms por vaivén completo
-export const pendulumPoints = (offset, zone) => (Math.abs(offset) <= zone * 0.3 ? 2 : Math.abs(offset) <= zone ? 1 : 0);
-export const pendulumPart = (total) => (total >= PENDULUM.tiers[2] ? 3 : total >= PENDULUM.tiers[1] ? 2 : total >= PENDULUM.tiers[0] ? 1 : 0);
-export const pendulumPrize = (total, level = 15) => scalePrize(pendulumPart(total), level);
+export function ensureBonusPlan(run) {
+  if (run.bonusPlan?.version === 2) return run.bonusPlan;
+  const old = run.bonusPlan, level = old?.level || Math.max(15, run.level - 1);
+  const plan = createBonusPlan(run.hero, level, run.seed);
+  if (old?.prize !== undefined) { plan.prize = old.prize; plan.phase = 'done'; }
+  run.bonusPlan = plan;
+  return plan;
+}
+export function memoryTap(plan, index) {
+  if (plan.prize !== undefined || plan.flipped.length >= 2 || !Number.isInteger(index) || index < 0 || index >= 8 || plan.matched.includes(index) || plan.flipped.includes(index)) return null;
+  plan.flipped.push(index);
+  if (plan.flipped.length < 2) return { type: 'open', indices: [index] };
+  const indices = plan.flipped.slice();
+  if (plan.deck[indices[0]] === plan.deck[indices[1]]) { plan.matched.push(...indices); plan.flipped = []; return { type: 'match', indices }; }
+  plan.mistakes++;
+  return { type: 'miss', indices };
+}
+export const memoryDone = plan => plan.matched.length === 8 || plan.mistakes >= MEMORY.misses;
+export const memoryPart = plan => plan.matched.length === 8 ? (plan.mistakes <= 2 ? 3 : plan.mistakes <= 4 ? 2 : 1) : plan.matched.length >= 4 ? 1 : 0;
+export function sequenceTap(plan, index) {
+  if (plan.phase !== 'input' || plan.prize !== undefined || index < 0 || index >= 4) return null;
+  if (index !== plan.sequence[plan.input]) { plan.mistakes++; plan.input = 0; plan.phase = plan.mistakes >= SEQUENCE.mistakes ? 'done' : 'ready'; return 'miss'; }
+  plan.input++;
+  if (plan.input === SEQUENCE.lengths[plan.round]) { plan.round++; plan.input = 0; plan.phase = plan.round >= SEQUENCE.rounds ? 'done' : 'ready'; return 'round'; }
+  return 'step';
+}
+export const sequencePart = plan => plan.round === 3 ? (plan.mistakes ? 2 : 3) : plan.round;
+/** A predictable back-and-forth sweep; score is calculated at the input timestamp, never from the last rendered frame. */
+export function timingPosition(elapsed) { const t = ((Math.max(0, elapsed) % TIMING.period) / TIMING.period) * 2; return t <= 1 ? t : 2 - t; }
+export const timingPoints = position => Math.abs(position - .5) <= TIMING.center ? 2 : Math.abs(position - .5) <= TIMING.zone ? 1 : 0;
+export function recordTiming(plan, elapsed) {
+  if (plan.prize !== undefined || plan.hits.length >= TIMING.tries || plan.phase !== 'running') return null;
+  const points = timingPoints(timingPosition(elapsed)); plan.hits.push(points); plan.phase = plan.hits.length === TIMING.tries ? 'done' : 'ready'; return points;
+}
+export const timingPart = plan => { const n = plan.hits.reduce((a, b) => a + b, 0); return n >= 5 ? 3 : n >= 3 ? 2 : n >= 1 ? 1 : 0; };
+export const earnedPart = plan => plan.kind === 'memory' ? memoryPart(plan) : plan.kind === 'sequence' ? sequencePart(plan) : timingPart(plan);
+export function finishBonus(plan) {
+  if (plan.prize === undefined) plan.prize = bonusPrize(earnedPart(plan), plan.level);
+  plan.phase = 'done'; return plan.prize;
+}
+/** One atomic claim; resumeAdventure must not add the prize a second time. */
+export function claimBonus(run) {
+  const plan = run.bonusPlan;
+  if (!plan || plan.prize === undefined) return 0;
+  const prize = run.lastBonusClaim >= plan.level ? 0 : plan.prize;
+  run.hints = (run.hints || 0) + prize;
+  run.lastBonusClaim = Math.max(run.lastBonusClaim || 0, plan.level); run.bonus = 0; delete run.bonusPlan;
+  return prize;
+}

@@ -1,91 +1,82 @@
 import { describe, it, expect } from 'vitest';
-import { BONUS_WEIGHTS, pickBonusKind, catchPrize, catchPace, comboBonus, CATCH, reelPosition, reelStopSymbol, slotPrize, slotPart, REEL_SPEEDS, maxPrize, scalePrize, BONUS_KINDS, runesPart, runesPrize, runeShowMs, pendulumZone, pendulumPeriod, pendulumPoints, pendulumPart, pendulumPrize, PENDULUM, RUNES } from '../src/game/minigames.js';
+import { BONUS_KINDS, HERO_GAMES, bonusIndex, isBonusLevel, gameFor, createBonusPlan, ensureBonusPlan, memoryTap, memoryDone, memoryPart, sequenceTap, sequencePart, timingPosition, timingPoints, recordTiming, timingPart, maxPrize, bonusPrize, finishBonus, claimBonus } from '../src/game/minigames.js';
 
-describe('minijuegos', () => {
-  it('cada minijuego tiene probabilidad y las luciérnagas salen más que los demás', () => {
-    expect(Object.keys(BONUS_WEIGHTS).sort()).toEqual(['cards', 'catch', 'pendulum', 'runes', 'slots', 'wheel']);
-    expect(BONUS_KINDS).toHaveLength(6);
-    for (const w of Object.values(BONUS_WEIGHTS)) expect(w).toBeGreaterThan(0);
-    expect(BONUS_WEIGHTS.catch).toBeGreaterThan(BONUS_WEIGHTS.wheel);
-    expect(BONUS_WEIGHTS.catch).toBeGreaterThanOrEqual(BONUS_WEIGHTS.cards);
-  });
-  it('el sorteo respeta los pesos y siempre devuelve un minijuego válido', () => {
-    const counts = { cards: 0, catch: 0, wheel: 0, slots: 0, runes: 0, pendulum: 0 };
-    const N = 20000;
-    for (let i = 0; i < N; i++) counts[pickBonusKind(i / N)]++;
-    const total = Object.values(BONUS_WEIGHTS).reduce((a, b) => a + b, 0);
-    for (const k of Object.keys(counts)) expect(counts[k] / N).toBeCloseTo(BONUS_WEIGHTS[k] / total, 1);
-    expect(pickBonusKind(0.9999999)).toBeTruthy();
-  });
-  it('luciérnagas: 12 → 1 pista, 24 → 2, 36 → 3, menos de 12 → ninguna', () => {
-    expect([0, 11, 12, 23, 24, 35, 36, 80].map(catchPrize)).toEqual([0, 0, 1, 1, 2, 2, 3, 3]);
-  });
-  it('luciérnagas: la partida acelera y salen más a la vez, y el combo da puntos extra cada 5', () => {
-    const a = catchPace(0);
-    const b = catchPace(1);
-    expect(b.delay).toBeLessThan(a.delay);
-    expect(b.rise).toBeLessThan(a.rise);
-    expect(b.group).toBeGreaterThan(a.group);
-    expect(CATCH.duration).toBeGreaterThanOrEqual(12000);
-    // más de 5 apariciones por segundo en la recta final: un reto de verdad
-    expect((1000 / b.delay) * b.group).toBeGreaterThan(10);
-    expect([1, 4, 5, 6, 10, 15].map(comboBonus)).toEqual([0, 0, 2, 0, 2, 2]);
-  });
-  it('tragaperras: el rodillo para en el símbolo más cercano y el premio depende de los tres', () => {
-    expect(reelStopSymbol(reelPosition(0, 100))).toBe(0);
-    expect(reelStopSymbol(reelPosition(149, 100))).toBe(1);
-    expect(reelStopSymbol(reelPosition(260, 100))).toBe(0);   // 2,6 → 3 ≡ 0
-    expect(reelStopSymbol(-0.6)).toBe(2);
-    expect(REEL_SPEEDS.every((ms, i) => i === 0 || ms < REEL_SPEEDS[i - 1])).toBe(true);
-    expect(slotPrize([1, 1, 1])).toBe(3);
-    expect(slotPrize([0, 2, 0])).toBe(1);
-    expect(slotPrize([0, 1, 2])).toBe(0);
-  });
-  it('tragaperras: parando a ciegas el premio esperado queda en torno a 1 pista; con puntería, más', () => {
-    let blind = 0;
-    let n = 0;
-    for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) for (let c = 0; c < 3; c++) { blind += slotPrize([a, b, c]); n++; }
-    expect(blind / n).toBeGreaterThan(0.8);
-    expect(blind / n).toBeLessThan(1.3);
-  });
+describe('tres juegos por héroe, entrada directa y ciclo fijo',()=>{
+ it('mantiene las nueve paradas intermedias y el orden 1,2,3,1',()=>{
+  const levels=Array.from({length:100},(_,i)=>i+1).filter(isBonusLevel);
+  expect(levels).toEqual([15,25,35,45,55,65,75,85,95]);
+  expect(levels.map(l=>bonusIndex(l)%3)).toEqual([0,1,2,0,1,2,0,1,2]);
+  for(const hero of ['lia','jean','van'])expect(levels.map(l=>gameFor(hero,l).kind)).toEqual([...HERO_GAMES[hero],...HERO_GAMES[hero],...HERO_GAMES[hero]].map(g=>g.kind));
+ });
+ it('nueve nombres propios, tres mecánicas conocidas y ninguna ruleta o tragaperras',()=>{
+  const games=Object.values(HERO_GAMES).flat();expect(new Set(games.map(g=>g.title)).size).toBe(9);
+  expect(BONUS_KINDS).toEqual(['memory','sequence','timing']);
+  for(const list of Object.values(HERO_GAMES))expect(new Set(list.map(g=>g.kind)).size).toBe(3);
+ });
+ it('la semilla cambia cartas y secuencias, nunca el orden del juego',()=>{
+  const a=createBonusPlan('lia',15,42),b=createBonusPlan('lia',15,43);
+  expect(createBonusPlan('lia',15,42)).toEqual(a);expect(a.kind).toBe(b.kind);expect(a.deck).not.toEqual(b.deck);
+  expect(a.deck.slice().sort()).toEqual([0,0,1,1,2,2,3,3]);
+ });
+});
 
-  it('los premios son proporcionales al nivel: el máximo sube de 3 pistas (nivel 15) a 10 (nivel 95)', () => {
-    expect(maxPrize(15)).toBe(3);
-    expect(maxPrize(95)).toBe(10);
-    let prev = 0;
-    for (const lvl of [15, 25, 35, 45, 55, 65, 75, 85, 95]) {
-      expect(maxPrize(lvl), `nivel ${lvl}`).toBeGreaterThanOrEqual(prev);
-      prev = maxPrize(lvl);
-    }
-    expect(scalePrize(0, 95)).toBe(0);
-    expect([1, 2, 3].map((p) => scalePrize(p, 15))).toEqual([1, 2, 3]);
-    expect([1, 2, 3].map((p) => scalePrize(p, 95))).toEqual([3, 7, 10]);
-    expect(catchPrize(40, 95)).toBe(10);
-    expect(catchPrize(12, 95)).toBe(3);
-    expect(slotPrize([1, 1, 1], 95)).toBe(10);
-    expect(slotPrize([1, 1, 2], 95)).toBe(3);
-    expect(slotPart([1, 1, 2])).toBe(1);
-  });
+describe('parejas: decisión del jugador, sin premios escondidos al azar',()=>{
+ it('no permite elegir la misma carta dos veces, ni abrir una tercera antes de cerrar el fallo',()=>{
+  const p=createBonusPlan('lia',15,1);memoryTap(p,0);expect(memoryTap(p,0)).toBeNull();
+  const bad=p.deck.findIndex(v=>v!==p.deck[0]);expect(memoryTap(p,bad).type).toBe('miss');expect(p.mistakes).toBe(1);
+  expect(memoryTap(p,7)).toBeNull();expect(p.flipped).toHaveLength(2);
+ });
+ it('cuatro parejas perfectas dan el premio máximo y las parejas encontradas no se repiten',()=>{
+  const p=createBonusPlan('lia',15,1);
+  for(let sym=0;sym<4;sym++){const pair=p.deck.map((v,i)=>v===sym?i:-1).filter(i=>i>=0);expect(memoryTap(p,pair[0]).type).toBe('open');expect(memoryTap(p,pair[1]).type).toBe('match');expect(memoryTap(p,pair[0])).toBeNull();}
+  expect(memoryDone(p)).toBe(true);expect(memoryPart(p)).toBe(3);expect(finishBonus(p)).toBe(3);
+ });
+ it('seis fallos terminan el juego y guardan la puntuación parcial',()=>{
+  const p=createBonusPlan('lia',15,1);p.mistakes=6;p.matched=[0,1,2,3];expect(memoryDone(p)).toBe(true);expect(memoryPart(p)).toBe(1);
+ });
+});
 
-  it('runas de memoria: 3 rondas → 1 parte, 5 → 2, 7 → 3, y cada ronda se muestra más rápido', () => {
-    expect([0, 2, 3, 4, 5, 6, 7, 8].map(runesPart)).toEqual([0, 0, 1, 1, 2, 2, 3, 3]);
-    expect(runesPrize(7, 95)).toBe(10);
-    expect(runesPrize(3, 95)).toBe(3);
-    expect(runeShowMs(7)).toBeLessThan(runeShowMs(0));
-    expect(runeShowMs(99)).toBeGreaterThanOrEqual(260);
-    expect(RUNES.count).toBe(4);
-  });
-  it('péndulo: el centro vale 2, la zona 1, fuera 0; cada lanzamiento es más rápido y más estrecho', () => {
-    const z = pendulumZone(0);
-    expect(pendulumPoints(0, z)).toBe(2);
-    expect(pendulumPoints(z * 0.9, z)).toBe(1);
-    expect(pendulumPoints(z * 1.1, z)).toBe(0);
-    expect(pendulumPoints(-z * 0.2, z)).toBe(2);
-    for (let i = 1; i < PENDULUM.throws; i++) {
-      expect(pendulumZone(i)).toBeLessThan(pendulumZone(i - 1));
-      expect(pendulumPeriod(i)).toBeLessThan(pendulumPeriod(i - 1));
-    }
-    expect([0, 3, 4, 6, 7, 8, 9, 10].map(pendulumPart)).toEqual([0, 0, 1, 1, 2, 2, 3, 3]);
-    expect(pendulumPrize(10, 95)).toBe(10);
-  });
+describe('secuencias cortas y legibles',()=>{
+ it('solo admite entradas durante tu turno y gana tras secuencias de dos, tres y cuatro pasos',()=>{
+  const p=createBonusPlan('van',15,2);expect(sequenceTap(p,0)).toBeNull();
+  for(let round=0;round<3;round++){p.phase='input';for(let i=0;i<round+2;i++)sequenceTap(p,p.sequence[i]);}
+  expect(p.round).toBe(3);expect(p.phase).toBe('done');expect(sequencePart(p)).toBe(3);
+ });
+ it('conserva la misma secuencia al fallar y ofrece un segundo intento',()=>{
+  const p=createBonusPlan('van',15,2),seq=p.sequence.slice();p.phase='input';expect(sequenceTap(p,(seq[0]+1)%4)).toBe('miss');
+  expect(p.phase).toBe('ready');expect(p.sequence).toEqual(seq);p.phase='input';sequenceTap(p,(seq[0]+1)%4);expect(p.phase).toBe('done');expect(p.mistakes).toBe(2);
+ });
+});
+
+describe('precisión: tres sellos y cálculo en el instante real del toque',()=>{
+ it('el recorrido es predecible y vuelve, con una zona amplia y un centro doble',()=>{
+  expect([0,600,1200,1800,2400].map(timingPosition)).toEqual([0,.5,1,.5,0]);
+  expect([.1,.25,.5,.75,.9].map(timingPoints)).toEqual([0,1,2,1,0]);
+ });
+ it('cada toque válido solo registra un intento y tres centros dan el máximo',()=>{
+  const p=createBonusPlan('jean',15,1);expect(recordTiming(p,600)).toBeNull();
+  for(let i=0;i<3;i++){p.phase='running';expect(recordTiming(p,600)).toBe(2);expect(recordTiming(p,600)).toBeNull();}
+  expect(p.hits).toEqual([2,2,2]);expect(timingPart(p)).toBe(3);expect(p.phase).toBe('done');
+ });
+});
+
+describe('premios útiles, persistentes y cobrados una sola vez',()=>{
+ it('participar conserva al menos una pista y el máximo escala de tres a diez',()=>{
+  expect(maxPrize(15)).toBe(3);expect(maxPrize(95)).toBe(10);
+  for(const l of [15,25,35,45,55,65,75,85,95]){expect(bonusPrize(0,l)).toBe(1);expect(bonusPrize(3,l)).toBe(maxPrize(l));}
+ });
+ it('guardar y cargar conserva cartas, errores y el premio ya decidido',()=>{
+  const run={hero:'lia',level:16,seed:7,bonus:1,hints:3};const p=ensureBonusPlan(run);memoryTap(p,0);p.mistakes=2;
+  const loaded=JSON.parse(JSON.stringify(run));expect(ensureBonusPlan(loaded)).toEqual(p);
+  const prize=finishBonus(p);p.matched=[0,1,2,3,4,5,6,7];expect(finishBonus(p)).toBe(prize);
+ });
+ it('cobra de forma atómica y ni doble toque ni un plan viejo duplican las pistas',()=>{
+  const run={hero:'lia',level:16,seed:7,bonus:1,hints:3};const p=ensureBonusPlan(run);p.matched=[0,1,2,3,4,5,6,7];finishBonus(p);
+  const stale=JSON.parse(JSON.stringify(p));expect(claimBonus(run)).toBe(3);expect(run.hints).toBe(6);expect(run.bonus).toBe(0);expect(run.bonusPlan).toBeUndefined();expect(claimBonus(run)).toBe(0);
+  run.bonusPlan=stale;expect(claimBonus(run)).toBe(0);expect(run.hints).toBe(6);
+ });
+ it('migra una antigua ruleta pendiente sin volver a sortear un premio ya ganado',()=>{
+  const run={hero:'jean',level:26,seed:5,bonusPlan:{kind:'wheel',level:25,prize:4}};
+  const p=ensureBonusPlan(run);expect(p.version).toBe(2);expect(p.kind).toBe('memory');expect(p.prize).toBe(4);expect(p.phase).toBe('done');
+ });
 });

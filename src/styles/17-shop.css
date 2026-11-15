@@ -2,7 +2,7 @@
 .controls button#bShop{flex:.8}
 #shop{padding:0;background:#0b141b;overflow:hidden;backdrop-filter:none}
 .shop-world{position:absolute;inset:0;overflow:hidden}
-.shop-world::before{content:'';position:absolute;inset:-6%;background:url('/tienda/fondo-tienda.webp') center/cover;filter:blur(16px) brightness(.4)}
+.shop-world::before{content:'';position:absolute;inset:-6%;background:var(--shop-scene,url('/tienda/fondo-tienda.webp')) center/cover;filter:blur(16px) brightness(.4)}
 .shop-scene{--u:1dvh;--edge:max(15%,calc(50% - 50vw + 12px));position:absolute;top:0;bottom:0;left:50%;aspect-ratio:2/3;transform:translateX(-50%);color:#2a1c10}
 .shop-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;pointer-events:none}
 .shop-scene::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,#0000 55%,#0a121a77 100%)}
@@ -48,3 +48,9 @@
 #shopClose{font-size:max(13px,calc(1.8*var(--u)));padding:calc(1*var(--u)) calc(2*var(--u))}
 @media (max-height:620px){.shop-merchant{left:46%;width:38%}.shop-bubble{width:30%}}
 @media (prefers-reduced-motion:reduce){.shop-merchant img,.shop-bubble.say{animation:none}}
+
+#shop[data-hero=lia] .shop-sign{border-color:#cc9360;background:linear-gradient(#5c3020,#30251a)}
+#shop[data-hero=van] .shop-sign{border-color:#ac94c1;background:linear-gradient(#413149,#242236)}
+#shop[data-hero=lia] .shop-merchant,#shop[data-hero=van] .shop-merchant{left:40%;width:43%}
+
+.shop-world>.shop-discount{position:absolute;top:12px;right:12px;z-index:4;margin:0;padding:6px 10px;font-size:11px;border:1px solid #b9a1d077;border-radius:8px;box-shadow:0 3px 12px #0005}

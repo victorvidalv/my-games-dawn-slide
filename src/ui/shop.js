@@ -1,5 +1,6 @@
 import { sfx } from '../audio/sound.js';
-import { $ } from '../dom.js';
+import { $, cssUrl } from '../dom.js';
+import { shopPersona } from '../game/shop-personas.js';
 import { SHOP_ITEMS, availability, buy, extraTurns, itemById, priceOf } from '../game/shop.js';
 import { saveRun, skipLevel } from '../game/session.js';
 import { S } from '../state.js';
@@ -82,6 +83,7 @@ const SAY = {
 const SHORT = { hint: 'Te enseña el mejor movimiento', moves3: 'Más turnos en este tablero', moves: 'Muchos más turnos en este tablero', redo: 'Empieza de cero con 0 movimientos', skip: 'Pasa de nivel sin puntos ni racha' };
 const shortOf = (id) => SHORT[id];
 const lastIdx = new Map();
+const merchantLine = key => pick(shopPersona(S.run?.hero).lines?.[key] || SAY[key]);
 /** Elige una frase al azar sin repetir la anterior de la misma lista. */
 const pick = (arr) => {
   if (typeof arr === 'string') return arr;
@@ -123,6 +125,11 @@ export function openShop() {
   const wasBusy = S.busy;
   S.busy = true;
   const modal = $('shop');
+  const persona=shopPersona(S.run.hero);modal.dataset.hero=S.run.hero;
+  $('shopBg').src=persona.background;$('shopMerchant').src=persona.portrait;
+  $('shopMerchant').alt=`${persona.name}, ${persona.title}`;
+  $('shopTitle').textContent=`Tienda de ${persona.name}`;
+  modal.style.setProperty('--shop-scene',cssUrl(persona.background));
   const close = () => {
     modal.classList.remove('show');
     $('shopClose').onclick = null;
@@ -130,12 +137,12 @@ export function openShop() {
   };
   render();
   modal.classList.add('show');
-  sfx.merchantBell(); say(pick(SAY.greet), 'happy');
+  sfx.merchantBell(); say(merchantLine('greet'), 'happy');
   $('shopClose').onclick = close;
   const list = $('shopList');
   const lineFor = (b) => {
-    if (b.classList.contains('off')) return b.dataset.id === 'redo' && S.G.moves === 0 ? pick(SAY.nothing) : pick(SAY.poor);
-    return pick(SAY[b.dataset.id]);
+    if (b.classList.contains('off')) return b.dataset.id === 'redo' && S.G.moves === 0 ? merchantLine('nothing') : merchantLine('poor');
+    return merchantLine(b.dataset.id);
   };
   list.onpointerover = (e) => { const b = e.target.closest('.shop-item'); if (b && e.pointerType === 'mouse') say(lineFor(b), undefined, false); };
   list.onfocusin = (e) => { const b = e.target.closest('.shop-item'); if (b) say(lineFor(b), undefined, false); };
@@ -144,9 +151,9 @@ export function openShop() {
     if (!b) return;
     if (b.classList.contains('off')) { sfx.merchantNope(); say(lineFor(b), 'nope'); return; }
     const id = b.dataset.id;
-    say(pick(SAY[id]));
-    if (!(await confirmBuy(id))) { sfx.merchantNope(); say(pick(SAY.decline)); return; }
-    sfx.merchantCoin(); say(pick(SAY.bought), 'happy');
+    say(merchantLine(id));
+    if (!(await confirmBuy(id))) { sfx.merchantNope(); say(merchantLine('decline')); return; }
+    sfx.merchantCoin(); say(merchantLine('bought'), 'happy');
     if (id === 'skip') {
       close();
       skipLevel();

@@ -135,7 +135,7 @@ export async function resumeAdventure(){
  if(S.run.enterPending){delete S.run.enterPending;S.run.route='normal';S.run.routeZone=0;S.run.travelFrom=0;saveRun()}
  if(S.run.level<=10&&!S.run.pendingClear?.routeChosen&&S.run.route!=='normal'){S.run.route='normal';S.run.routeZone=0;saveRun()}
  if(S.run.pendingClear){await advanceClear();return}
- if(S.run.bonus){const prize=await showBonus();S.run.hints+=prize;S.run.bonus=0;saveRun()}
+ if(S.run.bonus){await showBonus();saveRun()}
  if(S.run.travelFrom!==undefined){const from=S.run.travelFrom,to=zoneIdx(S.run.level);await showMap(from,to,{travel:from!==to});delete S.run.travelFrom;saveRun()}
  await startLevel();
 }

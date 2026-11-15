@@ -72,7 +72,7 @@ src/
   game/
     shop.js             Tienda: precios y compras como funciones puras (turnos extra, pista, rehacer, saltar).
     mechanics.js        Piezas especiales por ciudad, calendario de niveles (normales, mecánica, jefe) y jefes.
-    minigames.js        Reglas puras de los minijuegos de descanso (sorteo y premios).
+    minigames.js        Reglas puras de los tres retos, ciclo por héroe, progreso y cobro de premios.
     heroes.js           ★ Héroes y poderes como funciones puras (Lía, Jean, Juth) + recompensas de nivel.
     session.js          Flujo de la aventura: empezar, cargar nivel, ganar, perder, viajar, récord.
   data/
@@ -231,7 +231,7 @@ Cada héroe saluda con su voz cada ciudad: la primera (el Valle) al empezar la a
 
 ## Minijuegos de descanso
 
-En los niveles 15, 25… 95 hay un descanso con un minijuego que da **pistas**. Una **ruleta del destino** mística (un anillo de seis sellos que gira y chasquea) anuncia cuál toca: las **cartas** del umbral, la **rueda** de los sellos, el **altar de los ecos** (una tragaperras en la que tú paras los tres rodillos), las **luciérnagas** (12 s, cada vez más rápidas y numerosas, con combos), las **runas de la memoria** (tipo «Simón») y el **péndulo del tiempo** (para la bola en la zona dorada). El premio máximo es proporcional al nivel: de 3 pistas en el nivel 15 a 10 en el 95. Reglas puras en [`src/game/minigames.js`](src/game/minigames.js) (con tests) e interfaz en [`src/ui/bonus.js`](src/ui/bonus.js).
+En los niveles 15, 25…95 se entra directamente a un reto: **parejas**, **secuencias** o **precisión**. Cada héroe tiene tres nombres y diseños propios, que se repiten en orden **1 → 2 → 3 → 1**. No hay sorteo de juego, ruleta introductoria ni tragaperras. Solo varían las cartas y las secuencias, de forma determinista por semilla. Los premios dependen del desempeño: al menos una pista al participar, y un máximo que crece de tres a diez. El progreso y los premios se guardan; el cobro es atómico y no se duplica al recargar. Reglas en [`src/game/minigames.js`](src/game/minigames.js) e interfaz en [`src/ui/bonus.js`](src/ui/bonus.js).
 
 ## Tienda
 
@@ -250,15 +250,25 @@ Los turnos comprados aparecen como cristales de hielo bajo el medidor, y se «de
 Si te pasas del límite de movimientos la aventura termina: **no se ofrece comprar turnos al perder**, hay que comprarlos antes.
 Toda compra pide confirmación y la lógica está en [`src/game/shop.js`](src/game/shop.js), con pruebas.
 
-La tienda es una escena ilustrada: el vendedor **Don Dublón** (`public/heroes/vendedor.webp`) detrás de su mostrador
-(`public/tienda/fondo-tienda.webp`) comenta cada ayuda, se alegra cuando compras y niega con la cabeza si no te alcanza.
-Los precios se muestran con su equivalente en niveles.
+La tienda conserva la misma distribución de productos y botones para todos los héroes, pero cambia de fondo, vendedor y diálogos:
+
+- **Lía:** Maela, la Candilera; taller de faroles y cobre.
+- **Jean:** Don Dublón, el Mercader; se conservan el personaje y la tienda originales.
+- **Juth:** Azhar, el Tasador de Runas; tienda de mapas, cristales y códices.
+
+Datos y frases propias en `src/game/shop-personas.js`. El descuento heroico de Juth conserva las mismas reglas y se muestra/cobra de forma consistente.
 
 ## Minijuegos de descanso
 
-Cada cinco niveles (desde el 15) hay una parada con un minijuego que regala pistas: **luciérnagas** (toca las luces antes
-de que escapen en 10 s: 6 → +1, 12 → +2, 18 → +3; las doradas valen 3), **cartas**, **rueda** y **altar de los ecos**.
-Las luciérnagas salen más a menudo (pesos en `src/game/minigames.js`, con pruebas).
+Se mantienen nueve paradas, en los niveles 15, 25…95. No aparecen en el selector de héroe.
+
+| Héroe | Juego 1 | Juego 2 | Juego 3 |
+|---|---|---|---|
+| Lía | Brasas del Juramento (parejas) | El Canto del Alba (secuencia) | El Latido de la Forja (precisión) |
+| Jean | La Última Campanada (precisión) | Fragmentos de la Hora (parejas) | El Eco del Péndulo (secuencia) |
+| Juth | El Nombre de las Estrellas (secuencia) | El Sello del Firmamento (precisión) | El Códice de los Nombres (parejas) |
+
+Parejas: cuatro parejas y hasta seis errores, sin cronómetro. Secuencias: repetir dos, tres y cuatro símbolos, con dos oportunidades de error. Precisión: tres intentos, recorrido predecible y zona amplia; los puntos se calculan en el instante real del toque. Los controles principales miden al menos 44 px. Reducir movimiento elimina transiciones decorativas sin acelerar las secuencias. Al poner la app en segundo plano se pausa el reto activo sin gastar un intento. Se puede terminar un reto y recoger el premio parcial. Las cartas, las rondas y el premio pendiente sobreviven a una recarga; la continuación añade las pistas una sola vez. Las antiguas partidas pendientes migran conservando un premio ya decidido.
 
 ## Música
 
