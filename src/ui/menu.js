@@ -20,12 +20,14 @@ function renderPaths(){
     const rec=store.paths[mode+p.s],lvl=rec?rec.level:0,prog=lvl?Math.max(4,lvl):0;
     const big=mode==='c'?(rec&&rec.score?rec.score.toLocaleString(numLocale()):'—'):(lvl?lvl:'—');
     const lbl=mode==='c'?'RÉCORD':'NIVEL MÁX.';
-    const txt=`${lvl>=100?'👑 ':''}Nivel máximo ${lvl}/100`;
+    const txt=`${lvl>=100?'👑 ':''}Nivel máx. ${lvl}/100`;
     const d=document.createElement('div');d.className='path';d.style.setProperty('--pc',p.c);
-    d.innerHTML=`<div class="ptop"><div class="pemo">${p.e}</div>
-      <div class="pinfo"><b>${p.n}</b></div>
-      <div class="pscore"><small>${lbl}</small><b>${big}</b></div></div>
+    d.setAttribute('role','button');d.tabIndex=0;
+    d.innerHTML=`<div class="pemo">${p.e}</div>
+      <div class="pinfo"><b>${p.n}</b><small>${p.d}</small></div>
+      <div class="pscore"><small>${lbl}</small><b>${big}</b></div>
       <div class="pach"><div class="pbar"><i style="width:${prog}%"></i></div><span>${txt}</span></div>`;
+    d.onkeydown=(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pickPath(p.s,mode)}};
     d.onclick=()=>pickPath(p.s,mode);
     box.appendChild(d);
   });

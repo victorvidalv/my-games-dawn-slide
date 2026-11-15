@@ -128,6 +128,7 @@ export const EN_UI = {
   'Camino de las Runas · −33 %': 'Path of the Runes · −33 %', 'Tienda de Don Dublón': 'Don Dublón\'s Shop', 'Tienda de {p}': '{p}\'s Shop',
   'Tienda de La Candilera': 'The Lamplighter\'s Shop',
   /* añadidos: avisos compuestos y accesibilidad */
+  'Nivel máx. {n}/100': 'Best level {n}/100', '👑 Nivel máx. {n}/100': '👑 Best level {n}/100',
   '↻ Jugar otra vez': '↻ Play again', 'Ir al inicio': 'Go to the start',
   'Turnos de reserva. Reserva automática': 'Reserve turns. Automatic reserve',
   'Maela, La Candilera': 'Maela, the Lamplighter', 'Don Dublón, El Mercader': 'Don Dublón, the Merchant', 'Azhar, El Tasador de Runas': 'Azhar, the Rune Appraiser',
