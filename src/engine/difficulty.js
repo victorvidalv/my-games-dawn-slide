@@ -6,13 +6,13 @@ export const MAX_RATING = 100;
  * Puntos de control nivel → dificultad (1-100) de cada camino (entre ellos se interpola linealmente).
  * La clave es el identificador del camino (1 = Normal, 50 = Difícil, 75 = Experto; no cambia: lo usan los récords guardados).
  *   Normal  : empieza en 2 movimientos y en el nivel 20 ya hay que pensar (11); llega al máximo en el 100.
- *   Difícil : empieza donde Normal ya exige pensar (~12 mov.) y sube mucho más rápido: máximo al llegar al nivel 55.
- *   Experto : empieza en ~21 movimientos y alcanza el máximo (37) en el nivel 40; el resto aprieta el límite de turnos.
+ *   Difícil : empieza donde Normal ya exige pensar (~11 mov.) y sube mucho más rápido: máximo al llegar al nivel 50.
+ *   Experto : empieza en ~19 movimientos y alcanza el máximo (37) en el nivel 38; el resto aprieta el límite de turnos.
  */
 export const PATH_CURVES = {
   1: [[1, 1], [20, 30], [45, 55], [70, 78], [100, 100]],
-  50: [[1, 35], [25, 65], [55, 100], [100, 100]],
-  75: [[1, 55], [20, 85], [40, 100], [100, 100]],
+  50: [[1, 27], [25, 60], [50, 100], [100, 100]],
+  75: [[1, 44], [20, 74], [38, 100], [100, 100]],
 };
 
 /** Dificultad (1-100) del nivel `level` en el camino `start` (1, 50 o 75). */
@@ -76,9 +76,9 @@ export const startHintsFor = (start = 1) => (start >= 75 ? 2 : 3);
 
 /**
  * Factor de límite de movimientos: empieza holgado y se aprieta hasta el nivel 100, así la dificultad se siente subir.
- *   Normal ×2 → ×1,3 · Difícil ×1,7 → ×1,15 · Experto ×1,5 → ×1,1   (interpolación lineal entre el nivel 1 y el 100)
+ *   Normal ×2 → ×1,3 · Difícil ×1,85 → ×1,06 · Experto ×1,7 → ×1,04 (con el mínimo de «mínimo + 2» movimientos)   (interpolación lineal entre el nivel 1 y el 100)
  */
-export const LIMIT_FACTORS = { 1: [2, 1.3], 50: [1.7, 1.15], 75: [1.5, 1.1] };
+export const LIMIT_FACTORS = { 1: [2, 1.3], 50: [1.85, 1.06], 75: [1.7, 1.04] };
 export const limitFactor = (start = 1, level = 1) => {
   const [from, to] = LIMIT_FACTORS[start >= 75 ? 75 : start >= 50 ? 50 : 1];
   const t = Math.max(0, Math.min(1, (level - 1) / (MAX_LEVEL - 1)));

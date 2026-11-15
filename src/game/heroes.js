@@ -21,8 +21,8 @@ export const JEAN_UNDO_MIN = 1;
 export const JEAN_UNDO_MAX = 6;      // …entre 1 y 6
 export const JUTH_HINT_EVERY = 32;   // pistas gratis = 1 por cada 32 movimientos del mínimo (redondeado)…
 export const JUTH_HINT_MAX = 3;      // …entre 1 y 3
-/** Qué parte de sus poderes conserva el héroe en cada camino: Normal 100 %, Difícil 75 %, Experto 50 %. */
-export const POWER_SCALE = { 1: 1, 50: 0.75, 75: 0.5 };
+/** Qué parte de su reserva de turnos conserva Lía en cada camino: Normal 100 %, Difícil 55 %, Experto 35 %. */
+export const POWER_SCALE = { 1: 1, 50: 0.55, 75: 0.35 };
 export const powerScale = (start = 1) => POWER_SCALE[start >= 75 ? 75 : start >= 50 ? 50 : 1];
 
 /** ¿Este tablero lleva pista gratis de Juth? Normal: todos; Difícil: ~9 de cada 10; Experto: ~8 de cada 10 (repartidos de forma pareja). */
@@ -40,13 +40,16 @@ export const freeHintsFor = (opt = 10, start = 1) => {
   return Math.max(1, Math.min(Math.max(1, Math.round(JUTH_HINT_MAX * k)), Math.round((opt / JUTH_HINT_EVERY) * k)));
 };
 export const CITY_EVERY = 10; // niveles por ciudad
-export const HINT_EVERY = 5; // todos los héroes: +1 pista cada 5 niveles
+export const HINT_EVERY = 5; // Normal: +1 pista cada 5 niveles (todos los héroes)
+/** Cada cuántos niveles se gana una pista: Normal 5, Difícil 6, Experto 8 (cuanto más difícil el camino, más escasas). */
+export const HINT_EVERY_BY_PATH = { 1: 5, 50: 6, 75: 8 };
+export const hintEvery = (start = 1) => HINT_EVERY_BY_PATH[start >= 75 ? 75 : start >= 50 ? 50 : 1];
 
 const isPractice = (mode) => mode === 'p';
 
 /* ───────────── Lía: turnos de reserva (un % más de turnos en cada tablero) ───────────── */
 
-export const LIA_TURNS_SHARE = 0.23; // +23 % del límite de movimientos (calibrado con npm run simulate)
+export const LIA_TURNS_SHARE = 0.25; // +23 % del límite de movimientos (calibrado con npm run simulate)
 export const LIA_MIN_TURNS = 2;     // y como mínimo 2 turnos
 
 /** Turnos extra que da el héroe sobre un límite base (solo Lía). */
@@ -139,7 +142,7 @@ export const canHint = (heroId, run, mode, level, opt) => isPractice(mode) || he
  * Todos los héroes: +1 cada 5 niveles.
  */
 export function clearRewards(heroId, run, level) {
-  const gained = level % HINT_EVERY === 0 ? 1 : 0;
+  const gained = level % hintEvery(run?.start) === 0 ? 1 : 0;
   run.hints = (run.hints || 0) + gained;
   return gained;
 }

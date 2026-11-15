@@ -46,7 +46,7 @@ export async function startLevel(){
   S.busy=true;
   S.G=buildAdventureLevel(S.run,{levels:levelBank.ratings,special:specialBank,tips:store.tips||{}});
   S.G.colors ||= [0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5);
-  $('lvl').textContent=S.G.n;$('mn').textContent=S.G.opt;$('base').textContent=S.run.mode==='p'?'—':baseScore(S.G.rate);
+  $('lvl').textContent=S.G.tutorial?`${S.G.n} · TUTORIAL`:S.G.n;$('mn').textContent=S.G.opt;$('base').textContent=S.run.mode==='p'?'—':baseScore(S.G.rate);
   applyZone(zoneIdx(S.G.n));renderStage();
   const prac=S.run.mode==='p';
   $('score').textContent=prac?'—':S.run.score.toLocaleString('de-DE');recLine();
@@ -131,6 +131,13 @@ async function advanceClear(){
 }
 export function win(){                                  // la voz del héroe NO se corta al ganar: termina su frase aunque el nivel sea rápido
  if(S.G.done)return;S.G.done=true;S.busy=true;boardEl.classList.add('board-lock');
+ if(S.G.tutorial){                                      // nivel extra de tutorial: sin puntos ni avance; después empieza el nivel real
+  store.tips=store.tips||{};store.tips['tut_'+S.G.tutorial]=true;delete S.run.board;persist();
+  setTensionFx(0,false);tone(523,.13,'sine',.06);tone(784,.18,'sine',.045,.08);
+  S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';
+  $('msg').textContent='¡Tutorial superado! Ahora, el nivel de verdad.';
+  setTimeout(()=>{S.busy=false;startLevel()},1400);return;
+ }
  const gain=gainNow(),previous=S.run.score;
  S.run.score+=gain.total;S.run.cleared=(S.run.cleared||0)+1;S.run.streak=gain.eff>=.9?(S.run.streak||0)+1:0;
  S.run.adj=Math.max(-2,Math.min(S.run.level<10?1:2,S.run.adj+(gain.eff>=.9?1:gain.eff<.4?-1:0)));

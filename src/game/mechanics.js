@@ -124,10 +124,10 @@ export const TUTORIALS = {
   },
 };
 
-/** ¿Hay un tablero de aprendizaje para este nivel y esta pieza (si no se vio ya)? */
+/** ¿Hay un nivel extra de tutorial antes de este nivel (si no se completó ya)? Va ANTES del nivel real: no da puntos ni cuenta como nivel. */
 export function tutorialFor(level, seenTips = {}) {
   for (const [mech, t] of Object.entries(TUTORIALS)) {
-    if (t.level === level && !seenTips[mech]) return { mech, ...t };
+    if (t.level === level && !seenTips['tut_' + mech]) return { mech, ...t };
   }
   return null;
 }

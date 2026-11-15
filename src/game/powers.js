@@ -1,9 +1,18 @@
 import { encode, N } from '../engine/board.js';
 import { analyze, expand } from '../engine/solver.js';
 
-export const REWIND_STEPS = 5;
+/** Jean rebobina más movimientos cuanto más difícil es el camino (Normal 3, Difícil 6, Experto 8): en Normal basta con poco y en los caminos duros hace falta más. */
+export const REWIND_BY_PATH = { 1: 3, 50: 6, 75: 8 };
+export const rewindSteps = (start = 1) => REWIND_BY_PATH[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+export const REWIND_STEPS = REWIND_BY_PATH[1];
 export const DESTINY_STEPS = 3;
-export const JUTH_MIN_REMAINING = 3; // usable only when the exact distance is greater than this
+export const JUTH_MIN_REMAINING = 2; // usable solo si quedan más de 2 pasos; nunca ejecuta el último movimiento (siempre deja uno al jugador)
+/** Parte de los tableros en los que los poderes de Jean y Juth están listos: Normal todos, Difícil ~85 %, Experto ~70 % (repartidos de forma pareja). */
+export const POWER_READY_SHARE = { 1: 1, 50: .85, 75: .7 };
+export const powerReady = (level = 1, start = 1) => {
+  const k = POWER_READY_SHARE[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+  return Math.floor(level * k + 1e-9) > Math.floor((level - 1) * k + 1e-9);
+};
 
 const plans = new WeakMap();
 /** One graph analysis per position, shared by the button and activation; respects all special pieces. */
@@ -15,8 +24,9 @@ export function destinyPlan(G) {
   const left = an?.dist.get(key);
   if (left > JUTH_MIN_REMAINING) {
     let current = key;
+    const count = Math.min(DESTINY_STEPS, left - 1);
     const pos = new Array(G.pieces.length).fill(0), grid = new Int8Array(N * N), steps = [];
-    for (let n = 0; n < DESTINY_STEPS; n++) {
+    for (let n = 0; n < count; n++) {
       const distance = an.dist.get(current);
       let next = null;
       expand(G.pieces, current, pos, grid, (i, to, k) => {
@@ -25,7 +35,7 @@ export function destinyPlan(G) {
       if (!next) break;
       steps.push({ i: next.i, to: next.to }); current = next.key;
     }
-    if (steps.length === DESTINY_STEPS) plan = { left, steps };
+    if (steps.length === count) plan = { left, steps };
   }
   plans.set(G, { key, plan });
   return plan;
@@ -41,14 +51,15 @@ export function powerState(run, G) {
   if (!run || !G || G.done) return { ok: false, reason: 'Sin tablero' };
   if (run.hero === 'lia') return { ok: false, reason: 'Reserva automática' };
   if (powerUsed(run, G)) return { ok: false, reason: 'Usado · próximo tablero' };
+  if (run.hero !== 'lia' && !powerReady(G.n, run.start)) return { ok: false, reason: 'Descansa este tablero' };
   if (run.hero === 'jean') return G.hist.length
-    ? { ok: true, count: Math.min(REWIND_STEPS, G.hist.length), reason: '1 uso por tablero' }
+    ? { ok: true, count: Math.min(rewindSteps(run.start), G.hist.length), reason: '1 uso por tablero' }
     : { ok: false, reason: 'Mueve una pieza primero' };
   if (run.hero !== 'van') return { ok: false, reason: 'Sin poder' };
-  if (G.limit - G.moves < DESTINY_STEPS) return { ok: false, reason: 'Necesitas 3 turnos' };
   const plan = destinyPlan(G);
-  return plan ? { ok: true, plan, reason: '3 movimientos · 1 uso' }
-    : { ok: false, reason: 'Requiere más de 3 pasos hasta la salida' };
+  if (plan && G.limit - G.moves < plan.steps.length) return { ok: false, reason: `Necesitas ${plan.steps.length} turnos` };
+  return plan ? { ok: true, plan, reason: `${plan.steps.length} movimientos · 1 uso` }
+    : { ok: false, reason: 'Requiere más de 2 pasos hasta la salida' };
 }
 
 /** Consume before any animation, so saving or reloading cannot replenish the power. */

@@ -17,3 +17,23 @@
 
 .seal-status small{display:block;margin-top:3px;color:#d0d1bd;font-size:9px;font-weight:500;line-height:1.25}
 #coachDemo:has(.ic-seal) .tools-demo>span{padding:5px;border:2px dashed #f0d28f;border-radius:8px}
+
+/* Tres tipos de sello: bronce (pequeño), plata (medio) y oro (gran premio), cada uno con su color, borde y brillo. */
+.seal-t1{--seal:#dc9a62;--seal-glow:#e0a46855;--seal-ink:#f3c996}
+.seal-t2{--seal:#d4e4f1;--seal-glow:#9fc4dd66;--seal-ink:#eef6fc}
+.seal-t3{--seal:#ffd75e;--seal-glow:#ffcb4a99;--seal-ink:#fff2b8}
+.seal-floor .seal-ring{border-color:var(--seal);box-shadow:0 0 10px var(--seal-glow),inset 0 0 10px var(--seal-glow)}
+.seal-floor.seal-t1 .seal-ring{border-radius:12px;border-style:dotted}
+.seal-floor.seal-t2 .seal-ring{border-radius:3px;transform:rotate(45deg) scale(.86);border-style:dashed}
+.seal-floor.seal-t3 .seal-ring{border-radius:50%;border-width:3px;animation:seal-gold 1.6s ease-in-out infinite alternate}
+.seal-floor.seal-t3 .seal-glyph{animation:seal-breathe 1.4s ease-in-out infinite alternate;filter:drop-shadow(0 0 7px #ffcb4a)}
+.seal-floor.covered .seal-ring{border-color:var(--seal-ink)}
+.piece.seal-carrier.seal-t1::after{border-color:var(--seal);border-style:dotted}
+.piece.seal-carrier.seal-t2::after{border-color:var(--seal)}
+.piece.seal-carrier.seal-t3::after{border-color:var(--seal);border-width:3px;box-shadow:0 0 0 1px #112733,0 0 12px #ffcb4a99;animation:seal-gold 1.6s ease-in-out infinite alternate}
+.seal-status.seal-t1{color:#f0c79a}.seal-status.seal-t2{color:#dbe9f4}.seal-status.seal-t3{color:#ffe08a}
+.seal-status.seal-t1 b{color:#f6d6b3}.seal-status.seal-t2 b{color:#f2f8fd}.seal-status.seal-t3 b{color:#fff0b0;text-shadow:0 0 10px #ffcb4a88}
+.seal-points-pop.seal-t1{border-color:#c98550;color:#f6d6b3}.seal-points-pop.seal-t2{border-color:#c9d8e4;color:#f2f8fd}
+.seal-points-pop.seal-t3{border-color:#ffd75e;color:#fff0b0;box-shadow:0 0 28px #ffcb4a88;font-size:27px}
+@keyframes seal-gold{to{box-shadow:0 0 16px #ffcb4abb,inset 0 0 14px #ffcb4a66}}
+@media(prefers-reduced-motion:reduce){.seal-floor.seal-t3 .seal-ring,.piece.seal-carrier.seal-t3::after{animation:none}}

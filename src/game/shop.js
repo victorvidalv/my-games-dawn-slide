@@ -16,16 +16,16 @@ import { baseScore } from '../engine/scoring.js';
  * Calibrado con `npm run simulate` (sección Tienda): un jugador que compra a fondo gana ~20 niveles en Normal, ~17 en Difícil
  * y ~8 en Experto (similar a un poder de héroe) pero su puntaje se desploma: ayuda, pero duele.
  */
-export const PATH_PRICE = { 1: 1, 50: 1.25, 75: 1.5 };
+export const PATH_PRICE = { 1: 1.7, 50: 2.6, 75: 3.6 };
 export const pathPrice = (start = 1) => PATH_PRICE[start >= 75 ? 75 : start >= 50 ? 50 : 1];
 /** Revivir al caer (fuera de tienda): cuesta 33 % de tus puntos actuales y solo 1 vez por partida. */
 export const REVIVE_SHARE = 0.33;
 export const MAX_REVIVES = 1;
 
 export const SHOP_ITEMS = [
-  { id: 'hint', icon: 'hint', name: 'Pista', levels: 3, detail: 'Una pista que te enseña el mejor movimiento.' },
-  { id: 'moves3', icon: 'hourglass', name: 'Turnos extra', levels: 6, share: 0.1, min: 2, detail: 'Más turnos para este tablero.' },
-  { id: 'moves', icon: 'hourglass', name: 'Muchos turnos extra', levels: 10, share: 0.2, min: 3, detail: 'Bastantes más turnos para este tablero.' },
+  { id: 'hint', icon: 'hint', name: 'Pista', levels: 5, detail: 'Una pista que te enseña el mejor movimiento.' },
+  { id: 'moves3', icon: 'hourglass', name: 'Turnos extra', levels: 9, share: 0.05, min: 1, detail: 'Más turnos para este tablero.' },
+  { id: 'moves', icon: 'hourglass', name: 'Muchos turnos extra', levels: 15, share: 0.1, min: 2, detail: 'Bastantes más turnos para este tablero.' },
   { id: 'redo', icon: 'rewind', name: 'Rehacer tablero', levels: 4, detail: 'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados).' },
   { id: 'skip', icon: 'skip', name: 'Saltar nivel', levels: 16, detail: 'Pasa al siguiente nivel sin puntos y sin racha.' },
 ];

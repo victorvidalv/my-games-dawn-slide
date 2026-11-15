@@ -8,11 +8,11 @@ import special from '../src/data/special.json';
 const rewindBoard = n => ({ n: 7, moves: n, limit: 30, pos: [n], hist: Array.from({length:n},(_,i)=>[i]) });
 const run = hero => ({ hero, hints: 4, score: 1234 });
 
-describe('Jean: una carga para hasta cinco movimientos', () => {
+describe('Jean: una carga para hasta tres movimientos en Normal (más en Difícil y Experto)', () => {
  for(const count of [0,1,4,5,8]) it(`rebobina el historial real de ${count} movimientos`,()=>{
   const r=run('jean'),G=rewindBoard(count),action=beginPower(r,G);
   if(!count){expect(action).toBeNull();expect(r.powerUsedLevel).toBeUndefined();return;}
-  expect(action.steps).toHaveLength(Math.min(5,count));expect(action.steps.at(-1)).toEqual([Math.max(0,count-5)]);
+  expect(action.steps).toHaveLength(Math.min(3,count));expect(action.steps.at(-1)).toEqual([Math.max(0,count-3)]);
   expect(beginPower(r,G)).toBeNull();expect(r.hints).toBe(4);expect(r.score).toBe(1234);
  });
  it('guardar y cargar, rehacer y revivir no recargan el poder del mismo nivel',()=>{
@@ -40,8 +40,8 @@ describe('Juth: tres movimientos óptimos legales',()=>{
   }
   expect(an.dist.get(encode(G.pos))).toBe(before-3);
  });
- it('se desactiva cuando quedan tres o menos pasos y no consume la carga',()=>{
-  const G={...decodeBoard('h2.2.0 v2.3.2 h2.4.3 #1.3'),n:10,moves:0,limit:10,hist:[]},r=run('van');
+ it('se desactiva cuando quedan dos o menos pasos y no consume la carga',()=>{
+  const G={...decodeBoard('h2.2.0'),n:10,moves:0,limit:10,hist:[]},r=run('van');
   expect(destinyPlan(G)).toBeNull();expect(beginPower(r,G)).toBeNull();expect(r.powerUsedLevel).toBeUndefined();
  });
  it('no activa una secuencia si quedan menos de tres turnos',()=>{

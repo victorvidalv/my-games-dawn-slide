@@ -6,15 +6,35 @@ import { TUTORIALS } from './mechanics.js';
 import { isHeroic } from './routes.js';
 
 const intros = new Set([...Object.values(TUTORIALS).map(t => t.level), 51]);
+export const SEAL_FIRST_LEVEL = 20;
 export const SEAL_LEVELS = (() => {
-  const levels = []; let level = 5, gap = 3;
+  const levels = []; let level = SEAL_FIRST_LEVEL, gap = 3;
   while (level < 100) { levels.push(level); let next = level + gap; if (intros.has(next)) next = level + (gap === 3 ? 4 : 3); level = next; gap = gap === 3 ? 4 : 3; }
   return levels;
 })();
 export const isSealLevel = level => SEAL_LEVELS.includes(level);
 export const maxSealDetour = opt => Math.min(8, Math.max(2, Math.ceil(opt * .18)));
 export const maxSealAdjustment = opt => Math.min(6, Math.max(1, Math.ceil(opt * .12)));
-export const sealPoints = (rate, opt, required) => Math.round(baseScore(rate) * .4 + Math.max(0, calcGain(rate, opt, opt, 0).total - calcGain(rate, required, opt, 0).total));
+/**
+ * Tres tipos de sello según lo difícil que es conseguirlos (el rodeo en movimientos extra, +1 si la casilla está ocupada y hay que apartar una pieza):
+ *   1 bronce  – rodeo de 1 movimiento: premio pequeño;
+ *   2 plata   – rodeo de 2-3 movimientos: premio medio;
+ *   3 oro     – rodeo de 4 o más: el gran premio (solo cabe en tableros largos).
+ * El premio = una parte de los puntos base del nivel (crece con la dificultad y con el tipo) + lo que compensa la eficiencia perdida en el desvío.
+ */
+export const SEAL_TIERS = [
+  { id: 1, key: 'bronce', name: 'Sello de bronce', mult: .3 },
+  { id: 2, key: 'plata', name: 'Sello de plata', mult: .8 },
+  { id: 3, key: 'oro', name: 'Sello de oro', mult: 2.1 },
+];
+export const sealTierOf = (extra, occupied = false) => { const s = extra + (occupied ? 1 : 0); return s >= 4 ? 3 : s >= 2 ? 2 : 1; };
+export const sealTier = seal => Math.max(1, Math.min(3, seal?.tier || 2));      // los sellos guardados antes de existir los tipos cuentan como plata
+export const sealPoints = (rate, opt, required, tier = 2) => Math.round(baseScore(rate) * SEAL_TIERS[tier - 1].mult + Math.max(0, calcGain(rate, opt, opt, 0).total - calcGain(rate, required, opt, 0).total));
+/** Qué tipo de sello se intenta colocar en un nivel: al principio casi todos de bronce, y cada vez más de plata y de oro. */
+export function requestedSealTier(level, seed = 0) {
+  const r = hash32(seed, level, 4646) % 100, w = level < 35 ? [60, 35] : level < 70 ? [30, 45] : [15, 40];
+  return r < w[0] ? 1 : r < w[0] + w[1] ? 2 : 3;
+}
 export const sealReward = (run, seal) => Math.round(seal.value * (isHeroic(run) && run.hero === 'jean' ? 1.1 : 1));
 export const sealLimit = (seal, base) => seal ? Math.max(base, seal.requiredMoves + 1) : base;
 
@@ -92,11 +112,13 @@ export function planSeal({ pieces, pos, walls = [], opt, limit, rate, level, see
   const an = analysis || analyze(pieces, pos, 600000, walls); if (!an) return null;
   const search = candidatesFor(pieces, pos, walls, opt, an, stateCap), cap = limit + maxSealAdjustment(opt);
   const usable = search.candidates.filter(c => c.required + 1 <= cap);
-  const preferred = Math.max(1, Math.min(4, Math.round(opt * .1)));
-  const rank = c => (c.extra > 0 ? 0 : 100) + (c.occupied ? 30 : 0) + (c.g >= 1 ? 0 : 8) + Math.abs(c.extra - preferred);
+  const want = requestedSealTier(level, seed), tierOf = c => sealTierOf(c.extra, c.occupied);
+  const target = { 1: 1, 2: 2.5, 3: Math.min(8, maxSealDetour(opt)) }[want];
+  const rank = c => (c.extra > 0 ? 0 : 100) + (c.occupied ? 6 : 0) + (c.g >= 1 ? 0 : 8) + Math.abs(c.extra - target) * 3 + Math.abs(tierOf(c) - want) * 40;
   usable.sort((a,b) => rank(a) - rank(b) || hash32(seed,level,a.piece,...a.cell) - hash32(seed,level,b.piece,...b.cell));
   const chosen = usable[0]; if (!chosen) return null; // fail closed: preserve the original solvable board
-  const seal = { piece: chosen.piece, cell: chosen.cell, value: sealPoints(rate,opt,chosen.required), requiredMoves: chosen.required, extraMoves: chosen.extra, collected: false };
+  const tier = tierOf(chosen);                          // el premio depende de lo que cuesta de verdad, no de lo que se pidió
+  const seal = { piece: chosen.piece, cell: chosen.cell, tier, value: sealPoints(rate,opt,chosen.required,tier), requiredMoves: chosen.required, extraMoves: chosen.extra, collected: false };
   const adjustedLimit=sealLimit(seal,limit),proof=witnessFor(chosen,search.nodes,pieces,walls,an);
   if(!verifySealProof({pieces,pos,walls},seal,proof,adjustedLimit))return null;
   return { seal, limit: adjustedLimit, visited: search.nodes.size, truncated: search.truncated,

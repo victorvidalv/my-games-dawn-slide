@@ -26,26 +26,29 @@ export const GAME_SYMBOLS = {
 export const isBonusLevel = level => level >= 15 && level < 100 && level % 10 === 5;
 export const bonusIndex = level => Math.max(0, Math.floor((level - 15) / 10));
 export const gameFor = (hero, level) => (HERO_GAMES[hero] || HERO_GAMES.lia)[bonusIndex(level) % 3];
-export const maxPrize = (level = 15) => Math.max(3, Math.min(10, Math.round(3 + 7 * (level - 15) / 80)));
-export const scalePrize = (part, level = 15) => part <= 0 ? 0 : Math.max(1, Math.round(Math.min(3, part) * maxPrize(level) / 3));
-export const bonusPrize = (part, level) => Math.max(1, scalePrize(part, level));
+/** Los premios de los minijuegos son proporcionales al nivel (3 pistas en el 15 → 10 en el 95) y más escasos en los caminos difíciles. */
+export const PRIZE_PATH_SCALE = { 1: 1, 50: .8, 75: .6 };
+export const prizePathScale = (start = 1) => PRIZE_PATH_SCALE[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+export const maxPrize = (level = 15, start = 1) => Math.max(2, Math.min(10, Math.round((3 + 7 * (level - 15) / 80) * prizePathScale(start))));
+export const scalePrize = (part, level = 15, start = 1) => part <= 0 ? 0 : Math.max(1, Math.round(Math.min(3, part) * maxPrize(level, start) / 3));
+export const bonusPrize = (part, level, start = 1) => Math.max(1, scalePrize(part, level, start));
 export const MEMORY = { pairs: 4, misses: 6 };
 export const SEQUENCE = { rounds: 3, mistakes: 2, lengths: [2, 3, 4] };
 export const TIMING = { tries: 3, period: 2400, zone: .25, center: .08 };
 
 /** Order is fixed; only card positions and sequences vary deterministically with the adventure seed. */
-export function createBonusPlan(hero, level, seed = 0) {
+export function createBonusPlan(hero, level, seed = 0, start = 1) {
   const heroId = HERO_GAMES[hero] ? hero : 'lia';
   const rng = mulberry32(hash32(seed, level, Object.keys(HERO_GAMES).indexOf(heroId), 507));
   const deck = [0, 0, 1, 1, 2, 2, 3, 3];
   for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
-  return { version: 2, hero: heroId, level, kind: gameFor(heroId, level).kind, deck, matched: [], flipped: [], mistakes: 0,
+  return { version: 2, hero: heroId, level, start, kind: gameFor(heroId, level).kind, deck, matched: [], flipped: [], mistakes: 0,
     sequence: Array.from({ length: 4 }, () => Math.floor(rng() * 4)), round: 0, input: 0, hits: [], phase: 'ready' };
 }
 export function ensureBonusPlan(run) {
   if (run.bonusPlan?.version === 2) return run.bonusPlan;
   const old = run.bonusPlan, level = old?.level || Math.max(15, run.level - 1);
-  const plan = createBonusPlan(run.hero, level, run.seed);
+  const plan = createBonusPlan(run.hero, level, run.seed, run.start);
   if (old?.prize !== undefined) { plan.prize = old.prize; plan.phase = 'done'; }
   run.bonusPlan = plan;
   return plan;
@@ -79,7 +82,7 @@ export function recordTiming(plan, elapsed) {
 export const timingPart = plan => { const n = plan.hits.reduce((a, b) => a + b, 0); return n >= 5 ? 3 : n >= 3 ? 2 : n >= 1 ? 1 : 0; };
 export const earnedPart = plan => plan.kind === 'memory' ? memoryPart(plan) : plan.kind === 'sequence' ? sequencePart(plan) : timingPart(plan);
 export function finishBonus(plan) {
-  if (plan.prize === undefined) plan.prize = bonusPrize(earnedPart(plan), plan.level);
+  if (plan.prize === undefined) plan.prize = bonusPrize(earnedPart(plan), plan.level, plan.start);
   plan.phase = 'done'; return plan.prize;
 }
 /** One atomic claim; resumeAdventure must not add the prize a second time. */

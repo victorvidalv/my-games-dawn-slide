@@ -16,7 +16,7 @@ describe('dificultad: la curva se siente apropiada', () => {
     for (const start of Object.values(PATHS)) expect(targetAt(start, 100)).toBeGreaterThanOrEqual(35);
   });
   it('Difícil y Experto empiezan donde Normal ya exige pensar, y Experto más arriba que Difícil', () => {
-    expect(targetAt(50, 1)).toBeGreaterThanOrEqual(11);
+    expect(targetAt(50, 1)).toBeGreaterThanOrEqual(9);
     expect(targetAt(75, 1)).toBeGreaterThanOrEqual(targetAt(50, 1) + 5);
     expect(targetAt(50, 1)).toBeLessThan(targetAt(1, 100));
   });

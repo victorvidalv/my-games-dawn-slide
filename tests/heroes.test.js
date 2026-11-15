@@ -13,10 +13,10 @@ describe('héroes', () => {
 });
 
 describe('Lía · turnos de reserva', () => {
-  it('solo Lía recibe turnos extra: el 23 % del límite, mínimo 2', () => {
+  it('solo Lía recibe turnos extra: el 25 % del límite, mínimo 2', () => {
     expect(bonusTurns('lia', 8)).toBe(2);
-    expect(bonusTurns('lia', 40)).toBe(9);
-    expect(bonusTurns('lia', 74)).toBe(17);
+    expect(bonusTurns('lia', 40)).toBe(10);
+    expect(bonusTurns('lia', 74)).toBe(19);
     expect(bonusTurns('jean', 40)).toBe(0);
     expect(bonusTurns('van', 40)).toBe(0);
   });
@@ -29,9 +29,9 @@ describe('Lía · turnos de reserva', () => {
   });
 });
 
-describe('poderes por camino: Normal 100 %, Difícil 75 %, Experto 50 %', () => {
+describe('poderes por camino: Normal 100 %, Difícil 55 %, Experto 35 %', () => {
   it('powerScale baja con la dificultad del camino', () => {
-    expect([1, 50, 75].map(powerScale)).toEqual([1, 0.75, 0.5]);
+    expect([1, 50, 75].map(powerScale)).toEqual([1, 0.55, 0.35]);
   });
   it('Lía, Jean y Juth dan menos en Difícil y menos aún en Experto (nunca cero)', () => {
     for (const opt of [14, 25, 37]) {

@@ -14,7 +14,7 @@ if (!isMainThread) {
   parentPort.on('message',job=>{
     try {
       const t=performance.now(),run={...job,hero:'jean',mode:'c',adj:job.seed%3-1,score:0};
-      const G=buildAdventureLevel(run,{levels,special,tips:{wall:true,gate:true,heavy:true,ice:true},withProof:true});
+      const G=buildAdventureLevel(run,{levels,special,tips:{wall:true,gate:true,heavy:true,ice:true,tut_wall:true,tut_gate:true,tut_heavy:true,tut_ice:true},withProof:true});
       const an=G.analysis||analyze(G.pieces,G.pos,600000,G.walls);
       if(!isValidState(G.pieces,G.pos,G.walls)||!an||an.dist.get(encode(G.pos))!==G.opt)throw Error('Invalid base level or minimum');
       let key=encode(G.pos),steps=0;

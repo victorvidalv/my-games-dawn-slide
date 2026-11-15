@@ -30,7 +30,7 @@ export function showBonus() {
     $('bHero').innerHTML = `<img src="${heroArt(hero.id, 'story')}" alt="${hero.name}">`;
     $('bSpeech').textContent = { lia: '«La brasa también necesita un respiro.»', jean: '«Tenemos un instante. Aprovechémoslo.»', van: '«Hasta las runas descansan entre páginas.»' }[hero.id];
     $('bHints').textContent = run.hints;
-    $('bLegend').textContent = `Premio: 1–${maxPrize(plan.level)} pistas · Sin perder tu reserva`;
+    $('bLegend').textContent = `Premio: 1–${maxPrize(plan.level, plan.start)} pistas · Sin perder tu reserva`;
     $('bRes').replaceChildren(); stage.replaceChildren(); stage.className = `bonus-stage mini-${plan.kind}`;
     action.hidden = plan.kind === 'memory'; action.disabled = false;
     go.hidden = true; go.disabled = false; leave.hidden = false;

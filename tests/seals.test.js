@@ -10,13 +10,13 @@ import { mulberry32 } from '../src/engine/rng.js';
 import { minMoves } from '../src/engine/solver.js';
 const levels=JSON.parse(readFileSync(new URL('../src/data/levels.json',import.meta.url))).ratings;
 const special=JSON.parse(readFileSync(new URL('../src/data/special.json',import.meta.url)));
-const tips={wall:true,gate:true,heavy:true,ice:true};
-const run=(extra={})=>({seed:46,hero:'jean',start:1,level:5,route:'normal',mode:'c',score:10000,hints:3,adj:0,...extra});
+const tips={wall:true,gate:true,heavy:true,ice:true,tut_wall:true,tut_gate:true,tut_heavy:true,tut_ice:true};
+const run=(extra={})=>({seed:46,hero:'jean',start:1,level:20,route:'normal',mode:'c',score:10000,hints:3,adj:0,...extra});
 
 it('aparecen desde el cinco cada tres o cuatro niveles, sin coincidir con introducciones',()=>{
- expect(SEAL_LEVELS[0]).toBe(5);expect(SEAL_LEVELS.at(-1)).toBeLessThan(100);
+ expect(SEAL_LEVELS[0]).toBe(20);expect(SEAL_LEVELS.at(-1)).toBeLessThan(100);
  for(let i=1;i<SEAL_LEVELS.length;i++)expect([3,4]).toContain(SEAL_LEVELS[i]-SEAL_LEVELS[i-1]);
- for(const level of [1,2,3,4,10,20,30,40,51,100])expect(isSealLevel(level)).toBe(false);
+ for(const level of [1,2,3,4,5,10,19,21,30,40,51,100])expect(isSealLevel(level)).toBe(false);
 });
 
 it('atravesar una casilla intermedia de hielo recoge el sello; mover otra pieza no lo recoge',()=>{
@@ -27,7 +27,7 @@ it('atravesar una casilla intermedia de hielo recoge el sello; mover otra pieza 
 });
 
 for(const start of [1,50,75])for(const route of ['normal','brave'])it(`certifica recogida y salida en ${start}/${route} sin alterar el mínimo`,()=>{
- const r=run({start,route,level:39});const G=buildAdventureLevel(r,{levels,special,tips,withProof:true});
+ const r=run({start,route,level:38});const G=buildAdventureLevel(r,{levels,special,tips,withProof:true});
  expect(G.seal).toBeTruthy();expect(G.seal.piece).toBeGreaterThan(0);
  expect(verifySealProof(G,G.seal,G.sealProof,G.limit)).toBe(true);
  expect(G.limit).toBeLessThanOrEqual(heroLimit(r.hero,G.opt,start,r.level,route==='brave')+maxSealAdjustment(G.opt));
@@ -51,7 +51,7 @@ it('el premio escala con la dificultad y compensa parte del desvío',()=>{
 });
 
 it('se guarda y se cobra una vez, incluso tras rebobinar, rehacer o revivir',()=>{
- const r=run({start:50,level:12}),G=buildAdventureLevel(r,{levels,special,tips,withProof:true});
+ const r=run({start:50,level:23,score:200000}),G=buildAdventureLevel(r,{levels,special,tips,withProof:true});
  let total=0;
  for(const step of G.sealProof){const before=G.pos.slice();G.hist.push(before);G.pos[step.i]=step.to;G.moves++;total+=collectSeal(r,G,before);}
  expect(total).toBe(sealReward(r,G.seal));const after=r.score;

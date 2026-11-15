@@ -1,3 +1,4 @@
+import { HEROIC_POINTS } from '../src/engine/scoring.js';
 import { describe, it, expect } from 'vitest';
 import {
   N, WIN_POS, encode, decode, encodeBoard, decodeBoard, isValidState, randomBoard,
@@ -115,7 +116,7 @@ describe('codificación', () => {
 describe('dificultad', () => {
   it('rateAt sube sin bajar nunca desde la dificultad inicial de cada camino hasta 100', () => {
     for (const start of [1, 50, 75]) {
-      expect(rateAt(start, 1)).toBe(start === 1 ? 1 : start === 50 ? 35 : 55);
+      expect(rateAt(start, 1)).toBe(start === 1 ? 1 : start === 50 ? 27 : 44);
       expect(rateAt(start, MAX_LEVEL)).toBe(100);
       for (let l = 2; l <= MAX_LEVEL; l++) expect(rateAt(start, l)).toBeGreaterThanOrEqual(rateAt(start, l - 1));
     }
@@ -169,9 +170,10 @@ describe('puntaje y límite de movimientos', () => {
     expect(calcGain(10, 4, 4, 0).mult).toBeCloseTo(1.1);
     expect(calcGain(10, 4, 4, 99).mult).toBeCloseTo(1.5);
   });
-  it('la ruta aventurera suma un 10%', () => {
+  it('el camino heroico de Jean suma el porcentaje de HEROIC_POINTS (+25 %)', () => {
     const base = gainFor(10, 4, 4, 0).total;
-    expect(gainFor(10, 4, 4, 0, { brave: true }).total).toBe(base + Math.round(base * 0.1));
+    expect(HEROIC_POINTS).toBe(0.25);
+    expect(gainFor(10, 4, 4, 0, { brave: true }).total).toBe(base + Math.round(base * HEROIC_POINTS));
   });
   it('estado del contador: ok → pocos → último turno → sin turnos (ya no se puede mover)', () => {
     expect(moveStatus(3, 10)).toBe('ok');

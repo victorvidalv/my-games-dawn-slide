@@ -34,6 +34,7 @@ export function buildAdventureLevel(run, { levels, special, tips = {}, withProof
     }
     G={n:level,rate,pieces:built.pieces,pos:built.pos.slice(),walls:built.walls||[],start:built.pos.slice(),opt:built.opt,
       limit:heroLimit(run.hero,built.opt,run.start,level,brave),moves:0,hist:[],bought:0,family:base.family,tutorial:tutorial?.mech||null,seal:null};
+    if(tutorial)G.limit=built.opt+40;                       // el tutorial no se puede perder
     if(withProof)G.analysis=built.analysis;
     if (!tutorial && run.mode !== 'p' && isSealLevel(level)) {
       const result=planSeal({...G,level,seed:run.seed,analysis:built.analysis,withProof});

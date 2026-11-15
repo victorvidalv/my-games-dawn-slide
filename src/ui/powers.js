@@ -33,7 +33,12 @@ export async function activatePower() {
   $('powerStep').textContent = 'Poder activado';
   board.classList.add('hero-power', action.kind);
   board.setAttribute('aria-busy', 'true');
-  tone(action.kind === 'rewind' ? 880 : 440, .4, 'triangle', .05, 0, action.kind === 'rewind' ? -500 : 400);
+  // Sonido de poder: barrido grave + acorde brillante (hacia abajo al rebobinar, hacia arriba al trazar el destino).
+  const up = action.kind !== 'rewind', root = up ? 330 : 660;
+  tone(root, .7, 'sawtooth', .035, 0, up ? 520 : -330);
+  tone(root * 1.5, .6, 'triangle', .05, .08, up ? 600 : -400);
+  tone(root * 2, .5, 'sine', .05, .22, up ? 700 : -450);
+  tone(root * 3, .35, 'sine', .035, .42, 0);
   vib([20, 30, 35]);
   try {
     try {

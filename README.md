@@ -5,7 +5,7 @@ y devuelve la luz al Faro del Alba. Funciona en el navegador y se puede instalar
 
 - **Objetivo:** desliza los bloques y saca la llave roja por la derecha en el menor número de movimientos.
   Un arrastre largo cuenta como **1** movimiento.
-- **Límite:** tienes de margen al principio el doble del mínimo en turnos y se aprieta hasta ×1,3 en el nivel 100 (Difícil y Experto, aún menos). Al agotarlos sin sacar la llave **ya no se puede mover** y la aventura termina (ganar en el último turno vale).
+- **Límite:** tienes de margen al principio el doble del mínimo en turnos y se aprieta con el nivel: hasta ×1,3 en el 100 en Normal, ×1,06 en Difícil y ×1,04 en Experto (siempre al menos «mínimo + 2»). Al agotarlos sin sacar la llave **ya no se puede mover** y la aventura termina (ganar en el último turno vale).
 - **Tres caminos** de 100 niveles: Normal, Difícil y Experto (cambia dónde empieza la dificultad).
 - **Tres héroes**, cada uno con un poder (ver [Héroes](#héroes-y-poderes)).
 
@@ -110,8 +110,8 @@ Por eso el «Mínimo» que ve el jugador y la pista son siempre exactos.
 
 ### Dificultad
 
-`rateAt(camino, nivel)` da una dificultad de 1 a 100 con una curva propia por camino (`PATH_CURVES`): Normal llega a 100 en el nivel 100, Difícil en el 55 y Experto en el 40
-(**Normal** empieza en 1 (2 movimientos y ya hay que pensar en el nivel 20), **Difícil** en 35 (~13 movimientos), **Experto** en 55 (~21)). `curve(dificultad)` fija el mínimo de movimientos
+`rateAt(camino, nivel)` da una dificultad de 1 a 100 con una curva propia por camino (`PATH_CURVES`): Normal llega a 100 en el nivel 100, Difícil en el 50 y Experto en el 38
+(**Normal** empieza en 1 (2 movimientos y ya hay que pensar en el nivel 20), **Difícil** en 27 (~11 movimientos), **Experto** en 44 (~19)). `curve(dificultad)` fija el mínimo de movimientos
 objetivo con unos puntos de control (entre ellos se interpola) en `src/engine/difficulty.js`:
 
 | Dificultad | Mínimo objetivo | Qué se siente |
@@ -196,7 +196,9 @@ Elegir héroe es permanente durante la aventura. Las reglas están en [`src/game
 
 Reglas comunes: el botón Poder sustituye Deshacer; Lía tiene poder pasivo y no muestra botón. Todos conservan las pistas de su reserva y ganan **+1 pista cada 5 niveles**. Guardar, recargar, rehacer en tienda o revivir no renueva una carga gastada en el mismo nivel. Los pasos se guardan durante la animación; al recargar se conserva lo ya ejecutado y la carga gastada.
 
-`src/game/balance.js` y sus funciones auxiliares proporcionales conservan el modelo histórico anterior a estos poderes. `npm run simulate` aún no representa el rebobinado de cinco pasos ni la ejecución de tres movimientos; no usar sus resultados como calibración de estos nuevos poderes.
+**Equilibrio por camino.** Los poderes de Jean y Juth están listos en todos los tableros de Normal, en ~85 % de Difícil y en ~70 % de Experto (`POWER_READY_SHARE`; los demás tableros «descansan»). La reserva de turnos de Lía conserva el 65 % en Difícil y el 40 % en Experto (`POWER_SCALE`). Las pistas ganadas por nivel son más escasas (cada 5, 6 y 8 niveles: `hintEvery`) y los premios de los minijuegos también (×1, ×0,8 y ×0,6: `PRIZE_PATH_SCALE`).
+
+`src/game/balance.js` modela estas reglas (rebobinado de 3/6/8 pasos según el camino, tres movimientos de Juth, reserva de Lía, camino heroico, sellos, minijuegos, tienda y revivir) y `npm run simulate` imprime las tablas con las que se calibró; `tests/balance.test.js` vigila los rangos. Resumen de lo calibrado (jugador medio / bueno / experto, media de los tres héroes): Normal llega a ~55 / ~84 / ~94 niveles, Difícil a ~33 / ~64 / ~91 y Experto a ~17 / ~44 / ~80. Los tres poderes aportan entre 8 y 32 niveles extra según el camino (en Normal Jean destaca algo más que Lía y Juth).
 
 En **Práctica** todo es gratis y no se gasta nada. Los poderes se leen del objeto `run`, así que sobreviven
 a recargar la página y a las partidas guardadas antiguas.
@@ -291,17 +293,17 @@ Los récords de cada camino se fusionan tomando el máximo, y la partida en curs
 
 Tras los niveles 10, 20…90 solo se elige **Avanzar** (dificultad habitual) o **Tomar camino heroico** (más difícil durante los próximos diez niveles). Los tres caminos heroicos usan la misma progresión de dificultad; solo cambia el beneficio:
 
-- Lía: dos pistas gratis por tablero, antes de gastar la reserva. No se acumulan ni se recargan al rehacer o revivir. Símbolo de brasa y acompañante forjadora.
-- Jean: diez por ciento adicional de puntos. Símbolo de reloj y la acompañante elfa original.
-- Juth: treinta y tres por ciento de descuento en los productos de la tienda, redondeado al punto. No afecta a revivir fuera de la tienda. Símbolo de runas y acompañante erudito.
+- Lía: una pista gratis cada dos tableros (en los tableros pares), antes de gastar la reserva. No se acumula ni se recarga al rehacer o revivir. Símbolo de brasa y acompañante forjadora.
+- Jean: veinticinco por ciento adicional de puntos. Símbolo de reloj y la acompañante elfa original.
+- Juth: cuarenta por ciento de descuento en los productos de la tienda, redondeado al punto. No afecta a revivir fuera de la tienda. Símbolo de runas y acompañante erudito.
 
 Los poderes de botón y la reserva de turnos de Lía se conservan. La selección de héroe muestra por separado Poder y Camino heroico. El identificador guardado del camino heroico sigue siendo `brave` para conservar las aventuras existentes. Reglas y textos comunes en `src/game/routes.js`.
 
 ## Sellos opcionales
 
-Desde el nivel 5 hay un sello cada tres o cuatro niveles. El calendario evita las primeras lecciones de piezas especiales y se calcula en `src/game/seals.js`. Una pieza concreta y una casilla del suelo llevan el mismo emblema y borde discontinuo dorado. Solo esa pieza recoge el sello al atravesar la casilla, incluido el recorrido intermedio de una pieza de hielo. Se puede salir sin recogerlo.
+Desde el nivel 20 hay un sello cada tres o cuatro niveles, en tres tipos (bronce pequeño, plata medio, oro gran premio según el rodeo que cuesta); la primera vez se explica con una ventana de ayuda. Cada pieza especial (roca, pesada, candado, hielo) tiene además un **nivel extra de tutorial** justo antes del nivel donde aparece: no da puntos ni cuenta como nivel, no se puede perder y señala cada movimiento. El calendario evita las primeras lecciones de piezas especiales y se calcula en `src/game/seals.js`. Una pieza concreta y una casilla del suelo llevan el mismo emblema y borde discontinuo dorado. Solo esa pieza recoge el sello al atravesar la casilla, incluido el recorrido intermedio de una pieza de hielo. Se puede salir sin recogerlo.
 
-El sello da puntos al recogerlo. Su valor crece con la dificultad y tiene en cuenta el coste del desvío; el +10 % heroico de Jean se aplica también a esos puntos. No altera el mínimo de movimientos para salir ni el cálculo habitual de puntos del nivel. El premio se guarda en una contabilidad por nivel y no se vuelve a dar al rebobinar, rehacer, revivir o recargar. Los tableros antiguos ya guardados se restauran sin inyectarles un nuevo objetivo.
+El sello da puntos al recogerlo. Su valor crece con la dificultad y tiene en cuenta el coste del desvío; el bono heroico de Jean (+25 %) se aplica también a esos puntos. No altera el mínimo de movimientos para salir ni el cálculo habitual de puntos del nivel. El premio se guarda en una contabilidad por nivel y no se vuelve a dar al rebobinar, rehacer, revivir o recargar. Los tableros antiguos ya guardados se restauran sin inyectarles un nuevo objetivo.
 
 La colocación recorre movimientos legales antes de salir y añade una ruta de salida exacta. Respeta muros, candados, pesadas y el grafo dirigido del hielo. Cada sello pasa además una reproducción de su ruta completa en tiempo de ejecución. Si no se encuentra una colocación certificada se conserva el tablero original sin añadir un objetivo inválido. El margen extra de turnos está acotado por el mínimo del tablero, hasta seis turnos; solo se añade lo necesario para permitir la ruta comprobada más un turno de margen. El juego y el simulador usan el mismo constructor `src/game/build-adventure.js`.
 

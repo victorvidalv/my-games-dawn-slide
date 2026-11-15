@@ -16,9 +16,11 @@ export function calcGain(rating, moves, opt, streak) {
 }
 
 /** Igual que calcGain, más el +10 % de la ruta aventurera (no cuenta en Práctica). */
+/** Puntos extra del camino heroico de Jean (+25 %; calibrado con `npm run simulate`). */
+export const HEROIC_POINTS = 0.25;
 export function gainFor(rating, moves, opt, streak, { brave = false } = {}) {
   const gain = calcGain(rating, moves, opt, streak);
-  gain.routeBonus = brave ? Math.round(gain.total * 0.1) : 0;
+  gain.routeBonus = brave ? Math.round(gain.total * HEROIC_POINTS) : 0;
   gain.total += gain.routeBonus;
   return gain;
 }

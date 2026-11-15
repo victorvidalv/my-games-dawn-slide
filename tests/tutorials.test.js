@@ -104,11 +104,11 @@ describe('tableros de aprendizaje', () => {
 
   it('tutorialFor: solo la primera vez que se ve la pieza', () => {
     expect(tutorialFor(10, {})?.mech).toBe('wall');
-    expect(tutorialFor(10, { wall: true })).toBeNull();
+    expect(tutorialFor(10, { tut_wall: true })).toBeNull();
     expect(tutorialFor(20, {})?.mech).toBe('heavy');
     expect(tutorialFor(30, {})?.mech).toBe('gate');
     expect(tutorialFor(40, {})?.mech).toBe('ice');
-    expect(tutorialFor(40, { ice: true })).toBeNull();
+    expect(tutorialFor(40, { tut_ice: true })).toBeNull();
     expect(tutorialFor(7, {})).toBeNull();
     expect(decode(encode([1, 2, 3]), 3)).toEqual([1, 2, 3]);
   });
