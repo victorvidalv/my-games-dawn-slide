@@ -33,6 +33,17 @@ function announceLow(last) {
  * Contador de turnos: «Restan N» y, si compraste turnos, una tira de cristales de hielo (uno por turno comprado).
  * Los cristales están congelados hasta que superas el límite original; entonces se van derritiendo uno a uno.
  */
+/** Lía no tiene animación de poder: al entrar en su reserva aparece un aviso con brasas para que se note que se activó. */
+function liaToast(left) {
+  document.querySelectorAll('.power-toast').forEach((e) => e.remove());
+  const t = document.createElement('div');
+  t.className = 'power-toast'; t.setAttribute('role', 'status');
+  t.innerHTML = `<b>¡Brasa de Lía activada!</b><span>${left} turnos de reserva</span>`;
+  document.body.appendChild(t);
+  if (!reduced()) { const [x, y] = center($('meter')); burst(x, y, 30, ['#68d8bd', '#ffcf6b', '#ff9a4a', '#fff'], 6); }
+  vib([15, 25, 15]);
+  setTimeout(() => t.remove(), 2400);
+}
 export function renderTurns() {
   const G = S.G;
   const bought = G.bought || 0;
@@ -44,7 +55,7 @@ export function renderTurns() {
     segment.setAttribute('aria-label',`Reserva de Lía: ${r.left} de ${reserve} turnos`);
     label.textContent=`Brasa de Lía · ${r.left}/${reserve} turnos de reserva`;
     label.classList.toggle('active',G.moves>=r.start&&r.left>0);
-    if(G.moves>=r.start&&r.left>0&&!G.reserveLit){G.reserveLit=true;flash($('meter'),'reserve-awaken',800);tone(330,.5,'sawtooth',.03,0,400);tone(440,.3,'triangle',.05,.05);tone(660,.35,'sine',.05,.18);tone(990,.3,'sine',.035,.34)}
+    if(G.moves>=r.start&&r.left>0&&!G.reserveLit){G.reserveLit=true;flash($('meter'),'reserve-awaken',800);liaToast(r.left);tone(330,.5,'sawtooth',.03,0,400);tone(440,.3,'triangle',.05,.05);tone(660,.35,'sine',.05,.18);tone(990,.3,'sine',.035,.34)}
     if(G.moves<r.start)G.reserveLit=false;
   }
   $('left').textContent = movesLeft(G.moves, G.limit);

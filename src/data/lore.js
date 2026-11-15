@@ -6,6 +6,8 @@
  *  - Thyes tiene diez reinos. En el año 4133 la sombra de VHORN apagó el Faro del Alba y llegó la Noche Larga.
  *  - TRI, guardiana del Faro, selló los diez reinos. Todos creen que fue ella quien los encerró…
  *  - …pero los diez sellos llevan grabada una sola frase (INSCRIPTIONS), que se lee en orden: Tri cerró para proteger.
+ *  - Vhorn se alimenta del olvido: fue el primer vigía del Faro y el mundo lo olvidó. Se revela en Ciudad Celeste y se resuelve
+ *    en el Castillo Dorado, donde lo NOMBRAN (no se le destruye).
  *  - Tres luces despiertan lo sellado: la Brasa (Lía), la Hora (Jean) y la Palabra (Juth). La Llave Roja abre cada cerrojo.
  *  - Los cuatro pueblos antiguos —Kogn, Sahrim, Ennari y Aluen— guardan, cada uno, un pedazo de esa historia.
  */

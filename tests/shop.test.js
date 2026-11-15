@@ -191,9 +191,9 @@ describe('Don Dublón: vendedor sarcástico con frases variadas', () => {
     for (const k of ['hint', 'moves3', 'moves', 'redo', 'skip']) expect(pool(k).length, k).toBeGreaterThanOrEqual(3);
     expect(pool('poor').length).toBeGreaterThanOrEqual(4);
   });
-  it('habla con sonido propio (balbuceo, campanilla, monedas y gesto de «no») y nunca repite la frase anterior', () => {
-    for (const fn of ['merchantTalk', 'merchantBell', 'merchantCoin', 'merchantNope']) expect(readFileSync(new URL('../src/audio/sound.js', import.meta.url), 'utf8')).toContain(fn);
-    expect(src).toContain('sfx.merchantTalk');
+  it('suena con campanilla, monedas y gesto de «no») y nunca repite la frase anterior', () => {
+    for (const fn of ['merchantBell', 'merchantCoin', 'merchantNope']) expect(readFileSync(new URL('../src/audio/sound.js', import.meta.url), 'utf8')).toContain(fn);
+    expect(readFileSync(new URL('../src/audio/sound.js', import.meta.url), 'utf8')).not.toContain('merchantTalk');   // sin balbuceo grave de fondo
     expect(src).toMatch(/sin repetir la anterior/);
   });
 });

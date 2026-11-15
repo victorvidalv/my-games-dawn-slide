@@ -229,7 +229,6 @@ Para escucharlas: `npm run melodies:html` genera `output/melodias.html` (un solo
 
 ## Voces de los héroes
 
-Cada héroe saluda con su voz cada ciudad: la primera (el Valle) al empezar la aventura y las demás **al elegir el camino** (Avanzar o Tomar camino heroico) al terminar la ciudad anterior, sin texto en pantalla y con la música más baja. Una frase por ciudad y héroe, una sola vez; respeta el botón de sonido. Los audios están en `public/voces/` (`lia-NN.m4a`, `jean-NN.m4a`, `juth-NN.m4a`, con NN = ciudad 01-10) y el guion en `output/voces/guion-voces.md`; el código en [`src/audio/voice.js`](src/audio/voice.js) y [`src/data/voices.js`](src/data/voices.js).
 
 ## Minijuegos de descanso
 

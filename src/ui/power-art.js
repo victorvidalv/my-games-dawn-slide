@@ -1,11 +1,11 @@
-/** Cache the bytes, never a playing Image: preloading a GIF can otherwise leave it on its last frame. */
+/** Cache the bytes, never a playing Image: preloading an animated WebP can otherwise leave it on its last frame. */
 const gifs = new Map();
 export const AWAKENING_MS = 1500;
 
 export function preloadAwakening(hero) {
   if (hero === 'lia') return Promise.resolve(null);
   if (!gifs.has(hero)) {
-    gifs.set(hero, fetch(`heroes/${hero}-power.gif`).then(response => {
+    gifs.set(hero, fetch(`heroes/${hero}-power-anim.webp`).then(response => {
       if (!response.ok) throw new Error('No se pudo cargar la animación del héroe');
       return response.blob();
     }).catch(error => { gifs.delete(hero); throw error; }));

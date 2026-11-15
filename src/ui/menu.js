@@ -7,7 +7,6 @@ import { PATHS, S, heroOf, pathOf, persist, store } from '../state.js';
 import { syncRouteStyle } from './board.js';
 import { syncHero } from './heroes.js';
 import { showMap } from './map.js';
-import { stopVoice } from '../audio/voice.js';
 /* ---------- Menú: elegir camino ---------- */
 const MODE_INFO={
   c:'Sube puntos nivel a nivel. Si agotas los turnos (el doble del mínimo) sin sacar la llave, la partida termina.',
@@ -76,11 +75,11 @@ $('pProgress').onclick=async()=>{
 };
 $('pSave').onclick=()=>{
  if(!S.run||!S.G||S.G.done)return;
- saveRun();stopVoice();S.G.done=true;S.run=null;S.busy=false;
+ saveRun();S.G.done=true;S.run=null;S.busy=false;
  $('pause').classList.remove('show');Music.stop(.2);setTensionFx(0,false);openMenu();
 };
 $('pQuit').onclick=()=>{
- if(!S.run)return;stopVoice();recordBest(true);store.run=null;if(S.G)S.G.done=true;S.run=null;S.busy=false;persist();
+ if(!S.run)return;recordBest(true);store.run=null;if(S.G)S.G.done=true;S.run=null;S.busy=false;persist();
  $('pause').classList.remove('show');Music.stop(.2);setTensionFx(0,false);openMenu();
 };
 $('pSound').onclick=toggleSound;

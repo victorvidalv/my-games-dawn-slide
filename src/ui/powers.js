@@ -7,6 +7,7 @@ import { afterMove, cancelDrag, layout, updateHud } from './board.js';
 import { icon } from './icons.js';
 import { processSealMove } from './seals.js';
 import { AWAKENING_MS, prepareAwakening } from './power-art.js';
+import { burst } from './fx.js';
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -21,10 +22,10 @@ export async function activatePower() {
   S.busy = true; saveRun(); updateHud();
   $('bShop').disabled = true;
   const name = action.kind === 'rewind' ? 'Rebobinar' : 'Trazar destino';
-  fx.dataset.hero = h.id;
+  fx.dataset.hero = h.id; fx.dataset.kind = action.kind;
   let art;
   const rect=$('bPower').getBoundingClientRect();
-  const height=Math.max(80,Math.min(288,rect.top-32,innerHeight-48)),width=height/2;
+  const height=Math.max(80,Math.min(380,rect.top-28,innerHeight-40)),width=height/2;
   fx.style.setProperty('--awakening-height',height+'px');
   fx.style.left=Math.max(width/2+12,Math.min(innerWidth-width/2-12,rect.left+rect.width/2))+'px';
   fx.style.top=Math.max(12,rect.top-height-12)+'px';
@@ -50,8 +51,17 @@ export async function activatePower() {
     }
     fx.classList.add('show');
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    await wait(reduced ? 100 : AWAKENING_MS + 80);
-    fx.classList.remove('show');
+    await wait(reduced ? 100 : AWAKENING_MS);
+    // La carta sale disparada hacia el tablero y suelta chispas: el poder «viaja» hacia donde actúa.
+    const spell = h.id === 'van' ? ['#d1b2ec', '#ecd7ff', '#fff'] : ['#a5c8ed', '#d8eaff', '#fff'];
+    const br = board.getBoundingClientRect();
+    if (!reduced) {
+      fx.classList.add('launch');
+      burst(fx.getBoundingClientRect().left + fx.offsetWidth / 2, fx.getBoundingClientRect().top + fx.offsetHeight / 2, 26, spell, 6);
+      await wait(280);
+      burst(br.left + br.width / 2, br.top + br.height / 2, 44, spell, 8);
+    }
+    fx.classList.remove('show', 'launch');
     for (let n = 0; n < action.steps.length; n++) {
       if (S.G !== G || S.run !== run || G.done) break;
       let i;

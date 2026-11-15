@@ -17,11 +17,11 @@ function showFinale(prac,p,score,broken,heroId='lia'){
   endingStory(true,heroId,100);
   const mode=prac?'p':'c';
   const F={
-    1: {ico:'trophy',tag:'SENDA NORMAL COMPLETADA',title:'¡Los sellos ceden!',text:'Los diez sellos de Thyes se quiebran y el Faro del Alba parpadea en la penumbra. Pero Vhorn aún acecha, y Tri duerme.',
+    1: {ico:'trophy',tag:'SENDA NORMAL COMPLETADA',title:'¡Los sellos ceden!',text:'Rompiste los diez sellos y el Faro del Alba parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.',
         chal:'En la senda <b>Difícil</b> las sombras de Vhorn pesan más: menos margen, más gloria.',next:[[50,'⚔️ Ir al camino Difícil',1]]},
-    50:{ico:'medal',tag:'SENDA DIFÍCIL COMPLETADA',title:'¡Viajero de Thyes!',text:'Recorriste otra vez los diez reinos, ya con la Hora y la Palabra al hombro. El Faro arde casi entero.',
+    50:{ico:'medal',tag:'SENDA DIFÍCIL COMPLETADA',title:'¡Viajero de Thyes!',text:'Recorriste otra vez los diez reinos, ya con la hora y la palabra de tu lado. El Faro arde casi entero; falta pronunciar el nombre de Vhorn.',
         chal:'Solo resta la prueba suprema: la senda <b>Experto</b>, hasta el trono vacío.',next:[[75,'🔥 Ir al camino Experto',1]]},
-    75:{ico:'crown',tag:'SENDA EXPERTO COMPLETADA',title:'¡Thyes amanece!',text:'La Brasa, la Hora y la Palabra encienden el Faro del Alba. Vhorn se disuelve y Tri, al fin, abre los ojos: año 4134, Thyes despierta.',
+    75:{ico:'crown',tag:'SENDA EXPERTO COMPLETADA',title:'¡Thyes amanece!',text:'La brasa, la hora y la palabra encienden el Faro del Alba y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.',
         chal:'Tu nombre queda grabado en los diez sellos.',next:[]},
   }[p.s]||{ico:'trophy',tag:'SENDA COMPLETADA',title:'¡Felicidades!',text:'Superaste los 100 umbrales.',chal:'',next:[[1,'↻ Jugar otra vez',1]]};
   const legend=p.s===75;

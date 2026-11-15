@@ -2,6 +2,7 @@ import { sfx } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { hintMove } from '../engine/solver.js';
 import { MECHANICS, TUTORIALS } from '../game/mechanics.js';
+import { HERO_TUTORIAL_TALK } from '../data/story.js';
 import { S, heroOf, persist, store } from '../state.js';
 import { icon } from './icons.js';
 
@@ -44,7 +45,10 @@ const DEMO = {
 };
 
 function tipFor(id) {
-  if (MECHANICS[id]) return { tag: 'PIEZA NUEVA', title: `${icon(MECHANICS[id].icon)} ${MECHANICS[id].name}`, text: MECHANICS[id].tip, demo: id };
+  if (MECHANICS[id]) {
+    const h = heroOf(), talk = HERO_TUTORIAL_TALK[h.id]?.[id];
+    return { tag: 'PIEZA NUEVA', title: `${icon(MECHANICS[id].icon)} ${MECHANICS[id].name}`, text: MECHANICS[id].tip + (talk ? `<br><br><i><b>${h.name}:</b> «${talk}»</i>` : ''), demo: id };
+  }
   const h = heroOf();
   return {
     drag: { tag: 'PRIMEROS PASOS', title: '¡Saca la llave roja!', text: 'Desliza los bloques para abrirle camino a la llave roja 🔑 hasta la salida ➜. <b>Arrastra el bloque que brilla.</b>', demo: 'drag' },

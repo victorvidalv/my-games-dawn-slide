@@ -24,7 +24,7 @@ export default defineConfig({
       registerType: 'prompt',
       injectRegister: false,
       manifestFilename: 'manifest.webmanifest',
-      injectManifest: { globPatterns: ['**/*.{js,css,html,webp,png,gif,m4a,webmanifest}'] },
+      injectManifest: { globPatterns: ['**/*.{js,css,html,webp,png,gif,webmanifest}'] },
       manifest: {
         name: 'SLIDE & SLAY',
         short_name: 'SLIDE & SLAY',

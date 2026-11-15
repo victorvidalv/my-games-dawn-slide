@@ -1,5 +1,4 @@
 import { Music, setTensionFx } from '../audio/music.js';
-import { playVoice } from '../audio/voice.js';
 import { $, cssUrl } from '../dom.js';
 import { saveRun } from '../game/session.js';
 import { HEROES, canHint, bonusTurns } from '../game/heroes.js';
@@ -27,7 +26,7 @@ export function chooseHero(start,mode){
   };
   const close=value=>{modal.classList.remove('show');modal.removeEventListener('keydown',keyboard);resolve(value)};
   const keyboard=e=>{if(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown'].includes(e.key)&&cards.contains(document.activeElement)){e.preventDefault();const delta=e.key==='ArrowRight'||e.key==='ArrowDown'?1:-1;selected=HEROES[(HEROES.findIndex(h=>h.id===selected)+delta+3)%3].id;render();cards.querySelector(`[data-hero="${selected}"]`).focus()}else if(e.key==='Escape')close(null);else if(e.key==='Tab'){const bs=[...modal.querySelectorAll('button')].filter(b=>b.tabIndex>=0);if(e.shiftKey&&document.activeElement===bs[0]){e.preventDefault();bs.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===bs.at(-1)){e.preventDefault();bs[0].focus()}}};
-  $('heroCancel').onclick=()=>close(null);$('heroConfirm').onclick=()=>{store.heroChoice=selected;persist();playVoice(selected,0);close(selected)};render();modal.classList.add('show');Music.scene('heroes');modal.addEventListener('keydown',keyboard);cards.querySelector('[aria-checked=true]').focus();
+  $('heroCancel').onclick=()=>close(null);$('heroConfirm').onclick=()=>{store.heroChoice=selected;persist();close(selected)};render();modal.classList.add('show');Music.scene('heroes');modal.addEventListener('keydown',keyboard);cards.querySelector('[aria-checked=true]').focus();
  });
 }
 export function updateHeroHud(){

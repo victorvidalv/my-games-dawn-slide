@@ -10,8 +10,14 @@
 .reserve-label.active{color:#e0f6cf}.reserve-awaken{animation:brasa-awaken .8s ease-out}
 @keyframes brasa-awaken{40%{box-shadow:0 0 22px #68d8bd77}}
 #heroPowerFx{position:fixed;z-index:54;display:none;pointer-events:none;width:calc(var(--awakening-height,260px)/2);height:var(--awakening-height,260px);transform:translateX(-50%);--spell:#a5c8ed}
-#heroPowerFx.show{display:block}#heroPowerFx[data-hero=van]{--spell:#d1b2ec}
-.power-sigil{position:relative;width:100%;height:100%;border:1px solid var(--spell);border-radius:13px;overflow:hidden;background:#142631;box-shadow:0 0 24px color-mix(in srgb,var(--spell) 35%,transparent),0 10px 28px #0008;animation:spell-arrive .22s ease-out}
+#heroPowerFx.show{display:block;animation:power-rise .34s cubic-bezier(.2,1.4,.4,1) both}#heroPowerFx[data-hero=van]{--spell:#d1b2ec}
+#heroPowerFx::before{content:'';position:absolute;left:50%;top:50%;width:260%;height:150%;transform:translate(-50%,-50%);z-index:-1;pointer-events:none;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--spell) 55%,transparent),transparent);animation:power-aura 1.5s ease-in-out both}
+#heroPowerFx::after{content:'';position:absolute;inset:-18%;z-index:2;pointer-events:none;border-radius:50%;border:3px solid var(--spell);animation:power-ring 1.5s ease-out infinite}
+#heroPowerFx.launch{animation:power-launch .3s ease-in forwards}
+.power-sigil::before{content:'';position:absolute;inset:-60%;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:.55;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--spell) 70%,transparent) 0 6deg,transparent 6deg 22deg);animation:power-rays 3s linear infinite;-webkit-mask:radial-gradient(circle,#0000 0,#000 60%);mask:radial-gradient(circle,#0000 0,#000 60%)}
+#heroPowerFx[data-kind=rewind] .power-sigil::before{animation-direction:reverse}
+.power-sigil>b{z-index:3;font-size:17px;letter-spacing:.06em;text-transform:uppercase;color:#fff;text-shadow:0 0 10px var(--spell),0 0 22px var(--spell),0 2px 3px #000}
+.power-sigil{position:relative;width:100%;height:100%;border:1px solid var(--spell);border-radius:13px;overflow:hidden;background:#142631;box-shadow:0 0 24px color-mix(in srgb,var(--spell) 35%,transparent),0 10px 28px #0008;}
 .power-sigil img{display:block;width:100%;height:100%;object-fit:cover}
 .power-sigil>b{position:absolute;left:0;right:0;bottom:0;padding:18px 6px 10px;background:linear-gradient(transparent,#10202bf5);font-family:Georgia,serif;font-size:14px;line-height:1.2;color:#f0e5ce;text-align:center}
 .power-sigil>span,.power-sigil>i{display:none}
@@ -20,8 +26,17 @@
 .hero-power.destiny .piece.power-piece{filter:drop-shadow(0 0 10px #d1b2ec);outline-color:#ecd7ff}
 .hero-power::after{content:'';position:absolute;inset:-4px;z-index:15;border:2px solid #a5c8ed88;border-radius:12px;box-shadow:0 0 22px #a5c8ed44;pointer-events:none;animation:spell-border 1.2s ease-in-out infinite alternate}
 .hero-power.destiny::after{border-color:#d1b2ecaa;box-shadow:0 0 22px #d1b2ec55}
+@keyframes power-rise{0%{opacity:0;transform:translateX(-50%) translateY(70px) scale(.35)}60%{opacity:1;transform:translateX(-50%) translateY(-6px) scale(1.1)}100%{transform:translateX(-50%) scale(1)}}
+@keyframes power-launch{to{opacity:0;transform:translateX(-50%) translateY(-90px) scale(1.55);filter:brightness(2.2) blur(2px)}}
+@keyframes power-aura{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}35%{opacity:1}100%{opacity:.5;transform:translate(-50%,-50%) scale(1.15)}}
+@keyframes power-ring{0%{opacity:.9;transform:scale(.55)}100%{opacity:0;transform:scale(1.5)}}
+@keyframes power-rays{to{transform:rotate(360deg)}}
+.power-toast{position:fixed;left:50%;top:22%;z-index:56;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 22px;border-radius:16px;border:1px solid #68d8bd;background:linear-gradient(#10302b,#102026);color:#e7fff8;text-align:center;pointer-events:none;box-shadow:0 0 28px #68d8bd66,0 12px 30px #000a;animation:power-toast 2.4s ease-out both}
+.power-toast b{font-family:Georgia,serif;font-size:19px;letter-spacing:.04em;text-shadow:0 0 12px #68d8bd,0 0 24px #68d8bd}.power-toast span{font-size:13px;color:#b7f0dd}
+@keyframes power-toast{0%{opacity:0;transform:translateX(-50%) translateY(18px) scale(.6)}12%{opacity:1;transform:translateX(-50%) scale(1.08)}20%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-24px)}}
+@media(prefers-reduced-motion:reduce){.power-toast{animation:none}}
 @keyframes spell-arrive{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
 @keyframes spell-orbit{to{transform:rotate(-360deg)}}
 @keyframes spell-border{to{opacity:.4}}
 @media(max-width:360px){#bPower{padding:7px 5px;gap:4px}#bPower b{font-size:11px}#bPower small{font-size:8px}#bPower .ic{width:21px;height:21px}}
-@media(prefers-reduced-motion:reduce){.power-sigil,.hero-power::after,.reserve-awaken{animation:none}.hero-power .piece{transition:none}}
+@media(prefers-reduced-motion:reduce){.power-sigil,.power-sigil::before,#heroPowerFx.show,#heroPowerFx::before,#heroPowerFx::after,.hero-power::after,.reserve-awaken{animation:none}.hero-power .piece{transition:none}}

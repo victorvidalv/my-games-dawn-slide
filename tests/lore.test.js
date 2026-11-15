@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { WORLD, PEOPLES, INSCRIPTIONS, LORE_PORTRAITS } from '../src/data/lore.js';
-import { CHAPTERS, HERO_LORE, HERO_TALK } from '../src/data/story.js';
+import { CHAPTERS, HERO_LORE, HERO_TALK, HERO_TUTORIAL_TALK } from '../src/data/story.js';
 import { HEROES } from '../src/game/heroes.js';
 import { ZONES } from '../src/data/zones.js';
 import { readFileSync, existsSync } from 'node:fs';
@@ -88,5 +88,11 @@ describe('mundo e historia: Thyes, año 4133', () => {
       if (people) expect(Number(city)).toBe(people.city);
     }
     expect(LORE_PORTRAITS[9].id).toBe('vhorn');
+  });
+
+  it('en el tutorial de cada pieza, cada héroe se queja o desafía a Vhorn; Vhorn habla desde Villa Sakura y se revela en Ciudad Celeste', () => {
+    for (const hero of ['lia', 'jean', 'van']) for (const mech of ['wall', 'heavy', 'gate', 'ice']) expect(HERO_TUTORIAL_TALK[hero][mech], `${hero} ${mech}`).toMatch(/Vhorn/);
+    expect(CHAPTERS.map((c) => !!c.vhorn)).toEqual([false, false, false, false, false, false, true, true, true, true]);
+    expect(CHAPTERS[8].opening).toMatch(/primer vigía/);
   });
 });

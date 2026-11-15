@@ -5,7 +5,7 @@ import { countUp } from './fx.js';
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmt = (n) => n.toLocaleString('de-DE');
 
-/** Aviso minimalista de «PERFECTO»: solo sonido y un sutil destello dorado en el marco. */
+/** Aviso minimalista de «PERFECTO»: sonido de éxito y un sutil destello dorado dorado en el marco. */
 function perfectFx() {
   document.body.classList.add('perfect');
   sfx.perfect();

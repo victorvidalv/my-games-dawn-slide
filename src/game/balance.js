@@ -44,7 +44,6 @@ export function sealPlan(level, d, seed = 0) {
   return { tier, extra };
 }
 
-export const HEROES_SIM = ['none', 'lia', 'jean', 'van'];   // «none» = sin poder (referencia)
 
 /** Parte del premio del minijuego (0-3) según la habilidad: los juegos son sencillos y previsibles. */
 export const minigamePart = (skill, u) => (u < 0.08 + 0.42 * skill ? 3 : u < 0.5 + 0.4 * skill ? 2 : u < 0.9 ? 1 : 0);

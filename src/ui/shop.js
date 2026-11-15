@@ -93,8 +93,7 @@ const pick = (arr) => {
   return arr[i];
 };
 
-function say(text, mood, talk = true) {
-  if (talk) sfx.merchantTalk(text);
+function say(text, mood) {
   const b = $('shopBubble');
   b.textContent = text;
   b.classList.remove('say');
@@ -144,8 +143,8 @@ export function openShop() {
     if (b.classList.contains('off')) return b.dataset.id === 'redo' && S.G.moves === 0 ? merchantLine('nothing') : merchantLine('poor');
     return merchantLine(b.dataset.id);
   };
-  list.onpointerover = (e) => { const b = e.target.closest('.shop-item'); if (b && e.pointerType === 'mouse') say(lineFor(b), undefined, false); };
-  list.onfocusin = (e) => { const b = e.target.closest('.shop-item'); if (b) say(lineFor(b), undefined, false); };
+  list.onpointerover = (e) => { const b = e.target.closest('.shop-item'); if (b && e.pointerType === 'mouse') say(lineFor(b)); };
+  list.onfocusin = (e) => { const b = e.target.closest('.shop-item'); if (b) say(lineFor(b)); };
   list.onclick = async (e) => {
     const b = e.target.closest('.shop-item');
     if (!b) return;

@@ -4,7 +4,6 @@ import { heroicPath } from './routes.js';
 import { icon } from '../ui/icons.js';
 import { HERO_TALK } from '../data/story.js';
 import { LORE_PORTRAITS, WORLD, lorePortraitSrc } from '../data/lore.js';
-import { playVoice, stopVoice, voiceActive } from '../audio/voice.js';
 import { ZONES, zoneIdx } from '../data/zones.js';
 import { $ } from '../dom.js';
 import { MAX_LEVEL, startHintsFor } from '../engine/difficulty.js';
@@ -38,7 +37,7 @@ export async function startRun(start,mode){
   if(S.run) recordBest(true);                         // si abandonas, lo logrado cuenta
   const seed=Math.floor(Math.random()*2**31);
   S.G=null;
-  S.run={seed,level:1,start,mode,hero:chosen,voiceCity:0,lifeUsed:false,revive:0,revivesBought:0,undoUsedAt:0,undoUsedLevel:0,undoUsedCount:0,vanAwardedAt:0,score:0,hints:startHintsFor(start),adj:0,streak:0,recBroken:false};
+  S.run={seed,level:1,start,mode,hero:chosen,lifeUsed:false,revive:0,revivesBought:0,undoUsedAt:0,undoUsedLevel:0,undoUsedCount:0,vanAwardedAt:0,score:0,hints:startHintsFor(start),adj:0,streak:0,recBroken:false};
   syncHero();syncRouteStyle();applyZone(0);saveRun();
   S.run.route='normal';S.run.routeZone=0;S.run.travelFrom=0;saveRun();await resumeAdventure();
 }
@@ -54,24 +53,15 @@ export async function startLevel(){
   $('bUndo').disabled=!S.G.hist.length;
   $('msg').textContent=S.G.n===1?'Desliza los bloques y saca la llave roja ➜ Cada movimiento cuenta.':tipFor(S.G);
   buildPieces();updateHud();sfx.start();S.busy=true;
-  fitBoard();Music.setLevel(S.G.n,S.G.rate);setTensionFx(0,false);Music.duck(voiceActive()?.35:1);Music.muffle(false);Music.start();
+  fitBoard();Music.setLevel(S.G.n,S.G.rate);setTensionFx(0,false);Music.duck(1);Music.muffle(false);Music.start();
   if(S.run.rescue){showRescue();return}
   if(S.run.pendingRevive&&canPaidRevive(S.run,S.run.mode)){offerPaidRevive(S.run.pendingRevive);return}
   delete S.run.pendingRevive;
   S.busy=false;boardEl.classList.remove('board-lock');updateHud();saveRun();
-  greetCity();
   startCoach();                                        // avisos y guía de los primeros niveles / mecánicas nuevas
 }
-/** Voz del héroe al empezar la aventura (Valle). Las demás ciudades se saludan en el diálogo de elegir camino (travelDialog). */
-function greetCity(){
-  if(!S.run||!S.G||S.G.n%10!==1||S.run.mode==='p')return;
-  const city=zoneIdx(S.G.n);
-  if(S.run.voiceCity===city)return;
-  S.run.voiceCity=city;saveRun();
-  playVoice(heroOf().id,city);
-}
 function tipFor(g){
-  if(heroOf().id==='jean')return 'Rebobinar devuelve hasta cinco movimientos. Un uso por tablero.';
+  if(heroOf().id==='jean')return 'Rebobinar devuelve varios movimientos. Un uso por tablero.';
   const t=['Piensa antes de mover: cada movimiento de más resta puntos.','Los bloques largos bloquean más: libéralos primero.','Un solo arrastre largo cuenta como 1 movimiento.','Cada héroe abre el camino a su manera.','La pista no cuesta movimientos, pero es limitada.'];
   return t[(g.n*7)%t.length];
 }
@@ -90,7 +80,7 @@ function travelDialog(){
   $('travelTitle').replaceChildren(citySpan);$('travelPlace').src=`backgrounds/zone-${city+1}.webp`;$('travelPlace').alt=ZONES[city].n;
   const portrait=LORE_PORTRAITS[city],loreBox=$('travelLore');loreBox.hidden=!portrait;
   if(portrait){$('travelLoreImg').src=lorePortraitSrc(portrait.id);$('travelLoreImg').alt=portrait.name;$('travelLoreName').textContent=portrait.name;$('travelLoreCap').textContent=portrait.caption}
-  const lines=story.cityLines||[story.body];
+  const lines=[...(story.cityLines||[story.body]),...(story.vhorn?[`Vhorn: «${story.vhorn}»`]:[])];
   $('travelText').replaceChildren(...lines.map(txt=>{const li=document.createElement('li');li.textContent=txt;return li}));
   $('travelHeroLine').textContent=`${h.name}: «${story.action}»`;
   $('routeSummary').textContent=`Nivel ${S.run.pendingClear?.level||S.run.level} superado · +${S.run.pendingClear?.gain||0} pts`;
@@ -105,7 +95,6 @@ function travelDialog(){
    saveRun();modal.classList.remove('show');modal.removeEventListener('keydown',key);resolve();
   };
   buttons[0].onclick=()=>choose('normal');buttons[1].onclick=()=>choose('brave');modal.classList.add('show');modal.addEventListener('keydown',key);buttons[0].focus();
-  if(S.run.mode!=='p'){S.run.voiceCity=city;saveRun();playVoice(h.id,city)}   // el héroe saluda la ciudad mientras eliges el camino
  });
 }
 let advancingClear=false;
@@ -133,7 +122,7 @@ export function win(){                                  // la voz del héroe NO 
  if(S.G.done)return;S.G.done=true;S.busy=true;boardEl.classList.add('board-lock');
  if(S.G.tutorial){                                      // nivel extra de tutorial: sin puntos ni avance; después empieza el nivel real
   store.tips=store.tips||{};store.tips['tut_'+S.G.tutorial]=true;delete S.run.board;persist();
-  setTensionFx(0,false);tone(523,.13,'sine',.06);tone(784,.18,'sine',.045,.08);
+  setTensionFx(0,false);sfx.success();
   S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';
   $('msg').textContent='¡Tutorial superado! Ahora, el nivel de verdad.';
   setTimeout(()=>{S.busy=false;startLevel()},1400);return;
@@ -143,7 +132,7 @@ export function win(){                                  // la voz del héroe NO 
  S.run.adj=Math.max(-2,Math.min(S.run.level<10?1:2,S.run.adj+(gain.eff>=.9?1:gain.eff<.4?-1:0)));
  clearRewards(heroOf().id,S.run,S.G.n);
  S.run.pendingClear={level:S.G.n,gain:gain.total,moves:S.G.moves,opt:S.G.opt,routeChosen:false};recordBest();saveRun();
- setTensionFx(0,false);Music.duck(.55);tone(523,.13,'sine',.06);tone(784,.18,'sine',.045,.08);
+ setTensionFx(0,false);Music.duck(.55);if(S.G.moves>S.G.opt)sfx.success();   // si es perfecto suena la fanfarria especial al mostrar el resultado
  S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';
  $('msg').textContent=`${S.G.moves<=S.G.opt?'Perfecto · ':''}+${gain.total} puntos · ${HERO_TALK[heroOf().id].win[S.G.n%3]}`;
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,done=S.G;
@@ -156,7 +145,6 @@ export function win(){                                  // la voz del héroe NO 
 /* ---------- Derrota ---------- */
 /** Al pasarte del límite la aventura termina (la tienda se usa antes, no al perder). */
 export function fail(why){
-  stopVoice();
   if(S.G.done)return;
   finalFail(why);
 }

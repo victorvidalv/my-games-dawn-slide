@@ -4,7 +4,6 @@ import { analyze, expand } from '../engine/solver.js';
 /** Jean rebobina más movimientos cuanto más difícil es el camino (Normal 3, Difícil 6, Experto 8): en Normal basta con poco y en los caminos duros hace falta más. */
 export const REWIND_BY_PATH = { 1: 3, 50: 6, 75: 8 };
 export const rewindSteps = (start = 1) => REWIND_BY_PATH[start >= 75 ? 75 : start >= 50 ? 50 : 1];
-export const REWIND_STEPS = REWIND_BY_PATH[1];
 export const DESTINY_STEPS = 3;
 export const JUTH_MIN_REMAINING = 2; // usable solo si quedan más de 2 pasos; nunca ejecuta el último movimiento (siempre deja uno al jugador)
 /** Parte de los tableros en los que los poderes de Jean y Juth están listos: Normal todos, Difícil ~85 %, Experto ~70 % (repartidos de forma pareja). */
@@ -41,7 +40,7 @@ export function destinyPlan(G) {
   return plan;
 }
 
-export function powerUsed(run, G) {
+function powerUsed(run, G) {
   return run?.powerUsedLevel === G?.n ||
     (run?.hero === 'jean' && run.undoUsedLevel === G?.n && run.undoUsedCount > 0) ||
     (run?.hero === 'van' && run.freeHintLevel === G?.n && run.freeHintCount > 0);

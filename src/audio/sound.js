@@ -32,6 +32,8 @@ export function tone(f,d=.1,type='sine',v=.12,delay=0,slide=0){
 export const sfx={
   move:()=>tone(240+Math.random()*60,.08,'triangle',.1),
   win:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.28,'sine',.13,i*.08)),
+  // Nivel superado (no perfecto): arpegio suave y agradable.
+  success:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,.4,'sine',.07,i*.1));tone(262,.6,'triangle',.04,0);tone(1568,.3,'sine',.03,.42)},
   perfect:()=>{[523,659,784,1047,1319,1568,2093].forEach((f,i)=>tone(f,.35,'sine',.12,i*.07));
     [1760,2349,2637,3136].forEach((f,i)=>tone(f,.18,'triangle',.05,.5+i*.09));tone(196,.5,'sine',.05,0,30)},
   fail:()=>{tone(260,.7,'triangle',.07,0,-140);tone(130,.8,'sine',.05,.1,-50)},
@@ -50,7 +52,6 @@ export const sfx={
   },
   warn:()=>tone(220,.16,'sine',.04),
   // Don Dublón: su «voz» es un balbuceo de notas graves (más larga la frase, más dura) y tintineos de caja
-  merchantTalk:(text='')=>{const n=Math.min(28,Math.max(6,Math.round(text.length/3.3)));for(let i=0;i<n;i++){const f=118+((i*37+text.charCodeAt(i%Math.max(1,text.length)))%7)*21,t=i*.072;tone(f,.07,'sawtooth',.04,t);tone(f*2.01,.05,'triangle',.018,t+.012)}},
   merchantCoin:()=>{[1568,2093,2637,3136].forEach((f,i)=>tone(f,.16,'sine',.06,i*.05));tone(880,.3,'triangle',.04,.05)},
   merchantNope:()=>{tone(196,.3,'sawtooth',.055,0,-70);tone(147,.4,'sawtooth',.05,.2,-50)},
   merchantBell:()=>{[1319,1760,2093].forEach((f,i)=>tone(f,.5,'sine',.05,i*.08));tone(660,.6,'triangle',.03,.02)},
