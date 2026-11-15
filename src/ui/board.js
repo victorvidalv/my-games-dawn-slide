@@ -198,6 +198,7 @@ export function updateHud(){
   $('mv').textContent=S.G.moves;
   const f=$('fill'),pct=Math.min(100,S.G.moves/S.G.limit*100);
   f.style.width=pct+'%';
+  const pz=Math.min(100,S.G.opt/S.G.limit*100);$('meter').style.setProperty('--pz',pz+'%');   // zona «perfecta»: hasta el mínimo de movimientos
   const over=Math.max(0,S.G.moves-S.G.opt)/S.G.opt,hue=140*(1-Math.min(1,over));
   f.style.background=`hsl(${hue} 85% 52%)`;f.style.color=`hsl(${hue} 85% 52%)`;
   const prac=S.run.mode==='p',cg=gainNow();

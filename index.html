@@ -17,27 +17,34 @@
 <body>
 <div id="app">
   <div class="top">
-    <div class="lv"><small>NIVEL</small><b id="lvl">1</b><i>/100</i><div class="pchip" id="pchip">NORMAL</div></div>
-    <div class="scores">
-      <div class="sc"><small id="scoreLbl">ACTUAL</small><b id="score">0</b></div>
-      <div class="sc max" id="scMax"><small id="maxLbl">MÁXIMO</small><b id="scoreMax">0</b></div>
-    </div>
+    <div class="lv" title="Nivel" aria-label="Nivel"><i class="bi level-ico" data-icon="flag" aria-hidden="true"></i><b id="lvl">1</b></div>
+    <div class="scores"><div class="sc" title="Puntaje"><i class="bi score-ico" data-icon="trophy" aria-hidden="true"></i><b id="score" aria-label="Puntaje">0</b></div></div>
     <button class="menubtn" id="bMenu" aria-label="Menú y opciones"><span>☰</span><em>Menú</em></button>
   </div>
-  <div class="prog stage"><span class="sname" id="sname"></span><div class="segs" id="segs"></div></div>
 
-  <div class="meter" id="meter">
+  <!-- Indicadores que ya no se muestran (el HUD es minimalista) pero que el código sigue actualizando -->
+  <div class="hud-legacy" hidden>
+    <small id="scoreLbl">ACTUAL</small><i>/100</i><div class="pchip" id="pchip">NORMAL</div>
+    <div class="sc max" id="scMax"><small id="maxLbl">MÁXIMO</small><b id="scoreMax">0</b></div>
+    <div class="prog stage"><span class="sname" id="sname"></span><div class="segs" id="segs"></div></div>
     <div class="hero-hud"><img id="heroHudImg" alt="" width="30" height="34"><b id="heroHudName"></b><span id="heroHudPower"></span></div>
     <div class="route-status" id="routeStatus"><span id="routeIcon" aria-hidden="true">🌿</span><strong id="routeName">RUTA TRANQUILA</strong><small id="routeScope">NIV. 1–10</small><span class="route-reward" id="routeReward">Normal</span></div>
-    <div class="mrow"><span>Movimientos <b id="mv">0</b></span><span>Mínimo <b id="mn" style="font-size:14px">–</b> · Límite <b id="lim" style="font-size:14px">–</b> · Restan <b id="left" style="font-size:14px">–</b></span></div>
-    <div class="bar"><i id="fill"></i><u></u></div>
-    <div class="bought" id="bought" hidden><span class="bl"><i class="bi" data-icon="crystal"></i> TURNOS COMPRADOS</span><span class="pips" id="boughtPips"></span><span class="bq">quedan <b id="boughtLeft">0</b></span></div>
+    <span>Mínimo <b id="mn">–</b> · Restan <b id="left">–</b></span>
     <div class="pot"><span>Base <b id="base">0</b></span><span>Premio posible <b id="pot">+0</b></span></div>
+  </div>
+
+  <div class="meter" id="meter">
+    <div class="mrow"><span>Hecho <b id="mv">0</b></span><span>Límite <b id="lim">–</b></span></div>
+    <div class="barwrap">
+      <div class="bar"><b class="pzone" id="pzone"></b><i id="fill"></i></div>
+      <i class="bi crown" id="crown" data-icon="crown" title="Zona perfecta: termina sin pasarte del mínimo"></i>
+    </div>
+    <div class="bought" id="bought" hidden><span class="bl"><i class="bi" data-icon="crystal"></i> TURNOS COMPRADOS</span><span class="pips" id="boughtPips"></span><span class="bq">quedan <b id="boughtLeft">0</b></span></div>
   </div>
 
   <div class="frame">
     <div class="exit-arrow">➜</div>
-    <div id="board"><div class="slot-row"></div><div id="banner"><b></b><span></span><span class="b2"></span></div></div>
+    <div id="board"><div class="slot-row"></div></div>
   </div>
 
   <div class="hint-text" id="msg"></div>
@@ -52,47 +59,29 @@
 
 <div class="modal" id="travel" role="dialog" aria-modal="true" aria-labelledby="travelTitle">
  <div class="travel-stage">
-  <img class="travel-backdrop" src="backgrounds/guia-elfa-mapa.webp" alt="" draggable="false">
-  <img class="travel-city-tint" id="travelScene" alt="" draggable="false">
-  <img class="travel-elf" src="backgrounds/guia-elfa-mapa.webp" alt="La guía del camino" draggable="false">
+  <img class="travel-city-bg" id="travelScene" alt="" draggable="false">
   <div class="travel-vignette" aria-hidden="true"></div>
+  <img class="travel-guide" src="backgrounds/guia-elfa.webp" alt="La guía del camino" draggable="false">
   <div class="travel-shell">
-   <div class="travel-top">
-    <div class="travel-meta">
-     <span class="tag" id="travelTag"></span>
-     <span class="travel-cleared" id="routeSummary"></span>
-    </div>
+   <header class="travel-head">
     <h2 class="travel-heading" id="travelTitle"></h2>
-   </div>
-   <aside class="travel-side" aria-label="Historia crítica de la siguiente ciudad">
-    <div class="travel-lore-box">
-     <div class="travel-lore-head">
-      <span class="travel-seal" id="travelSeal"></span>
-     </div>
-     <p class="travel-inscription" id="travelInscription"></p>
-     <figure class="travel-lore" id="travelLore" hidden><img id="travelLoreImg" alt="" width="64" height="96"><figcaption><b id="travelLoreName"></b><span id="travelLoreCap"></span></figcaption></figure>
-     <ul class="travel-lines" id="travelText"></ul>
-     <div class="travel-companion">
-      <img class="travel-hero-thumb" id="travelPortrait" alt="">
-      <p class="travel-hero-line" id="travelHeroLine"></p>
-     </div>
-    </div>
-   </aside>
+    <p class="travel-inscription" id="travelInscription"></p>
+   </header>
    <div class="travel-bottom">
-    <div class="route-caption">ELIGE TU CAMINO PARA LOS PRÓXIMOS 10 NIVELES</div>
+    <p class="travel-ask">Elige tu camino</p>
     <div class="route-options" id="routeOptions">
-     <button class="route-option" id="routeNormal">
-      <span class="choice-icon" aria-hidden="true">⌁</span>
-      <span class="choice-copy"><strong>Camino Tranquilo</strong><small>Dificultad y puntos habituales</small></span>
-      <span class="choice-bonus">Avanzar →</span>
-     </button>
-     <button class="route-option brave" id="routeBrave">
-      <span class="choice-icon" aria-hidden="true">△</span>
-      <span class="choice-copy"><strong>Camino Aventurero</strong><small>Puzles algo más difíciles</small></span>
-      <span class="choice-bonus">+10 % puntos →</span>
-     </button>
+     <button class="route-option" id="routeNormal"><span class="choice-icon" aria-hidden="true">⌁</span><span class="choice-copy"><strong>Tranquilo</strong><small>Normal</small></span></button>
+     <button class="route-option brave" id="routeBrave"><span class="choice-icon" aria-hidden="true">△</span><span class="choice-copy"><strong>Aventurero</strong><small>Más puntos</small></span></button>
     </div>
    </div>
+  </div>
+  <!-- textos e imágenes que ya no se muestran (las paradas llevan poco texto), conservados para el código -->
+  <div class="travel-legacy" hidden>
+   <span class="tag" id="travelTag"></span><span class="travel-cleared" id="routeSummary"></span><span class="travel-seal" id="travelSeal"></span>
+   <img id="travelPlace" alt="">
+   <figure id="travelLore" hidden><img id="travelLoreImg" alt=""><figcaption><b id="travelLoreName"></b><span id="travelLoreCap"></span></figcaption></figure>
+   <ul id="travelText"></ul>
+   <img id="travelPortrait" alt=""><p id="travelHeroLine"></p>
   </div>
  </div>
 </div>
@@ -162,7 +151,7 @@
   <button class="primary" id="updYes">Actualizar</button>
   <button class="updx" id="updNo" aria-label="Más tarde">✕</button>
 </div>
-<div id="result" role="status"><div class="res-card"><small id="resLevel"></small><strong id="resTitle"></strong><b id="resPts">+0</b><span id="resLine"></span><em id="resTotal"></em><i class="res-bar"><u id="resBar"></u></i><small class="res-skip">Toca para continuar</small></div></div>
+<div id="result" role="status"><div class="res-card"><i class="bi res-crown" data-icon="crown" aria-hidden="true"></i><strong id="resTitle"></strong><div class="res-prize"><i class="bi res-ico" data-icon="trophy" aria-hidden="true"></i><b id="resPts">+0</b></div><small id="resLevel" hidden></small><span id="resLine" hidden></span><em id="resTotal" hidden></em><u id="resBar" hidden></u></div></div>
 <div id="lowBanner" aria-live="assertive"><i data-icon="alert"></i><div><b id="lowTitle"></b><span id="lowSub"></span></div></div>
 <div id="rewindFx" aria-hidden="true"><span>↺</span><i></i></div>
 <div id="skipFx" aria-hidden="true"><div class="chev"><b>»</b><b>»</b><b>»</b></div><strong>NIVEL SALTADO</strong><small>Sin puntos · sin racha</small></div>

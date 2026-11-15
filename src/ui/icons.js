@@ -132,6 +132,11 @@ const BODIES = {
     <path d="M16 20.4V25M11 27.6h10" stroke-width="2.4"/><rect x="10" y="25" width="12" height="3.4" rx="1.2" fill="${BRASS_DK}"/>
     <path d="M12 7.5v4.5" stroke="${BRASS_LT}" stroke-width="1.8"/>`,
 
+  /** Bandera sobre un montículo: el nivel. */
+  flag: `<path d="M5.5 27.6c1-3.2 4.6-4.4 8-4.4s7 1.2 8 4.4z" fill="${IRON}"/>
+    <path d="M12 24V4.6" stroke-width="2.4"/><path d="M12 5.6l15 4.6-15 5.4z" fill="${RED}"/>
+    <path d="M14.4 8.2l8 2.4" stroke="${BRASS_LT}" stroke-width="1.6"/><circle cx="12" cy="4.4" r="1.9" fill="${BRASS}"/>`,
+
   /** Medalla (fin del camino Difícil). */
   medal: `<path d="M9.6 3l5 9.2M22.4 3l-5 9.2" stroke-width="3.4" fill="none"/>
     <path d="M9.6 3l5 9.2M22.4 3l-5 9.2" stroke="${RED}" stroke-width="1.6" fill="none"/>

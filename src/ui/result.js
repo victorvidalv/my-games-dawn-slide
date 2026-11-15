@@ -36,11 +36,10 @@ export function showResult({ gain, moves, opt, previous, total }) {
     $('resLevel').textContent = '';
     $('resLine').textContent = '';
     $('resTotal').textContent = '';
-    $('resBar').style.animationDuration = ms + 'ms';
     el.classList.remove('show');
     void el.offsetWidth;
     el.classList.add('show');
-    countUp($('resPts'), 0, gain.total, Math.min(340, ms - 200), (v) => '+' + fmt(Math.round(v)) + ' pts');
+    countUp($('resPts'), 0, gain.total, Math.min(420, ms - 200), (v) => '+' + fmt(Math.round(v)));
     countUp($('score'), previous, total, 340);
     if (perfect) perfectFx();
     let done = false;

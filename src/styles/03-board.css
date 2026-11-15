@@ -40,13 +40,5 @@
 .piece.exit{transition:left .9s cubic-bezier(.5,0,.8,.4),opacity .9s;opacity:0;pointer-events:none}
 .board-lock{pointer-events:none}
 
-#banner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9;pointer-events:none;opacity:0;
-  background:radial-gradient(circle,#0a0d1fcc,#0a0d1f00 70%)}
-#banner b{font-size:44px;font-weight:900;letter-spacing:.1em;color:#fff;text-shadow:0 0 30px var(--gold)}
-#banner span{font-size:14px;letter-spacing:.08em;opacity:.9;margin-top:4px}
-#banner.go{animation:bannerfade 1.7s ease both}
-#banner.go b,#banner.go span{animation:bannerpop 1.7s ease both}
-@keyframes bannerfade{0%{opacity:0}18%{opacity:1}75%{opacity:1}100%{opacity:0}}
-@keyframes bannerpop{0%{transform:scale(.6)}18%{transform:scale(1.08)}30%{transform:scale(1)}100%{transform:scale(1.1)}}
 
 .hint-text{height:34px;flex:none;overflow:hidden;font-size:12.5px;opacity:.85;text-align:center;max-width:340px;line-height:1.3;display:flex;align-items:center;justify-content:center}

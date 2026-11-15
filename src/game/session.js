@@ -3,7 +3,7 @@ import { sfx, tone } from '../audio/sound.js';
 import { HERO_TALK } from '../data/story.js';
 import { LORE_PORTRAITS, WORLD, lorePortraitSrc } from '../data/lore.js';
 import { playVoice, stopVoice, voiceActive } from '../audio/voice.js';
-import { ZONES, zoneIdx, zoneOf, zoneStep } from '../data/zones.js';
+import { ZONES, zoneIdx } from '../data/zones.js';
 import { $ } from '../dom.js';
 import { MAX_LEVEL, rateAt, startHintsFor } from '../engine/difficulty.js';
 import { hash32 } from '../engine/rng.js';
@@ -77,7 +77,7 @@ export async function startLevel(){
   if(S.run.rescue){showRescue();return}
   if(S.run.pendingRevive&&canPaidRevive(S.run,S.run.mode)){offerPaidRevive(S.run.pendingRevive);return}
   delete S.run.pendingRevive;
-  S.busy=false;boardEl.classList.remove('board-lock');saveRun();banner();
+  S.busy=false;boardEl.classList.remove('board-lock');saveRun();
   greetCity();
   startCoach();                                        // avisos y guía de los primeros niveles / mecánicas nuevas
 }
@@ -94,12 +94,6 @@ function tipFor(g){
   const t=['Piensa antes de mover: cada movimiento de más resta puntos.','Los bloques largos bloquean más: libéralos primero.','Un solo arrastre largo cuenta como 1 movimiento.','Deshacer cuesta 1 movimiento. Úsalo con cabeza.','La pista no cuesta movimientos, pero es limitada.'];
   return t[(g.n*7)%t.length];
 }
-function banner(){
-  const b=$('banner'),z=zoneOf(S.G.n);b.querySelector('b').textContent='NIVEL '+S.G.n;
-  b.querySelector('span').textContent=`${z.e} ${z.n} · ${zoneStep(S.G.n)}/10`;
-  b.querySelector('.b2').textContent=`Mínimo ${S.G.opt} mov.`+(S.run.mode==='p'?'':` · Límite ${S.G.limit}`);
-  b.classList.remove('go');void b.offsetWidth;b.classList.add('go');
-}
 
 function travelDialog(){
  if(!S.run?.pendingClear||S.run.pendingClear.level%10!==0||S.run.pendingClear.level>=100)return Promise.resolve();
@@ -109,7 +103,7 @@ function travelDialog(){
   $('travelTag').textContent=`THYES · AÑO ${WORLD.year} · CAPÍTULO ${city+1} DE 10 · NIVELES ${city*10+1}–${(city+1)*10}`;
   $('travelSeal').textContent=`Sello de ${story.seal}`;$('travelInscription').textContent=`«${story.inscription}»`;
   const citySpan=document.createElement('span');citySpan.className='travel-city';citySpan.textContent=ZONES[city].n;
-  $('travelTitle').replaceChildren('Elige cómo llegar a ',citySpan);
+  $('travelTitle').replaceChildren(citySpan);$('travelPlace').src=`backgrounds/zone-${city+1}.webp`;$('travelPlace').alt=ZONES[city].n;
   const portrait=LORE_PORTRAITS[city],loreBox=$('travelLore');loreBox.hidden=!portrait;
   if(portrait){$('travelLoreImg').src=lorePortraitSrc(portrait.id);$('travelLoreImg').alt=portrait.name;$('travelLoreName').textContent=portrait.name;$('travelLoreCap').textContent=portrait.caption}
   const lines=story.cityLines||[story.body];

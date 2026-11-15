@@ -1,0 +1,32 @@
+/* HUD minimalista: nivel (solo el número), puntos, menú, y una barra con «hecho», «límite» y la zona perfecta con corona. */
+.hud-legacy{display:none!important}
+.top{align-items:center;justify-content:space-between}
+.lv{min-width:54px}
+.lv b{font-size:38px;line-height:1}
+.scores{flex:1;display:flex;justify-content:center;grid-template-columns:none}
+.top .sc{padding:0 10px;background:none;border:0;box-shadow:none}
+.top .sc b,#score{font-size:32px!important;line-height:1.1;color:#f0e7d4!important;text-shadow:0 2px 0 #091118}
+.meter{padding:12px 16px 12px}
+.meter .mrow{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.9}
+.meter .mrow span:last-child{opacity:.75;font-size:11px}
+.meter .mrow b{font-size:24px;letter-spacing:0;margin-left:3px;font-variant-numeric:tabular-nums}
+#lim,#mv{font-size:24px!important;background:none!important;color:inherit!important;border:0!important;box-shadow:none!important;padding:0!important}
+.barwrap{position:relative;margin:16px 0 4px}
+.barwrap .bar{height:14px;margin:0;border-radius:9px}
+.bar .pzone{position:absolute;left:0;top:0;bottom:0;width:var(--pz,60%);background:repeating-linear-gradient(135deg,#f1ce8240 0 7px,#f1ce8220 7px 14px);border-right:2px solid #f1ce82;box-shadow:inset 0 0 8px #f1ce8240;transition:width .35s}
+.bar u{display:none}
+.barwrap .crown{position:absolute;top:-19px;left:var(--pz,60%);transform:translateX(-50%);width:22px;height:20px;pointer-events:none;filter:drop-shadow(0 2px 0 #091118);transition:left .35s}
+.barwrap .crown svg{width:100%;height:100%;display:block}
+.meter.danger .barwrap .crown{opacity:.55}
+@media(max-height:620px){.lv b{font-size:30px}.top .sc b,#score{font-size:26px!important}.meter{padding:8px 14px 9px}.barwrap{margin-top:14px}}
+.top .sc{display:flex;align-items:center;justify-content:center;gap:7px}
+.score-ico{flex:none;width:28px;height:28px;display:block;filter:drop-shadow(0 2px 0 #091118)}
+.score-ico svg{width:100%;height:100%;display:block}
+@media(max-height:620px){.score-ico{width:22px;height:22px}}
+.top .lv{display:flex;align-items:center;gap:6px;min-width:0}
+.level-ico{flex:none;width:28px;height:28px;display:block;filter:drop-shadow(0 2px 0 #091118)}
+.level-ico svg{width:100%;height:100%;display:block}
+@media(max-height:620px){.level-ico{width:22px;height:22px}}
+.top .lv .level-ico{opacity:1;margin:0}
+/* sin consejos ni leyendas bajo el tablero: solo los botones (el texto sigue existiendo para lectores de pantalla) */
+.hint-text,.legend{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;border:0!important;white-space:nowrap}

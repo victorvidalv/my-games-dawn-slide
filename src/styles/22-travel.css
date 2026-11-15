@@ -1,0 +1,33 @@
+/* Paradas para elegir camino: la imagen de la ciudad de fondo con la guía encima; arriba el nombre de la ciudad y la frase de la historia,
+   abajo «Elige tu camino» y los dos caminos bien destacados. */
+.travel-legacy{display:none!important}
+#travel{background:#08121a}
+.travel-city-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(.8) saturate(1.05);pointer-events:none}
+.travel-vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,#08121acf 0%,#08121a38 30%,#08121a55 56%,#08121af2 100%)}
+.travel-guide{position:fixed;left:-5%;bottom:0;z-index:2;height:min(74dvh,860px);width:auto;max-width:92vw;object-fit:contain;object-position:left bottom;filter:drop-shadow(0 10px 26px #000b);pointer-events:none;user-select:none}
+.travel-shell{position:relative;z-index:3;display:flex!important;flex-direction:column;justify-content:space-between;gap:14px;min-height:100dvh;width:min(100%,1160px);margin:0 auto;
+  grid-template-columns:none!important;grid-template-rows:none!important;padding:calc(env(safe-area-inset-top) + 22px) clamp(16px,4vw,36px) calc(env(safe-area-inset-bottom) + 24px)}
+.travel-head{text-align:left;max-width:min(100%,560px)}
+.travel-heading{margin:0;font:800 clamp(30px,8vw,48px)/1.05 Georgia,serif;color:#f5ce74;text-shadow:0 3px 0 #091118,0 0 28px #f1ce8244}
+.travel-heading .travel-city{color:inherit}
+.travel-inscription{margin:10px 0 0!important;max-width:30ch;font:italic 600 clamp(17px,4.6vw,23px)/1.32 Georgia,serif!important;color:#f6ecd0;text-shadow:0 2px 0 #091118,0 0 18px #000}
+.travel-bottom{width:100%;max-width:640px;align-self:center}
+.travel-ask{margin:0 0 9px;text-align:center;font:800 12px/1 system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:#f1ce82;text-shadow:0 2px 0 #091118}
+#travel .route-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#travel .route-option{display:flex;align-items:center;gap:11px;min-height:86px;padding:12px 14px 12px 12px;border-radius:22px;text-align:left;position:relative;overflow:hidden;
+  background:linear-gradient(165deg,#1d3a45f7,#102029f9);border:2.5px solid #091118;box-shadow:0 5px 0 #091118,inset 0 0 0 1.5px #8cc8bf55,inset 0 1px 0 #ffffff1f,0 12px 28px #0009;transition:transform .12s,box-shadow .12s,filter .12s}
+#travel .route-option::after{content:'›';position:absolute;right:8px;top:50%;transform:translateY(-50%);font:900 30px/1 Georgia,serif;color:#ffffff40}
+#travel .route-option .choice-icon{flex:none;width:52px;height:52px;display:grid;place-items:center;border-radius:50%;font-size:28px!important;line-height:1;color:#0c2b2a;
+  background:radial-gradient(circle at 35% 28%,#c5f3e6,#5fc3ae 60%,#2c7a6c);border:2.5px solid #091118;box-shadow:0 3px 0 #091118,0 0 16px #5fc3ae66}
+#travel .route-option .choice-copy{flex:1;min-width:0;padding-right:16px}
+#travel .route-option strong{display:block;font:800 17px/1.1 Georgia,serif;color:#f8eed3;text-shadow:0 2px 0 #091118}
+#travel .route-option small{display:block;margin-top:4px;font:700 11px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#a9cfc8;white-space:nowrap}
+#travel .route-option.brave{background:linear-gradient(165deg,#4a3320f7,#241a16f9);box-shadow:0 5px 0 #091118,inset 0 0 0 1.5px #f1ce8299,0 0 26px #f1ce8240,0 12px 28px #0009}
+#travel .route-option.brave .choice-icon{color:#4a1f08;background:radial-gradient(circle at 35% 28%,#ffe9ad,#e6a24a 60%,#a85a2a);box-shadow:0 3px 0 #091118,0 0 18px #f1ce8280}
+#travel .route-option.brave small{color:#f4cf7e}
+#travel .route-option:hover,#travel .route-option:focus-visible{transform:translateY(-2px);filter:brightness(1.1)}
+#travel .route-option:active{transform:translateY(3px);box-shadow:0 2px 0 #091118}
+@media(max-width:420px){#travel .route-option{flex-direction:column;text-align:center;min-height:112px;justify-content:center;padding:12px 8px}#travel .route-option::after{display:none}#travel .route-option .choice-copy{padding-right:0}}
+@media(min-aspect-ratio:11/10){.travel-guide{left:2%;height:92dvh}.travel-head{margin-left:min(44vw,520px);max-width:560px}.travel-bottom{margin-left:min(44vw,520px);max-width:600px;align-self:flex-start}}
+@media(max-height:640px){.travel-guide{height:62dvh}#travel .route-option{min-height:70px}}
+.travel-ask{display:table;margin:0 auto 10px;padding:6px 14px;border-radius:99px;background:#08121ac9;border:1px solid #f1ce8240}
