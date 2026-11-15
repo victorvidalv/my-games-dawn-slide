@@ -1,6 +1,10 @@
 import { sfx, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
-import { countUp } from './fx.js';
+import { burst, countUp } from './fx.js';
+
+const CONFETTI = ['#f2c45c', '#ee6a46', '#58b3b8', '#a07bc6', '#f6e6bd', '#9dbb5f'];
+/** Frase corta según la eficiencia (la racha, si la hay, manda). */
+const chipText = (gain) => (gain.mult > 1 ? `Racha ×${gain.mult.toFixed(1).replace('.', ',')}` : gain.eff >= 0.9 ? 'Muy bien' : gain.eff >= 0.6 ? 'Bien hecho' : 'Nivel superado');
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmt = (n) => n.toLocaleString('de-DE');
@@ -32,6 +36,9 @@ export function showResult({ gain, moves, opt, previous, total }) {
     const perfect = moves <= opt;
     const ms = reduced() ? 450 : perfect ? 1300 : 900;
     el.classList.toggle('perfect', perfect);
+    let chip = el.querySelector('.res-chip');
+    if (!chip) { chip = document.createElement('small'); chip.className = 'res-chip'; el.querySelector('.res-card').appendChild(chip); }
+    chip.textContent = chipText(gain);
     $('resTitle').textContent = perfect ? 'PERFECTO' : '';
     $('resLevel').textContent = '';
     $('resLine').textContent = '';
@@ -42,6 +49,11 @@ export function showResult({ gain, moves, opt, previous, total }) {
     countUp($('resPts'), 0, gain.total, Math.min(420, ms - 200), (v) => '+' + fmt(Math.round(v)));
     countUp($('score'), previous, total, 340);
     if (perfect) perfectFx();
+    if (!reduced() && r && r.width > 0) {                       // confeti de los colores del juego desde el centro del tablero
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      burst(cx, cy, perfect ? 70 : 22, CONFETTI, perfect ? 10 : 6);
+      if (perfect) setTimeout(() => burst(cx, cy - 40, 40, CONFETTI, 8), 260);
+    }
     let done = false;
     const finish = () => {
       if (done) return;

@@ -64,7 +64,7 @@ body.last-turn::before{opacity:.36}
   background:#13232df2;border:2px solid #091118;box-shadow:0 3px 0 #091118,0 8px 20px #0007,inset 0 0 0 1px #e4a95244;transform:translate(-50%,0);white-space:nowrap}
 #lowBanner i{display:grid;place-items:center;font-style:normal;font-size:15px;color:#f4be66}
 #lowBanner>div{display:flex;align-items:baseline;gap:7px}
-#lowBanner b{display:block;font:800 13px/1 Georgia,serif;letter-spacing:.02em;color:#f5d084}
+#lowBanner b{display:block;font:800 13px/1 var(--font-book);letter-spacing:.02em;color:#f5d084}
 #lowBanner span{display:block;font:600 11.5px/1 system-ui,sans-serif;color:#d6ceb8;margin-top:0}
 #lowBanner.last{background:#2d1515f5;box-shadow:0 3px 0 #091118,0 8px 20px #0008,inset 0 0 0 1px #ff7b6b55}
 #lowBanner.last i,#lowBanner.last b{color:#ffb3a7}

@@ -41,7 +41,7 @@ export async function startRun(start,mode){
   syncHero();syncRouteStyle();applyZone(0);saveRun();
   S.run.route='normal';S.run.routeZone=0;S.run.travelFrom=0;saveRun();await resumeAdventure();
 }
-export async function startLevel(){
+async function startLevel(){
   S.busy=true;
   S.G=buildAdventureLevel(S.run,{levels:levelBank.ratings,special:specialBank,tips:store.tips||{}});
   S.G.colors ||= [0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5);
@@ -130,7 +130,7 @@ export function win(){                                  // la voz del héroe NO 
  const gain=gainNow(),previous=S.run.score;
  S.run.score+=gain.total;S.run.cleared=(S.run.cleared||0)+1;S.run.streak=gain.eff>=.9?(S.run.streak||0)+1:0;
  S.run.adj=Math.max(-2,Math.min(S.run.level<10?1:2,S.run.adj+(gain.eff>=.9?1:gain.eff<.4?-1:0)));
- clearRewards(heroOf().id,S.run,S.G.n);
+ clearRewards(S.run,S.G.n);
  S.run.pendingClear={level:S.G.n,gain:gain.total,moves:S.G.moves,opt:S.G.opt,routeChosen:false};recordBest();saveRun();
  setTensionFx(0,false);Music.duck(.55);if(S.G.moves>S.G.opt)sfx.success();   // si es perfecto suena la fanfarria especial al mostrar el resultado
  S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';

@@ -19,7 +19,7 @@ export const SCALES = {
 };
 
 /** Calidades de acorde que se pueden forzar con «"grado:calidad"» (semitonos sobre la fundamental). */
-export const QUALITIES = {
+const QUALITIES = {
   '7': [0, 4, 7, 10], '9': [0, 4, 7, 10, 14], m7: [0, 3, 7, 10], maj7: [0, 4, 7, 11], m: [0, 3, 7], maj: [0, 4, 7], dim: [0, 3, 6, 9],
 };
 

@@ -28,6 +28,7 @@ import './styles/22-travel.css';
 import './styles/23-powers.css';
 import './styles/24-heroic-paths.css';
 import './styles/25-seals.css';
+import './styles/26-handmade.css';
 import { hooks } from './audio/sound.js';
 import { saveRun } from './game/session.js';
 import { S, persist, store } from './state.js';

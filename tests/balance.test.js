@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { averageRuns, simulateRun, PATHS, SKILLS } from '../src/game/balance.js';
 import { hintEvery, powerScale } from '../src/game/heroes.js';
 import { POWER_READY_SHARE, powerReady } from '../src/game/powers.js';
-import { HEROIC_BENEFITS } from '../src/game/routes.js';
 import { maxPrize, bonusPrize } from '../src/game/minigames.js';
 import { MAX_REVIVES, REVIVE_SHARE } from '../src/game/shop.js';
 import { braveExtra, moveLimit } from '../src/engine/difficulty.js';
@@ -121,7 +120,7 @@ describe('camino heroico (simulación)', () => {
     for (const hero of HEROES) {
       const g = avgOver(0.92, hero);
       expect(g.levels, `${hero} niveles`).toBeGreaterThan(-8);
-      expect(g.points, `${hero} puntos`).toBeGreaterThan(hero === 'van' ? 0.9 : 1.02);   // Juth se compensa con la tienda (descuento), no con puntos
+      expect(g.points, `${hero} puntos`).toBeGreaterThan(hero === 'van' ? 0.9 : 1.02);   // Juth se compensa con la tienda (descuento) y su Destino largo
     }
     for (const hero of HEROES) expect(avgOver(0.6, hero).levels, `${hero} jugador medio`).toBeGreaterThan(-12);
   });
@@ -129,10 +128,13 @@ describe('camino heroico (simulación)', () => {
   it('las tres ventajas heroicas están equilibradas: ningún héroe gana a la vez muchos niveles y muchos puntos', () => {
     const lia = avgOver(0.8, 'lia');
     const jean = avgOver(0.8, 'jean');
-    expect(lia.levels).toBeLessThan(8);        // 1 pista cada dos tableros ayuda, pero no regala la partida
-    expect(lia.levels).toBeGreaterThan(jean.levels);
+    const juth = avgOver(0.8, 'van');
+    for (const g of [lia, jean, juth]) {
+      expect(g.levels).toBeLessThan(3);          // la ventaja heroica ayuda, pero no regala la partida
+      expect(g.levels).toBeGreaterThan(-6);      // ni el riesgo castiga demasiado
+    }
+    expect(Math.max(lia.levels, jean.levels, juth.levels) - Math.min(lia.levels, jean.levels, juth.levels)).toBeLessThan(4);   // parecidos entre héroes
     expect(jean.points).toBeGreaterThan(lia.points - 0.12);   // Jean se compensa con puntos
-    expect(HEROIC_BENEFITS).toMatchObject({ liaHints: 1, liaEvery: 2, jeanPoints: 0.25, juthDiscount: 0.4 });
   });
 
   it('con tienda, el descuento de Juth compensa su camino heroico', () => {

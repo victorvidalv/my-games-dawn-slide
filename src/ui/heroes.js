@@ -12,7 +12,7 @@ import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
 import { heroicPath, heroicHintsLeft } from '../game/routes.js';
 import { preloadAwakening } from './power-art.js';
-export function heroMarkup(h,pose='start'){return `<svg xmlns="http://www.w3.org/2000/svg" class="hero-art" viewBox="0 0 100 145" role="img" aria-label="${h.name}, ${h.role}"><defs><clipPath id="portrait-${h.id}-${pose}"><rect width="100" height="145" rx="16"/></clipPath></defs><image href="${heroArt(h.id,pose)}" width="100" height="145" preserveAspectRatio="xMidYMin slice" clip-path="url(#portrait-${h.id}-${pose})"/><rect x="1" y="1" width="98" height="143" rx="16" fill="none" stroke="${h.color}" stroke-opacity=".65" stroke-width="2"/></svg>`}
+function heroMarkup(h,pose='start'){return `<svg xmlns="http://www.w3.org/2000/svg" class="hero-art" viewBox="0 0 100 145" role="img" aria-label="${h.name}, ${h.role}"><defs><clipPath id="portrait-${h.id}-${pose}"><rect width="100" height="145" rx="16"/></clipPath></defs><image href="${heroArt(h.id,pose)}" width="100" height="145" preserveAspectRatio="xMidYMin slice" clip-path="url(#portrait-${h.id}-${pose})"/><rect x="1" y="1" width="98" height="143" rx="16" fill="none" stroke="${h.color}" stroke-opacity=".65" stroke-width="2"/></svg>`}
 export function syncHero(id=S.run?.hero){const h=heroOf(id);const art=document.querySelector('#travel .traveler>.hero-art');if(art)art.outerHTML=heroMarkup(h,'map');document.documentElement.style.setProperty('--hero-color',h.color);if(h.id!=='lia'&&!matchMedia('(prefers-reduced-motion: reduce)').matches)preloadAwakening(h.id).catch(()=>{})}
 export function chooseHero(start,mode){
  return new Promise(resolve=>{
@@ -36,7 +36,7 @@ export function updateHeroHud(){
  $('heroHudPower').textContent=h.id==='lia'?`+${bonusTurns('lia',moveLimit(S.G.opt,S.run.start,S.run.level,S.run.route==='brave'),S.run.start)} turnos de reserva`:status.reason;
  const free=heroicHintsLeft(S.run,S.G.n);
  $('hintN').textContent=prac?'∞':free?`${free} gratis`:S.run.hints;
- $('bHint').setAttribute('aria-label',`Pista. ${free} gratis en este tablero y ${S.run.hints} en reserva.`);$('bHint').disabled=S.busy||!canHint(h.id,S.run,S.run.mode,S.G.n,S.G.opt);
+ $('bHint').setAttribute('aria-label',`Pista. ${free} gratis en este tablero y ${S.run.hints} en reserva.`);$('bHint').disabled=S.busy||!canHint(S.run,S.run.mode,S.G.n);
  $('bUndo').hidden=true;
  const button=$('bPower');button.hidden=h.id==='lia';button.disabled=S.busy||!status.ok;
  button.dataset.hero=h.id;$('powerIcon').innerHTML=icon(h.id==='jean'?'clock':'stars');

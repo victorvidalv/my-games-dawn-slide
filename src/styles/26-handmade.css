@@ -1,0 +1,238 @@
+/*
+ * Acabado «hecho a mano» para seguir la estética de las ilustraciones (tinta gruesa, óleo, papel):
+ * nada es un rectángulo perfecto. Los bordes son irregulares (radios elípticos distintos en cada esquina), las sombras
+ * son de tinta desplazada con un halo cálido, los paneles tienen grano de papel y las fichas parecen madera pintada con
+ * una pincelada de luz y un canto oscuro. Solo toca formas, sombras y texturas: nada cambia de tamaño ni de sitio.
+ */
+:root{
+  /* tipografía: rótulos tipo cartel de aventuras (Copperplate / Palatino, que traen todos los sistemas) y lectura en serif de libro */
+  --font-title:'Copperplate','Copperplate Gothic Bold','Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  --font-book:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --font-ui:'Avenir Next','Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  /* paleta de la ilustración: verde azulado, bermellón, oro, púrpura, azul marino, naranja de flor, crema de piedra */
+  --p0a:#58b3b8;--p0b:#2f8394;--p0d:#174b5c;--p1a:#f2c45c;--p1b:#d39528;--p1d:#80520f;--p2a:#a07bc6;--p2b:#6c4893;--p2d:#38214f;
+  --p3a:#9dbb5f;--p3b:#678a36;--p3d:#36501c;--p4a:#5c82c4;--p4b:#385594;--p4d:#1b2d58;--p5a:#f08c58;--p5b:#cf5a2e;--p5d:#7c2c14;
+  --p6a:#eedcaa;--p6b:#c2aa77;--p6d:#76603a;--p7a:#d87688;--p7b:#a64560;--p7d:#5e2036;
+  --hatch:radial-gradient(#ffffff0f 0.9px,#0000 1.3px) 0 0/6px 6px,radial-gradient(#0000001f 0.9px,#0000 1.3px) 3px 3px/6px 6px;   /* grano de óleo: puntos, no tela */
+  --wob-a:19px 25px 16px 23px / 23px 16px 25px 19px;     /* paneles grandes */
+  --wob-b:13px 18px 12px 17px / 17px 12px 18px 13px;     /* tarjetas y botones */
+  --wob-c:9px 13px 8px 12px / 12px 8px 13px 9px;         /* fichas */
+  --wob-d:11px 8px 14px 9px / 9px 14px 8px 11px;
+  --cast:5px 7px 0 #150e0c;                              /* sombra de tinta desplazada */
+  --paper-grain:radial-gradient(#ffffff07 1px,transparent 1.4px) 0 0/7px 7px,repeating-linear-gradient(103deg,#0000 0 5px,#ffffff05 5px 6px,#0000 6px 11px);
+  --glow-warm:0 0 0 1px #d6bf8d3d;
+  --brass:#e0b04f;
+  --plate:inset 0 0 0 2px #e0b04f55,inset 0 3px 0 #e3cd9a40,inset 0 -4px 0 #0007,0 0 0 2px #e0b04f,0 0 0 5px #150e0c,7px 10px 0 5px #150e0ccc,0 26px 50px #000a;
+  /* remache de latón: se coloca en las cuatro esquinas de los paneles */
+  --rivet:radial-gradient(circle at 35% 30%,#f3dfa6 0 1.4px,#a98445 2.4px,#4a3417 3.6px,#0000 4.2px) no-repeat;
+  --rivets:var(--rivet) left 13px top 13px/9px 9px,var(--rivet) right 13px top 13px/9px 9px,var(--rivet) left 13px bottom 13px/9px 9px,var(--rivet) right 13px bottom 13px/9px 9px;
+}
+
+/* Paneles y ventanas: papel oscuro recortado a mano con filo de tinta y brillo cálido en el borde superior */
+.card{border-radius:var(--wob-a);background:var(--rivets),var(--paper-grain),var(--hatch),linear-gradient(165deg,#43283e,#2c1d33 58%,#35233a);
+  border:3px solid #150e0c;
+  /* placa de juego: filo de tinta, aro de latón, filo de tinta exterior y sombra desplazada */
+  box-shadow:var(--plate)}
+#menu .card{background:var(--rivets),var(--paper-grain),var(--hatch),linear-gradient(#3e2539ee,#2a1c31f4);border-color:#150e0c;box-shadow:var(--plate)}
+.meter{border-radius:var(--wob-b);box-shadow:inset 0 0 0 1.5px #e0b04f48,inset 0 2px 0 #e3cd9a26,inset 0 -3px 0 #0006,0 0 0 2px #150e0c,4px 7px 0 2px #150e0c}
+.path{border-radius:var(--wob-b);border-width:2.5px;box-shadow:inset 0 0 0 1.5px #e0b04f40,inset 0 -3px 0 #0005,3px 5px 0 #150e0c}
+.path:nth-child(2n){border-radius:var(--wob-d)}
+.path:nth-child(3n){border-radius:13px 11px 18px 12px / 14px 17px 11px 13px}
+.route-status,.rules,.breakdown,.stats div{border-radius:var(--wob-d)}
+.rules,.breakdown,.stats div{background:var(--paper-grain),#0b151d88;box-shadow:inset 0 2px 5px #0007,inset 0 0 0 1px #e3cd9a14}
+
+/* Botones: piezas de cartón pintadas; la sombra de tinta se «hunde» al pulsarlas */
+button{border-radius:var(--wob-b);border-width:2.5px;box-shadow:inset 0 0 0 1.5px #ffffff14,inset 0 2px 0 #ffffff26,inset 0 -4px 0 #0005,3px 5px 0 #150e0c}
+button:nth-of-type(2n){border-radius:var(--wob-d)}
+button.primary{background:var(--hatch),linear-gradient(175deg,#c2402a,#a63019 70%,#8f2713);box-shadow:3px 5px 0 #150e0c,inset 0 2px 0 #ffe6b84a,inset 0 -3px 0 #5e281c88}
+button:active,button.primary:active{transform:translate(2px,3px);box-shadow:1px 2px 0 #150e0c,inset 0 2px 0 #0003}
+.menubtn{border-radius:var(--wob-d)}
+
+/* Marco del tablero: madera tallada con veta, canto oscuro y relieve */
+.frame{border-radius:21px 26px 19px 24px / 25px 19px 26px 21px;
+  background:repeating-linear-gradient(91deg,#0000 0 6px,#00000012 6px 7px),repeating-linear-gradient(88deg,#0000 0 23px,#ffffff08 23px 25px),linear-gradient(155deg,#a2692f,#6e4219 55%,#8a5624);
+  border-width:3px;
+  box-shadow:inset 0 0 0 2px #e0b04f44,inset 0 3px 0 #e3cd9a55,inset 0 -4px 0 #0a0805aa,0 0 0 2px #e0b04f,0 0 0 5px #150e0c,6px 10px 0 5px #150e0ccc,0 22px 36px #0008}
+#board{border-radius:12px 9px 13px 10px / 10px 13px 9px 12px}
+
+/* Fichas: madera pintada con pincelada de luz, canto inferior grueso y esquinas desiguales (cada color, su irregularidad) */
+.face{border-radius:var(--wob-c);
+  box-shadow:0 5px 0 #150e0c,2px 8px 11px #0006,inset 0 -5px 0 var(--d),inset 0 2px 0 #fff4d655,inset 2px 0 0 #fff4d61f}
+.face::before{inset:3px 6px auto 4px;height:30%;border-radius:40% 55% 45% 60% / 100% 100% 0 0;background:linear-gradient(180deg,#fff4d650,#fff4d600);transform:rotate(-1.2deg)}
+.c1 .face,.c3 .face,.c5 .face,.c7 .face{border-radius:8px 12px 9px 13px / 13px 9px 12px 8px}
+.c2 .face,.c6 .face{border-radius:12px 8px 12px 9px / 9px 12px 8px 13px}
+.piece.red .face{border-radius:10px 14px 9px 13px / 14px 9px 13px 10px}
+.piece.drag .face{box-shadow:0 9px 0 #150e0c,4px 16px 18px #0007,inset 0 -4px 0 var(--d),inset 0 2px 0 #fff5d866,0 0 0 2px #f2cf7e88}
+
+/* Resultados y avisos en el mismo papel */
+.toast,.power-toast,.tip{border-radius:var(--wob-b)}
+
+/* Colores del resto de la interfaz con la misma paleta */
+body{background:#1a1528}
+body::before{background:radial-gradient(ellipse at 50% 52%,#1a12202e 0,#110c1ab0 100%),var(--scene) center/cover}
+button{background:var(--hatch),linear-gradient(180deg,#2c7585,#215666)}
+.meter,.path{background:var(--hatch),linear-gradient(170deg,#3e2539f0,#2a1c31f2)}
+.path{background:var(--hatch),#ffffff08}
+#board{background-color:#17323f}
+.face{background:var(--hatch),linear-gradient(165deg,var(--a),var(--b))}
+.piece.red{--a:#f0694a;--b:#c4381f;--d:#751a0e}
+.badge{background:#f2c45c;border:2px solid #150e0c;color:#3a2300}
+#menu .path{background:var(--hatch),linear-gradient(170deg,#4a2c44f0,#321f38f2)}#menu .path:hover{background:var(--hatch),linear-gradient(170deg,#5b3853f0,#3d2742f2)}
+.hero-selector{background:var(--rivets),var(--hatch),linear-gradient(150deg,#43283e,#2c1d33)!important;border:3px solid #150e0c!important;box-shadow:var(--plate)!important;border-radius:var(--wob-a)!important}
+.hero-choice{border-radius:var(--wob-b);border-width:3px;box-shadow:3px 5px 0 #150e0c}
+.hero-selector .hero-power,.hero-selector .hero-route-info{background:var(--hatch),linear-gradient(170deg,#4a2c44f0,#321f38f2)!important;border:2.5px solid #150e0c!important;border-radius:var(--wob-d)!important;box-shadow:inset 0 0 0 1.5px #e0b04f40,3px 5px 0 #150e0c}
+#journey{background:radial-gradient(ellipse at 50% 35%,var(--t1),transparent 65%),radial-gradient(ellipse at 50% 100%,var(--t2),transparent 60%),#1b1530}
+
+/* Tipografía: títulos con trazo de tinta y relieve dorado; botones y datos en sans redondeada con sombra de tinta */
+.logo,.card h2,.hero-selector h2,.pause-menu h2,.book-series,.book-leaf h2,.power-toast b,.power-sigil>b,.hero-choice-name,.mcap h2,.travel-heading,.pemo{font-family:var(--font-title)!important;font-weight:700;letter-spacing:.07em}
+.logo,.card h2,.hero-selector h2,.pause-menu h2,.mcap h2{text-transform:uppercase;color:#f6e6bd;text-shadow:0 2px 0 #150e0c,0 0 0 #150e0c,2px 3px 0 #150e0c,0 0 14px #e0b04f55}
+.logo{letter-spacing:.09em}
+button,.menubtn,.badge{font-family:var(--font-ui);letter-spacing:.025em}
+button{text-shadow:0 2px 0 #150e0c88}
+.card .tag,.hero-selector .tag,.pause-menu>.tag{font-family:var(--font-ui);color:#e0b04f}
+
+/* Pausa, mapa y avisos con la misma placa: papel ciruela, aro de oro, remaches, esquinas irregulares y sombra de tinta */
+#pause .pause-menu,.sheet,.askcard{border-radius:var(--wob-a);border:3px solid #150e0c;background:var(--rivets),var(--hatch),linear-gradient(165deg,#43283e,#2c1d33 58%,#35233a);box-shadow:var(--plate)}
+#pause .pause-menu{padding:28px 26px}
+.pause-actions button,.opt{border:2.5px solid #150e0c;border-radius:var(--wob-b);background:var(--hatch),linear-gradient(180deg,#2c7585,#215666);color:#fff5e0;box-shadow:inset 0 0 0 1.5px #ffffff14,inset 0 2px 0 #ffffff26,inset 0 -4px 0 #0005,3px 5px 0 #150e0c;font-family:var(--font-ui);font-weight:700}
+.pause-actions button:nth-child(2n){border-radius:var(--wob-d)}
+.pause-actions button:hover{background:var(--hatch),linear-gradient(180deg,#348393,#276172);border-color:#150e0c}
+.pause-actions button:active{transform:translate(2px,3px);box-shadow:1px 2px 0 #150e0c}
+.pause-actions button.primary{background:var(--hatch),linear-gradient(175deg,#c2402a,#a63019 70%,#8f2713);border-color:#150e0c;color:#fff5e0}
+.pause-actions button.primary:hover{background:var(--hatch),linear-gradient(175deg,#cc4a32,#b03a21 70%,#9a2e18)}
+.pause-actions .pause-end{background:var(--hatch),linear-gradient(180deg,#5a3a4f,#40283d);color:#f0cdbf;border-color:#150e0c}
+.pstat div{border-radius:var(--wob-d);background:var(--hatch),#150e0c66;box-shadow:inset 0 2px 5px #0007,inset 0 0 0 1px #e0b04f26}
+.map-close{border:2.5px solid #150e0c;border-radius:var(--wob-b);background:var(--hatch),linear-gradient(180deg,#2c7585,#215666);color:#fff5e0;box-shadow:inset 0 2px 0 #ffffff26,inset 0 -4px 0 #0005,3px 5px 0 #150e0c;font-family:var(--font-ui);font-weight:700}
+#journey[aria-modal=true]{background:radial-gradient(ellipse at 50% 30%,#3a2f58,transparent 70%),#1b1530}
+.mcap h2{font-family:var(--font-title)!important}
+#upd{border:3px solid #150e0c;border-radius:var(--wob-b);background:var(--hatch),linear-gradient(150deg,#4a2c44f2,#2c1d33f2);box-shadow:0 0 0 2px #e0b04f,0 0 0 4px #150e0c,5px 8px 0 4px #150e0ccc}
+
+/* ---------- Premio de nivel: placa de juego, puntos pintados en oro y, si es perfecto, cinta sellada con estrellas ---------- */
+.res-card{border-radius:var(--wob-a);border:3px solid #150e0c;min-width:min(72vw,250px);padding:18px 32px 16px;
+  background:var(--rivets),var(--hatch),linear-gradient(165deg,#4a2c44,#2c1d33 62%);box-shadow:var(--plate)}
+.res-card::before{inset:-60%;background:repeating-conic-gradient(from 0deg,#f2c45c1c 0 8deg,#f2c45c00 8deg 24deg);animation:res-spin 14s linear infinite}
+#result.perfect .res-card::before{background:repeating-conic-gradient(from 0deg,#ffe6a03a 0 9deg,#f2c45c00 9deg 22deg);animation-duration:9s}
+.res-prize b{font-family:var(--font-title);font-weight:700;-webkit-text-stroke:2px #150e0c;filter:drop-shadow(0 4px 0 #150e0c) drop-shadow(0 0 14px #f2c45c66);animation:res-bump .5s cubic-bezier(.2,1.8,.4,1) .1s both}
+@keyframes res-bump{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.res-chip{display:block;margin-top:6px;padding:3px 14px;border-radius:var(--wob-d);border:2px solid #150e0c;background:linear-gradient(180deg,#2c7585,#215666);font:700 11px/1.3 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:#fff5e0;text-shadow:0 1px 0 #150e0c;box-shadow:2px 3px 0 #150e0c;animation:res-bump .4s ease-out .3s both}
+#resTitle{font-family:var(--font-title);font-size:15px;letter-spacing:.22em;padding:7px 20px 7px calc(20px + .22em);margin:2px 0 8px;color:#fff5e0;
+  border:3px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(175deg,#c2402a,#9e2b15);box-shadow:inset 0 0 0 1.5px #f2c45c,3px 5px 0 #150e0c;text-shadow:0 2px 0 #150e0c;
+  transform:rotate(-3deg);animation:res-stamp .5s cubic-bezier(.2,1.8,.4,1) .12s both}
+@keyframes res-stamp{0%{transform:scale(2.8) rotate(10deg);opacity:0}60%{transform:scale(.92) rotate(-4deg);opacity:1}100%{transform:scale(1) rotate(-3deg)}}
+#result.perfect .res-chip{background:linear-gradient(180deg,#f2c45c,#c98a25);color:#3a2300;text-shadow:none}
+#result.perfect .res-card::after{content:'★ ★ ★';order:9;margin-top:6px;font-size:22px;letter-spacing:8px;color:#f2c45c;text-shadow:0 2px 0 #150e0c,0 0 12px #f2c45c;animation:res-stars .7s ease-out .35s both}
+@keyframes res-stars{from{opacity:0;letter-spacing:22px;transform:scale(.5)}to{opacity:1;letter-spacing:8px;transform:none}}
+#result.perfect .res-card{animation:res-pop .38s cubic-bezier(.2,1.5,.4,1) both,res-shake .35s ease-out .12s}
+@keyframes res-shake{20%{translate:calc(-50% - 5px) calc(-50% + 2px)}50%{translate:calc(-50% + 4px) calc(-50% - 2px)}80%{translate:calc(-50% - 2px) -50%}}
+@media(prefers-reduced-motion:reduce){.res-prize b,.res-chip,#resTitle,#result.perfect .res-card,#result.perfect .res-card::after{animation:none}}
+
+/* ---------- Tienda de Don Dublón: etiquetas de precio de pergamino cosidas, rótulo de madera con clavos y todo legible ---------- */
+.shop-sign{border:3px solid #150e0c;border-radius:var(--wob-b);color:#fff0c8;text-shadow:0 2px 0 #150e0c;font-family:var(--font-title)!important;letter-spacing:.07em;text-transform:uppercase;
+  background:radial-gradient(circle at 9px 50%,#f3dfa6 0 1.6px,#a98445 2.6px,#3a2a12 3.8px,#0000 4.4px) no-repeat,radial-gradient(circle at calc(100% - 9px) 50%,#f3dfa6 0 1.6px,#a98445 2.6px,#3a2a12 3.8px,#0000 4.4px) no-repeat,
+  repeating-linear-gradient(91deg,#0000 0 7px,#0000001a 7px 8px),linear-gradient(#8a5a28,#5e3a18);
+  padding-left:calc(2.6*var(--u))!important;padding-right:calc(2.6*var(--u))!important;box-shadow:inset 0 2px 0 #ffd9a255,inset 0 -3px 0 #0006,0 0 0 2px #e0b04f,0 0 0 4.5px #150e0c,4px 7px 0 4.5px #150e0ccc}
+#shop[data-hero=lia] .shop-sign,#shop[data-hero=van] .shop-sign{border-color:#150e0c}
+.shop-item{border:2.5px solid #150e0c;border-radius:var(--wob-b);position:relative;color:#2a1c10;
+  background:repeating-linear-gradient(97deg,#0000 0 9px,#8a6a3a12 9px 10px),linear-gradient(#f7e9c8,#e6d3a2);
+  box-shadow:inset 0 0 0 1.5px #b8975a99,inset 0 -3px 0 #b8975a88,3px 5px 0 #150e0c,0 12px 18px #0007}
+.shop-item:nth-child(2n){border-radius:var(--wob-d)}
+.shop-item::before{content:'';position:absolute;inset:3px;border:1.5px dashed #8a6a3a77;border-radius:inherit;pointer-events:none}
+.shop-item .ico{border:2px solid #150e0c;box-shadow:inset 0 0 0 2px #fff3b088,2px 3px 0 #150e0c}
+.shop-item b{font-family:var(--font-book);font-weight:800;color:#2a1c10}
+.shop-item small{font-size:max(11px,calc(1.35*var(--u)));font-weight:700;color:#4a3720}
+.shop-item .price{color:#7a2a12;font-family:var(--font-title);font-weight:700;letter-spacing:.03em}
+.shop-item:hover:not(.off){transform:translate(-1px,-2px);filter:none;background:repeating-linear-gradient(97deg,#0000 0 9px,#8a6a3a12 9px 10px),linear-gradient(#fff3d2,#f0dfae)}
+.shop-item:active:not(.off){transform:translate(2px,3px);box-shadow:inset 0 0 0 1.5px #b8975a99,1px 2px 0 #150e0c}
+/* sin saldo: el mismo pergamino, apagado pero con el texto a pleno contraste (nunca translúcido) */
+.shop-item.off{filter:none;opacity:1;background:repeating-linear-gradient(97deg,#0000 0 9px,#6a5a3a14 9px 10px),linear-gradient(#ddd0b0,#c4b58f)}
+.shop-item.off .ico{filter:grayscale(.85) brightness(.95)}
+.shop-item.off .price{color:#6a2412}
+.shop-item.off .price::before{filter:grayscale(1) brightness(.9)}
+.shop-item.off small{color:#5a1f12}
+.shop-wallet{border:3px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(#8a5a28,#5e3a18);box-shadow:inset 0 0 0 1.5px #e0b04f88,3px 5px 0 #150e0c}
+.shop-wallet small{color:#ffe7a8}.shop-wallet b{color:#fff0c0;text-shadow:0 2px 0 #150e0c;font-family:var(--font-title);letter-spacing:.04em}
+.shop-bubble{border:2.5px solid #150e0c;border-radius:var(--wob-b);background:repeating-linear-gradient(97deg,#0000 0 9px,#8a6a3a12 9px 10px),linear-gradient(#f9edcf,#ead8aa);color:#2a1c10;font-weight:700;box-shadow:3px 5px 0 #150e0c,0 10px 16px #0007}
+.shop-bubble::after{border-left-color:#150e0c}
+.shop-discount{background:var(--hatch),linear-gradient(175deg,#c2402a,#9e2b15)!important;color:#fff5e0!important;border:2.5px solid #150e0c!important;border-radius:var(--wob-d)!important;font-family:var(--font-ui);font-weight:800;box-shadow:inset 0 0 0 1.5px #f2c45c,3px 4px 0 #150e0c!important}
+
+/* ---------- Elegir camino: dos cartas de misión (calma frente a gloria) sobre la ciudad ---------- */
+.travel-ask{display:table;margin:0 auto 14px!important;padding:7px 22px;border:3px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(175deg,#c2402a,#9e2b15);
+  font:700 13px/1 var(--font-title);letter-spacing:.26em;color:#fff5e0;text-shadow:0 2px 0 #150e0c;box-shadow:inset 0 0 0 1.5px #f2c45c,3px 5px 0 #150e0c;transform:rotate(-1.5deg)}
+.travel-heading{font-family:var(--font-title)!important;text-transform:uppercase;letter-spacing:.06em;color:#f6e6bd;text-shadow:0 3px 0 #150e0c,2px 4px 0 #150e0c,0 0 26px #e0b04f55}
+.travel-inscription{padding:10px 14px;border-left:4px solid #e0b04f;border-radius:0 var(--wob-d) var(--wob-d) 0;background:linear-gradient(90deg,#150e0ccc,#150e0c66);max-width:32ch}
+#travel .route-options{gap:16px}
+#travel .route-option{position:relative;min-height:112px;padding:14px 16px 14px 14px;border:3px solid #150e0c;border-radius:var(--wob-a);overflow:visible;color:#fff5e0;
+  background:var(--hatch),linear-gradient(165deg,#2e6a77,#1c3f4f);
+  box-shadow:inset 0 0 0 2px #58b3b888,inset 0 3px 0 #ffffff26,inset 0 -4px 0 #0006,0 0 0 2px #58b3b8,0 0 0 4.5px #150e0c,5px 8px 0 4.5px #150e0ccc}
+#travel .route-option.brave{border-radius:var(--wob-b);background:var(--hatch),linear-gradient(165deg,#a8351f,#5a1d16 80%);
+  box-shadow:inset 0 0 0 2px #f2c45caa,inset 0 3px 0 #ffffff2e,inset 0 -4px 0 #0006,0 0 0 2px #f2c45c,0 0 0 4.5px #150e0c,5px 8px 0 4.5px #150e0ccc,0 0 30px #ee6a4666;animation:ember 2.4s ease-in-out infinite}
+@keyframes ember{50%{box-shadow:inset 0 0 0 2px #f2c45cdd,inset 0 3px 0 #ffffff2e,inset 0 -4px 0 #0006,0 0 0 2px #ffdb8f,0 0 0 4.5px #150e0c,5px 8px 0 4.5px #150e0ccc,0 0 46px #ee6a4699}}
+#travel .route-option::after{display:none}
+#travel .route-option .choice-icon{width:58px;height:58px;color:#10303a;border:3px solid #150e0c;background:radial-gradient(circle at 35% 28%,#d4f5ec,#58b3b8 62%,#2c7585);box-shadow:3px 4px 0 #150e0c,inset 0 0 0 2px #ffffff55}
+#travel .route-option.brave .choice-icon{color:#4a1608;background:radial-gradient(circle at 35% 28%,#fff0bf,#f2c45c 60%,#d0852a);box-shadow:3px 4px 0 #150e0c,inset 0 0 0 2px #ffffff66,0 0 18px #f2c45ca0}
+#travel .route-option strong{font:700 17px/1.15 var(--font-title);letter-spacing:.04em;text-transform:uppercase;color:#fff5e0;text-shadow:0 2px 0 #150e0c}
+#travel .route-option small{font:800 11px/1.2 var(--font-ui);letter-spacing:.1em;color:#c9ece7;white-space:normal}
+#travel .route-option.brave small{color:#ffe7a8}
+#travel .route-perk{display:inline-block;margin-top:7px;padding:4px 10px;border:2px solid #150e0c;border-radius:var(--wob-d);background:linear-gradient(180deg,#f2c45c,#d39528);font:800 11px/1.25 var(--font-ui);letter-spacing:.02em;color:#2e1a00;text-shadow:none;box-shadow:2px 3px 0 #150e0c}
+#travel .route-option:hover,#travel .route-option:focus-visible{transform:translate(-1px,-3px);filter:brightness(1.08)}
+#travel .route-option:active{transform:translate(2px,3px)}
+@media(prefers-reduced-motion:reduce){#travel .route-option.brave{animation:none}}
+.shop-item,.shop-item *{text-shadow:none}
+#travel .route-option .route-perk{color:#2e1a00!important;background:linear-gradient(180deg,#f7d273,#d39528)!important;text-shadow:none!important}
+
+/* ---------- Legibilidad: nada de etiquetas a media opacidad; texto claro sobre fondo oscuro, y bordes de tinta cuando va sobre ilustración ---------- */
+.pscore small,.pstat small,.stats small,.sc small,.card .tag,.mrow,.mrow span,.pchip,.ver,.pach,.modeinfo{opacity:1!important;color:#e6dcf2}
+.mrow span{color:#efe8f7}
+.cont small{opacity:1!important;color:#fff5e3}
+.pemo{color:#150e0c!important;text-shadow:0 1px 0 #ffffff77;font-weight:700}
+.exit-arrow{color:#ffe08a;-webkit-text-stroke:1.4px #150e0c;paint-order:stroke fill}
+button:disabled{opacity:.62}
+#bPower:disabled{opacity:1;background:var(--hatch),linear-gradient(180deg,#3a4656,#2a3340)}
+#bPower:disabled b{color:#fff5e3}#bPower:disabled small{color:#d8e6f5}
+#bPower b{color:#fff5e3}#bPower small{color:#d8e6f5}#bPower[data-hero=van] small{color:#eadcf7}
+/* texto suelto sobre ilustración: contorno de tinta de cuatro lados para que se lea con cualquier fondo */
+.top .sc b,.sc.max b,.mtag,.mcap p,.travel-ask,.travel-inscription,.hint-text,#msg,.msg{text-shadow:1px 1px 0 #150e0c,-1px 1px 0 #150e0c,1px -1px 0 #150e0c,-1px -1px 0 #150e0c,0 2px 5px #150e0ccc}
+
+/* Minijuegos: la misma placa y los mismos botones que el resto */
+#bonus{background:var(--hatch),linear-gradient(#1d1830f2,#150f24f8)}
+#bonus .bonuscard{border:3px solid #150e0c;border-radius:var(--wob-a);background:var(--rivets),var(--hatch),linear-gradient(165deg,#43283e,#2c1d33 58%,#35233a);box-shadow:var(--plate)}
+#bonus[data-version="2"] #bAction,#bonus[data-version="2"] #bGo{background:var(--hatch),linear-gradient(175deg,#c2402a,#a63019 70%,#8f2713);border:2.5px solid #150e0c;border-radius:var(--wob-b);color:#fff5e0;font-weight:800;text-shadow:0 2px 0 #150e0c88;box-shadow:inset 0 2px 0 #ffffff33,inset 0 -3px 0 #0005,3px 5px 0 #150e0c}
+
+/* ---------- Pantalla de inicio: título de videojuego (escudo, logotipo con relieve y selector de niveles) ---------- */
+#menu{flex-direction:column;justify-content:space-between;align-items:center;gap:10px;padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));
+  background:radial-gradient(ellipse at 50% 38%,#15101a00 30%,#15101acc 100%),linear-gradient(#15101a44,#15101a99),url('/backgrounds/cover.webp') 40% center/cover}
+.title-lockup{display:flex;flex-direction:column;align-items:center;gap:2px;flex:none;text-align:center;filter:drop-shadow(0 6px 14px #0009)}
+.title-crest{width:54px;height:61px;overflow:visible;filter:drop-shadow(0 3px 0 #150e0c)}
+.crest-shield{fill:#c2402a;stroke:#150e0c;stroke-width:3.5;stroke-linejoin:round}
+.crest-inner{fill:#7a1f12;stroke:#f2c45c;stroke-width:2.2;stroke-linejoin:round}
+.crest-key{fill:none;stroke:#fff0c8;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+#menu .logo{display:block;text-align:center;margin:2px 0 0;font:700 clamp(30px,10vw,46px)/1 var(--font-title)!important;letter-spacing:.07em;white-space:nowrap;color:#ffe9b0;text-transform:uppercase;
+  -webkit-text-stroke:1px #150e0c;
+  background:linear-gradient(180deg,#fff3c9,#f2c45c 60%,#d39528);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 0 #150e0c)}
+#menu .logo i{display:inline-block;margin:0 .18em;font-style:normal;color:#ee6a46;-webkit-text-fill-color:#ee6a46;font-size:.78em}
+.title-sub{margin:4px 0 0;padding:4px 16px;border:2.5px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(180deg,#43283e,#2c1d33);box-shadow:inset 0 0 0 1.5px #e0b04f88,3px 4px 0 #150e0c;
+  font:700 11px/1.3 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:#f6e6bd}
+#menu .card{flex:none;max-width:420px;width:100%;max-height:calc(100dvh - 190px);margin-top:auto;padding:20px 16px 16px;
+  background:var(--rivets),var(--hatch),linear-gradient(165deg,#43283eef,#251a2cf5 60%)}
+#menu .menu-pick{display:table;margin:0 auto 14px;padding:5px 18px;border:3px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(175deg,#c2402a,#9e2b15);
+  font:700 12px/1 var(--font-title);letter-spacing:.24em;color:#fff5e0;text-shadow:0 2px 0 #150e0c;box-shadow:inset 0 0 0 1.5px #f2c45c,3px 4px 0 #150e0c;opacity:1}
+/* niveles como placas de misión con medalla */
+#menu .path{position:relative;padding:12px 14px 11px 12px;border-left:3px solid #150e0c;background:var(--hatch),linear-gradient(170deg,#4a2c44f2,#2f1f36f4)}
+#menu .path::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:6px;border-radius:0 4px 4px 0;background:var(--pc);box-shadow:0 0 12px var(--pc)}
+#menu .pemo{width:52px;height:52px;border-radius:50%!important;border:3px solid #150e0c;font:700 22px/1 var(--font-title);filter:none;
+  background:radial-gradient(circle at 35% 28%,#fffbe8,var(--pc) 60%,#0006);box-shadow:inset 0 0 0 2px #ffffff66,3px 4px 0 #150e0c,0 0 14px var(--pc)}
+#menu .pinfo b{font:700 20px/1.1 var(--font-title);letter-spacing:.05em;text-transform:uppercase;color:#fff0c8;text-shadow:0 2px 0 #150e0c}
+#menu .pinfo span,#menu .pinfo small{opacity:1;color:#ecdff0}
+#menu .pgo{font-size:24px;text-shadow:0 2px 0 #150e0c}
+#menu .pbar{height:9px;border:2px solid #150e0c;background:#150e0c99}
+#menu .cont{min-height:62px;font-size:18px;letter-spacing:.04em;border-radius:var(--wob-a)!important;box-shadow:inset 0 2px 0 #ffffff44,inset 0 -4px 0 #0005,4px 6px 0 #150e0c,0 0 26px #ee6a4688}
+#menu .cont small{font-size:12px}
+@media(max-height:700px){.title-crest{display:none}.title-sub{display:none}#menu .card{max-height:calc(100dvh - 70px)}}
+@media(min-aspect-ratio:13/10){#menu{justify-content:center}.title-crest{width:40px;height:46px}#menu .card{margin-top:0;max-height:calc(100dvh - 150px)}}
+#menu .pach{padding-left:6px}#menu .card{padding-top:22px}
+#menu .logo{text-shadow:none!important}
+
+/* ---------- Ajuste final según las ilustraciones: cada ciudad tiñe el tablero y el marco con su propio color ---------- */
+#board{background-color:color-mix(in srgb,#17323f 76%,var(--t1,#17323f))}
+.frame{box-shadow:inset 0 0 0 2px #e0b04f44,inset 0 3px 0 #e3cd9a55,inset 0 -4px 0 #0a0805aa,0 0 0 2px #e0b04f,0 0 0 5px #150e0c,6px 10px 0 5px #150e0ccc,0 22px 36px #0008,0 0 34px color-mix(in srgb,var(--cc,#e0b04f) 38%,transparent)}
+.top .sc b{-webkit-text-stroke:0}

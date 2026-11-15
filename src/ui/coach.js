@@ -13,7 +13,7 @@ import { icon } from './icons.js';
  */
 
 /** Mecánicas presentes en el tablero actual. */
-export function mechanicsPresent(G) {
+function mechanicsPresent(G) {
   const out = [];
   if ((G.walls || []).length) out.push('wall');
   if (G.pieces.some((p) => p.kind === 'gate')) out.push('gate');
@@ -23,7 +23,7 @@ export function mechanicsPresent(G) {
 }
 
 /** Leyenda de piezas especiales del nivel actual. */
-export function renderLegend() {
+function renderLegend() {
   const el = $('legend');
   const G = S.G;
   const chips = G ? mechanicsPresent(G).map((m) => `<span class="chip chip-${m}"><i>${icon(MECHANICS[m].icon)}</i>${MECHANICS[m].chip}</span>`) : [];

@@ -1,4 +1,4 @@
-import { tone, vib } from '../audio/sound.js';
+import { sfx, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { beginPower } from '../game/powers.js';
 import { saveRun } from '../game/session.js';
@@ -8,6 +8,15 @@ import { icon } from './icons.js';
 import { processSealMove } from './seals.js';
 import { AWAKENING_MS, prepareAwakening } from './power-art.js';
 import { burst } from './fx.js';
+
+/** Chispas del color del hechizo sobre la pieza que el poder mueve, y una onda que cruza el tablero. */
+function pulse(piece, colors) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !piece) return;
+  const r = piece.getBoundingClientRect();
+  burst(r.left + r.width / 2, r.top + r.height / 2, 14, colors, 4);
+  const board = $('board');
+  board.classList.remove('wave'); void board.offsetWidth; board.classList.add('wave');
+}
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -35,11 +44,9 @@ export async function activatePower() {
   board.classList.add('hero-power', action.kind);
   board.setAttribute('aria-busy', 'true');
   // Sonido de poder: barrido grave + acorde brillante (hacia abajo al rebobinar, hacia arriba al trazar el destino).
-  const up = action.kind !== 'rewind', root = up ? 330 : 660;
-  tone(root, .7, 'sawtooth', .035, 0, up ? 520 : -330);
-  tone(root * 1.5, .6, 'triangle', .05, .08, up ? 600 : -400);
-  tone(root * 2, .5, 'sine', .05, .22, up ? 700 : -450);
-  tone(root * 3, .35, 'sine', .035, .42, 0);
+  const up = action.kind !== 'rewind';
+  const spell = h.id === 'van' ? ['#d1b2ec', '#ecd7ff', '#fff'] : ['#a5c8ed', '#d8eaff', '#fff'], spellColors = spell;
+  sfx.power(up);
   vib([20, 30, 35]);
   try {
     try {
@@ -53,7 +60,6 @@ export async function activatePower() {
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     await wait(reduced ? 100 : AWAKENING_MS);
     // La carta sale disparada hacia el tablero y suelta chispas: el poder «viaja» hacia donde actúa.
-    const spell = h.id === 'van' ? ['#d1b2ec', '#ecd7ff', '#fff'] : ['#a5c8ed', '#d8eaff', '#fff'];
     const br = board.getBoundingClientRect();
     if (!reduced) {
       fx.classList.add('launch');
@@ -77,7 +83,8 @@ export async function activatePower() {
       piece?.classList.add('power-piece');
       $('powerStep').textContent = `${action.kind === 'rewind' ? 'Pasado' : 'Destino'} · ${n + 1}/${action.steps.length}`;
       layout(); updateHud(); saveRun();
-      tone(action.kind === 'rewind' ? 740 - n * 65 : 440 + n * 110, .18, 'sine', .05);
+      sfx.powerStep(n, up);
+      pulse(piece, spellColors);
       await wait(reduced ? 35 : 360);
       piece?.classList.remove('power-piece');
       if (action.kind === 'destiny') {
@@ -88,6 +95,7 @@ export async function activatePower() {
     if (S.G === G && S.run === run && !G.done) {
       $('powerStep').textContent = action.kind === 'rewind' ? 'El tiempo vuelve a tus manos' : 'El destino está trazado';
       $('msg').textContent = `${name} usado. Se renueva en el próximo tablero.`;
+      sfx.powerEnd(up);
       await wait(reduced ? 40 : 280);
     }
   } finally {

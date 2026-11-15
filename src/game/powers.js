@@ -1,29 +1,31 @@
 import { encode, N } from '../engine/board.js';
+import { byPath } from '../engine/difficulty.js';
+import { HEROIC_BENEFITS, isHeroic, juthHeroic } from './routes.js';
 import { analyze, expand } from '../engine/solver.js';
 
 /** Jean rebobina más movimientos cuanto más difícil es el camino (Normal 3, Difícil 6, Experto 8): en Normal basta con poco y en los caminos duros hace falta más. */
-export const REWIND_BY_PATH = { 1: 3, 50: 6, 75: 8 };
-export const rewindSteps = (start = 1) => REWIND_BY_PATH[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+const REWIND_BY_PATH = { 1: 3, 50: 6, 75: 8 };
+export const rewindSteps = (start = 1) => byPath(REWIND_BY_PATH, start);
 export const DESTINY_STEPS = 3;
 export const JUTH_MIN_REMAINING = 2; // usable solo si quedan más de 2 pasos; nunca ejecuta el último movimiento (siempre deja uno al jugador)
 /** Parte de los tableros en los que los poderes de Jean y Juth están listos: Normal todos, Difícil ~85 %, Experto ~70 % (repartidos de forma pareja). */
 export const POWER_READY_SHARE = { 1: 1, 50: .85, 75: .7 };
 export const powerReady = (level = 1, start = 1) => {
-  const k = POWER_READY_SHARE[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+  const k = byPath(POWER_READY_SHARE, start);
   return Math.floor(level * k + 1e-9) > Math.floor((level - 1) * k + 1e-9);
 };
 
 const plans = new WeakMap();
 /** One graph analysis per position, shared by the button and activation; respects all special pieces. */
-export function destinyPlan(G) {
-  const key = encode(G.pos), cached = plans.get(G);
+export function destinyPlan(G, maxSteps = DESTINY_STEPS) {
+  const key = `${encode(G.pos)}/${maxSteps}`, cached = plans.get(G);
   if (cached?.key === key) return cached.plan;
   const an = analyze(G.pieces, G.pos, 600000, G.walls || []);
   let plan = null;
-  const left = an?.dist.get(key);
+  const left = an?.dist.get(encode(G.pos));
   if (left > JUTH_MIN_REMAINING) {
-    let current = key;
-    const count = Math.min(DESTINY_STEPS, left - 1);
+    let current = encode(G.pos);
+    const count = Math.min(maxSteps, left - 1);
     const pos = new Array(G.pieces.length).fill(0), grid = new Int8Array(N * N), steps = [];
     for (let n = 0; n < count; n++) {
       const distance = an.dist.get(current);
@@ -50,12 +52,12 @@ export function powerState(run, G) {
   if (!run || !G || G.done) return { ok: false, reason: 'Sin tablero' };
   if (run.hero === 'lia') return { ok: false, reason: 'Reserva automática' };
   if (powerUsed(run, G)) return { ok: false, reason: 'Usado · próximo tablero' };
-  if (run.hero !== 'lia' && !powerReady(G.n, run.start)) return { ok: false, reason: 'Descansa este tablero' };
+  if (!powerReady(G.n, run.start)) return { ok: false, reason: 'Descansa este tablero' };
   if (run.hero === 'jean') return G.hist.length
-    ? { ok: true, count: Math.min(rewindSteps(run.start), G.hist.length), reason: '1 uso por tablero' }
+    ? { ok: true, count: Math.min(rewindSteps(run.start) + (isHeroic(run) ? HEROIC_BENEFITS.jeanRewind : 0), G.hist.length), reason: '1 uso por tablero' }
     : { ok: false, reason: 'Mueve una pieza primero' };
   if (run.hero !== 'van') return { ok: false, reason: 'Sin poder' };
-  const plan = destinyPlan(G);
+  const plan = destinyPlan(G, juthHeroic(run) ? HEROIC_BENEFITS.juthDestiny : DESTINY_STEPS);
   if (plan && G.limit - G.moves < plan.steps.length) return { ok: false, reason: `Necesitas ${plan.steps.length} turnos` };
   return plan ? { ok: true, plan, reason: `${plan.steps.length} movimientos · 1 uso` }
     : { ok: false, reason: 'Requiere más de 2 pasos hasta la salida' };

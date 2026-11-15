@@ -1,6 +1,6 @@
 /** Niveles por camino y nivel de dificultad máximo. */
 export const MAX_LEVEL = 100;
-export const MAX_RATING = 100;
+const MAX_RATING = 100;
 
 /**
  * Puntos de control nivel → dificultad (1-100) de cada camino (entre ellos se interpola linealmente).
@@ -9,15 +9,20 @@ export const MAX_RATING = 100;
  *   Difícil : empieza donde Normal ya exige pensar (~11 mov.) y sube mucho más rápido: máximo al llegar al nivel 50.
  *   Experto : empieza en ~19 movimientos y alcanza el máximo (37) en el nivel 38; el resto aprieta el límite de turnos.
  */
-export const PATH_CURVES = {
+const PATH_CURVES = {
   1: [[1, 1], [20, 30], [45, 55], [70, 78], [100, 100]],
   50: [[1, 27], [25, 60], [50, 100], [100, 100]],
   75: [[1, 44], [20, 74], [38, 100], [100, 100]],
 };
 
+/** Camino al que pertenece un valor de inicio: 1 (Normal), 50 (Difícil) o 75 (Experto). */
+export const pathKey = (start = 1) => (start >= 75 ? 75 : start >= 50 ? 50 : 1);
+/** Valor de una tabla indexada por camino. */
+export const byPath = (table, start) => table[pathKey(start)];
+
 /** Dificultad (1-100) del nivel `level` en el camino `start` (1, 50 o 75). */
 export function rateAt(start, level) {
-  const knots = PATH_CURVES[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+  const knots = byPath(PATH_CURVES, start);
   const l = Math.max(1, Math.min(MAX_LEVEL, level));
   for (let i = 1; i < knots.length; i++) {
     const [l1, r1] = knots[i];
@@ -72,15 +77,15 @@ export const minReach = (rating) => curve(rating).target - (rating > 85 ? 3 : ra
 export const WINDOW = 3;
 
 /** Pistas iniciales según la dificultad del camino (Experto empieza más justo). */
-export const startHintsFor = (start = 1) => (start >= 75 ? 2 : 3);
+export const startHintsFor = (start = 1) => (pathKey(start) === 75 ? 2 : 3);
 
 /**
  * Factor de límite de movimientos: empieza holgado y se aprieta hasta el nivel 100, así la dificultad se siente subir.
  *   Normal ×2 → ×1,3 · Difícil ×1,85 → ×1,06 · Experto ×1,7 → ×1,04 (con el mínimo de «mínimo + 2» movimientos)   (interpolación lineal entre el nivel 1 y el 100)
  */
-export const LIMIT_FACTORS = { 1: [2, 1.3], 50: [1.85, 1.06], 75: [1.7, 1.04] };
-export const limitFactor = (start = 1, level = 1) => {
-  const [from, to] = LIMIT_FACTORS[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+const LIMIT_FACTORS = { 1: [2, 1.3], 50: [1.85, 1.06], 75: [1.7, 1.04] };
+const limitFactor = (start = 1, level = 1) => {
+  const [from, to] = byPath(LIMIT_FACTORS, start);
   const t = Math.max(0, Math.min(1, (level - 1) / (MAX_LEVEL - 1)));
   return from + (to - from) * t;
 };
@@ -89,8 +94,8 @@ export const limitFactor = (start = 1, level = 1) => {
  * Ruta aventurera: el tablero pide más movimientos (+BRAVE_SHARE del mínimo, como poco +1) y el límite es más estricto
  * (el factor baja BRAVE_LIMIT_CUT). A cambio da +10 % de puntos. Calibrado con `npm run simulate` (sección Rutas).
  */
-export const BRAVE_SHARE = 0.1;
-export const BRAVE_LIMIT_CUT = 0.04;
+const BRAVE_SHARE = 0.1;
+const BRAVE_LIMIT_CUT = 0.04;
 export const braveExtra = (opt) => Math.max(1, Math.round(opt * BRAVE_SHARE));
 
 /** Límite de movimientos permitido para completar un tablero de mínimo `opt` en ese camino y nivel (nivel 1 si no se indica). */

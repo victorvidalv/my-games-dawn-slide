@@ -8,7 +8,7 @@ export function burst(x,y,n=40,cols=['#ffcf6b','#ff6a6a','#43e0c1','#6cb6ff','#b
     parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,g:.22,life:60+Math.random()*40,max:100,c:cols[i%cols.length],r:2+Math.random()*4,rot:Math.random()*6,vr:(Math.random()-.5)*.4})}
   if(!raf) raf=requestAnimationFrame(tick);
 }
-export function tick(){
+function tick(){
   cx.clearRect(0,0,innerWidth,innerHeight);
   parts=parts.filter(p=>p.life>0);
   for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=.99;p.life--;p.rot+=p.vr;

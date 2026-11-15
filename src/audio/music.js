@@ -1,4 +1,4 @@
-import { AC, audioPageHidden, clearAudioRecoveryHint, ctx, muted } from './sound.js';
+import { AC, audioPageHidden, clearAudioRecoveryHint, ctx, muted, setSfxKey } from './sound.js';
 import { zoneIdx } from '../data/zones.js';
 import { HEROES_THEME, LAYERS_PER_CITY, MENU_THEME, SCALES, ZONE_THEMES, chordMidi, entryAt, layerOfLevel, layersFor } from './themes.js';
 
@@ -210,7 +210,7 @@ export const Music=(()=>{
   /** Cambia de tema entrando al inicio de un compás. */
   function useTheme(nt){
     if(nt!==theme&&playing)step=Math.ceil(step/16)*16;
-    theme=nt;baseBpm=nt.bpm;if(!playing)tempoNow=baseBpm;
+    theme=nt;setSfxKey(nt);baseBpm=nt.bpm;if(!playing)tempoNow=baseBpm;
   }
   return {
     start(){if(muted)return;init();if(playing){if(!timer)armSequencer();bus.gain.setTargetAtTime(vol(),AC.currentTime,.3);return}tempoNow=targetBpm();playing=true;step=0;armSequencer()},
@@ -222,7 +222,7 @@ export const Music=(()=>{
     /** Tema de la ciudad del nivel `n` y la capa que le toca (1 = solo lo básico … 10 = todo). */
     setLevel(n){useTheme(THEMES[zoneIdx(n)]);layerNext=layerOfLevel(n);if(!playing)layerNow=layerNext},
     /** Toca un tema concreto desde el principio (lo usa melodies.html). */
-    playTheme(th,layer=LAYERS_PER_CITY){duckLv=1;muffled=false;theme=th;baseBpm=th.bpm;tempoNow=th.bpm;step=0;layerNow=layerNext=layer;if(playing){playing=false;clearInterval(timer);timer=0}this.start()},
+    playTheme(th,layer=LAYERS_PER_CITY){duckLv=1;muffled=false;theme=th;setSfxKey(th);baseBpm=th.bpm;tempoNow=th.bpm;step=0;layerNow=layerNext=layer;if(playing){playing=false;clearInterval(timer);timer=0}this.start()},
     /** Música fuera de partida: 'menu' (menú principal) o 'heroes' (elección de héroe). Arranca si hace falta. */
     scene(name){
       useTheme(name==='heroes'?HEROES_THEME:MENU_THEME);layerNext=LAYERS_PER_CITY;if(!playing)layerNow=layerNext;

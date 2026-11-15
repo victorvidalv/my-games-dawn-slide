@@ -43,34 +43,32 @@ describe('poderes por camino: Normal 100 %, Difícil 55 %, Experto 35 %', () => 
 });
 
 describe('pistas · recompensas de nivel y reserva', () => {
-  it('todos ganan +1 pista cada 5 niveles (y nada más: Juth ya no recibe pistas extra por ciudad)', () => {
-    for (const hero of ['lia', 'jean', 'van']) {
-      const run = newRun({ hints: 0 });
-      expect(clearRewards(hero, run, 5)).toBe(1);
-      expect(clearRewards(hero, run, 6)).toBe(0);
-      expect(clearRewards(hero, run, 10)).toBe(1);
-      expect(run.hints).toBe(2);
-    }
+  it('se gana +1 pista cada 5 niveles en Normal (y nada más)', () => {
+    const run = newRun({ hints: 0 });
+    expect(clearRewards(run, 5)).toBe(1);
+    expect(clearRewards(run, 6)).toBe(0);
+    expect(clearRewards(run, 10)).toBe(1);
+    expect(run.hints).toBe(2);
   });
   it('las pistas normales de Juth gastan la reserva: su poder tiene una carga independiente', () => {
     const run = newRun({ hints: 2 });
-    expect(spendHint({ heroId: 'van', run, mode: 'c', level: 7 })).toEqual({ ok: true, free: false });
+    expect(spendHint({ run, mode: 'c', level: 7 })).toEqual({ ok: true, free: false });
     expect(run.hints).toBe(1);
     expect(run.powerUsedLevel).toBeUndefined();
-    spendHint({ heroId: 'van', run, mode: 'c', level: 7 });
-    expect(canHint('van', run, 'c', 7)).toBe(false);
-    expect(canHint('van', run, 'c', 8)).toBe(false);
+    spendHint({ run, mode: 'c', level: 7 });
+    expect(canHint(run, 'c', 7)).toBe(false);
+    expect(canHint(run, 'c', 8)).toBe(false);
   });
   it('sin reserva ni pista gratis no se puede pedir una pista', () => {
     const run = newRun({ hints: 0 });
-    expect(canHint('lia', run, 'c', 3)).toBe(false);
-    expect(spendHint({ heroId: 'lia', run, mode: 'c', level: 3 })).toEqual({ ok: false, free: false });
+    expect(canHint(run, 'c', 3)).toBe(false);
+    expect(spendHint({ run, mode: 'c', level: 3 })).toEqual({ ok: false, free: false });
     expect(run.hints).toBe(0);
   });
   it('en Práctica las pistas son gratis y no gastan nada', () => {
     const run = newRun({ hints: 0 });
-    expect(canHint('lia', run, 'p', 3)).toBe(true);
-    expect(spendHint({ heroId: 'lia', run, mode: 'p', level: 3 }).ok).toBe(true);
+    expect(canHint(run, 'p', 3)).toBe(true);
+    expect(spendHint({ run, mode: 'p', level: 3 }).ok).toBe(true);
     expect(run.hints).toBe(0);
   });
 });

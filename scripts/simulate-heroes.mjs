@@ -22,7 +22,7 @@ for (const s of PATHS) {
 console.log(`  Total    Lía ${mean('lia').toFixed(1)} · Jean ${mean('jean').toFixed(1)} · Juth ${mean('van').toFixed(1)}`);
 
 console.log('\nCamino heroico frente a Avanzar (sin tienda): niveles y puntos, media de los tres caminos');
-console.log('hab.   Lía (1 pista cada 2 tableros)    Jean (+25 % puntos)         Juth (sin tienda)');
+console.log('hab.   Lía (pista gratis periódica)     Jean (+puntos, rebobina más) Juth (Destino largo, tienda)');
 for (const skill of [0.6, 0.8, 0.92]) {
   const cells = ['lia', 'jean', 'van'].map((hero) => {
     let dl = 0; let pr = 0;

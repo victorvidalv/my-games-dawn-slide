@@ -12,7 +12,7 @@ import { hash32 } from './rng.js';
  * (`npm run levels:decorate`); si falta una familia se usa el tablero normal.
  */
 /** Si una familia no tiene tableros a esa dificultad (los muros no se consiguen por encima de 85) se prueba con otra especial. */
-export const FALLBACK = {
+const FALLBACK = {
   plain: ['plain'],
   walls: ['walls', 'gates'],
   gates: ['gates'],

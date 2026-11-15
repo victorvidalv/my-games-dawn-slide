@@ -19,7 +19,7 @@
 .power-sigil>b{z-index:3;font-size:17px;letter-spacing:.06em;text-transform:uppercase;color:#fff;text-shadow:0 0 10px var(--spell),0 0 22px var(--spell),0 2px 3px #000}
 .power-sigil{position:relative;width:100%;height:100%;border:1px solid var(--spell);border-radius:13px;overflow:hidden;background:#142631;box-shadow:0 0 24px color-mix(in srgb,var(--spell) 35%,transparent),0 10px 28px #0008;}
 .power-sigil img{display:block;width:100%;height:100%;object-fit:cover}
-.power-sigil>b{position:absolute;left:0;right:0;bottom:0;padding:18px 6px 10px;background:linear-gradient(transparent,#10202bf5);font-family:Georgia,serif;font-size:14px;line-height:1.2;color:#f0e5ce;text-align:center}
+.power-sigil>b{position:absolute;left:0;right:0;bottom:0;padding:18px 6px 10px;background:linear-gradient(transparent,#10202bf5);font-family:var(--font-book);font-size:14px;line-height:1.2;color:#f0e5ce;text-align:center}
 .power-sigil>span,.power-sigil>i{display:none}
 .hero-power .piece{transition:left .29s ease-in-out,top .29s ease-in-out}
 .hero-power .piece.power-piece{z-index:12;filter:drop-shadow(0 0 9px #a5c8ed);outline:2px solid #d8eaff;outline-offset:-3px;border-radius:9px}
@@ -32,7 +32,7 @@
 @keyframes power-ring{0%{opacity:.9;transform:scale(.55)}100%{opacity:0;transform:scale(1.5)}}
 @keyframes power-rays{to{transform:rotate(360deg)}}
 .power-toast{position:fixed;left:50%;top:22%;z-index:56;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 22px;border-radius:16px;border:1px solid #68d8bd;background:linear-gradient(#10302b,#102026);color:#e7fff8;text-align:center;pointer-events:none;box-shadow:0 0 28px #68d8bd66,0 12px 30px #000a;animation:power-toast 2.4s ease-out both}
-.power-toast b{font-family:Georgia,serif;font-size:19px;letter-spacing:.04em;text-shadow:0 0 12px #68d8bd,0 0 24px #68d8bd}.power-toast span{font-size:13px;color:#b7f0dd}
+.power-toast b{font-family:var(--font-book);font-size:19px;letter-spacing:.04em;text-shadow:0 0 12px #68d8bd,0 0 24px #68d8bd}.power-toast span{font-size:13px;color:#b7f0dd}
 @keyframes power-toast{0%{opacity:0;transform:translateX(-50%) translateY(18px) scale(.6)}12%{opacity:1;transform:translateX(-50%) scale(1.08)}20%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-24px)}}
 @media(prefers-reduced-motion:reduce){.power-toast{animation:none}}
 @keyframes spell-arrive{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
@@ -40,3 +40,12 @@
 @keyframes spell-border{to{opacity:.4}}
 @media(max-width:360px){#bPower{padding:7px 5px;gap:4px}#bPower b{font-size:11px}#bPower small{font-size:8px}#bPower .ic{width:21px;height:21px}}
 @media(prefers-reduced-motion:reduce){.power-sigil,.power-sigil::before,#heroPowerFx.show,#heroPowerFx::before,#heroPowerFx::after,.hero-power::after,.reserve-awaken{animation:none}.hero-power .piece{transition:none}}
+/* Onda de poder: un anillo luminoso cruza el tablero cada vez que el hechizo mueve una pieza (Rebobinar se ve desaturado y hacia atrás). */
+.hero-power::before{content:'';position:absolute;left:50%;top:50%;width:30%;aspect-ratio:1;z-index:14;border-radius:50%;pointer-events:none;opacity:0;border:2px solid #d8eaff;box-shadow:0 0 18px #a5c8ed,inset 0 0 18px #a5c8ed66;transform:translate(-50%,-50%) scale(.2)}
+.hero-power.destiny::before{border-color:#ecd7ff;box-shadow:0 0 18px #d1b2ec,inset 0 0 18px #d1b2ec66}
+.hero-power.wave::before{animation:power-wave .55s ease-out}
+.hero-power.rewind .piece:not(.power-piece){filter:sepia(.35) saturate(.8) brightness(.92)}
+.hero-power .piece.power-piece{animation:power-piece-pop .36s ease-out}
+@keyframes power-wave{0%{opacity:.9;transform:translate(-50%,-50%) scale(.2)}100%{opacity:0;transform:translate(-50%,-50%) scale(5.2)}}
+@keyframes power-piece-pop{0%{transform:scale(1)}35%{transform:scale(1.07)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.hero-power::before,.hero-power .piece.power-piece{animation:none}}

@@ -1,4 +1,5 @@
 import { snapshotRescue } from './heroes.js';
+import { byPath } from '../engine/difficulty.js';
 
 import { shopDiscount } from './routes.js';
 
@@ -16,8 +17,8 @@ import { baseScore } from '../engine/scoring.js';
  * Calibrado con `npm run simulate` (sección Tienda): un jugador que compra a fondo gana ~20 niveles en Normal, ~17 en Difícil
  * y ~8 en Experto (similar a un poder de héroe) pero su puntaje se desploma: ayuda, pero duele.
  */
-export const PATH_PRICE = { 1: 1.7, 50: 2.6, 75: 3.6 };
-export const pathPrice = (start = 1) => PATH_PRICE[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+const PATH_PRICE = { 1: 1.7, 50: 2.6, 75: 3.6 };
+export const pathPrice = (start = 1) => byPath(PATH_PRICE, start);
 /** Revivir al caer (fuera de tienda): cuesta 33 % de tus puntos actuales y solo 1 vez por partida. */
 export const REVIVE_SHARE = 0.33;
 export const MAX_REVIVES = 1;

@@ -1,5 +1,5 @@
 import { setTensionFx } from '../audio/music.js';
-import { sfx, tone, vib } from '../audio/sound.js';
+import { sfx, vib } from '../audio/sound.js';
 import { isLocked, slideRange, snapDrag } from '../engine/board.js';
 import { isLow, isWon, moveStatus, movesLeft } from '../engine/rules.js';
 import { $ } from '../dom.js';
@@ -79,7 +79,7 @@ function placeStatic(){
 const flashEl=(el,cls,ms)=>{el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),ms)};
 /** Candados: se cierran o se abren según la placa; al abrirse suena y brilla. */
 /** Redibuja el hilo que une cada candado con su placa (sigue al candado cuando se mueve). */
-export function updateLinks(){
+function updateLinks(){
   const G=S.G;if(!G||!G.linkEls)return;const s=cellPx();
   for(const i in G.linkEls){
     const p=G.pieces[i],x=G.pos[i],ln=G.linkEls[i];
@@ -88,7 +88,7 @@ export function updateLinks(){
     ln.classList.toggle('open',!G.gateLocked?.[i]);
   }
 }
-export function syncSpecials(animate=true){
+function syncSpecials(animate=true){
   const G=S.G;if(!G||!G.plateEls)return;
   G.pieces.forEach((p,i)=>{
     if(p.kind!=='gate')return;
@@ -140,7 +140,7 @@ function attach(el,i){
       if(ev.pointerId!==e.pointerId) return;
       delta=((p.o==='h'?ev.clientX:ev.clientY)-start)/s;cur=Math.max(lo,Math.min(hi,x0+delta));
       el.style[p.o==='h'?'left':'top']=cur*s+'px';trail?.aim(delta);
-      const c=Math.round(cur);if(c!==lastCell){lastCell=c;tone(300+c*25,.04,'triangle',.05);vib(4)}
+      const c=Math.round(cur);if(c!==lastCell){lastCell=c;sfx.tick(c);vib(4)}
     };
     let ended=false;
     const end=commit=>{

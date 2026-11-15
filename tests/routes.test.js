@@ -11,37 +11,37 @@ describe('camino heroico propio de cada héroe',()=>{
   expect(new Set(Object.values(HEROIC_PATHS).map(p=>p.guide)).size).toBe(3);
   expect(HEROIC_PATHS.jean.guide).toBe('guia-elfa.webp');
  });
- it('solo Jean gana el porcentaje adicional de puntos (+25 %)',()=>{
+ it('todos ganan un porcentaje base de puntos y Jean uno adicional',()=>{
   const base=calcGain(30,12,10,2).total;
-  expect(HEROIC_BENEFITS.jeanPoints).toBe(.25);
+  expect(HEROIC_BENEFITS.points).toBeGreaterThan(0);expect(HEROIC_BENEFITS.jeanPoints).toBeGreaterThan(0);
   for(const hero of ['lia','jean','van']){
-   const gain=routeGain(run(hero),30,12,10,2);
-   expect(gain.total).toBe(base+(hero==='jean'?Math.round(base*HEROIC_BENEFITS.jeanPoints):0));
+   const gain=routeGain(run(hero),30,12,10,2),extra=HEROIC_BENEFITS.points+(hero==='jean'?HEROIC_BENEFITS.jeanPoints:0);
+   expect(gain.total).toBe(base+Math.round(base*extra));
    expect(routeGain(run(hero,'normal'),30,12,10,2).total).toBe(base);
   }
  });
- it('Lía recibe una pista gratis cada dos tableros: se consume antes que la reserva y se renueva',()=>{
+ it('Lía recibe una pista gratis cada pocos tableros: se consume antes que la reserva y se renueva',()=>{
   const r=run('lia');
-  expect(heroicHintsLeft(r,11)).toBe(0);expect(heroicHintsLeft(r,12)).toBe(1);
-  expect(spendHint({heroId:'lia',run:r,mode:'c',level:12})).toEqual({ok:true,free:true});expect(r.hints).toBe(3);
-  expect(heroicHintsLeft(r,12)).toBe(0);expect(heroicHintsLeft(r,14)).toBe(1);
-  expect(spendHint({heroId:'lia',run:r,mode:'c',level:12})).toEqual({ok:true,free:false});expect(r.hints).toBe(2);
-  expect(spendHint({heroId:'lia',run:r,mode:'c',level:11})).toEqual({ok:true,free:false});expect(r.hints).toBe(1);
+  const E=HEROIC_BENEFITS.liaEvery,L=E*2;expect(heroicHintsLeft(r,L-1)).toBe(0);expect(heroicHintsLeft(r,L)).toBe(1);
+  expect(spendHint({ run:r,mode:'c',level:L})).toEqual({ok:true,free:true});expect(r.hints).toBe(3);
+  expect(heroicHintsLeft(r,L)).toBe(0);expect(heroicHintsLeft(r,L+E)).toBe(1);
+  expect(spendHint({ run:r,mode:'c',level:L})).toEqual({ok:true,free:false});expect(r.hints).toBe(2);
+  expect(spendHint({ run:r,mode:'c',level:L-1})).toEqual({ok:true,free:false});expect(r.hints).toBe(1);
  });
  it('guardar/rehacer/revivir no recarga la pista gratis y no se acumula',()=>{
-  const r=run('lia');spendHint({heroId:'lia',run:r,mode:'c',level:12});
-  const loaded=JSON.parse(JSON.stringify(r));expect(heroicHintsLeft(loaded,12)).toBe(0);expect(heroicHintsLeft(loaded,14)).toBe(1);
-  loaded.route='normal';expect(heroicHintsLeft(loaded,14)).toBe(0);
-  loaded.hints=0;expect(canHint('lia',loaded,'c',12)).toBe(false);
-  loaded.route='brave';expect(canHint('lia',loaded,'c',14)).toBe(true);
+  const E=HEROIC_BENEFITS.liaEvery,L=E*2,r=run('lia');spendHint({ run:r,mode:'c',level:L});
+  const loaded=JSON.parse(JSON.stringify(r));expect(heroicHintsLeft(loaded,L)).toBe(0);expect(heroicHintsLeft(loaded,L+E)).toBe(1);
+  loaded.route='normal';expect(heroicHintsLeft(loaded,L+E)).toBe(0);
+  loaded.hints=0;expect(canHint(loaded,'c',L)).toBe(false);
+  loaded.route='brave';expect(canHint(loaded,'c',L+E)).toBe(true);
  });
  it('ni Jean ni Juth reciben las pistas de Lía',()=>{
-  for(const hero of ['jean','van'])expect(heroicHintsLeft(run(hero),12)).toBe(0);
+  for(const hero of ['jean','van'])expect(heroicHintsLeft(run(hero),HEROIC_BENEFITS.liaEvery)).toBe(0);
  });
- it('el descuento de Juth es del 40 % en todos los productos y dificultades',()=>{
+ it('el descuento de Juth es el configurado en todos los productos y dificultades',()=>{
   for(const start of [1,50,75])for(const item of SHOP_ITEMS){
    const r={...run('van'),start},base=priceOf(item.id,40,start);
-   expect(priceOf(item.id,40,start,r)).toBe(Math.round(base*(1-HEROIC_BENEFITS.juthDiscount)));expect(HEROIC_BENEFITS.juthDiscount).toBe(.4);
+   expect(priceOf(item.id,40,start,r)).toBe(Math.round(base*(1-HEROIC_BENEFITS.juthDiscount)));
    for(const hero of ['lia','jean'])expect(priceOf(item.id,40,start,run(hero))).toBe(base);
    expect(priceOf(item.id,40,start,{...r,route:'normal'})).toBe(base);
   }

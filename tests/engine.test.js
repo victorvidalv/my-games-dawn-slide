@@ -1,4 +1,3 @@
-import { HEROIC_POINTS } from '../src/engine/scoring.js';
 import { describe, it, expect } from 'vitest';
 import {
   N, WIN_POS, encode, decode, encodeBoard, decodeBoard, isValidState, randomBoard,
@@ -170,10 +169,9 @@ describe('puntaje y límite de movimientos', () => {
     expect(calcGain(10, 4, 4, 0).mult).toBeCloseTo(1.1);
     expect(calcGain(10, 4, 4, 99).mult).toBeCloseTo(1.5);
   });
-  it('el camino heroico de Jean suma el porcentaje de HEROIC_POINTS (+25 %)', () => {
+  it('el bono del camino heroico suma ese porcentaje a los puntos', () => {
     const base = gainFor(10, 4, 4, 0).total;
-    expect(HEROIC_POINTS).toBe(0.25);
-    expect(gainFor(10, 4, 4, 0, { brave: true }).total).toBe(base + Math.round(base * HEROIC_POINTS));
+    expect(gainFor(10, 4, 4, 0, { bonus: 0.25 }).total).toBe(base + Math.round(base * 0.25));
   });
   it('estado del contador: ok → pocos → último turno → sin turnos (ya no se puede mover)', () => {
     expect(moveStatus(3, 10)).toBe('ok');

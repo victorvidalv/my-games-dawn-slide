@@ -74,7 +74,7 @@
    <div class="travel-bottom">
     <p class="travel-ask">Próximos 10 niveles</p>
     <div class="route-options" id="routeOptions">
-     <button class="route-option" id="routeNormal"><span class="choice-icon" aria-hidden="true">⌁</span><span class="choice-copy"><strong>Avanzar</strong><small>Dificultad habitual</small></span></button>
+     <button class="route-option" id="routeNormal"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21c0-5 6-5 6-9s-5-3-5-8"/><path d="M14 4h5v5"/><path d="M19 4l-6 6"/></svg></span><span class="choice-copy"><strong>Avanzar</strong><small>Dificultad habitual</small></span></button>
      <button class="route-option brave" id="routeBrave"><span class="choice-icon" id="routeBraveIcon" aria-hidden="true"></span><span class="choice-copy"><strong>Tomar camino heroico</strong><small>Más difícil</small><span class="route-perk" id="routePerk"></span></span></button>
     </div>
    </div>
@@ -166,8 +166,12 @@
 
 <!-- Menú -->
 <div class="modal show" id="menu">
+  <div class="title-lockup">
+    <svg class="title-crest" viewBox="0 0 64 72" aria-hidden="true"><path class="crest-shield" d="M32 3 59 12v23c0 17-12 28-27 34C17 63 5 52 5 35V12Z"/><path class="crest-inner" d="M32 9 53 16v19c0 13-9 22-21 27C20 57 11 48 11 35V16Z"/><circle class="crest-key" cx="32" cy="27" r="7"/><path class="crest-key" d="M32 34v20m0-7h7m-7-7h5"/></svg>
+    <h1 class="logo">SLIDE <i>&amp;</i> SLAY</h1>
+    <p class="title-sub">Puzle de bloques · tres héroes · cien niveles</p>
+  </div>
   <div class="card">
-    <h1 class="logo"><svg class="brand-key" viewBox="0 0 30 38" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="15" cy="9" r="6"/><path d="M15 15v19h7m-7-6h5"/></svg>SLIDE &amp; SLAY</h1>
     <p class="menu-pick">Escoge el nivel</p>
     <button class="primary cont" id="bContinue" style="display:none"></button>
     <p class="modeinfo" id="modeInfo" hidden></p>

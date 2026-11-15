@@ -36,7 +36,7 @@ export const CITY_FAMILY = ['walls', 'walls', 'heavy', 'gates', 'ice', 'duo', 'm
  *   40+   hielo (`ice`) a veces (tutorial en el 40)
  *   51+   combinaciones de piezas (`duo` y `mixed`) en dificultad ascendente junto a individuales y respiros normales
  */
-export const LEVEL_FAMILIES = [
+const LEVEL_FAMILIES = [
   // 1..10
   'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 'walls',
   // 11..20

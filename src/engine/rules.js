@@ -1,13 +1,13 @@
 import { WIN_POS } from './board.js';
 
 /** Fracción de turnos restantes (o menos) a partir de la cual se avisa de que quedan pocos. */
-export const WARN_FRACTION = 0.2;
+const WARN_FRACTION = 0.2;
 
 /** Movimientos que aún puedes hacer (nunca negativo). Al llegar a 0 sin ganar, la aventura termina: ya no se puede mover. */
 export const movesLeft = (moves, limit) => Math.max(0, limit - moves);
 
 /** Sin turnos: se hicieron todos los movimientos permitidos (si no ganaste en el último, pierdes y no puedes mover más). */
-export const isOver = (moves, limit) => moves >= limit;
+const isOver = (moves, limit) => moves >= limit;
 
 /** Quedan pocos turnos: ≈ 20 % del límite o menos (al menos el aviso salta con 1 restante) y todavía se puede mover. */
 export function isLow(moves, limit) {

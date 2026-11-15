@@ -13,7 +13,7 @@
  *             (Su grafo puede ser dirigido; el solver calcula distancias exactas por aristas invertidas.)
  */
 export const N = 6;
-export const EXIT_ROW = 2;
+const EXIT_ROW = 2;
 export const WIN_POS = N - 2; // posición de la llave roja cuando toca la salida
 export const WALL = 99; // marca de muro en la rejilla de ocupación
 
@@ -25,7 +25,7 @@ export const encode = (pos) => pos.reduce((k, x, i) => k + x * P8[i], 0);
 export const decode = (key, n) => Array.from({ length: n }, (_, i) => Math.floor(key / P8[i]) % 8);
 
 /** Celdas ocupadas por una pieza en la posición x. Útil para dibujar y para pruebas. */
-export function cellsOf(piece, x) {
+function cellsOf(piece, x) {
   const out = [];
   for (let k = 0; k < piece.len; k++) {
     out.push(piece.o === 'h' ? [piece.fix, x + k] : [x + k, piece.fix]);

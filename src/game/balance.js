@@ -24,7 +24,7 @@ import { bonusPrize, isBonusLevel } from './minigames.js';
  * Sellos (cada 3-4 niveles desde el 5): el jugador hábil rodea un poco para recogerlos y cobra puntos extra.
  * Minijuegos (niveles 15, 25…): pistas según habilidad, con el premio máximo proporcional al nivel.
  */
-export const MODEL = {
+const MODEL = {
   err: 0.07,
   notice: 0.7,           // probabilidad de darte cuenta de que un movimiento fue un error y deshacerlo enseguida
   hintAware: 0.65,       // probabilidad de pedir la pista A TIEMPO (antes de equivocarte): una pista solo ayuda si la pides
@@ -36,7 +36,7 @@ export const MODEL = {
 };
 
 /** El sello de un nivel según el modelo: el tipo que pide el calendario (limitado por lo que cabe en el tablero) y su rodeo en movimientos. */
-export function sealPlan(level, d, seed = 0) {
+function sealPlan(level, d, seed = 0) {
   const maxD = maxSealDetour(d);
   let tier = requestedSealTier(level, seed);
   if (tier === 3 && maxD < 4) tier = 2;
@@ -46,16 +46,16 @@ export function sealPlan(level, d, seed = 0) {
 
 
 /** Parte del premio del minijuego (0-3) según la habilidad: los juegos son sencillos y previsibles. */
-export const minigamePart = (skill, u) => (u < 0.08 + 0.42 * skill ? 3 : u < 0.5 + 0.4 * skill ? 2 : u < 0.9 ? 1 : 0);
+const minigamePart = (skill, u) => (u < 0.08 + 0.42 * skill ? 3 : u < 0.5 + 0.4 * skill ? 2 : u < 0.9 ? 1 : 0);
 
 /**
  * Jugador que usa la tienda (`shop = {score, rating}`): al quedarse sin turnos compra los turnos más baratos que le alcancen,
  * y si no le quedan pistas en un tablero duro compra una, pero solo si le sobran puntos (MODEL.shopReserve veces el precio).
  */
 function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, shop = null, brave = false, seal = false, powers = {} }) {
-  const rewindSteps = powers.rewindSteps ?? pathRewindSteps(start);
-  const destinySteps = powers.destinySteps ?? DESTINY_STEPS;
   const heroic = brave;
+  const rewindSteps = powers.rewindSteps ?? pathRewindSteps(start) + (heroic && hero === 'jean' ? HEROIC_BENEFITS.jeanRewind : 0);
+  const destinySteps = powers.destinySteps ?? (heroic && hero === 'van' ? HEROIC_BENEFITS.juthDestiny : DESTINY_STEPS);   // camino heroico de Juth: Destino más largo
   const baseLimit = moveLimit(d, start, level, brave);
   let limit = baseLimit + (powers.liaTurns && hero === 'lia' ? Math.max(1, Math.round(baseLimit * powers.liaTurns * (powers.liaScale?.[start] ?? 1))) : bonusTurns(hero, baseLimit, start));
   let extra = 0;
@@ -160,9 +160,10 @@ export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = 
       return { cleared: level - 1, score, completed: false, revivesBought: bought, spent: spentTotal, turnsBought, hintsBought, sealPts };
     }
     const gain = calcGain(rating, res.moves, d, streak);
-    score += gain.total + (heroic && hero === 'jean' ? Math.round(gain.total * HEROIC_BENEFITS.jeanPoints) : 0);   // camino heroico de Jean: más puntos
-    if (goForSeal) {                                           // sello recogido: puntos extra (más en el camino heroico de Jean)
-      const pts = Math.round(sealPoints(rating, d, d + res.extra, seal.tier) * (heroic && hero === 'jean' ? 1 + HEROIC_BENEFITS.jeanPoints : 1));
+    const bonus = heroic ? HEROIC_BENEFITS.points + (hero === 'jean' ? HEROIC_BENEFITS.jeanPoints : 0) : 0;   // camino heroico: más puntos (más aún Jean)
+    score += gain.total + Math.round(gain.total * bonus);
+    if (goForSeal) {                                           // sello recogido: puntos extra (con el bono heroico)
+      const pts = Math.round(sealPoints(rating, d, d + res.extra, seal.tier) * (1 + bonus));
       score += pts;
       sealPts += pts;
     }

@@ -292,9 +292,13 @@ Los récords de cada camino se fusionan tomando el máximo, y la partida en curs
 
 Tras los niveles 10, 20…90 solo se elige **Avanzar** (dificultad habitual) o **Tomar camino heroico** (más difícil durante los próximos diez niveles). Los tres caminos heroicos usan la misma progresión de dificultad; solo cambia el beneficio:
 
-- Lía: una pista gratis cada dos tableros (en los tableros pares), antes de gastar la reserva. No se acumula ni se recarga al rehacer o revivir. Símbolo de brasa y acompañante forjadora.
-- Jean: veinticinco por ciento adicional de puntos. Símbolo de reloj y la acompañante elfa original.
-- Juth: cuarenta por ciento de descuento en los productos de la tienda, redondeado al punto. No afecta a revivir fuera de la tienda. Símbolo de runas y acompañante erudito.
+Todos los caminos heroicos dan **+15 % de puntos** (también en los sellos) como premio base al riesgo, y además:
+
+- Lía: una pista gratis cada 6 tableros, antes de gastar la reserva. No se acumula ni se recarga al rehacer o revivir. Símbolo de brasa y acompañante forjadora.
+- Jean: +10 % adicional de puntos (+25 % en total) y Rebobinar devuelve 3 movimientos más. Símbolo de reloj y la acompañante elfa original.
+- Juth: Trazar destino llega a 6 pasos (en vez de 3) y 40 % de descuento en la tienda, redondeado al punto. No afecta a revivir fuera de la tienda. Símbolo de runas y acompañante erudito.
+
+Valores en `HEROIC_BENEFITS` (`src/game/routes.js`), calibrados con `npm run simulate`: en jugadores hábiles el riesgo cuesta de 0 a 2 niveles y da ≈ +10 % de puntos con cualquiera de los tres héroes.
 
 Los poderes de botón y la reserva de turnos de Lía se conservan. La selección de héroe muestra por separado Poder y Camino heroico. El identificador guardado del camino heroico sigue siendo `brave` para conservar las aventuras existentes. Reglas y textos comunes en `src/game/routes.js`.
 
@@ -302,7 +306,7 @@ Los poderes de botón y la reserva de turnos de Lía se conservan. La selección
 
 Desde el nivel 20 hay un sello cada tres o cuatro niveles, en tres tipos (bronce pequeño, plata medio, oro gran premio según el rodeo que cuesta); la primera vez se explica con una ventana de ayuda. Cada pieza especial (roca, pesada, candado, hielo) tiene además un **nivel extra de tutorial** justo antes del nivel donde aparece: no da puntos ni cuenta como nivel, no se puede perder y señala cada movimiento. El calendario evita las primeras lecciones de piezas especiales y se calcula en `src/game/seals.js`. Una pieza concreta y una casilla del suelo llevan el mismo emblema y borde discontinuo dorado. Solo esa pieza recoge el sello al atravesar la casilla, incluido el recorrido intermedio de una pieza de hielo. Se puede salir sin recogerlo.
 
-El sello da puntos al recogerlo. Su valor crece con la dificultad y tiene en cuenta el coste del desvío; el bono heroico de Jean (+25 %) se aplica también a esos puntos. No altera el mínimo de movimientos para salir ni el cálculo habitual de puntos del nivel. El premio se guarda en una contabilidad por nivel y no se vuelve a dar al rebobinar, rehacer, revivir o recargar. Los tableros antiguos ya guardados se restauran sin inyectarles un nuevo objetivo.
+El sello da puntos al recogerlo. Su valor crece con la dificultad y tiene en cuenta el coste del desvío; el bono heroico (+15 %, +25 % con Jean) se aplica también a esos puntos. No altera el mínimo de movimientos para salir ni el cálculo habitual de puntos del nivel. El premio se guarda en una contabilidad por nivel y no se vuelve a dar al rebobinar, rehacer, revivir o recargar. Los tableros antiguos ya guardados se restauran sin inyectarles un nuevo objetivo.
 
 La colocación recorre movimientos legales antes de salir y añade una ruta de salida exacta. Respeta muros, candados, pesadas y el grafo dirigido del hielo. Cada sello pasa además una reproducción de su ruta completa en tiempo de ejecución. Si no se encuentra una colocación certificada se conserva el tablero original sin añadir un objetivo inválido. El margen extra de turnos está acotado por el mínimo del tablero, hasta seis turnos; solo se añade lo necesario para permitir la ruta comprobada más un turno de margen. El juego y el simulador usan el mismo constructor `src/game/build-adventure.js`.
 

@@ -1,6 +1,7 @@
 import { it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { SEAL_LEVELS, isSealLevel, planSeal, verifySealProof, crossesSeal, collectSeal, sealReward, sealPoints, maxSealAdjustment } from '../src/game/seals.js';
+import { HEROIC_BENEFITS } from '../src/game/routes.js';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { heroLimit, snapshotRescue } from '../src/game/heroes.js';
 import { buy, payRevive } from '../src/game/shop.js';
@@ -63,10 +64,11 @@ it('se guarda y se cobra una vez, incluso tras rebobinar, rehacer o revivir',()=
  payRevive(loaded);expect(loaded.sealClaims[G.n]).toBe(total);
 });
 
-it('el diez por ciento de Jean también se aplica al sello y coincide con el importe mostrado',()=>{
- const seal={value:101};expect(sealReward(run({route:'brave'}),seal)).toBe(111);
- expect(sealReward(run({hero:'lia',route:'brave'}),seal)).toBe(101);
- expect(sealReward(run(),seal)).toBe(101);
+it('el bono heroico también se aplica al sello (más para Jean) y coincide con el importe mostrado',()=>{
+ const seal={value:100},B=HEROIC_BENEFITS;
+ expect(sealReward(run({route:'brave'}),seal)).toBe(Math.round(100*(1+B.points+B.jeanPoints)));
+ expect(sealReward(run({hero:'lia',route:'brave'}),seal)).toBe(Math.round(100*(1+B.points)));
+ expect(sealReward(run(),seal)).toBe(100);
 });
 
 it('restaura el mismo tablero y sello sin regenerar, también en partidas antiguas sin sello',()=>{

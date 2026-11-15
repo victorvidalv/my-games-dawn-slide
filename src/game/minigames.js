@@ -1,4 +1,5 @@
 import { hash32, mulberry32 } from '../engine/rng.js';
+import { byPath } from '../engine/difficulty.js';
 
 export const BONUS_KINDS = ['memory', 'sequence', 'timing'];
 export const HERO_GAMES = {
@@ -27,14 +28,14 @@ export const isBonusLevel = level => level >= 15 && level < 100 && level % 10 ==
 export const bonusIndex = level => Math.max(0, Math.floor((level - 15) / 10));
 export const gameFor = (hero, level) => (HERO_GAMES[hero] || HERO_GAMES.lia)[bonusIndex(level) % 3];
 /** Los premios de los minijuegos son proporcionales al nivel (3 pistas en el 15 → 10 en el 95) y más escasos en los caminos difíciles. */
-export const PRIZE_PATH_SCALE = { 1: 1, 50: .8, 75: .6 };
-export const prizePathScale = (start = 1) => PRIZE_PATH_SCALE[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+const PRIZE_PATH_SCALE = { 1: 1, 50: .8, 75: .6 };
+const prizePathScale = (start = 1) => byPath(PRIZE_PATH_SCALE, start);
 export const maxPrize = (level = 15, start = 1) => Math.max(2, Math.min(10, Math.round((3 + 7 * (level - 15) / 80) * prizePathScale(start))));
-export const scalePrize = (part, level = 15, start = 1) => part <= 0 ? 0 : Math.max(1, Math.round(Math.min(3, part) * maxPrize(level, start) / 3));
+const scalePrize = (part, level = 15, start = 1) => part <= 0 ? 0 : Math.max(1, Math.round(Math.min(3, part) * maxPrize(level, start) / 3));
 export const bonusPrize = (part, level, start = 1) => Math.max(1, scalePrize(part, level, start));
-export const MEMORY = { pairs: 4, misses: 6 };
+const MEMORY = { pairs: 4, misses: 6 };
 export const SEQUENCE = { rounds: 3, mistakes: 2, lengths: [2, 3, 4] };
-export const TIMING = { tries: 3, period: 2400, zone: .25, center: .08 };
+const TIMING = { tries: 3, period: 2400, zone: .25, center: .08 };
 
 /** Order is fixed; only card positions and sequences vary deterministically with the adventure seed. */
 export function createBonusPlan(hero, level, seed = 0, start = 1) {

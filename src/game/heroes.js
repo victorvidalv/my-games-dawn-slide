@@ -2,7 +2,7 @@
  * Héroes y poderes. Los datos (nombre, texto) y las reglas viven juntos aquí; las reglas son
  * funciones puras sobre el objeto `run` (la aventura en curso), sin DOM, y están cubiertas por tests.
  */
-import { moveLimit } from '../engine/difficulty.js';
+import { moveLimit, byPath } from '../engine/difficulty.js';
 import { heroicHintsLeft, useHeroicHint } from './routes.js';
 
 /* Ojo: el identificador interno de Juth sigue siendo 'van' (imágenes heroes/van*.webp y partidas guardadas). Solo cambia el nombre que se ve. */
@@ -15,20 +15,20 @@ export const HEROES = [
 export const heroById = (id) => HEROES.find((h) => h.id === id) || HEROES[0];
 
 /** Qué parte de su reserva de turnos conserva Lía en cada camino: Normal 100 %, Difícil 55 %, Experto 35 %. */
-export const POWER_SCALE = { 1: 1, 50: 0.55, 75: 0.35 };
-export const powerScale = (start = 1) => POWER_SCALE[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+const POWER_SCALE = { 1: 1, 50: 0.55, 75: 0.35 };
+export const powerScale = (start = 1) => byPath(POWER_SCALE, start);
 
 export const CITY_EVERY = 10; // niveles por ciudad
 /** Cada cuántos niveles se gana una pista: Normal 5, Difícil 6, Experto 8 (cuanto más difícil el camino, más escasas). */
-export const HINT_EVERY_BY_PATH = { 1: 5, 50: 6, 75: 8 };
-export const hintEvery = (start = 1) => HINT_EVERY_BY_PATH[start >= 75 ? 75 : start >= 50 ? 50 : 1];
+const HINT_EVERY_BY_PATH = { 1: 5, 50: 6, 75: 8 };
+export const hintEvery = (start = 1) => byPath(HINT_EVERY_BY_PATH, start);
 
 const isPractice = (mode) => mode === 'p';
 
 /* ───────────── Lía: turnos de reserva (un % más de turnos en cada tablero) ───────────── */
 
-export const LIA_TURNS_SHARE = 0.25; // +23 % del límite de movimientos (calibrado con npm run simulate)
-export const LIA_MIN_TURNS = 2;     // y como mínimo 2 turnos
+const LIA_TURNS_SHARE = 0.25; // +23 % del límite de movimientos (calibrado con npm run simulate)
+const LIA_MIN_TURNS = 2;     // y como mínimo 2 turnos
 
 /** Turnos extra que da el héroe sobre un límite base (solo Lía). */
 export const bonusTurns = (heroId, baseLimit, start = 1) => {
@@ -52,7 +52,7 @@ export function snapshotRescue(G) {
     walls: (G.walls || []).map((w) => w.slice()),
     start: G.start.slice(),
     opt: G.opt,
-    seal: G.seal?{...G.seal,cell:G.seal.cell.slice()}:null,
+    seal: G.seal ? { ...G.seal, cell: G.seal.cell.slice() } : null,
     family: G.family,
   };
 }
@@ -64,7 +64,7 @@ export function snapshotRescue(G) {
  * El poder de Juth es independiente de las pistas.
  * Devuelve {ok, free}. (ok=false si no hay ninguna.) En Práctica no gasta nada.
  */
-export function spendHint({ heroId, run, mode, level, opt }) {
+export function spendHint({ run, mode, level }) {
   if (isPractice(mode)) return { ok: true, free: true };
   if (useHeroicHint(run, level)) return { ok: true, free: true };
   if ((run.hints || 0) > 0) {
@@ -75,13 +75,13 @@ export function spendHint({ heroId, run, mode, level, opt }) {
 }
 
 /** ¿Se puede pedir una pista ahora? (gratis o de la reserva) */
-export const canHint = (heroId, run, mode, level, opt) => isPractice(mode) || heroicHintsLeft(run, level) > 0 || (run?.hints || 0) > 0;
+export const canHint = (run, mode, level) => isPractice(mode) || heroicHintsLeft(run, level) > 0 || (run?.hints || 0) > 0;
 
 /**
  * Pistas ganadas al completar `level`; suma a run.hints y devuelve cuántas.
  * Todos los héroes: +1 cada 5 niveles.
  */
-export function clearRewards(heroId, run, level) {
+export function clearRewards(run, level) {
   const gained = level % hintEvery(run?.start) === 0 ? 1 : 0;
   run.hints = (run.hints || 0) + gained;
   return gained;
