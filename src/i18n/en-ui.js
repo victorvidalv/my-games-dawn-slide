@@ -136,4 +136,22 @@ export const EN_UI = {
   '{x} · {p} pts': '{x} · {p} pts',
   'Dejas la partida en curso. Lo conseguido ({r}) cuenta para tu máximo.': 'You are leaving the game in progress. What you earned ({r}) counts toward your best.',
   'Se pierde la partida guardada. Lo conseguido ({r}) cuenta para tu máximo.': 'The saved game will be lost. What you earned ({r}) counts toward your best.',
+  /* tutoriales, piezas especiales y rótulos que faltaban */
+  'PIEZA NUEVA': 'NEW PIECE', 'PRIMEROS PASOS': 'FIRST STEPS', 'AYUDAS': 'HELP', 'OBJETIVO OPCIONAL': 'OPTIONAL GOAL',
+  'Cada movimiento cuenta': 'Every move counts',
+  'Roca fija': 'Fixed rock', 'Candado': 'Padlock', 'Candado: cubre ▣': 'Padlock: cover ▣', 'Pieza pesada': 'Heavy piece', 'Pesada: 1 paso': 'Heavy: 1 step',
+  'Lía: Turnos de reserva': 'Lía: Reserve turns', 'Jean: Rebobinar': 'Jean: Rewind', 'Juth: Trazar destino': 'Juth: Trace destiny',
+  'Más turnos en cada tablero.': 'More turns on every board.', 'Retrocede varios movimientos.': 'Go back several moves.', 'Ejecuta movimientos óptimos.': 'Plays optimal moves.',
+  'Lía: Más turnos en cada tablero': 'Lía: More turns on every board', 'Jean: Retrocede varios movimientos': 'Jean: Go back several moves', 'Juth: Ejecuta movimientos óptimos': 'Juth: Plays optimal moves',
+  'MODO': 'MODE', 'AVANZAR': 'ADVANCE', 'NORMAL · AVENTURA': 'NORMAL · ADVENTURE', 'DIFÍCIL · AVENTURA': 'HARD · ADVENTURE', 'EXPERTO · AVENTURA': 'EXPERT · ADVENTURE',
+  'Comprar': 'Buy', 'Reto terminado': 'Challenge complete', 'Pareja encontrada': 'Pair found', 'Secuencia completada': 'Sequence complete', 'Comenzar': 'Start', 'Reanudar sello': 'Resume seal',
+  'SENDA NORMAL COMPLETADA': 'NORMAL PATH COMPLETED', 'SENDA EXPERTO COMPLETADA': 'EXPERT PATH COMPLETED', 'SENDA COMPLETADA': 'PATH COMPLETED',
+  'Brasa': 'Ember', 'Farol': 'Lantern', 'Corona': 'Crown', 'Reloj': 'Clock', 'Arena': 'Sand', 'Retorno': 'Return', 'Cristal': 'Crystal', 'Estrella': 'Star', 'Sello': 'Seal',
+  'Actualizando…': 'Updating…',
+  'Sonido activado': 'Sound on', 'Sonido desactivado': 'Sound off', 'Toca para activar el sonido': 'Tap to turn on the sound',
+  /* compartir y QR */
+  'Jugar en el móvil': 'Play on your phone', 'Escanea el código con la cámara de tu móvil y juega al instante.': 'Scan the code with your phone camera and play instantly.',
+  'Copiar enlace': 'Copy link', '¡Enlace copiado!': 'Link copied!', 'Compartir': 'Share', 'Cerrar': 'Close',
+  'Compartir y jugar en el móvil': 'Share / play on your phone',
+  'Prueba DAWNSLIDE: un puzle de bloques con tres héroes y cien niveles.': 'Try DAWNSLIDE: a block puzzle with three heroes and one hundred levels.',
 };

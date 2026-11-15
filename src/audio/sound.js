@@ -114,7 +114,30 @@ export function soundLabel(){
 export function toggleSound(){
   muted=!muted;localStorage.setItem('desbloquea.mute',muted?'1':'0');soundLabel();
   if(muted)Music.stop(.2);
-  else if(S.G&&!S.G.done){Music.start();Music.muffle($('menu').classList.contains('show')||$('pause').classList.contains('show'))}
+  else{
+    unlockAudio();
+    if(S.G&&!S.G.done){Music.start();Music.muffle($('menu').classList.contains('show')||$('pause').classList.contains('show'))}
+    else Music.scene($('heroSelect')?.classList.contains('show')?'heroes':'menu');     // sin partida: vuelve la música del menú
+  }
+  document.dispatchEvent(new Event('soundstate'));
+}
+/** ¿El audio del navegador está realmente sonando? (puede estar suspendido hasta un toque, o interrumpido en iOS) */
+export const audioRunning=()=>!!AC&&AC.state==='running';
+/**
+ * Desbloquea el audio dentro de un gesto del usuario: crea/reanuda el contexto y reproduce un búfer mudo (truco de iOS/Safari),
+ * y vuelve a arrancar la música si estaba parada. Devuelve una promesa que se cumple cuando el audio ya suena.
+ */
+export function unlockAudio(){
+  if(muted)return Promise.resolve(false);
+  try{
+    const c=ctx(),b=c.createBuffer(1,1,22050),src=c.createBufferSource();
+    src.buffer=b;src.connect(c.destination);src.start(0);
+    return Promise.resolve(c.state==='running'?true:c.resume()).then(()=>{
+      audioNeedsRecovery=true;completeAudioRecovery(c);
+      document.dispatchEvent(new Event('soundstate'));
+      return c.state==='running';
+    }).catch(()=>false);
+  }catch(_){return Promise.resolve(false)}
 }
 soundLabel();
 
@@ -132,6 +155,7 @@ function completeAudioRecovery(owner=AC){
 }
 function handleAudioState(owner){
  if(owner!==AC)return;
+ document.dispatchEvent(new Event('soundstate'));
  if(owner.state==='running'){completeAudioRecovery(owner);return}
  audioNeedsRecovery=true;Music.background();
  if(!document.hidden&&!audioPageHidden&&!muted&&owner.state!=='closed')recoverPageAudio();
@@ -162,5 +186,5 @@ addEventListener('pagehide',suspendPageAudio);
 addEventListener('pageshow',()=>{audioPageHidden=false;recoverPageAudio()});
 addEventListener('focus',()=>{if(!document.hidden)audioPageHidden=false;recoverPageAudio()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendPageAudio();else{audioPageHidden=false;recoverPageAudio()}});
-for(const event of ['pointerdown','touchend','keydown'])addEventListener(event,()=>recoverPageAudio(true),{capture:true,passive:true});
+for(const event of ['pointerdown','touchstart','touchend','click','keydown'])addEventListener(event,()=>{recoverPageAudio(true);if(!muted&&AC&&AC.state!=='running')unlockAudio()},{capture:true,passive:true});
 $('audioRecover').onclick=()=>recoverPageAudio(true);

@@ -297,3 +297,41 @@ button:disabled{opacity:.62}
   #menu .path{padding:8px 12px}#menu .pemo{width:42px;height:42px;font-size:18px}
   #menu .cont{min-height:52px}
 }
+
+/* ---------- Botón de sonido: siempre a la vista, con estado (suena / silencio / bloqueado) ---------- */
+.snd-btn{flex:none;position:relative;display:flex;align-items:center;justify-content:center;gap:8px;min-width:46px;height:46px;padding:0 11px;color:#fff5e0;
+  border:3px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(175deg,#2c7585,#215666);box-shadow:inset 0 0 0 1.5px #ffffff22,3px 5px 0 #150e0c}
+.snd-btn .snd-ico{width:26px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 0 #150e0c)}
+.snd-btn .snd-ico path:first-child{fill:currentColor}
+.snd-btn .snd-cap{display:none;font:800 12px/1.1 var(--font-ui);letter-spacing:.03em;text-shadow:0 2px 0 #150e0c88}
+.snd-btn[data-state=on] .snd-x,.snd-btn[data-state=blocked] .snd-x{display:none}
+.snd-btn[data-state=off] .snd-waves{display:none}
+.snd-btn[data-state=off]{background:var(--hatch),linear-gradient(175deg,#5a3a4f,#40283d)}
+.snd-btn[data-state=blocked]{background:var(--hatch),linear-gradient(175deg,#c2402a,#9e2b15);box-shadow:inset 0 0 0 2px #f2c45c,3px 5px 0 #150e0c,0 0 18px #ee6a4699;animation:snd-pulse 1.4s ease-in-out infinite}
+.snd-btn[data-state=blocked] .snd-cap{display:block}
+.snd-btn[data-state=blocked] .snd-ico{animation:snd-wiggle 1.4s ease-in-out infinite}
+.snd-btn:active{transform:translate(2px,3px);box-shadow:1px 2px 0 #150e0c}
+.snd-btn:focus-visible{outline:3px solid #ffdb8f;outline-offset:3px}
+@keyframes snd-pulse{50%{box-shadow:inset 0 0 0 2px #ffdb8f,3px 5px 0 #150e0c,0 0 30px #ee6a46dd}}
+@keyframes snd-wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+@media(prefers-reduced-motion:reduce){.snd-btn[data-state=blocked],.snd-btn[data-state=blocked] .snd-ico{animation:none}}
+.snd-hud{margin-left:auto;margin-right:2px;height:52px;min-width:52px}
+.snd-hud[data-state=blocked]{position:absolute;top:calc(100% + 8px);right:0;z-index:5;max-width:min(70vw,260px);height:auto;min-height:46px;padding:8px 12px;margin:0}
+.top{position:relative}
+.snd-menu{height:46px}
+.lang-switch{flex-wrap:wrap;align-items:center}
+
+/* ---------- Compartir: botón bajo el menú y ventana con el QR ---------- */
+.share-btn{flex:none;display:flex;align-items:center;justify-content:center;width:46px;height:46px;padding:0;color:#fff5e0;border:3px solid #150e0c;border-radius:var(--wob-b);
+  background:var(--hatch),linear-gradient(175deg,#4a2c44,#2c1d33);box-shadow:inset 0 0 0 1.5px #e0b04f44,3px 5px 0 #150e0c}
+.share-btn svg{width:24px;height:24px;fill:currentColor;stroke:currentColor;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 2px 0 #150e0c)}
+.share-btn:active{transform:translate(2px,3px);box-shadow:1px 2px 0 #150e0c}.share-btn:focus-visible{outline:3px solid #ffdb8f;outline-offset:3px}
+.share-card{max-width:360px;padding:24px 20px 18px}
+.share-card h2{margin-bottom:4px}
+.share-card p{margin:6px 0 14px;color:#ece4f5;opacity:1}
+.share-qr{width:min(64vw,240px);aspect-ratio:1;margin:0 auto;padding:8px;background:#fff;border:3px solid #150e0c;border-radius:var(--wob-d);box-shadow:inset 0 0 0 2px #e0b04f,4px 6px 0 #150e0c}
+.share-qr svg{display:block;width:100%;height:100%}
+.share-url{margin:12px 0 14px;font:700 13px/1.3 var(--font-ui);letter-spacing:.03em;color:#ffe08a;word-break:break-all}
+.share-actions{display:flex;gap:10px;margin-bottom:10px}.share-actions button{flex:1}
+.share-card>button:last-child{width:100%;min-height:44px}
+#share{z-index:80}

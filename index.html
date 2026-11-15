@@ -19,6 +19,7 @@
   <div class="top">
     <div class="lv" title="Nivel" aria-label="Nivel"><i class="bi level-ico" data-icon="flag" aria-hidden="true"></i><b id="lvl">1</b></div>
     <div class="scores"><div class="sc" title="Puntaje"><i class="bi score-ico" data-icon="trophy" aria-hidden="true"></i><b id="score" aria-label="Puntaje">0</b></div></div>
+    <button class="snd-btn snd-hud" type="button"></button>
     <button class="menubtn" id="bMenu" aria-label="Menú y opciones"><span>☰</span><em>Menú</em></button>
   </div>
 
@@ -191,6 +192,23 @@
       <svg class="flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#c60b1e"/><rect y="10" width="60" height="20" fill="#ffc400"/></svg>
       <span>Español</span>
     </button>
+    <button class="snd-btn snd-menu" type="button"></button>
+    <button class="share-btn" id="bShare" type="button" aria-label="Compartir y jugar en el móvil" title="Compartir y jugar en el móvil"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="21" cy="6" r="3.2"/><circle cx="7" cy="14" r="3.2"/><circle cx="21" cy="22" r="3.2"/><path d="m9.8 12.4 8.4-4.8m-8.4 8 8.4 4.8"/></svg></button>
+  </div>
+</div>
+
+<!-- Compartir / jugar en el móvil -->
+<div class="modal" id="share" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+  <div class="card share-card">
+    <h2 id="shareTitle">Jugar en el móvil</h2>
+    <p>Escanea el código con la cámara de tu móvil y juega al instante.</p>
+    <div class="share-qr" id="shareQr"></div>
+    <div class="share-url" id="shareUrl"></div>
+    <div class="share-actions">
+      <button class="primary" id="shareCopy" type="button">Copiar enlace</button>
+      <button id="shareNative" type="button" hidden>Compartir</button>
+    </div>
+    <button id="shareClose" type="button">Cerrar</button>
   </div>
 </div>
 

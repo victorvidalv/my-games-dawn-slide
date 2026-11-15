@@ -31,6 +31,8 @@ import './styles/24-heroic-paths.css';
 import './styles/25-seals.css';
 import './styles/26-handmade.css';
 import { hooks } from './audio/sound.js';
+import './ui/sound-button.js';
+import './ui/share.js';
 import { saveRun } from './game/session.js';
 import { S, persist, store } from './state.js';
 import { fitBoard } from './ui/board.js';
