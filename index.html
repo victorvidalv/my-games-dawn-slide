@@ -34,6 +34,7 @@
   </div>
 
   <div class="meter" id="meter">
+    <div class="heroic-badge" id="heroicBadge" hidden><i id="heroicIcon" aria-hidden="true"></i><span id="heroicBenefit"></span></div>
     <div class="mrow"><span>Hecho <b id="mv">0</b></span><span>Límite <b id="lim">–</b></span></div>
     <div class="barwrap">
       <div class="bar"><b class="pzone" id="pzone"></b><i id="fill"></i><span id="liaReserve" class="lia-reserve" hidden></span></div>
@@ -63,17 +64,17 @@
  <div class="travel-stage">
   <img class="travel-city-bg" id="travelScene" alt="" draggable="false">
   <div class="travel-vignette" aria-hidden="true"></div>
-  <img class="travel-guide" src="backgrounds/guia-elfa.webp" alt="La guía del camino" draggable="false">
+  <img class="travel-guide" id="travelGuide" src="backgrounds/guia-elfa.webp" alt="La guía del camino" draggable="false">
   <div class="travel-shell">
    <header class="travel-head">
     <h2 class="travel-heading" id="travelTitle"></h2>
     <p class="travel-inscription" id="travelInscription"></p>
    </header>
    <div class="travel-bottom">
-    <p class="travel-ask">Elige tu camino</p>
+    <p class="travel-ask">Próximos 10 niveles</p>
     <div class="route-options" id="routeOptions">
-     <button class="route-option" id="routeNormal"><span class="choice-icon" aria-hidden="true">⌁</span><span class="choice-copy"><strong>Tranquilo</strong><small>Normal</small></span></button>
-     <button class="route-option brave" id="routeBrave"><span class="choice-icon" aria-hidden="true">△</span><span class="choice-copy"><strong>Aventurero</strong><small>Más puntos</small></span></button>
+     <button class="route-option" id="routeNormal"><span class="choice-icon" aria-hidden="true">⌁</span><span class="choice-copy"><strong>Avanzar</strong><small>Dificultad habitual</small></span></button>
+     <button class="route-option brave" id="routeBrave"><span class="choice-icon" id="routeBraveIcon" aria-hidden="true"></span><span class="choice-copy"><strong>Tomar camino heroico</strong><small>Más difícil</small><span class="route-perk" id="routePerk"></span></span></button>
     </div>
    </div>
   </div>
@@ -90,7 +91,8 @@
 <div class="modal" id="heroSelect" role="dialog" aria-modal="true" aria-labelledby="heroSelectTitle"><div class="card hero-selector">
  <div class="tag" id="heroPath" hidden></div><h2 id="heroSelectTitle">Elige tu compañero</h2>
  <div class="hero-cards" id="heroCards" role="radiogroup" aria-label="Elige un héroe"></div>
- <div class="hero-power"><span class="hero-power-icon" id="heroPowerIcon" aria-hidden="true"></span><div><h3 id="heroPowerTitle" hidden></h3><strong id="heroPowerShort"></strong><p id="heroPowerDetail" hidden></p></div></div>
+ <div class="hero-power"><span class="hero-power-icon" id="heroPowerIcon" aria-hidden="true"></span><div><h3 id="heroPowerTitle" hidden></h3><span class="hero-ability-label">Poder</span><strong id="heroPowerShort"></strong><p id="heroPowerDetail" hidden></p></div></div>
+ <div class="hero-route-info" id="heroRouteInfo"><i id="heroRouteIcon" aria-hidden="true"></i><div><span class="hero-ability-label">Camino heroico · desde el nivel 11</span><strong id="heroRouteBenefit"></strong></div></div>
  <p id="heroQuote" hidden></p>
  <div class="hero-selector-actions"><button id="heroCancel">Menú</button><button class="primary" id="heroConfirm">Comenzar aventura ➜</button></div>
 </div></div>
@@ -196,7 +198,8 @@
     <div class="shop-scene">
       <img class="shop-bg" src="/tienda/fondo-tienda.webp" alt="" draggable="false">
       <h2 class="shop-sign" id="shopTitle">Tienda de Don Dublón</h2>
-      <div class="shop-list" id="shopList"></div>
+      <div id="shopDiscount" class="shop-discount" hidden>Camino de las Runas · −33 %</div>
+<div class="shop-list" id="shopList"></div>
       <div class="shop-merchant" id="merchant"><img src="/heroes/vendedor.webp" alt="Don Dublón, el mercader" draggable="false"></div>
       <div class="shop-bubble" id="shopBubble" aria-live="polite"></div>
       <div class="shop-counter">

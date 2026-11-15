@@ -5,6 +5,8 @@ import { isLow, isWon, moveStatus, movesLeft } from '../engine/rules.js';
 import { $ } from '../dom.js';
 import { fail, saveRun, win } from '../game/session.js';
 import { S, gainNow, pathOf, rkey, store } from '../state.js';
+import { heroicPath, isHeroic } from '../game/routes.js';
+import { icon } from './icons.js';
 import { zoneIdx } from '../data/zones.js';
 import { coachOnMove } from './coach.js';
 import { updateHeroHud } from './heroes.js';
@@ -186,11 +188,14 @@ export function recLine(){            // refresca camino, puntaje actual y máxi
   fitScores();
 }
 export function syncRouteStyle(){
- const brave=!!S.run&&S.run.route==='brave';document.body.classList.toggle('adventure-route',brave);
- const level=S.run?.level||1,first=Math.floor((level-1)/10)*10+1,last=Math.min(100,first+9),practice=S.run?.mode==='p';
- $('routeName').textContent=brave?'RUTA AVENTURERA':'RUTA TRANQUILA';$('routeIcon').textContent=brave?'△':'⌁';
- $('routeScope').textContent=`NIV. ${first}–${last}`;$('routeReward').textContent=brave?(practice?'Más reto':'+10 % puntos'):'Normal';
- $('routeStatus').setAttribute('aria-label',brave?`Ruta aventurera, niveles ${first} a ${last}. Puzles algo más difíciles${practice?', sin puntos en Práctica.':' y diez por ciento más de puntos.'}`:`Ruta tranquila, niveles ${first} a ${last}. Dificultad habitual.`);
+ const brave=isHeroic(S.run),path=heroicPath(S.run?.hero);document.body.classList.toggle('adventure-route',brave);
+ const level=S.run?.level||1,first=Math.floor((level-1)/10)*10+1,last=Math.min(100,first+9);
+ $('routeName').textContent=brave?path.name:'AVANZAR';$('routeIcon').innerHTML=brave?icon(path.icon):'⌁';
+ $('routeScope').textContent=`NIV. ${first}–${last}`;$('routeReward').textContent=brave?path.benefit:'Habitual';
+ $('routeStatus').setAttribute('aria-label',brave?`${path.name}. Más difícil. ${path.benefit}. Niveles ${first} a ${last}.`:'Dificultad habitual');
+ $('heroicBadge').hidden=!brave;$('heroicIcon').innerHTML=icon(path.icon);$('heroicBenefit').textContent=`Camino heroico · ${path.benefit}`;
+ $('heroicBadge').setAttribute('aria-label',brave?`${path.name}: ${path.benefit}`:'');
+
 }
 
 export function updateHud(){

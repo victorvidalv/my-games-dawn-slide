@@ -1,5 +1,5 @@
 import { heroById } from './game/heroes.js';
-import { gainFor } from './engine/scoring.js';
+import { routeGain } from './game/routes.js';
 /* ============================ Estado y guardado ============================ */
 /* Los puntajes viven SIEMPRE en localStorage (clave estable entre versiones, con copia de respaldo) */
 const SAVE='desbloquea.rogue.v2', BAK=SAVE+'.bak';
@@ -24,7 +24,7 @@ export const rkey=()=>S.run.mode+S.run.start;
 export const S={run:null,G:null,busy:false,lastCfg:{start:1,mode:'c'}};
 export const heroOf=(id=S.run?.hero)=>heroById(id);
 /** Puntos que dan `moves` movimientos en el tablero actual (incluye racha y bono de ruta aventurera). */
-export const gainNow=(moves=S.G.moves)=>gainFor(S.G.rate,moves,S.G.opt,S.run.streak||0,{brave:S.run.mode!=='p'&&S.run.route==='brave'});
+export const gainNow=(moves=S.G.moves)=>routeGain(S.run,S.G.rate,moves,S.G.opt,S.run.streak||0);
 function mergeRecords(a,b){                              // conserva el máximo de cada registro (p. ej. con dos pestañas abiertas)
   const out={...a};
   for(const k in b){const x=out[k]||{score:0,level:0,runs:0},y=b[k]||{};

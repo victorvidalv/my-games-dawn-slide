@@ -1,5 +1,7 @@
 import { Music, setTensionFx } from '../audio/music.js';
 import { sfx, tone } from '../audio/sound.js';
+import { heroicPath } from './routes.js';
+import { icon } from '../ui/icons.js';
 import { HERO_TALK } from '../data/story.js';
 import { LORE_PORTRAITS, WORLD, lorePortraitSrc } from '../data/lore.js';
 import { playVoice, stopVoice, voiceActive } from '../audio/voice.js';
@@ -99,6 +101,9 @@ function travelDialog(){
  if(!S.run?.pendingClear||S.run.pendingClear.level%10!==0||S.run.pendingClear.level>=100)return Promise.resolve();
  return new Promise(resolve=>{
   const session=S.run,modal=$('travel'),h=heroOf(),city=Math.min(9,Math.floor(S.run.pendingClear.level/10)),story=storyFor(h.id,city*10+1);
+  const path=heroicPath(h.id);$('travelGuide').src=`backgrounds/${path.guide}`;$('travelGuide').alt=path.guideAlt;
+  $('routeBraveIcon').innerHTML=icon(path.icon);$('routePerk').textContent=path.benefit;
+  $('routeBrave').setAttribute('aria-label',`Tomar camino heroico. Más difícil. ${path.benefit}. Próximos 10 niveles.`);
   $('travelScene').src=`backgrounds/zone-${city+1}.webp`;$('travelPortrait').src=heroArt(h.id,'story');$('travelPortrait').alt=h.name;
   $('travelTag').textContent=`THYES · AÑO ${WORLD.year} · CAPÍTULO ${city+1} DE 10 · NIVELES ${city*10+1}–${(city+1)*10}`;
   $('travelSeal').textContent=`Sello de ${story.seal}`;$('travelInscription').textContent=`«${story.inscription}»`;

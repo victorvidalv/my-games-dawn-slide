@@ -11,6 +11,7 @@ import { heroArt } from './story.js';
 import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
+import { heroicPath, heroicHintsLeft } from '../game/routes.js';
 import { preloadAwakening } from './power-art.js';
 export function heroMarkup(h,pose='start'){return `<svg xmlns="http://www.w3.org/2000/svg" class="hero-art" viewBox="0 0 100 145" role="img" aria-label="${h.name}, ${h.role}"><defs><clipPath id="portrait-${h.id}-${pose}"><rect width="100" height="145" rx="16"/></clipPath></defs><image href="${heroArt(h.id,pose)}" width="100" height="145" preserveAspectRatio="xMidYMin slice" clip-path="url(#portrait-${h.id}-${pose})"/><rect x="1" y="1" width="98" height="143" rx="16" fill="none" stroke="${h.color}" stroke-opacity=".65" stroke-width="2"/></svg>`}
 export function syncHero(id=S.run?.hero){const h=heroOf(id);const art=document.querySelector('#travel .traveler>.hero-art');if(art)art.outerHTML=heroMarkup(h,'map');document.documentElement.style.setProperty('--hero-color',h.color);if(h.id!=='lia'&&!matchMedia('(prefers-reduced-motion: reduce)').matches)preloadAwakening(h.id).catch(()=>{})}
@@ -20,7 +21,7 @@ export function chooseHero(start,mode){
   $('heroPath').textContent=`${pathOf(start).n.toUpperCase()} · AVENTURA`;
   const render=()=>{const h=heroOf(selected);modal.style.setProperty('--chosen',h.color);modal.style.setProperty('--hero-scene',cssUrl(`heroes/${h.id}.webp`));
    cards.innerHTML=HEROES.map(v=>`<button class="hero-choice ${v.id===selected?'selected':''}" role="radio" aria-checked="${v.id===selected}" tabindex="${v.id===selected?0:-1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${v.short}"><img src="${heroArt(v.id,v.id===selected?'ready':'start')}" alt="${v.name}, ${v.role}" width="360" height="720"><span class="hero-choice-name">${v.name}</span><span class="hero-check" aria-hidden="true">✓</span></button>`).join('');
-   $('heroPowerIcon').innerHTML=icon(h.icon);$('heroPowerTitle').textContent=h.power;$('heroPowerShort').textContent=h.short;$('heroPowerDetail').textContent=h.detail;$('heroQuote').textContent=h.quote;
+   $('heroPowerIcon').innerHTML=icon(h.icon);$('heroPowerTitle').textContent=h.power;$('heroPowerShort').textContent=h.short;$('heroPowerDetail').textContent=h.detail;$('heroQuote').textContent=h.quote;const path=heroicPath(h.id);$('heroRouteIcon').innerHTML=icon(path.icon);$('heroRouteBenefit').textContent=path.benefit;$('heroRouteInfo').setAttribute('aria-label',`${path.name}: ${path.benefit}. Más difícil, desde el nivel 11.`);
    $('heroConfirm').textContent='Comenzar aventura ➜';
    cards.querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.hero;render();cards.querySelector(`[data-hero="${selected}"]`).focus()});
   };
@@ -34,7 +35,9 @@ export function updateHeroHud(){
  $('heroHudImg').src=`heroes/${h.id}.webp`;$('heroHudImg').alt=h.name;$('heroHudName').textContent=h.name;
  const status=powerState(S.run,S.G);
  $('heroHudPower').textContent=h.id==='lia'?`+${bonusTurns('lia',moveLimit(S.G.opt,S.run.start,S.run.level,S.run.route==='brave'),S.run.start)} turnos de reserva`:status.reason;
- $('hintN').textContent=prac?'∞':S.run.hints;$('bHint').disabled=S.busy||!canHint(h.id,S.run,S.run.mode,S.G.n,S.G.opt);
+ const free=heroicHintsLeft(S.run,S.G.n);
+ $('hintN').textContent=prac?'∞':free?`${free} gratis`:S.run.hints;
+ $('bHint').setAttribute('aria-label',`Pista. ${free} gratis en este tablero y ${S.run.hints} en reserva.`);$('bHint').disabled=S.busy||!canHint(h.id,S.run,S.run.mode,S.G.n,S.G.opt);
  $('bUndo').hidden=true;
  const button=$('bPower');button.hidden=h.id==='lia';button.disabled=S.busy||!status.ok;
  button.dataset.hero=h.id;$('powerIcon').innerHTML=icon(h.id==='jean'?'clock':'stars');

@@ -1,5 +1,7 @@
 import { snapshotRescue } from './heroes.js';
 
+import { shopDiscount } from './routes.js';
+
 import { baseScore } from '../engine/scoring.js';
 
 /**
@@ -31,7 +33,10 @@ export const SHOP_ITEMS = [
 export const itemById = (id) => SHOP_ITEMS.find((i) => i.id === id);
 
 /** Precio en puntos de un objeto: niveles × valor de un nivel de esa dificultad × camino (redondeado a la decena). */
-export const priceOf = (id, rating = 1, start = 1) => Math.round((itemById(id).levels * baseScore(rating) * pathPrice(start)) / 10) * 10;
+export const priceOf = (id, rating = 1, start = 1, run = null) => {
+  const normal = Math.round((itemById(id).levels * baseScore(rating) * pathPrice(start)) / 10) * 10;
+  return Math.round(normal * (1 - shopDiscount(run)));
+};
 
 /** Turnos que da un objeto de turnos sobre el límite actual del tablero (0 si no es de turnos). */
 export const extraTurns = (id, limit) => {
@@ -44,7 +49,7 @@ export function availability(id, { run, G }) {
   if (!run || !G || G.done) return { ok: false, reason: 'No hay un tablero en juego.' };
   if (run.mode === 'p') return { ok: false, reason: 'En Práctica todo es gratis.' };
   if (id === 'redo' && !G.moves) return { ok: false, reason: 'Aún no has movido nada.' };
-  const price = priceOf(id, G.rate, run.start);
+  const price = priceOf(id, G.rate, run.start, run);
   if ((run.score || 0) < price) return { ok: false, reason: 'No te alcanzan los puntos.', price };
   return { ok: true, price };
 }

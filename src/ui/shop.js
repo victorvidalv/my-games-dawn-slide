@@ -3,6 +3,7 @@ import { $ } from '../dom.js';
 import { SHOP_ITEMS, availability, buy, extraTurns, itemById, priceOf } from '../game/shop.js';
 import { saveRun, skipLevel } from '../game/session.js';
 import { S } from '../state.js';
+import { shopDiscount } from '../game/routes.js';
 import { layout, recLine, updateHud } from './board.js';
 import { updateHeroHud } from './heroes.js';
 import { ask } from './menu.js';
@@ -12,7 +13,7 @@ import { playBuyEffect, playRewindEffect } from './turns.js';
 const fmt = (n) => n.toLocaleString('de-DE');
 /** Nombre con los turnos reales que da en este tablero (son un % del límite). */
 const nameOf = (item) => (item.share ? `+${extraTurns(item.id, S.G.limit)} turnos` : item.name);   // la cifra real, nunca un porcentaje
-const priceNow = (id) => priceOf(id, S.G.rate, S.run.start);
+const priceNow = (id) => priceOf(id, S.G.rate, S.run.start, S.run);
 
 /** Refleja en pantalla la compra ya cobrada. */
 function applyEffects(id) {
@@ -107,11 +108,12 @@ function say(text, mood, talk = true) {
 
 function render() {
   $('shopScore').textContent = fmt(S.run.score);
+  $('shopDiscount').hidden = !shopDiscount(S.run);
   $('shopList').innerHTML = SHOP_ITEMS.map((i) => {
     const a = availability(i.id, { run: S.run, G: S.G });
     return `<button class="shop-item${a.ok ? '' : ' off'}" data-id="${i.id}" aria-disabled="${!a.ok}">
       <span class="ico">${icon(i.icon)}</span><span><b>${nameOf(i)}</b><small>${a.ok || !a.reason ? shortOf(i.id) : a.reason}</small></span>
-      <span class="price">${fmt(priceNow(i.id))}</span></button>`;
+      <span class="price">${shopDiscount(S.run)?`<del>${fmt(priceOf(i.id,S.G.rate,S.run.start))}</del>`:''}${fmt(priceNow(i.id))}</span></button>`;
   }).join('');
 }
 

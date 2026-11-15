@@ -165,7 +165,7 @@ falta una familia usa otra), `varyBoard()` crea una variante propia de cada part
 - **Normal:** distancia = objetivo de la curva + ajuste adaptativo.
 - **Adaptativo:** si juegas con ≥ 90 % de eficiencia el ajuste sube (máx. +1 hasta el nivel 10, +2 después);
   si < 40 %, baja (mín. −2).
-- **Ruta aventurera** (al terminar una ciudad): el tablero pide un 10 % más de movimientos (mínimo +1) y el límite de turnos es algo más estricto (−0,04 de factor), a cambio de +10 % de puntos. Calibrada con `npm run simulate` (sección Rutas): al jugador hábil en Normal le compensa; en Difícil y Experto es un riesgo real.
+- **Camino heroico** (al terminar una ciudad): conserva el reto de la antigua ruta aventurera —más movimientos mínimos y un límite algo más estricto— para los tres héroes. El beneficio depende del héroe: Jean +10 % de puntos; Lía dos pistas gratis por tablero; Juth −33 % en tienda. El modelo histórico de `npm run simulate` no calibra estos nuevos beneficios.
 - Siempre dentro de ±3 del objetivo, y el límite de movimientos baja de ×2 a ×1,3 del mínimo entre el nivel 1 y el 100 (`limitFactor`).
 
 > Si cambias `curve()` o las reglas de generación, ejecuta `npm run levels:all` y `npm test`
@@ -227,7 +227,7 @@ Para escucharlas: `npm run melodies:html` genera `output/melodias.html` (un solo
 
 ## Voces de los héroes
 
-Cada héroe saluda con su voz cada ciudad: la primera (el Valle) al empezar la aventura y las demás **al elegir el camino** (Tranquilo o Aventurero) al terminar la ciudad anterior, sin texto en pantalla y con la música más baja. Una frase por ciudad y héroe, una sola vez; respeta el botón de sonido. Los audios están en `public/voces/` (`lia-NN.m4a`, `jean-NN.m4a`, `juth-NN.m4a`, con NN = ciudad 01-10) y el guion en `output/voces/guion-voces.md`; el código en [`src/audio/voice.js`](src/audio/voice.js) y [`src/data/voices.js`](src/data/voices.js).
+Cada héroe saluda con su voz cada ciudad: la primera (el Valle) al empezar la aventura y las demás **al elegir el camino** (Avanzar o Tomar camino heroico) al terminar la ciudad anterior, sin texto en pantalla y con la música más baja. Una frase por ciudad y héroe, una sola vez; respeta el botón de sonido. Los audios están en `public/voces/` (`lia-NN.m4a`, `jean-NN.m4a`, `juth-NN.m4a`, con NN = ciudad 01-10) y el guion en `output/voces/guion-voces.md`; el código en [`src/audio/voice.js`](src/audio/voice.js) y [`src/data/voices.js`](src/data/voices.js).
 
 ## Minijuegos de descanso
 
@@ -276,3 +276,13 @@ Las piezas son épicas pero distintas: el campo `epic` (1-3) de cada tema añade
 
 Todo vive en `localStorage` (`desbloquea.rogue.v2` con copia `.bak`; se mantiene entre versiones).
 Los récords de cada camino se fusionan tomando el máximo, y la partida en curso se guarda tras cada movimiento.
+
+## Caminos heroicos
+
+Tras los niveles 10, 20…90 solo se elige **Avanzar** (dificultad habitual) o **Tomar camino heroico** (más difícil durante los próximos diez niveles). Los tres caminos heroicos usan la misma progresión de dificultad; solo cambia el beneficio:
+
+- Lía: dos pistas gratis por tablero, antes de gastar la reserva. No se acumulan ni se recargan al rehacer o revivir. Símbolo de brasa y acompañante forjadora.
+- Jean: diez por ciento adicional de puntos. Símbolo de reloj y la acompañante elfa original.
+- Juth: treinta y tres por ciento de descuento en los productos de la tienda, redondeado al punto. No afecta a revivir fuera de la tienda. Símbolo de runas y acompañante erudito.
+
+Los poderes de botón y la reserva de turnos de Lía se conservan. La selección de héroe muestra por separado Poder y Camino heroico. El identificador guardado del camino heroico sigue siendo `brave` para conservar las aventuras existentes. Reglas y textos comunes en `src/game/routes.js`.

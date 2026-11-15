@@ -3,6 +3,7 @@
  * funciones puras sobre el objeto `run` (la aventura en curso), sin DOM, y están cubiertas por tests.
  */
 import { moveLimit } from '../engine/difficulty.js';
+import { heroicHintsLeft, useHeroicHint } from './routes.js';
 
 /* Ojo: el identificador interno de Juth sigue siendo 'van' (imágenes heroes/van*.webp y partidas guardadas). Solo cambia el nombre que se ve. */
 export const HEROES = [
@@ -114,11 +115,13 @@ export function freeHintsLeft(heroId, run, level, opt) {
 }
 
 /**
- * Gasta una pista de la reserva. El poder de Juth es independiente de las pistas.
+ * Gasta primero una pista gratuita del camino heroico de Lía; después, la reserva.
+ * El poder de Juth es independiente de las pistas.
  * Devuelve {ok, free}. (ok=false si no hay ninguna.) En Práctica no gasta nada.
  */
 export function spendHint({ heroId, run, mode, level, opt }) {
   if (isPractice(mode)) return { ok: true, free: true };
+  if (useHeroicHint(run, level)) return { ok: true, free: true };
   if ((run.hints || 0) > 0) {
     run.hints--;
     return { ok: true, free: false };
@@ -127,7 +130,7 @@ export function spendHint({ heroId, run, mode, level, opt }) {
 }
 
 /** ¿Se puede pedir una pista ahora? (gratis o de la reserva) */
-export const canHint = (heroId, run, mode, level, opt) => isPractice(mode) || (run?.hints || 0) > 0;
+export const canHint = (heroId, run, mode, level, opt) => isPractice(mode) || heroicHintsLeft(run, level) > 0 || (run?.hints || 0) > 0;
 
 /**
  * Pistas ganadas al completar `level`; suma a run.hints y devuelve cuántas.
