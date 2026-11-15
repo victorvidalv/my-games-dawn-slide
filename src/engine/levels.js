@@ -64,7 +64,7 @@ export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) 
  *  - brave: ruta aventurera → usa la siguiente distancia mayor disponible.
  * Devuelve {pieces, pos, opt} donde opt = movimientos mínimos reales del estado elegido.
  */
-export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.random, boost = 0 }) {
+export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.random, boost = 0, withAnalysis = false }) {
   const walls = board.walls || [];
   const an = analyze(board.pieces, board.pos, 600000, walls);
   if (!an) throw new Error('Tablero sin solución');
@@ -90,6 +90,6 @@ export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.r
   const key = keys[Math.floor(rng() * keys.length)];
   const pos = [];
   for (let i = 0, v = key; i < board.pieces.length; i++, v = Math.floor(v / 8)) pos.push(v % 8);
-  return { pieces: board.pieces, pos, walls, opt };
+  return { pieces: board.pieces, pos, walls, opt, ...(withAnalysis ? { analysis: an } : {}) };
 }
 

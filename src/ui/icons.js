@@ -17,6 +17,7 @@ const GLASS = '#bfefff';
 const RED = '#d9604f';
 
 const BODIES = {
+  seal: `<path d="M10 3h12l7 7v12l-7 7H10l-7-7V10z" fill="#b58a4e" stroke="#172731" stroke-width="2"/><path d="M11.5 6.5h9l5 5v9l-5 5h-9l-5-5v-9z" fill="#e4cf9b"/><path d="M16 9l7 7-7 7-7-7z" fill="#344b50" stroke="#8f6336"/><circle cx="16" cy="14" r="2.2" fill="#d27c5d" stroke="none"/><path d="M16 16v4m0-1h2" stroke="#e8c884" stroke-width="1.5"/>`,
   /** Farol con llama: la pista. */
   hint: `<path d="M16 2.8v3" /><circle cx="16" cy="3.3" r="1.5" fill="${BRASS}"/>
     <path d="M10.2 9h11.6l-2.2-3.6h-7.2z" fill="${BRASS_DK}"/>

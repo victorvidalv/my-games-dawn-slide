@@ -5,6 +5,7 @@ import { saveRun } from '../game/session.js';
 import { S, heroOf } from '../state.js';
 import { afterMove, cancelDrag, layout, updateHud } from './board.js';
 import { icon } from './icons.js';
+import { processSealMove } from './seals.js';
 import { AWAKENING_MS, prepareAwakening } from './power-art.js';
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -55,7 +56,7 @@ export async function activatePower() {
         G.pos = pos.slice(); G.hist.pop(); G.moves = Math.max(0, G.moves - 1);
       } else {
         const step = action.steps[n]; i = step.i;
-        G.hist.push(G.pos.slice()); G.pos[i] = step.to; G.moves++;
+        G.hist.push(G.pos.slice()); G.pos[i] = step.to; G.moves++;processSealMove();
       }
       const piece = G.els[i];
       piece?.classList.add('power-piece');

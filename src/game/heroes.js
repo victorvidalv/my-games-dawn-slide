@@ -71,6 +71,8 @@ export function snapshotRescue(G) {
     walls: (G.walls || []).map((w) => w.slice()),
     start: G.start.slice(),
     opt: G.opt,
+    seal: G.seal?{...G.seal,cell:G.seal.cell.slice()}:null,
+    family: G.family,
   };
 }
 

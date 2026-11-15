@@ -1,0 +1,25 @@
+{
+  "version": 46,
+  "mode": "full",
+  "seeds": 3,
+  "boards": 1710,
+  "heroChecks": 5130,
+  "seals": 1458,
+  "adjusted": 31,
+  "detours": 1413,
+  "covered": 230,
+  "truncated": 48,
+  "maxAdded": 5,
+  "maxMs": 20090.891831999994,
+  "families": {
+    "plain": 711,
+    "walls": 123,
+    "heavy": 144,
+    "gates": 156,
+    "ice": 126,
+    "duo": 198,
+    "mixed": 252
+  },
+  "failures": [],
+  "seconds": 450
+}

@@ -11,6 +11,7 @@ import { zoneIdx } from '../data/zones.js';
 import { coachOnMove } from './coach.js';
 import { updateHeroHud } from './heroes.js';
 import { lowState, renderTurns } from './turns.js';
+import { renderSeal, processSealMove } from './seals.js';
 export const boardEl=$('board'), cellPx=()=>boardEl.clientWidth/6;
 /* Mide el espacio libre real y da al tablero el mayor tamaño posible (sin scroll) */
 export function fitBoard(){
@@ -44,7 +45,7 @@ const HEAVY_MARK='<span class="mk heavy" title="Pesada: 1 casilla"><svg viewBox=
 const ICE_MARK='<span class="mk ice" title="Hielo: patina hasta el tope"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14.5" fill="#133d54" stroke="#091118" stroke-width="1.6"/><circle cx="16" cy="16" r="12.2" fill="none" stroke="#baf1ff" stroke-width="1.4"/><path d="M16 7.5v17M8.6 11.7l14.8 8.6M23.4 11.7L8.6 20.3" stroke="#e9fcff" stroke-width="2" stroke-linecap="round"/><path d="M14 9.8l2 2 2-2M14 22.2l2-2 2 2" fill="none" stroke="#8de2fc" stroke-width="1.4" stroke-linecap="round"/><circle cx="16" cy="16" r="2.5" fill="#ffffff"/></svg></span>';
 const STRAPS='<span class="strap h"></span><span class="strap v"></span>';
 export function buildPieces(){
-  boardEl.querySelectorAll('.piece,.wall,.plate,.links').forEach(e=>e.remove());
+  boardEl.querySelectorAll('.piece,.wall,.plate,.links,.seal-floor').forEach(e=>e.remove());
   boardEl.dataset.city=zoneIdx(S.G.n);
   S.G.gateLocked={};
   S.G.wallEls=(S.G.walls||[]).map(()=>{const el=document.createElement('div');el.className='wall';el.innerHTML='<i></i>';boardEl.appendChild(el);return el});
@@ -100,7 +101,7 @@ export function syncSpecials(animate=true){
     }
   });
 }
-export const layout=()=>{if(!S.G)return;S.G.els.forEach((_,i)=>place(i));placeStatic();syncSpecials(false);updateLinks()};
+export const layout=()=>{if(!S.G)return;S.G.els.forEach((_,i)=>place(i));placeStatic();syncSpecials(false);updateLinks();renderSeal()};
 
 
 
@@ -160,7 +161,7 @@ function attach(el,i){
 }
 export function afterMove(){
   if(!S.run||!S.G||S.G.done)return;
-  updateHud();saveRun();coachOnMove();
+  processSealMove();updateHud();saveRun();coachOnMove();
   const prac=S.run.mode==='p';
   const status=prac?'ok':moveStatus(S.G.moves,S.G.limit);
   if(isWon(S.G.pos)){win();return}                         // ganar en el último turno vale
@@ -212,7 +213,7 @@ export function updateHud(){
   $('meter').classList.toggle('danger',!prac&&isLow(S.G.moves,S.G.limit));
   const {low,last}=lowState();                          // pocos turnos: solo aviso visual, la música no cambia
   setTensionFx(low,last);
-  renderTurns();
+  renderTurns();renderSeal();
 }
 
 /* ---------- Victoria de nivel ---------- */

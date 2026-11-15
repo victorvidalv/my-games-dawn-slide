@@ -7,16 +7,13 @@ import { LORE_PORTRAITS, WORLD, lorePortraitSrc } from '../data/lore.js';
 import { playVoice, stopVoice, voiceActive } from '../audio/voice.js';
 import { ZONES, zoneIdx } from '../data/zones.js';
 import { $ } from '../dom.js';
-import { MAX_LEVEL, rateAt, startHintsFor } from '../engine/difficulty.js';
-import { hash32 } from '../engine/rng.js';
+import { MAX_LEVEL, startHintsFor } from '../engine/difficulty.js';
 import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
-import { buildLevel, pickBoard, varyBoard } from '../engine/levels.js';
 import levelBank from '../data/levels.json';
 import specialBank from '../data/special.json';
-import { levelPlan, tutorialFor } from './mechanics.js';
-import { decodeBoard } from '../engine/board.js';
-import { minMoves } from '../engine/solver.js';
+import { buildAdventureLevel } from './build-adventure.js';
+import { sealLimit } from './seals.js';
 import { baseScore } from '../engine/scoring.js';
 import { clearRewards, heroLimit } from './heroes.js';
 import { canPaidRevive, hasRevive, payRevive, useRevive } from './shop.js';
@@ -31,7 +28,7 @@ import { openMenu } from '../ui/menu.js';
 import { heroArt, storyFor } from '../ui/story.js';
 export function saveRun(){
  if(S.run&&S.G&&!S.G.done&&S.G.n===S.run.level&&!S.run.pendingClear&&!S.run.rescue&&!S.run.pendingRevive){
-  S.run.board={level:S.G.n,rate:S.G.rate,pieces:S.G.pieces.map(p=>({...p})),walls:(S.G.walls||[]).map(w=>w.slice()),pos:S.G.pos.slice(),start:S.G.start.slice(),opt:S.G.opt,limit:S.G.limit,bought:S.G.bought||0,tutorial:S.G.tutorial||null,moves:S.G.moves,hist:S.G.hist.map(p=>p.slice()),colors:S.G.colors?.slice()};
+  S.run.board={level:S.G.n,rate:S.G.rate,pieces:S.G.pieces.map(p=>({...p})),walls:(S.G.walls||[]).map(w=>w.slice()),pos:S.G.pos.slice(),start:S.G.start.slice(),opt:S.G.opt,limit:S.G.limit,bought:S.G.bought||0,tutorial:S.G.tutorial||null,moves:S.G.moves,hist:S.G.hist.map(p=>p.slice()),colors:S.G.colors?.slice(),family:S.G.family,seal:S.G.seal?{...S.G.seal,cell:S.G.seal.cell.slice()}:null};
  }
  store.run=S.run&&{...S.run};persist();
 }
@@ -47,26 +44,8 @@ export async function startRun(start,mode){
 }
 export async function startLevel(){
   S.busy=true;
-  const rate=rateAt(S.run.start,S.run.level);
-  // Tablero precalculado para esta dificultad; el objetivo se desplaza según tu eficiencia (adaptativo)
-  const plan=levelPlan(S.run.level);                               // ¿normal, con muros, candados o pesadas?
-  const tut=S.run.mode==='p'?null:tutorialFor(S.run.level,store.tips);       // primera vez de una pieza: tablero de aprendizaje
-  let base,lvl;
-  if(tut){
-   const b=decodeBoard(tut.board);base={...b,family:plan.family};
-   lvl={pieces:b.pieces,pos:b.pos,walls:b.walls,opt:minMoves(b.pieces,b.pos,b.walls)};
-  }else{
-   base=pickBoard(levelBank.ratings,rate,S.run.seed,S.run.level,plan.family,specialBank);
-   const board=varyBoard(base,rate,hash32(S.run.seed,S.run.level,7));   // variante propia de cada partida
-   lvl=buildLevel(board,{rating:rate,adj:S.run.adj,brave:S.run.route==='brave'});
-  }
-  S.G={n:S.run.level,rate,pieces:lvl.pieces,pos:lvl.pos,walls:lvl.walls||[],start:lvl.pos.slice(),opt:lvl.opt,limit:heroLimit(S.run.hero,lvl.opt,S.run.start,S.run.level,S.run.route==='brave'),moves:0,hist:[],done:false,els:[],plan,family:base.family,tutorial:tut?tut.mech:null};
-  if(S.run.rescue&&S.run.rescue.level===S.run.level){const r=S.run.rescue;S.G={...S.G,rate:r.rate,pieces:r.pieces,walls:(r.walls||[]).map(w=>w.slice()),pos:r.start.slice(),start:r.start.slice(),opt:r.opt,limit:heroLimit(S.run.hero,r.opt,S.run.start,S.run.level,S.run.route==='brave')}}
-  const saved=S.run.board;
-  if(!S.run.rescue&&saved?.level===S.run.level&&saved.pieces?.length===saved.pos?.length&&saved.start?.length===saved.pos.length){
-   S.G={...S.G,rate:saved.rate,pieces:saved.pieces.map(p=>({...p})),walls:(saved.walls||[]).map(w=>w.slice()),pos:saved.pos.slice(),start:saved.start.slice(),opt:saved.opt,limit:saved.limit,bought:saved.bought||0,tutorial:saved.tutorial||null,moves:saved.moves||0,hist:(saved.hist||[]).map(p=>p.slice())};
-  }
-  S.G.colors=saved?.level===S.run.level&&saved.colors?saved.colors.slice():[0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5);
+  S.G=buildAdventureLevel(S.run,{levels:levelBank.ratings,special:specialBank,tips:store.tips||{}});
+  S.G.colors ||= [0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5);
   $('lvl').textContent=S.G.n;$('mn').textContent=S.G.opt;$('base').textContent=S.run.mode==='p'?'—':baseScore(S.G.rate);
   applyZone(zoneIdx(S.G.n));renderStage();
   const prac=S.run.mode==='p';
@@ -194,7 +173,7 @@ async function offerPaidRevive(why){
   if(accepted){
     const r=payRevive(S.run);
     if(r.ok){
-      S.G.pos=S.G.start.slice();S.G.moves=0;S.G.hist=[];S.G.done=false;S.G.bought=0;S.G.limit=heroLimit(S.run.hero,S.G.opt,S.run.start,S.run.level,S.run.route==='brave');
+      S.G.pos=S.G.start.slice();S.G.moves=0;S.G.hist=[];S.G.done=false;S.G.bought=0;S.G.limit=sealLimit(S.G.seal,heroLimit(S.run.hero,S.G.opt,S.run.start,S.run.level,S.run.route==='brave'));
       $('score').textContent=S.run.score.toLocaleString('de-DE');$('lim').textContent=S.G.limit;recLine();
       saveRun();boardEl.classList.remove('board-lock');S.busy=false;$('bUndo').disabled=true;layout();updateHud();
       Music.duck(1);playReviveEffect('¡RENACER!',false);$('msg').textContent=`Renaciste (−${r.cost.toLocaleString('de-DE')} pts). ¡Este tablero empieza de nuevo!`;

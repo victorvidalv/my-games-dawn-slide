@@ -296,3 +296,19 @@ Tras los niveles 10, 20…90 solo se elige **Avanzar** (dificultad habitual) o *
 - Juth: treinta y tres por ciento de descuento en los productos de la tienda, redondeado al punto. No afecta a revivir fuera de la tienda. Símbolo de runas y acompañante erudito.
 
 Los poderes de botón y la reserva de turnos de Lía se conservan. La selección de héroe muestra por separado Poder y Camino heroico. El identificador guardado del camino heroico sigue siendo `brave` para conservar las aventuras existentes. Reglas y textos comunes en `src/game/routes.js`.
+
+## Sellos opcionales
+
+Desde el nivel 5 hay un sello cada tres o cuatro niveles. El calendario evita las primeras lecciones de piezas especiales y se calcula en `src/game/seals.js`. Una pieza concreta y una casilla del suelo llevan el mismo emblema y borde discontinuo dorado. Solo esa pieza recoge el sello al atravesar la casilla, incluido el recorrido intermedio de una pieza de hielo. Se puede salir sin recogerlo.
+
+El sello da puntos al recogerlo. Su valor crece con la dificultad y tiene en cuenta el coste del desvío; el +10 % heroico de Jean se aplica también a esos puntos. No altera el mínimo de movimientos para salir ni el cálculo habitual de puntos del nivel. El premio se guarda en una contabilidad por nivel y no se vuelve a dar al rebobinar, rehacer, revivir o recargar. Los tableros antiguos ya guardados se restauran sin inyectarles un nuevo objetivo.
+
+La colocación recorre movimientos legales antes de salir y añade una ruta de salida exacta. Respeta muros, candados, pesadas y el grafo dirigido del hielo. Cada sello pasa además una reproducción de su ruta completa en tiempo de ejecución. Si no se encuentra una colocación certificada se conserva el tablero original sin añadir un objetivo inválido. El margen extra de turnos está acotado por el mínimo del tablero, hasta seis turnos; solo se añade lo necesario para permitir la ruta comprobada más un turno de margen. El juego y el simulador usan el mismo constructor `src/game/build-adventure.js`.
+
+Verificación reproducible de todos los niveles, tres dificultades, dos rutas y tres héroes:
+
+```sh
+TEST_THREADS=2 npm run simulate:seals -- --full --seeds=3
+```
+
+La simulación de la versión 46 está en [`seal-simulation-report.json`](seal-simulation-report.json): 1.710 tableros reales, 5.130 comprobaciones de héroe y 1.458 rutas de sello certificadas, sin fallos. En esa muestra 31 rutas necesitaron ampliar el límite, como máximo cinco turnos. El presupuesto determinista de búsqueda puede recortar la exploración de candidatos; todos los objetivos emitidos conservan una ruta completa y validada. El modelo probabilístico antiguo de `npm run simulate` sigue separado de esta comprobación exacta de alcanzabilidad.
