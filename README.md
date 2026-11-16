@@ -324,7 +324,7 @@ La simulación de la versión 46 está en [`seal-simulation-report.json`](seal-s
 
 ## Salida en cualquier lado
 
-Desde el nivel 11 el tablero se gira (0°, 90°, 180° o 270°, según la semilla y el nivel), de modo que la llave puede salir a la derecha, abajo, a la izquierda o arriba (`src/game/orientation.js`). Es un giro visual: el motor no cambia; el arrastre se traduce al eje del tablero y las marcas (gemas, candados) se contragiran para leerse derechas. Los tutoriales no giran.
+A partir del nivel 17, y luego cada 6 o 7 niveles (irregular, según la partida), el tablero se gira 90°, 180° o 270°, de modo que la llave sale abajo, a la izquierda o arriba; el resto de niveles mantienen la salida a la derecha, así es una sorpresa. Cada giro se anuncia con una introducción de ~2 s («Maleficio», `src/ui/curse.js`; un toque la salta) y el marco del tablero lleva un borde maldito violeta mientras dura el nivel (`src/game/orientation.js`). Es un giro visual: el motor no cambia; el arrastre se traduce al eje del tablero y las marcas (gemas, candados) se contragiran para leerse derechas. Los tutoriales y los jefes no giran.
 
 ## Empezar desde un nivel desbloqueado
 

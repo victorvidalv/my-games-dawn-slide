@@ -33,6 +33,7 @@ import './styles/26-handmade.css';
 import './styles/27-boss-lore.css';
 import './styles/28-boss-polish.css';
 import './styles/29-boss-phase.css';
+import './styles/30-curse.css';
 import { hooks } from './audio/sound.js';
 import './ui/sound-button.js';
 import { warmBanks } from './data/banks.js';

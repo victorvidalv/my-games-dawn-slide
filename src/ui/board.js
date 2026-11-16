@@ -14,6 +14,7 @@ import { lowState, renderTurns } from './turns.js';
 import { renderSeal, processSealMove } from './seals.js';
 import { numLocale } from '../i18n.js';
 import { boardRotation, localDelta } from '../game/orientation.js';
+import { hideCurse, showCurse } from './curse.js';
 export const boardEl=$('board'), cellPx=()=>boardEl.clientWidth/6;
 /* Mide el espacio libre real y da al tablero el mayor tamaño posible (sin scroll) */
 export function fitBoard(){
@@ -54,6 +55,7 @@ export function buildPieces(){
   boardEl.dataset.city=zoneIdx(S.G.n);
   S.G.rot=boardRotation(S.run?.seed,S.G.n,!!S.G.tutorial);                       // la salida cambia de lado (derecha, abajo, izquierda, arriba)
   boardEl.parentElement.style.setProperty('--rot',S.G.rot+'deg');boardEl.parentElement.dataset.rot=S.G.rot;
+  if(S.G.rot&&!S.G.moves)showCurse(S.G.rot);else hideCurse();
   boardEl.classList.toggle('is-boss',!!S.G.plan?.boss);
   S.G.gateLocked={};
   S.G.wallEls=(S.G.walls||[]).map(()=>{const el=document.createElement('div');el.className='wall';el.innerHTML='<i></i>';boardEl.appendChild(el);return el});

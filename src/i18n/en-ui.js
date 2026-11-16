@@ -69,6 +69,7 @@ export const EN_UI = {
   '{p} usado. Se renueva en el próximo tablero.': '{p} used. It renews on the next board.',
   'Poder activado': 'Power activated', 'Pasado · {a}/{b}': 'Past · {a}/{b}', 'Destino · {a}/{b}': 'Destiny · {a}/{b}',
   'Camino heroico · {b}': 'Heroic path · {b}',
+  'MALEFICIO': 'CURSE', '¡Cuidado!': 'Beware!', 'La salida ahora está abajo': 'The exit is now at the bottom', 'La salida ahora está a la izquierda': 'The exit is now on the left', 'La salida ahora está arriba': 'The exit is now at the top',
   'Puntos de reinicio: {n}': 'Restart points: {n}', 'ninguno': 'none',
   'Empezar desde el nivel': 'Start from level', 'Inicio': 'Start', 'Nivel 1': 'Level 1', 'Desbloqueado': 'Unlocked', 'Alcanza el {n}': 'Reach {n}',
   'Nivel {n}': 'Level {n}', 'Nivel de inicio': 'Starting level', 'Desde el principio': 'From the beginning',
