@@ -321,3 +321,9 @@ La simulación de la versión 46 está en [`seal-simulation-report.json`](seal-s
 ## Posicionamiento (SEO)
 
 `index.html` incluye título y descripción, URL canónica, Open Graph y Twitter Card (imagen `public/og-image.jpg`, 1200×630), datos estructurados `VideoGame` (JSON-LD) y un texto de respaldo `<noscript>`. Al compilar se generan `robots.txt` y `sitemap.xml`. La dirección pública se define al construir: `SITE_URL=https://dawnslide.com npm run build` (por defecto `https://dawnslide.com`). Tras publicar: dar de alta el sitio en Google Search Console y enviar `sitemap.xml`.
+
+## Simuladores de equilibrio
+
+- `npm run simulate` (`src/game/balance.js`): la partida de 100 niveles con poderes de héroe, camino heroico, sellos, tienda, revivir y minijuegos.
+- `npm run simulate:bosses` (`src/game/boss-balance.js`): **segundo simulador** de los jefes. Añade un *reloj humano* (cada movimiento cuesta ejecutarlo y pensarlo, según habilidad y largo del tablero), el efecto de las piezas especiales sobre los errores (`FAMILY_HARD`) y el duelo de jefe (se gana dentro del límite de turnos y, si lo hay, del tiempo). Imprime la regla de cada jefe, la tasa de victoria por camino y habilidad, el jugador típico de cada jefe frente a su tasa objetivo y las causas de derrota. `npm run simulate:bosses -- 500 --calibrar` propone los valores de `BOSS_RULES` (`src/game/bosses.js`) para las tasas objetivo (`BOSS_TARGET`).
+- Para retocar la dificultad de un jefe: cambia su `cap` (tope del límite de turnos) o su `mult` (holgura de la contrarreloj) en `BOSS_RULES`, mira la tabla y ajusta hasta que el jugador típico quede cerca del objetivo. `tests/boss-balance.test.js` lo vigila.

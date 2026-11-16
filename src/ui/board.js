@@ -45,11 +45,19 @@ const LOCK_SVG='<svg class="lk shut" viewBox="0 0 24 24"><rect x="5" y="11" widt
 const HEAVY_MARK='<span class="mk heavy" title="Pesada: 1 casilla"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14.6" fill="#2b323a" stroke="#1c1208" stroke-width="1.4"/><circle cx="16" cy="16" r="12.6" fill="none" stroke="#f1e6c8" stroke-width="1.8"/><text x="16" y="19.6" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="17" fill="#fff3d0">1</text><path d="M8.2 25.4h5M10.6 23.6l-2.4 1.8 2.4 1.8M23.8 25.4h-5M21.4 23.6l2.4 1.8-2.4 1.8" fill="none" stroke="#ffd98a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
 const ICE_MARK='<span class="mk ice" title="Hielo: patina hasta el tope"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14.5" fill="#133d54" stroke="#091118" stroke-width="1.6"/><circle cx="16" cy="16" r="12.2" fill="none" stroke="#baf1ff" stroke-width="1.4"/><path d="M16 7.5v17M8.6 11.7l14.8 8.6M23.4 11.7L8.6 20.3" stroke="#e9fcff" stroke-width="2" stroke-linecap="round"/><path d="M14 9.8l2 2 2-2M14 22.2l2-2 2 2" fill="none" stroke="#8de2fc" stroke-width="1.4" stroke-linecap="round"/><circle cx="16" cy="16" r="2.5" fill="#ffffff"/></svg></span>';
 const STRAPS='<span class="strap h"></span><span class="strap v"></span>';
+const TONE_SYM=['◆','●','▲'];
+const TONE_NAMES=['azul ◆','ámbar ●','verde ▲'];
+const toneMark=(t)=>`<span class="mk tone t${t}" title="Gema ${TONE_NAMES[t]}">${TONE_SYM[t]}</span>`;
 export function buildPieces(){
-  boardEl.querySelectorAll('.piece,.wall,.plate,.links,.seal-floor').forEach(e=>e.remove());
+  boardEl.querySelectorAll('.piece,.wall,.door,.plate,.links,.seal-floor').forEach(e=>e.remove());
   boardEl.dataset.city=zoneIdx(S.G.n);
+  boardEl.classList.toggle('is-boss',!!S.G.plan?.boss);
   S.G.gateLocked={};
   S.G.wallEls=(S.G.walls||[]).map(()=>{const el=document.createElement('div');el.className='wall';el.innerHTML='<i></i>';boardEl.appendChild(el);return el});
+  S.G.doorEls=(S.G.doors||[]).map(([, , tone])=>{
+    const el=document.createElement('div');el.className=`door tone-${tone}`;el.setAttribute('aria-label',`Portón ${TONE_NAMES[tone]}`);
+    el.innerHTML=`<i>${TONE_SYM[tone]}</i><b></b>`;boardEl.appendChild(el);return el;
+  });
   S.G.plateEls=S.G.pieces.map(p=>{if(p.kind!=='gate')return null;const el=document.createElement('div');el.className='plate';el.innerHTML='<i></i>';boardEl.appendChild(el);return el});
   S.G.linkEls={};
   if(S.G.plateEls.some(Boolean)){                // un hilo punteado une cada candado con su placa: se ve qué abre qué
@@ -59,9 +67,11 @@ export function buildPieces(){
   }
   S.G.els=S.G.pieces.map((p,i)=>{
     const el=document.createElement('div');
-    el.className='piece enter '+p.o+' '+(i===0?'red':'c'+S.G.colors[i%8])+(p.kind?' '+p.kind:'');
+    const toneCls=p.tone!==undefined?` toned tone-${p.tone}`:'';
+    el.className='piece enter '+p.o+' '+(i===0?'red':'c'+S.G.colors[i%8])+(p.kind?' '+p.kind:'')+toneCls;
     el.style.setProperty('--dl',(i*18)+'ms');
-    el.innerHTML='<div class="face"></div>'+(p.kind==='gate'?STRAPS+'<span class="mk gate">'+LOCK_SVG+'</span>':p.kind==='heavy'?HEAVY_MARK:p.kind==='ice'?ICE_MARK:'');
+    const badge=p.kind==='gate'?STRAPS+'<span class="mk gate">'+LOCK_SVG+'</span>':p.kind==='heavy'?HEAVY_MARK:p.kind==='ice'?ICE_MARK:'';
+    el.innerHTML='<div class="face"></div>'+badge+(p.tone!==undefined?toneMark(p.tone):'');
     el.addEventListener('animationend',e=>{if(e.animationName==='enter')el.classList.remove('enter')});
     boardEl.appendChild(el);attach(el,i);return el;
   });
@@ -75,6 +85,7 @@ export function place(i,x=S.G.pos[i]){
 function placeStatic(){
   const s=cellPx();
   (S.G.walls||[]).forEach(([r,c],k)=>{const el=S.G.wallEls?.[k];if(!el)return;el.style.left=c*s+'px';el.style.top=r*s+'px';el.style.width=el.style.height=s+'px'});
+  (S.G.doors||[]).forEach(([r,c],k)=>{const el=S.G.doorEls?.[k];if(!el)return;el.style.left=c*s+'px';el.style.top=r*s+'px';el.style.width=el.style.height=s+'px'});
   S.G.pieces.forEach((p,i)=>{const el=S.G.plateEls?.[i];if(!el)return;el.style.left=p.plate[1]*s+'px';el.style.top=p.plate[0]*s+'px';el.style.width=el.style.height=s+'px'});
 }
 const flashEl=(el,cls,ms)=>{el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),ms)};
@@ -123,6 +134,17 @@ function iceTrail(p,x0,lo,hi,s,before){
   };
 }
 
+function blockReasonDoor(p,posVal){
+  const doors=S.G?.doors;if(!doors?.length)return -1;
+  const r=p.o==='h'?p.fix:posVal,c=p.o==='h'?posVal:p.fix;
+  const k=doors.findIndex(([dr,dc,t])=>dr===r&&dc===c&&t!==p.tone);
+  return k;
+}
+function crossedDoorIdx(p,x0,x){
+  const doors=S.G?.doors;if(!doors?.length)return -1;
+  const a=Math.min(x0,x),b=Math.max(x0,x)+p.len-1;
+  return doors.findIndex(([r,c,t])=>t===p.tone&&(p.o==='h'?r===p.fix&&c>=a&&c<=b:c===p.fix&&r>=a&&r<=b));
+}
 export function cancelDrag(){activeDrag?.cancel()}
 let activeDrag=null;                           // arrastre en curso: solo puede haber uno (evita dos dedos a la vez)
 function attach(el,i){
@@ -130,18 +152,33 @@ function attach(el,i){
     if(!S.G||S.G.done||S.busy) return;
     if(activeDrag) activeDrag.cancel();          // un arrastre anterior que no terminó nunca bloquea el tablero
     e.preventDefault();try{el.setPointerCapture(e.pointerId)}catch(_){}
-    const p=S.G.pieces[i],s=cellPx(),[lo,hi]=slideRange(S.G.pieces,S.G.pos,i,S.G.walls),x0=S.G.pos[i],start=p.o==='h'?e.clientX:e.clientY;
+    const p=S.G.pieces[i],s=cellPx(),[lo,hi]=slideRange(S.G.pieces,S.G.pos,i,S.G.walls,S.G.doors),x0=S.G.pos[i],start=p.o==='h'?e.clientX:e.clientY;
     if(p.kind==='gate'&&isLocked(S.G.pieces,S.G.pos,i,S.G.walls)){      // candado cerrado: sacude, avisa y señala la placa
-      flashEl(el,'deny',450);flashEl(S.G.plateEls[i],'hint',1500);sfx.locked();vib([30,30,30]);
+      flashEl(el,'deny',450);flashEl(boardEl.parentElement,'board-shake',260);flashEl(S.G.plateEls[i],'hint',1500);sfx.locked();vib([30,30,30]);
       $('msg').textContent='Está atrapada. Cubre la placa ▣ con otra pieza para abrirla.';return;
     }
-    el.classList.remove('hint');el.classList.add('drag');let cur=x0,lastCell=x0,delta=0;
+    el.classList.remove('hint');el.classList.add('drag');let cur=x0,lastCell=x0,delta=0,bumped=0;
     const trail=p.kind==='ice'?iceTrail(p,x0,lo,hi,s,el):null;
     const move=ev=>{
       if(ev.pointerId!==e.pointerId) return;
-      delta=((p.o==='h'?ev.clientX:ev.clientY)-start)/s;cur=Math.max(lo,Math.min(hi,x0+delta));
+      delta=((p.o==='h'?ev.clientX:ev.clientY)-start)/s;
+      const raw=x0+delta;cur=Math.max(lo,Math.min(hi,raw));
       el.style[p.o==='h'?'left':'top']=cur*s+'px';trail?.aim(delta);
       const c=Math.round(cur);if(c!==lastCell){lastCell=c;sfx.tick(c);vib(4)}
+      const hitDir=raw<lo-0.14?-1:raw>hi+0.14?1:0;
+      if(hitDir&&hitDir!==bumped){
+        bumped=hitDir;
+        const stopPos=hitDir<0?lo-1:hi+p.len;
+        const dk=stopPos>=0&&stopPos<6?blockReasonDoor(p,stopPos):-1;
+        if(dk>=0){
+          const dt=S.G.doors[dk][2];
+          flashEl(el,'deny',320);flashEl(S.G.doorEls[dk],'deny-door',450);flashEl(boardEl.parentElement,'board-shake',200);
+          sfx.doorDeny();vib([24,30,24]);
+          $('msg').textContent=`Portón cerrado: solo pasa la gema ${TONE_NAMES[dt]}.`;
+        } else {
+          flashEl(el,'bump-hit',180);sfx.bump();vib(10);
+        }
+      } else if(!hitDir){bumped=0}
     };
     let ended=false;
     const end=commit=>{
@@ -150,7 +187,15 @@ function attach(el,i){
       try{el.releasePointerCapture(e.pointerId)}catch(_){}
       el.classList.remove('drag');
       const x=commit&&S.G&&!S.G.done?snapDrag(x0,lo,hi,delta,p.kind):x0;
-      if(x!==x0){S.G.hist.push(S.G.pos.slice());S.G.pos[i]=x;S.G.moves++;(p.kind==='heavy'?sfx.heavyMove:p.kind==='gate'?sfx.gateMove:p.kind==='ice'?sfx.iceMove:sfx.move)();if(p.kind==='ice')flashEl(el,'sliding',220)}
+      if(x!==x0){
+        S.G.hist.push(S.G.pos.slice());S.G.pos[i]=x;S.G.moves++;
+        (p.kind==='heavy'?sfx.heavyMove:p.kind==='gate'?sfx.gateMove:p.kind==='ice'?sfx.iceMove:sfx.move)();
+        const passDoor=crossedDoorIdx(p,x0,x);
+        if(passDoor>=0){sfx.doorOpen();flashEl(S.G.doorEls[passDoor],'door-pass',550);vib([14,18,22])}
+        else if(p.kind==='heavy'){flashEl(boardEl.parentElement,'board-thud',180);vib([24,18])}
+        else if(p.kind==='ice'){flashEl(el,'sliding',220);vib([8,40,20]);setTimeout(()=>{flashEl(boardEl.parentElement,'board-thud',140)},120)}
+        else vib(9);
+      }
       trail?.clear(x!==x0?380:0);
       if(S.G&&S.G.els[i]===el){place(i);syncSpecials();updateLinks()}
       if(x!==x0) afterMove();

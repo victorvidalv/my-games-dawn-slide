@@ -35,6 +35,7 @@ function renderPaths(){
 /* ---------- Ventana de confirmación con diseño propio ---------- */
 import { ICON_NAMES, icon } from './icons.js';
 import { lang, numLocale, setLang } from '../i18n.js';
+import { leaveBossPhase } from './boss-phase.js';
 export function ask({ico='❓',title,text,yes='Aceptar',no='Cancelar',danger=false}){
   return new Promise(res=>{
     $('askIco').innerHTML=ICON_NAMES.includes(ico)?icon(ico):ico;$('askTitle').textContent=title;$('askText').innerHTML=text;
@@ -91,6 +92,7 @@ export function openMenu(){
   syncRouteStyle();
   renderPaths();
   const active=S.run&&S.G&&!S.G.done, canCont=!!store.run&&!active;
+  if(!active)leaveBossPhase();                    // el menú principal no lleva el ambiente de jefe
   const b=$('bContinue');b.style.display=canCont?'':'none';
   if(canCont)b.innerHTML=continueLabel(store.run);
   $('bResume').style.display=active?'':'none';

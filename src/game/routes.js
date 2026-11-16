@@ -37,4 +37,9 @@ export function useHeroicHint(run, level) {
   return true;
 }
 
-export const routeGain = (run, rating, moves, opt, streak) => gainFor(rating, moves, opt, streak, { bonus: heroicPoints(run) });
+import { isBossLevel } from './mechanics.js';
+
+export const BOSS_POINTS_BONUS = 0.3;
+
+export const routeGain = (run, rating, moves, opt, streak, level = run?.level || 1) =>
+  gainFor(rating, moves, opt, streak, { bonus: heroicPoints(run) + (isBossLevel(level) ? BOSS_POINTS_BONUS : 0) });

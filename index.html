@@ -53,6 +53,7 @@
 <link rel="preload" as="image" href="/backgrounds/cover.webp" fetchpriority="high">
 </head>
 <body>
+<div id="bossAmbient" aria-hidden="true"></div>
 <noscript><main style="font:16px/1.5 Georgia,serif;max-width:640px;margin:10vh auto;padding:0 20px;color:#f6e6bd;background:#1a1528"><h1>DAWNSLIDE</h1><p>A free sliding-block puzzle adventure: slide the blocks, free the red key, break ten seals across ten cities and relight the Dawn Beacon. Three heroes, one hundred levels. English and Spanish.</p><p>Please enable JavaScript to play.</p></main></noscript>
 <div id="app">
   <div class="top">
@@ -82,6 +83,7 @@
       <i class="bi crown" id="crown" data-icon="crown" title="Zona perfecta: termina sin pasarte del mínimo"></i>
     </div>
     <div id="liaReserveLabel" class="reserve-label" hidden></div>
+    <div class="boss-timer" id="bossTimer" role="timer" aria-label="Tiempo restante" hidden><i class="bt-ico" aria-hidden="true">⏳</i><div class="bt-bar"><i id="btFill"></i></div><b id="btText">0:00</b></div>
     <div class="bought" id="bought" hidden><span class="bl"><i class="bi" data-icon="crystal"></i> TURNOS COMPRADOS</span><span class="pips" id="boughtPips"></span><span class="bq">quedan <b id="boughtLeft">0</b></span></div>
   </div>
 
@@ -110,6 +112,7 @@
    <header class="travel-head">
     <h2 class="travel-heading" id="travelTitle"></h2>
     <p class="travel-inscription" id="travelInscription"></p>
+    <div class="travel-lore-chip" id="travelLoreChip" hidden><img id="travelChipImg" alt="" width="44" height="44"><div><b id="travelChipName"></b><span id="travelChipLine"></span></div></div>
    </header>
    <div class="travel-bottom">
     <p class="travel-ask">Próximos 10 niveles</p>
@@ -175,6 +178,31 @@
  </div>
 </div>
 <div id="bonusIntro" role="dialog" aria-modal="true" aria-labelledby="entryTitle"><div class="entry-glow"></div><div class="entry-content"><img id="entryHero" class="entry-portrait" alt=""><p id="entryName"></p><div class="entry-icons" id="entryIcons" aria-hidden="true"></div><h2 id="entryTitle"></h2></div><button id="entrySkip">Continuar ➜</button></div>
+
+<!-- Presentación del jefe de ciudad (niveles 10, 20, ..., 100) -->
+<div class="modal" id="bossIntro" role="dialog" aria-modal="true" aria-labelledby="bossName">
+ <div class="boss-stage">
+  <img class="boss-backdrop" id="bossArt" alt="" draggable="false">
+  <div class="boss-vignette" aria-hidden="true"></div>
+  <div class="boss-fx boss-rays" aria-hidden="true"></div>
+  <div class="boss-fx boss-embers" aria-hidden="true"></div>
+  <div class="boss-fx boss-bolt" aria-hidden="true"></div>
+  <div class="boss-fx boss-grain" aria-hidden="true"></div>
+  <div class="boss-fx boss-flash" aria-hidden="true"></div>
+  <div class="boss-shell">
+   <header class="boss-head">
+    <span class="tag boss-tag" id="bossTag"></span>
+    <h2 class="boss-name" id="bossName"></h2>
+    <p class="boss-title" id="bossTitle"></p>
+   </header>
+   <footer class="boss-bottom">
+    <p class="boss-lore" id="bossLore"></p>
+    <div class="boss-mech" id="bossMech"></div>
+    <button class="primary boss-fight" id="bossFight">Enfrentar ➜</button>
+   </footer>
+  </div>
+ </div>
+</div>
 
 
 <div class="modal" id="storyBook" role="dialog" aria-modal="true" aria-labelledby="storyTitle"><article class="storybook">

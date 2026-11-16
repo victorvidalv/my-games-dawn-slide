@@ -6,6 +6,7 @@ import { bonusTurns } from '../game/heroes.js';
 import { moveLimit } from '../engine/difficulty.js';
 import { reserveState } from '../game/powers.js';
 import { burst } from './fx.js';
+import { bossCapFor } from '../game/bosses.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const center = (el) => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
@@ -47,7 +48,7 @@ function liaToast(left) {
 export function renderTurns() {
   const G = S.G;
   const bought = G.bought || 0;
-  const reserve = bonusTurns(S.run.hero, moveLimit(G.opt,S.run.start,G.n,S.run.route==='brave'),S.run.start);
+  const reserve = bonusTurns(S.run.hero, moveLimit(G.opt,S.run.start,G.n,S.run.route==='brave',bossCapFor(G.n)),S.run.start,bossCapFor(G.n));
   const segment=$('liaReserve'),label=$('liaReserveLabel');segment.hidden=label.hidden=!reserve;
   if(reserve){
     const r=reserveState(G,reserve);

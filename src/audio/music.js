@@ -1,6 +1,7 @@
 import { AC, audioPageHidden, clearAudioRecoveryHint, ctx, muted, setSfxKey } from './sound.js';
 import { zoneIdx } from '../data/zones.js';
-import { HEROES_THEME, LAYERS_PER_CITY, MENU_THEME, SCALES, ZONE_THEMES, chordMidi, entryAt, layerOfLevel, layersFor } from './themes.js';
+import { HEROES_THEME, LAYERS_PER_CITY, MENU_THEME, SCALES, ZONE_THEMES, bossThemeFor, chordMidi, entryAt, layerOfLevel, layersFor } from './themes.js';
+import { isBossLevel } from '../game/mechanics.js';
 
 /* ============================ Música procedural ============================
    Secuenciador por pasos de 1/16 que toca los temas de themes.js: melodía, acordes con séptima, bajo caminante,
@@ -21,7 +22,7 @@ export const Music=(()=>{
     bus.gain.value=0;bus.connect(flt);flt.connect(AC.destination);
     noiseBuf=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   }
-  const vol=()=>muted?0:.28*duckLv;
+  const vol=()=>muted?0:(theme.boss?.35:.28)*duckLv;
   function osc(type,f,t,dur,v,a=.006,filt=0,det=0){
     const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;o.detune.value=det;
     g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+dur);
@@ -136,6 +137,38 @@ export const Music=(()=>{
   /* Pasos del acompañamiento (acordes cortos) según el estilo */
   const COMP={charleston:[0,6],offbeat:[4,12],oompah:[4,12],strum:[0,6,10],chop16:[0,3,6,8,11,14],skank:[2,6,10,14],montuno:[3,6,10,12,14],pump:[0,2,4,6,8,10,12,14],arp:[],none:[]};
 
+  /**
+   * Producción «épica» de los jefes (tema con `boss: true`): coro y cuerdas sostenidas con un bordón grave, timbales y bombo de taiko
+   * en cada tiempo, metales en acordes de poder, trémolo de cuerdas, platillos en cada frase y, antes de cada sección, un
+   * crescendo de redobles y ruido ascendente. Se oye claramente distinta del resto de la música del juego.
+   */
+  function bossLayer(th,st,t,bar,sd,chord,firstOfBar){
+    const root=chord[0],fifth=chord[2],low=Math.max(root-12,26);
+    if(st===0){
+      firstOfBar.slice(0,3).forEach(m=>{voice('horn',m,t,sd*15.5,.016);voice('strings',m+12,t,sd*15.5,.011)});       // coro de metales suaves + cuerdas
+      voice('upright',bassReg(firstOfBar[0])-12,t,sd*15,.11);                                                         // bordón grave
+      timpani(t,low,.12);
+      if(bar%4===0)noise(t,1.9,.04,3200);                                                                          // platillo al empezar cada frase
+    }
+    if(st===8){timpani(t,fifth>root?fifth-12:fifth,.09)}
+    if(st===4||st===12)timpani(t,low,.05);                                                                         // pulso de taiko
+    // metales en acordes de poder (fundamental, quinta y octava) sobre los tiempos fuertes
+    if(st===0||st===8||(bar%2===1&&st===10)||st===6&&bar%4===3){
+      [root+12,fifth+12,root+24].forEach((m,i)=>voice('brass',m,t+i*.006,sd*(st===0?3.2:2),st===8?.032:.04));
+    }
+    if(st===4||st===12)voice('brass',root+12,t,sd*1.6,.022);                                                       // semicorcheas de metal entre los golpes
+    // trémolo de cuerdas altas: tensión constante (dos voces, una por semicorchea)
+    voice('strings',fifth+24,t,sd*1.1,.005);
+    if(st%2===0)voice('strings',chord[1]+24,t,sd*1.8,.004);
+    // redoble y subida antes de cada sección (último compás de cada 8)
+    if(bar%8===7&&st>=8){
+      if(st%2===0)noise(t,.12,.012+.0035*(st-8),2200+(st-8)*520,'highpass');
+      snare(t,.018+.006*(st-8));
+      if(st>=12)timpani(t,low,.06+.01*(st-12));
+    }
+    if(bar%4===3&&st>=12&&st%2===0)timpani(t,fifth>root?fifth-12:fifth,.04+.005*(st-12));
+  }
+
   function play(s,t){
     if(s%16===0)layerNow=layerNext;                                          // las capas entran siempre al empezar un compás
     const th=theme,bar=Math.floor(s/16),st=s%16,sd=60/bpm()/4,E=th.epic||0,L=layersFor(layerNow);
@@ -174,6 +207,8 @@ export const Music=(()=>{
 
     // batería
     drums(th,st,t,bar,E,L.drums,L.tutti);
+
+    if(th.boss&&L.orchestra)bossLayer(th,st,t,bar,sd,chord,firstOfBar);
 
     // capa épica: timbal en las frases y metales que refuerzan la melodía
     if(E>=2&&L.orchestra){
@@ -220,7 +255,7 @@ export const Music=(()=>{
     /** Fija la capa (1-10) a mano; entra en el próximo compás (lo usa melodies.html). */
     setLayer(n){layerNext=Math.max(1,Math.min(LAYERS_PER_CITY,n))},
     /** Tema de la ciudad del nivel `n` y la capa que le toca (1 = solo lo básico … 10 = todo). */
-    setLevel(n){useTheme(THEMES[zoneIdx(n)]);layerNext=layerOfLevel(n);if(!playing)layerNow=layerNext},
+    setLevel(n){useTheme(isBossLevel(n)?bossThemeFor(zoneIdx(n)):THEMES[zoneIdx(n)]);layerNext=layerOfLevel(n);if(!playing)layerNow=layerNext},
     /** Toca un tema concreto desde el principio (lo usa melodies.html). */
     playTheme(th,layer=LAYERS_PER_CITY){duckLv=1;muffled=false;theme=th;setSfxKey(th);baseBpm=th.bpm;tempoNow=th.bpm;step=0;layerNow=layerNext=layer;if(playing){playing=false;clearInterval(timer);timer=0}this.start()},
     /** Música fuera de partida: 'menu' (menú principal) o 'heroes' (elección de héroe). Arranca si hace falta. */

@@ -20,7 +20,7 @@ const plans = new WeakMap();
 export function destinyPlan(G, maxSteps = DESTINY_STEPS) {
   const key = `${encode(G.pos)}/${maxSteps}`, cached = plans.get(G);
   if (cached?.key === key) return cached.plan;
-  const an = analyze(G.pieces, G.pos, 600000, G.walls || []);
+  const an = analyze(G.pieces, G.pos, 600000, G.walls || [], G.doors || []);
   let plan = null;
   const left = an?.dist.get(encode(G.pos));
   if (left > JUTH_MIN_REMAINING) {
@@ -32,7 +32,7 @@ export function destinyPlan(G, maxSteps = DESTINY_STEPS) {
       let next = null;
       expand(G.pieces, current, pos, grid, (i, to, k) => {
         if (!next && an.dist.get(k) === distance - 1) next = { i, to, key: k };
-      }, G.walls || []);
+      }, G.walls || [], G.doors || []);
       if (!next) break;
       steps.push({ i: next.i, to: next.to }); current = next.key;
     }

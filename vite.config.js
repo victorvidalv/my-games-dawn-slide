@@ -36,7 +36,7 @@ export default defineConfig({
       registerType: 'prompt',
       injectRegister: false,
       manifestFilename: 'manifest.webmanifest',
-      injectManifest: { globPatterns: ['**/*.{js,css,html,webp,png,gif,webmanifest}'] },
+      injectManifest: { globPatterns: ['**/*.{js,css,html,webp,png,gif,webmanifest}'], globIgnores: ['**/jefes/**'] },   // las ilustraciones de jefe se guardan al verlas (sw.js)
       manifest: {
         name: 'DAWNSLIDE',
         short_name: 'DAWNSLIDE',

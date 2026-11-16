@@ -165,6 +165,20 @@ const HEROES_DATA = {
 };
 
 /**
+ * Jefes de ciudad (niveles 10, 20, …, 100): marcha dramática en menor armónico, más rápida y con orquesta completa.
+ * Cada jefe la toca en una tonalidad distinta (`bossThemeFor`), para que suene a duelo y no se repita igual.
+ */
+const BOSS_DATA = {
+  name: 'El guardián del umbral', boss: true, epic: 3, bpm: 134, sc: 'hmin', root: 38, swing: 0.08, leadVoice: 'brass', compVoice: 'strings', comp: 'charleston', bassPat: 'gallop', groove: 'march', echo: false, leadV: 0.05,
+  prog: [0, 5, 3, 4, 0, 5, [3, 4], 0,   3, 3, 5, 4, 0, 5, '4:7', 0],
+  tuneText: [
+    '7:2 r:2 9:2 7:2 11:4 9:2 7:2', '12:2 r:2 14:2 12:2 11:4 9:2 7:2', '10:2 r:2 12:2 14:2 12:4 10:2 12:2', '11:2 13:2 15:2 13:2 11:4 13:2 r:2',
+    '14:4 12:2 11:2 9:4 7:4', '12:2 14:2 16:2 14:2 12:4 11:2 9:2', '10:2 12:2 14:2 12:2 11:4 13:2 11:2', '14:2 13:2 14:2 16:2 14:4 r:4',
+    '17:2 r:2 17:2 15:2 14:4 12:4', '17:2 15:2 14:2 12:2 14:4 15:2 17:2', '19:2 r:2 19:2 18:2 16:4 14:4', '18:2 17:2 15:2 17:2 18:4 20:2 r:2',
+    '21:4 19:2 18:2 16:4 14:4', '19:2 18:2 16:2 14:2 12:4 14:2 16:2', '18:2 20:2 21:2 20:2 18:4 17:2 15:2', '21:2 20:2 21:2 22:2 21:6 r:2'],
+};
+
+/**
  * Capas por nivel: cada ciudad tiene UNA melodía central y, a medida que avanzas por sus 10 niveles, se le suman capas.
  * Así el nivel 1 suena limpio y el 10 suena a orquesta completa, sin cambiar la melodía (no cansa y se siente avanzar).
  *   1  melodía + colchón de cuerdas + bajo mínimo      6  + arpegio
@@ -210,4 +224,14 @@ const build = (raw) => {
 export const ZONE_THEMES = THEME_DATA.map(build);
 export const MENU_THEME = build(MENU_DATA);
 export const HEROES_THEME = build(HEROES_DATA);
-export const ALL_THEMES = [...ZONE_THEMES, MENU_THEME, HEROES_THEME];
+export const BOSS_THEME = build(BOSS_DATA);
+export const ALL_THEMES = [...ZONE_THEMES, MENU_THEME, HEROES_THEME, BOSS_THEME];
+
+const BOSS_ROOT_STEP = [0, 2, 3, 5, 7, -2, 1, 4, -1, 0];   // semitonos sobre la tónica base, por ciudad
+const bossCache = new Map();
+/** Tema del jefe de la ciudad `city` (0-9): la misma marcha en otra tonalidad y un poco más rápida cuanto más avanzas. */
+export function bossThemeFor(city) {
+  const c = Math.max(0, Math.min(9, city));
+  if (!bossCache.has(c)) bossCache.set(c, { ...BOSS_THEME, root: BOSS_THEME.root + BOSS_ROOT_STEP[c], bpm: Math.min(136, BOSS_THEME.bpm - 4 + c) });
+  return bossCache.get(c);
+}

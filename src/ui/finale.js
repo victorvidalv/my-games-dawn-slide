@@ -46,8 +46,9 @@ export function endRun(victory,why){
   if(victory){const sc=S.run.score,br=S.run.recBroken;store.run=null;persist();S.run=null;showFinale(prac,p,sc,br,endingHero);return}
   endingStory(false,endingHero,S.run.level);
   $('overTag').textContent='LA NOCHE SE CIERRA · '+p.n.toUpperCase();
-  $('overTitle').textContent='Sin turnos';
-  $('overTxt').textContent=`Te quedaste sin movimientos en el nivel ${S.run.level}. El Sello de ${CHAPTERS[zoneIdx(S.run.level)].seal} resiste… por ahora. Thyes, año ${WORLD.year}.`;
+  const timeUp=why==='time';
+  $('overTitle').textContent=timeUp?'Sin tiempo':'Sin turnos';
+  $('overTxt').textContent=`${timeUp?'Se agotó el tiempo':'Te quedaste sin movimientos'} en el nivel ${S.run.level}. El Sello de ${CHAPTERS[zoneIdx(S.run.level)].seal} resiste… por ahora. Thyes, año ${WORLD.year}.`;
   $('overRec').innerHTML=(!prac&&S.run.recBroken)?'<span class="rec">★ NUEVO RÉCORD ★</span>':'';
   $('overLvl').textContent=S.run.level;$('overBest').textContent=rec.score.toLocaleString(numLocale());
   $('over').classList.add('show');countUp($('overScore'),0,S.run.score,1200);$('bToMenu').focus();

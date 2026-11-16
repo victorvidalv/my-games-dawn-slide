@@ -59,44 +59,47 @@ describe('dificultad: la curva se siente apropiada', () => {
     }
     expect(minReach(30)).toBe(curve(30).target);
   });
-  it('el límite es el doble en Normal y se vuelve más estricto en Difícil y Experto', () => {
+  it('el límite es el doble en Normal y se vuelve más estricto en Difícil, Experto y en jefes', () => {
     expect(moveLimit(20)).toBe(40);
     expect(moveLimit(20, 1)).toBe(40);
     expect(moveLimit(20, 50)).toBeLessThan(moveLimit(20, 1));
     expect(moveLimit(20, 75)).toBeLessThan(moveLimit(20, 50));
     expect(moveLimit(20, 75)).toBeGreaterThan(20);
+    expect(moveLimit(20, 1, 10, false, true)).toBeLessThan(moveLimit(20, 1, 10, false, false));
+    expect(moveLimit(20, 1, 10, false, true)).toBeGreaterThan(20);
   });
 });
 
 describe('calendario de piezas especiales', () => {
-  it('los primeros 9 niveles son normales; la primera roca llega en el 10', () => {
-    for (let l = 1; l <= 9; l++) expect(levelPlan(l).family, `nivel ${l}`).toBe('plain');
-    expect(levelPlan(10).family).toBe('walls');
-    expect(levelPlan(10).intro).toBe(true);
+  it('los primeros 7 niveles son normales; la primera roca llega en el 8', () => {
+    for (let l = 1; l <= 7; l++) expect(levelPlan(l).family, `nivel ${l}`).toBe('plain');
+    expect(levelPlan(8).family).toBe('walls');
+    expect(levelPlan(8).intro).toBe(true);
   });
-  it('ningún nivel tiene modo jefe y en todos los tramos hay respiros normales', () => {
-    for (let l = 1; l <= 100; l++) expect(levelPlan(l).boss, `nivel ${l}`).toBeUndefined();
+  it('los niveles de múltiplo 10 son jefes y en todos los tramos hay respiros normales', () => {
+    for (let l = 1; l <= 100; l++) expect(levelPlan(l).boss, `nivel ${l}`).toBe(l % 10 === 0);
     for (let c = 0; c < 10; c++) {
       const plans = Array.from({ length: 10 }, (_, k) => levelPlan(c * 10 + k + 1));
       expect(plans.filter((p) => p.family === 'plain').length, `tramo ${c + 1}`).toBeGreaterThanOrEqual(2);
     }
   });
-  it('escalado exacto: rocas ≥10, pesada ≥20, candado ≥30, hielo ≥40; solo un tipo hasta el 50 y combinados >50', () => {
+  it('escalado exacto: rocas ≥8, pesada ≥18, candado ≥28, hielo ≥38, portón ≥48; solo un tipo hasta el 50 y combinados >50', () => {
     const firstSeen = {};
     for (let l = 1; l <= 100; l++) {
       const p = levelPlan(l);
       for (const m of p.mechanics) if (!(m in firstSeen)) firstSeen[m] = l;
       if (l <= 50) expect(p.mechanics.length, `nivel ${l} solo 1 tipo`).toBeLessThanOrEqual(1);
     }
-    expect(firstSeen.wall).toBe(10);
-    expect(firstSeen.heavy).toBe(20);
-    expect(firstSeen.gate).toBe(30);
-    expect(firstSeen.ice).toBe(40);
+    expect(firstSeen.wall).toBe(8);
+    expect(firstSeen.heavy).toBe(18);
+    expect(firstSeen.gate).toBe(28);
+    expect(firstSeen.ice).toBe(38);
+    expect(firstSeen.door).toBe(48);
     const combos = Array.from({ length: 100 }, (_, i) => levelPlan(i + 1)).filter((p) => p.mechanics.length > 1);
     expect(combos.length).toBeGreaterThan(20);
     for (let l = 51; l <= 100; l++) {
       const p = levelPlan(l);
-      if (p.family === 'duo' || p.family === 'mixed') expect(p.mechanics.length).toBeGreaterThanOrEqual(2);
+      if (p.family === 'duo' || p.family === 'doorduo' || p.family === 'mixed') expect(p.mechanics.length).toBeGreaterThanOrEqual(2);
     }
     // Densidad ascendente de combinados: segunda mitad (>70) combina más que 51..70
     const midCombos = Array.from({ length: 20 }, (_, i) => levelPlan(51 + i)).filter((p) => p.mechanics.length > 1).length;
@@ -107,7 +110,9 @@ describe('calendario de piezas especiales', () => {
     expect(CITY_FAMILY).toHaveLength(10);
     expect(mechanicsOfFamily('plain')).toEqual([]);
     expect(mechanicsOfFamily('ice')).toEqual(['ice']);
+    expect(mechanicsOfFamily('doors')).toEqual(['door']);
     expect(mechanicsOfFamily('duo')).toEqual(['gate', 'heavy', 'ice']);
+    expect(mechanicsOfFamily('doorduo')).toEqual(['door', 'gate', 'heavy', 'ice']);
     expect(mechanicsOfFamily('mixed')).toEqual(['wall', 'gate', 'heavy', 'ice']);
   });
   it('calcGain y gainFor coinciden sin bonos extra', () => {

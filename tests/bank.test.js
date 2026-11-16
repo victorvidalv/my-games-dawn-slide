@@ -9,7 +9,7 @@ import { runPool, FULL } from './parallel/pool.js';
  * un solo análisis por tablero repartido entre todos los hilos, y cada test lee ese resumen.
  * (Sustituye a la validación en serie de levels.test.js y special-bank.test.js.)
  */
-const FAMILIES = ['walls', 'gates', 'heavy', 'ice', 'duo', 'mixed'];
+const FAMILIES = ['walls', 'gates', 'heavy', 'ice', 'doors', 'duo', 'doorduo', 'mixed'];
 const RATINGS = Array.from({ length: 100 }, (_, i) => i + 1);
 
 const jobs = [];
@@ -59,7 +59,7 @@ describe('banco de tableros especiales', () => {
     for (const f of FAMILIES) {
       expect(special[f], f).toHaveLength(100);
       const have = RATINGS.filter((r) => special[f][r - 1].length > 0).length;
-      expect(have, `${f}: dificultades con tableros`).toBeGreaterThanOrEqual(f === 'walls' ? 80 : f === 'mixed' ? 90 : f === 'ice' ? 0 : 95);
+      expect(have, `${f}: dificultades con tableros`).toBeGreaterThanOrEqual(f === 'walls' || f === 'doors' ? 80 : f === 'mixed' ? 90 : f === 'ice' ? 0 : 95);
     }
   });
 
@@ -69,7 +69,12 @@ describe('banco de tableros especiales', () => {
     for (const r of of('gates')) expect(has(r, 'gate'), r.text).toBe(true);
     for (const r of of('heavy')) expect(has(r, 'heavy'), r.text).toBe(true);
     for (const r of of('ice')) expect(has(r, 'ice'), r.text).toBe(true);
+    for (const r of of('doors')) expect(r.doors, r.text).toBeGreaterThan(0);
     for (const r of of('duo')) expect(r.kinds.length, r.text).toBe(2);
+    for (const r of of('doorduo')) {
+      expect(r.doors, r.text).toBeGreaterThan(0);
+      expect(r.doors >= 2 || r.kinds.length >= 1, r.text).toBe(true);
+    }
     for (const r of of('mixed')) {
       expect(r.walls, r.text).toBeGreaterThan(0);
       expect(r.kinds, r.text).toEqual(['gate', 'heavy', 'ice']);

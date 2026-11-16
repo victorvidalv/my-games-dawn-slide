@@ -69,6 +69,8 @@ export const sfx={
   },
   /** Cada paso del poder: nota del arpegio de la tónica (sube con Destino, baja con Rebobinar) y un tintineo. */
   powerStep:(n,up)=>{const j=up?n:Math.max(0,6-n);tone(keyHz(j,1),.3,'sine',.07,0,0,3600);tone(keyHz(j+3,1),.18,'triangle',.03,.03,0,4200);noise(.07,.03,5200,'highpass')},
+  /* Jefe: el golpe de la presentación y el salto al tablero */
+  bossGo:()=>{noise(.55,.13,500,'bandpass',0,3600);tone(keyHz(0,0),.7,'sawtooth',.07,0,-20,520);tone(keyHz(2,1),.45,'triangle',.05,.06,0,2400);noise(.25,.1,300,'lowpass',.32)},
   powerEnd:(up)=>{[0,1,2,3].forEach((k,i)=>tone(keyHz(up?i:3-i,2),.5,'sine',.045,i*.06,0,4200));tone(keyHz(0,1),.8,'triangle',.05,0,0,1500)},
   win:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.28,'sine',.13,i*.08)),
   // Nivel superado (no perfecto): arpegio suave y agradable.
@@ -82,6 +84,10 @@ export const sfx={
   iceMove:()=>{noise(.18,.045,2600,'highpass',0,2600);[2,3,4,5].forEach((k,i)=>tone(keyHz(k,2),.16,'sine',.04,i*.045,0,5200))},     // desliz cristalino sobre hielo
   unlock:()=>{[523,784,1047,1568].forEach((f,i)=>tone(f,.16,'triangle',.09,i*.05));tone(1976,.3,'sine',.06,.2)},
   locked:()=>{tone(150,.18,'square',.06);tone(120,.22,'square',.05,.1)},
+  doorOpen:()=>{[659,988,1319].forEach((f,i)=>tone(f,.18,'sine',.085,i*.04));tone(1976,.22,'triangle',.04,.12)},
+  doorDeny:()=>{tone(180,.14,'sawtooth',.06);tone(135,.18,'triangle',.07,.07,-35)},
+  bump:()=>{noise(.04,.07,420,'lowpass');tone(130,.08,'sine',.07,0,-20)},
+  bossIntro:()=>{tone(82,.9,'triangle',.14,0,-10);tone(123,.8,'sawtooth',.045,.04,-8);[246,329,493].forEach((f,i)=>tone(f,.5,'sine',.06,.08+i*.09))},
   plate:()=>{tone(330,.1,'triangle',.08);tone(494,.14,'triangle',.07,.07)},
   start:()=>{tone(330,.12,'triangle',.08);tone(494,.18,'triangle',.08,.08)},
   revive:()=>{

@@ -18,7 +18,8 @@
     "levels:all": "npm run levels && npm run levels:special",
     "simulate": "node scripts/simulate-heroes.mjs",
     "melodies:html": "node scripts/build-melodies.mjs",
-    "simulate:seals": "node scripts/simulate-seals.mjs"
+    "simulate:seals": "node scripts/simulate-seals.mjs",
+    "simulate:bosses": "node scripts/simulate-bosses.mjs"
   },
   "devDependencies": {
     "eslint": "^10.14.0",

@@ -9,9 +9,9 @@ import { $ } from '../dom.js';
 import { MAX_LEVEL, startHintsFor } from '../engine/difficulty.js';
 import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
-import levelBank from '../data/levels.json';
-import specialBank from '../data/special.json';
+import { loadBanks } from '../data/banks.js';
 import { buildAdventureLevel } from './build-adventure.js';
+import { bossCapFor } from './bosses.js';
 import { sealLimit } from './seals.js';
 import { baseScore } from '../engine/scoring.js';
 import { clearRewards, heroLimit } from './heroes.js';
@@ -19,6 +19,8 @@ import { canPaidRevive, hasRevive, payRevive, useRevive } from './shop.js';
 import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
 import { boardEl, buildPieces, cellPx, fitBoard, layout, recLine, syncRouteStyle, updateHud } from '../ui/board.js';
 import { isBonusLevel, showBonus } from '../ui/bonus.js';
+import { showBossIntro } from '../ui/boss.js';
+import { onBossTimeUp, preloadBossArt, syncBossPhase, syncBossTimer } from '../ui/boss-phase.js';
 import { endRun } from '../ui/finale.js';
 import { showResult } from '../ui/result.js';
 import { chooseHero, showRescue, showReviveOffer, syncHero } from '../ui/heroes.js';
@@ -28,7 +30,7 @@ import { heroArt, storyFor } from '../ui/story.js';
 import { numLocale } from '../i18n.js';
 export function saveRun(){
  if(S.run&&S.G&&!S.G.done&&S.G.n===S.run.level&&!S.run.pendingClear&&!S.run.rescue&&!S.run.pendingRevive){
-  S.run.board={level:S.G.n,rate:S.G.rate,pieces:S.G.pieces.map(p=>({...p})),walls:(S.G.walls||[]).map(w=>w.slice()),pos:S.G.pos.slice(),start:S.G.start.slice(),opt:S.G.opt,limit:S.G.limit,bought:S.G.bought||0,tutorial:S.G.tutorial||null,moves:S.G.moves,hist:S.G.hist.map(p=>p.slice()),colors:S.G.colors?.slice(),family:S.G.family,seal:S.G.seal?{...S.G.seal,cell:S.G.seal.cell.slice()}:null};
+  S.run.board={level:S.G.n,rate:S.G.rate,pieces:S.G.pieces.map(p=>({...p})),walls:(S.G.walls||[]).map(w=>w.slice()),doors:(S.G.doors||[]).map(d=>d.slice()),pos:S.G.pos.slice(),start:S.G.start.slice(),opt:S.G.opt,limit:S.G.limit,bought:S.G.bought||0,timeLimit:S.G.timeLimit||0,timeLeft:Math.ceil(S.G.timeLeft||0),tutorial:S.G.tutorial||null,moves:S.G.moves,hist:S.G.hist.map(p=>p.slice()),colors:S.G.colors?.slice(),family:S.G.family,seal:S.G.seal?{...S.G.seal,cell:S.G.seal.cell.slice()}:null};
  }
  store.run=S.run&&{...S.run};persist();
 }
@@ -44,10 +46,12 @@ export async function startRun(start,mode){
 }
 async function startLevel(){
   S.busy=true;
+  const {levelBank,specialBank}=await loadBanks();
   S.G=buildAdventureLevel(S.run,{levels:levelBank.ratings,special:specialBank,tips:store.tips||{}});
   S.G.colors ||= [0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5);
   $('lvl').textContent=S.G.tutorial?`${S.G.n} · TUTORIAL`:S.G.n;$('mn').textContent=S.G.opt;$('base').textContent=S.run.mode==='p'?'—':baseScore(S.G.rate);
-  applyZone(zoneIdx(S.G.n));renderStage();
+  applyZone(zoneIdx(S.G.n));renderStage();syncBossPhase();
+  if(S.G.n%10>=7)preloadBossArt(Math.ceil(S.G.n/10)*10);                  // la ilustración del próximo jefe ya está lista cuando llegas
   const prac=S.run.mode==='p';
   $('score').textContent=prac?'—':S.run.score.toLocaleString(numLocale());recLine();
   $('lim').textContent=prac?'∞':S.G.limit;
@@ -58,7 +62,12 @@ async function startLevel(){
   if(S.run.rescue){showRescue();return}
   if(S.run.pendingRevive&&canPaidRevive(S.run,S.run.mode)){offerPaidRevive(S.run.pendingRevive);return}
   delete S.run.pendingRevive;
-  S.busy=false;boardEl.classList.remove('board-lock');updateHud();saveRun();
+  if(S.G.plan?.boss&&!S.G.tutorial&&S.G.moves===0&&S.run.bossSeen!==S.G.n){
+   S.run.bossSeen=S.G.n;saveRun();
+   await showBossIntro(S.G.n);
+   if(!S.run||S.G?.done)return;
+  }
+  S.busy=false;boardEl.classList.remove('board-lock');updateHud();saveRun();syncBossTimer();
   startCoach();                                        // avisos y guía de los primeros niveles / mecánicas nuevas
 }
 function tipFor(g){
@@ -81,6 +90,11 @@ function travelDialog(){
   $('travelTitle').replaceChildren(citySpan);$('travelPlace').src=`backgrounds/zone-${city+1}.webp`;$('travelPlace').alt=ZONES[city].n;
   const portrait=LORE_PORTRAITS[city],loreBox=$('travelLore');loreBox.hidden=!portrait;
   if(portrait){$('travelLoreImg').src=lorePortraitSrc(portrait.id);$('travelLoreImg').alt=portrait.name;$('travelLoreName').textContent=portrait.name;$('travelLoreCap').textContent=portrait.caption}
+  const chip=$('travelLoreChip'),chipLine=story.vhorn?`Vhorn: «${story.vhorn}»`:(story.cityLines?.[0]||story.body||'');
+  chip.hidden=!portrait&&!chipLine;
+  if(portrait){$('travelChipImg').src=lorePortraitSrc(portrait.id);$('travelChipImg').alt=portrait.name;$('travelChipName').textContent=`${portrait.name} · ${portrait.caption}`;}
+  else{$('travelChipImg').removeAttribute('src');$('travelChipName').textContent=ZONES[city].n;}
+  $('travelChipLine').textContent=chipLine;
   const lines=[...(story.cityLines||[story.body]),...(story.vhorn?[`Vhorn: «${story.vhorn}»`]:[])];
   $('travelText').replaceChildren(...lines.map(txt=>{const li=document.createElement('li');li.textContent=txt;return li}));
   $('travelHeroLine').textContent=`${h.name}: «${story.action}»`;
@@ -145,6 +159,7 @@ export function win(){                                  // la voz del héroe NO 
 }
 /* ---------- Derrota ---------- */
 /** Al pasarte del límite la aventura termina (la tienda se usa antes, no al perder). */
+onBossTimeUp(()=>fail('time'));
 export function fail(why){
   if(S.G.done)return;
   finalFail(why);
@@ -169,7 +184,7 @@ async function offerPaidRevive(why){
   if(accepted){
     const r=payRevive(S.run);
     if(r.ok){
-      S.G.pos=S.G.start.slice();S.G.moves=0;S.G.hist=[];S.G.done=false;S.G.bought=0;S.G.limit=sealLimit(S.G.seal,heroLimit(S.run.hero,S.G.opt,S.run.start,S.run.level,S.run.route==='brave'));
+      S.G.pos=S.G.start.slice();S.G.moves=0;S.G.hist=[];S.G.done=false;S.G.bought=0;S.G.limit=sealLimit(S.G.seal,heroLimit(S.run.hero,S.G.opt,S.run.start,S.run.level,S.run.route==='brave',bossCapFor(S.run.level)));S.G.timeLeft=S.G.timeLimit||0;
       $('score').textContent=S.run.score.toLocaleString(numLocale());$('lim').textContent=S.G.limit;recLine();
       saveRun();boardEl.classList.remove('board-lock');S.busy=false;$('bUndo').disabled=true;layout();updateHud();
       Music.duck(1);playReviveEffect('¡RENACER!',false);$('msg').textContent=`Renaciste (−${r.cost.toLocaleString(numLocale())} pts). ¡Este tablero empieza de nuevo!`;

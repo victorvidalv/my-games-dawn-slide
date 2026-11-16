@@ -21,7 +21,8 @@ describe('variantes: cada partida tiene tableros distintos', () => {
         const an = analyze(v.pieces, v.pos, 600000);
         expect(an).not.toBeNull();
         expect(maxDistance(an), `dif ${rating}`).toBeGreaterThanOrEqual(minReach(rating));
-        expect(encodeBoard(v.pieces, v.pos)).toBe(encodeBoard(...Object.values(varyBoard(base, rating, seed))));
+        const v2 = varyBoard(base, rating, seed);
+        expect(encodeBoard(v.pieces, v.pos, v.walls, v.doors)).toBe(encodeBoard(v2.pieces, v2.pos, v2.walls, v2.doors));
         seen.add(encodeBoard(v.pieces, v.pos));
       }
       expect(seen.size, `dif ${rating}: variantes distintas`).toBeGreaterThanOrEqual(2);
@@ -107,20 +108,21 @@ describe('partida completa simulada (3 caminos × 100 niveles, con piezas especi
     });
   }
 
-  it('el aprendizaje funciona: los 9 primeros niveles de Normal son normales y suaves', () => {
-    for (const r of path(1).slice(0, 9)) {
+  it('el aprendizaje funciona: los 7 primeros niveles de Normal son normales y suaves', () => {
+    for (const r of path(1).slice(0, 7)) {
       expect(r.planFamily).toBe('plain');
       expect(r.walls).toBe(0);
+      expect(r.doors).toBe(0);
       expect(r.kinds).toEqual([]);
       expect(r.opt).toBeLessThanOrEqual(6 + 2);
     }
   });
 
-  it('todos los niveles 10 de ciudad tienen su familia y dificultad normal', () => {
+  it('todos los niveles 10 de ciudad tienen modo jefe, su familia y dificultad controlada', () => {
     for (const start of STARTS) {
       for (let level = 10; level <= 100; level += 10) {
         const r = path(start)[level - 1];
-        expect(r.boss).toBeUndefined();
+        expect(r.boss).toBe(true);
         expect(r.opt).toBeLessThanOrEqual(r.target + 3 + 2);
       }
     }

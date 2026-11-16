@@ -30,8 +30,12 @@ import './styles/23-powers.css';
 import './styles/24-heroic-paths.css';
 import './styles/25-seals.css';
 import './styles/26-handmade.css';
+import './styles/27-boss-lore.css';
+import './styles/28-boss-polish.css';
+import './styles/29-boss-phase.css';
 import { hooks } from './audio/sound.js';
 import './ui/sound-button.js';
+import { warmBanks } from './data/banks.js';
 import './ui/share.js';
 import { saveRun } from './game/session.js';
 import { S, persist, store } from './state.js';
@@ -61,3 +65,4 @@ syncHero(store.run?.hero || store.heroChoice || 'lia');
 fitBoard();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBoard);
 openMenu();
+warmBanks();   // los tableros se descargan en un momento libre, mientras ves el menú

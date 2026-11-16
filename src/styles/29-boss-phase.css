@@ -1,0 +1,118 @@
+/* ---------- Fase de jefe: ambiente oscuro con el color del jefe, que «respira» y se enciende con la tensión ---------- */
+body.boss-fight{--boss-c:#d95b43;--boss-c2:#ffd0a0}
+body.boss-fight::before{
+  background:radial-gradient(ellipse at 50% 42%,color-mix(in srgb,var(--boss-c) 10%,transparent) 0,#08040b88 50%,#040206ee 100%),linear-gradient(#0b060dbd,#0b060dd6),var(--scene) center/cover;
+  filter:saturate(.95) brightness(.95)}
+/* respiración del color: solo cambia la opacidad de una capa (barato para la GPU, nada de filtros animados a pantalla completa) */
+#bossAmbient{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity .8s;
+  background:radial-gradient(ellipse at 50% 46%,color-mix(in srgb,var(--boss-c,#d95b43) 44%,transparent) 0,color-mix(in srgb,var(--boss-c,#d95b43) 14%,transparent) 46%,transparent 76%)}
+body.boss-fight #bossAmbient{opacity:.55;animation:boss-breathe 6.5s ease-in-out infinite}
+body.boss-fight[data-tension="1"] #bossAmbient{animation-duration:3.4s}
+body.boss-fight[data-tension="2"] #bossAmbient{animation-duration:1.4s;background:radial-gradient(ellipse at 50% 46%,color-mix(in srgb,var(--boss-c,#d95b43) 50%,#ff2a2a) 0,color-mix(in srgb,var(--boss-c,#d95b43) 20%,#ff2a2a) 50%,transparent 80%)}
+@keyframes boss-breathe{0%,100%{opacity:.18}50%{opacity:.85}}
+body.boss-fight.boss-surge #bossAmbient{animation:boss-surge 1.1s ease-out}
+@keyframes boss-surge{0%{opacity:.4}22%{opacity:1}100%{opacity:.4}}
+/* aura de poder: anillo de luz del color del jefe tras el tablero */
+body.boss-fight .frame{position:relative}
+body.boss-fight .frame::after{content:'';position:absolute;inset:-26px;z-index:-1;border-radius:46px;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--boss-c) 40%,transparent),transparent 72%);opacity:.7;animation:boss-aura 4.2s ease-in-out infinite}
+body.boss-fight[data-tension="1"] .frame::after{animation-duration:2.2s;opacity:.9}
+body.boss-fight[data-tension="2"] .frame::after{animation-duration:.9s;opacity:1;background:radial-gradient(closest-side,color-mix(in srgb,var(--boss-c) 55%,#ff2a2a),transparent 72%)}
+@keyframes boss-aura{0%,100%{transform:scale(.97);opacity:.45}50%{transform:scale(1.04);opacity:.95}}
+/* marcador, botones y tablero oscuros */
+body.boss-fight .meter{background:var(--hatch),linear-gradient(165deg,#1d1420f4,#0f0813f6);border-color:#07030a;
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--boss-c) 55%,transparent),inset 0 2px 0 #ffffff12,0 0 0 2px #07030a,4px 7px 0 2px #07030a}
+body.boss-fight .controls button,body.boss-fight .snd-btn,body.boss-fight .menubtn{background:var(--hatch),linear-gradient(175deg,#2c2230,#150e19);border-color:#07030a;
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--boss-c) 50%,transparent),3px 5px 0 #07030a}
+body.boss-fight .frame:has(#board.is-boss){
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--boss-c) 50%,transparent),inset 0 3px 0 #ffffff1c,inset 0 -4px 0 #0a0405aa,0 0 0 2px var(--boss-c),0 0 0 5px #07030a,6px 10px 0 5px #07030acc,0 22px 36px #000a,0 0 38px color-mix(in srgb,var(--boss-c) 55%,transparent)}
+body.boss-fight #board.is-boss{background-color:#12080e;box-shadow:inset 0 3px 10px #000c,inset 0 0 56px color-mix(in srgb,var(--boss-c) 30%,transparent)}
+body.boss-fight #board.is-boss::before{background:linear-gradient(color-mix(in srgb,var(--boss-c) 14%,transparent) 1px,transparent 1px) 0 0/var(--cell) var(--cell),linear-gradient(90deg,color-mix(in srgb,var(--boss-c) 14%,transparent) 1px,transparent 1px) 0 0/var(--cell) var(--cell),radial-gradient(ellipse at 50% 38%,#2a0f1ce6,#0c0509f6),var(--scene) center/cover}
+body.boss-fight .piece.red{filter:drop-shadow(0 0 10px var(--boss-c2))}
+@media(prefers-reduced-motion:reduce){#bossAmbient,body.boss-fight .frame::after{animation:none}body.boss-fight #bossAmbient{opacity:.4}}
+
+/* ---------- Contrarreloj (barra de tiempo en el marcador) ---------- */
+.boss-timer{display:flex;align-items:center;gap:8px;margin-top:8px}
+.boss-timer[hidden]{display:none}
+.boss-timer .bt-ico{font-style:normal;font-size:16px;filter:drop-shadow(0 2px 0 #150e0c)}
+.boss-timer .bt-bar{flex:1;height:12px;border:2px solid #150e0c;border-radius:8px;background:#150e0c99;overflow:hidden}
+.boss-timer .bt-bar i{display:block;height:100%;width:100%;transform-origin:left;background:linear-gradient(90deg,var(--boss-c,#f2c45c),var(--boss-c2,#fff0b0));transition:transform .25s linear}
+.boss-timer b{font:700 18px/1 var(--font-title);min-width:3ch;text-align:right;font-variant-numeric:tabular-nums;color:#fff0d0;text-shadow:0 2px 0 #150e0c}
+.boss-timer.low .bt-bar i{background:linear-gradient(90deg,#e0662a,#ffb066)}
+.boss-timer.crit{animation:bt-crit .5s ease-in-out infinite alternate}
+.boss-timer.crit .bt-bar i{background:linear-gradient(90deg,#d62a2a,#ff7a5a)}
+.boss-timer.crit b{color:#ff9a8a}
+@keyframes bt-crit{to{transform:translateX(1.5px) scale(1.03)}}
+@media(prefers-reduced-motion:reduce){.boss-timer.crit{animation:none}}
+
+/* ---------- Presentación del jefe: aura, viñeta y brillo con su color ---------- */
+#bossIntro{--boss-c:#d95b43;--boss-c2:#ffd0a0}
+#bossIntro .boss-backdrop{animation:boss-intro-art 7s ease-in-out infinite alternate;filter:contrast(1.08) saturate(.95) brightness(.86)}
+@keyframes boss-intro-art{from{filter:contrast(1.08) saturate(.85) brightness(.74);transform:scale(1.02)}to{filter:contrast(1.12) saturate(1.2) brightness(1);transform:scale(1.06)}}
+#bossIntro .boss-vignette{background:radial-gradient(ellipse at 50% 44%,color-mix(in srgb,var(--boss-c) 14%,transparent),transparent 55%),linear-gradient(180deg,#05020ae6 0%,#05020a66 28%,#05020a22 50%,#05020acc 74%,#05020af8 100%);animation:boss-intro-glow 3.4s ease-in-out infinite alternate}
+@keyframes boss-intro-glow{from{opacity:.82}to{opacity:1}}
+#bossIntro .boss-tag{background:var(--hatch),linear-gradient(175deg,color-mix(in srgb,var(--boss-c) 70%,#150e0c),#150e0c);box-shadow:inset 0 0 0 1.5px var(--boss-c2),3px 4px 0 #150e0c}
+#bossIntro .boss-name{text-shadow:2px 3px 0 #150e0c,0 0 28px var(--boss-c)}
+#bossIntro .boss-mech{border-color:#150e0c;background:var(--hatch),linear-gradient(175deg,#2a1a22,#120a10);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--boss-c) 70%,transparent),3px 4px 0 #150e0c;color:var(--boss-c2)}
+@media(prefers-reduced-motion:reduce){#bossIntro .boss-backdrop,#bossIntro .boss-vignette{animation:none}}
+
+/* demostraciones de los avisos de jefe (coach) */
+.boss-demo{display:flex;align-items:center;justify-content:center;gap:12px;color:#fff0d0;font:700 22px/1 var(--font-title)}
+.boss-demo .bd-skull{font-size:34px;filter:drop-shadow(0 2px 0 #150e0c)}
+.boss-demo .bd-bar{width:110px;height:14px;border:2px solid #150e0c;border-radius:8px;background:#150e0c99;overflow:hidden}
+.boss-demo .bd-bar i{display:block;width:62%;height:100%;background:linear-gradient(90deg,#f2c45c,#fff0b0)}
+
+/* ---------- Presentación del jefe: capas de efectos (rayos, brasas, relámpagos, grano, destello) y transición al tablero ---------- */
+.boss-fx{position:absolute;inset:0;pointer-events:none;z-index:1}
+.boss-rays{inset:-35%;background:repeating-conic-gradient(from 0deg at 50% 40%,color-mix(in srgb,var(--boss-c) 26%,transparent) 0 5deg,transparent 5deg 17deg);
+  -webkit-mask-image:radial-gradient(circle at 50% 40%,#000 0,transparent 62%);mask-image:radial-gradient(circle at 50% 40%,#000 0,transparent 62%);opacity:0;animation:boss-rays-spin 46s linear infinite}
+#bossIntro.show .boss-rays{opacity:.6;transition:opacity 1.2s .2s}
+@keyframes boss-rays-spin{to{transform:rotate(360deg)}}
+.boss-embers{overflow:hidden;opacity:0}
+.boss-embers::before,.boss-embers::after{content:'';position:absolute;left:0;right:0;bottom:-100%;height:200%;
+  background:radial-gradient(circle,var(--boss-c2) 0 1.6px,transparent 2.4px) 12% 30%/110px 130px,radial-gradient(circle,var(--boss-c) 0 2.2px,transparent 3px) 64% 70%/160px 170px,radial-gradient(circle,#fff 0 1.2px,transparent 2px) 38% 10%/90px 100px;
+  animation:boss-embers-up 9s linear infinite;opacity:.8}
+.boss-embers::after{background-position:80% 50%,20% 10%,55% 90%;animation-duration:14s;animation-delay:-5s;opacity:.55}
+#bossIntro.show .boss-embers{opacity:1;transition:opacity 1s .4s}
+@keyframes boss-embers-up{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.boss-bolt{background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--boss-c2) 55%,#fff) 0,transparent 60%);opacity:0;animation:boss-bolt 6.5s ease-in-out 1.4s infinite}
+@keyframes boss-bolt{0%,6%,12%,100%{opacity:0}7%{opacity:.55}9%{opacity:.08}10%{opacity:.4}}
+.boss-grain{opacity:.14;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");animation:boss-grain 1.2s steps(4) infinite}
+@keyframes boss-grain{25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-2%)}}
+.boss-flash{background:radial-gradient(circle at 50% 40%,#fff,color-mix(in srgb,var(--boss-c) 70%,#fff) 40%,transparent 75%);opacity:0;z-index:4}
+#bossIntro.show .boss-flash{animation:boss-flash-in .9s ease-out both}
+@keyframes boss-flash-in{0%{opacity:.95}100%{opacity:0}}
+/* entrada: la imagen «impacta» (zoom que se asienta) y el texto aparece con peso */
+#bossIntro.show .boss-backdrop{animation:boss-impact 1.3s cubic-bezier(.2,.9,.2,1) both,boss-intro-art 7s ease-in-out 1.3s infinite alternate}
+@keyframes boss-impact{0%{transform:scale(1.28);filter:contrast(1.3) saturate(1.5) brightness(1.6) blur(5px)}60%{transform:scale(1.07)}100%{transform:scale(1.04);filter:contrast(1.08) saturate(.95) brightness(.86) blur(0)}}
+#bossIntro.show .boss-name{animation:boss-name-in 1s .25s cubic-bezier(.2,.9,.2,1) both}
+@keyframes boss-name-in{0%{opacity:0;letter-spacing:.5em;filter:blur(10px)}100%{opacity:1;letter-spacing:.06em;filter:blur(0)}}
+#bossIntro.show .boss-tag{animation:boss-slide-down .6s .1s ease-out both}
+#bossIntro.show .boss-title{animation:boss-fade .8s .7s ease-out both}
+#bossIntro.show .boss-lore{animation:boss-rise .8s .95s ease-out both}
+#bossIntro.show .boss-mech{animation:boss-rise .7s 1.2s ease-out both}
+#bossIntro.show .boss-fight{animation:boss-rise .7s 1.4s ease-out both,boss-btn-pulse 1.8s 2.2s ease-in-out infinite}
+@keyframes boss-slide-down{from{opacity:0;transform:translateY(-20px) rotate(-1.2deg)}to{opacity:1;transform:rotate(-1.2deg)}}
+@keyframes boss-fade{from{opacity:0}to{opacity:1}}
+@keyframes boss-rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes boss-btn-pulse{50%{box-shadow:0 0 0 3px #150e0c,0 0 26px 4px color-mix(in srgb,var(--boss-c) 70%,transparent),3px 5px 0 #150e0c}}
+/* salida hacia el tablero: la imagen se abalanza, destello y el iris se cierra */
+#bossIntro.leaving{animation:boss-iris .72s cubic-bezier(.6,0,.9,.4) forwards}
+#bossIntro.leaving .boss-backdrop{animation:boss-lunge .72s ease-in forwards}
+#bossIntro.leaving .boss-shell{animation:boss-shell-out .4s ease-in forwards}
+#bossIntro.leaving .boss-flash{animation:boss-flash-out .72s ease-in forwards}
+@keyframes boss-iris{0%,45%{clip-path:circle(150% at 50% 50%)}100%{clip-path:circle(0% at 50% 50%)}}
+@keyframes boss-lunge{to{transform:scale(1.55);filter:brightness(1.9) blur(7px)}}
+@keyframes boss-shell-out{to{opacity:0;transform:translateY(-16px) scale(.96)}}
+@keyframes boss-flash-out{0%{opacity:0}35%{opacity:.9}100%{opacity:.5}}
+/* llegada al tablero: onda de choque con el color del jefe y el marco que aterriza */
+.boss-shock{position:fixed;z-index:70;width:var(--sz);height:var(--sz);margin:calc(var(--sz) / -2) 0 0 calc(var(--sz) / -2);border-radius:50%;pointer-events:none;
+  border:4px solid var(--boss-c2,#fff);box-shadow:0 0 36px var(--boss-c,#fff),inset 0 0 36px var(--boss-c,#fff);animation:boss-shock 1s ease-out forwards}
+@keyframes boss-shock{from{transform:scale(.25);opacity:1}to{transform:scale(1.9);opacity:0}}
+body.boss-arrive .frame{animation:boss-land .9s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes boss-land{0%{transform:scale(.88) translateY(26px);filter:brightness(2) blur(4px);opacity:.2}55%{transform:scale(1.03);filter:brightness(1.3)}100%{transform:none;filter:none;opacity:1}}
+body.boss-arrive .meter{animation:boss-land .8s .1s cubic-bezier(.2,1.3,.4,1) both}
+@media(prefers-reduced-motion:reduce){.boss-fx,.boss-rays,.boss-embers::before,.boss-embers::after,#bossIntro.show .boss-backdrop,#bossIntro.show .boss-name,#bossIntro.show .boss-flash,body.boss-arrive .frame,body.boss-arrive .meter{animation:none!important}.boss-embers{display:none}}
+/* en pantallas apaisadas la ilustración se ve entera; los lados se rellenan con ella misma, desenfocada y oscura (sin barras negras) */
+#bossIntro::before{content:'';position:absolute;inset:-6%;z-index:0;background:var(--boss-art,none) center/cover;filter:blur(26px) brightness(.38) saturate(1.2);transform:scale(1.08)}
+.boss-stage{z-index:1}

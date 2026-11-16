@@ -1,0 +1,20 @@
+/* Pantalla de jefe con el mismo acabado que el resto del juego: placas de tinta con aro de oro, cintas y tipografía de cartel */
+.boss-tag{padding:6px 16px;border:3px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(175deg,#c2402a,#9e2b15);
+  color:#fff5e0;font:800 11px/1.2 var(--font-ui);letter-spacing:.16em;text-shadow:0 2px 0 #150e0c;box-shadow:inset 0 0 0 1.5px #f2c45c,3px 4px 0 #150e0c;transform:rotate(-1.2deg)}
+.boss-name{font-family:var(--font-title);text-transform:uppercase;letter-spacing:.06em;color:#f6e6bd;text-shadow:2px 3px 0 #150e0c,0 0 26px #000}
+.boss-title{font:700 14px/1.3 var(--font-ui);letter-spacing:.04em;color:#f1e9f7;text-shadow:1px 1px 0 #150e0c,-1px 1px 0 #150e0c,1px -1px 0 #150e0c,-1px -1px 0 #150e0c,0 2px 6px #000}
+.boss-lore{padding:12px 20px;border:3px solid #150e0c;border-radius:var(--wob-a);background:var(--hatch),linear-gradient(165deg,#43283ef2,#2c1d33f5);
+  color:#fff1d2;box-shadow:inset 0 0 0 2px #e0b04f66,4px 6px 0 #150e0c,0 14px 28px #000a}
+.boss-mech{padding:6px 16px;border:3px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(175deg,#6a2a24,#3d1a1e);
+  color:#ffe7c9;font:800 12px/1.2 var(--font-ui);letter-spacing:.05em;box-shadow:inset 0 0 0 1.5px #f08a6c88,3px 4px 0 #150e0c}
+.boss-fight{min-height:52px;font-family:var(--font-ui);letter-spacing:.04em}
+.travel-lore-chip{border:3px solid #150e0c;border-radius:var(--wob-b);background:var(--hatch),linear-gradient(165deg,#43283ef2,#2c1d33f5);box-shadow:inset 0 0 0 1.5px #e0b04f55,3px 5px 0 #150e0c}
+.travel-lore-chip b{font-family:var(--font-ui);color:#ffe08a}
+.travel-lore-chip span{color:#f6ecdc}
+
+/* Tablero de jefe: hierro oscuro con brasa roja (distinto del tablero de cada ciudad) */
+#board.is-boss{background-color:#2a1016;border-color:#150e0c;box-shadow:inset 0 3px 10px #000b,inset 0 0 46px #a3202e55}
+#board.is-boss::before{background:linear-gradient(#ffb4a020 1px,transparent 1px) 0 0/var(--cell) var(--cell),linear-gradient(90deg,#ffb4a020 1px,transparent 1px) 0 0/var(--cell) var(--cell),radial-gradient(ellipse at 50% 38%,#4e1622e6,#1a0a10f5),var(--scene) center/cover}
+#board.is-boss .slot-row{background:linear-gradient(90deg,transparent,#ff6a4a14 50%,#ff6a4a40)}
+.frame:has(#board.is-boss){background:repeating-linear-gradient(91deg,#0000 0 6px,#00000014 6px 7px),repeating-linear-gradient(88deg,#0000 0 19px,#ffffff08 19px 21px),linear-gradient(155deg,#5a4343,#2a1c1e 55%,#4a3235);
+  box-shadow:inset 0 0 0 2px #e0b04f55,inset 0 3px 0 #ffb4a044,inset 0 -4px 0 #0a0405aa,0 0 0 2px #d95b43,0 0 0 5px #150e0c,6px 10px 0 5px #150e0ccc,0 22px 36px #0008,0 0 38px #d95b4388}

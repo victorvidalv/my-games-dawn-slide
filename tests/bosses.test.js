@@ -1,0 +1,115 @@
+import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import levelBank from '../src/data/levels.json';
+import specialBank from '../src/data/special.json';
+import { BOSSES, BOSS_RATING_FLOOR, BOSS_RULES, bossCapFor, bossRating, bossRule, bossRuleLabel, bossTimeFor } from '../src/game/bosses.js';
+import { buildAdventureLevel } from '../src/game/build-adventure.js';
+import { moveLimit } from '../src/engine/difficulty.js';
+import { bonusTurns, heroLimit } from '../src/game/heroes.js';
+import { ZONE_THEMES } from '../src/audio/themes.js';
+
+const LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const tips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_door'].map((k) => [k, true]));
+const build = (level, mode = 'c') => buildAdventureLevel({ seed: 46, hero: 'lia', start: 1, level, route: 'normal', mode, adj: 0, hints: 3, score: 0 }, { levels: levelBank.ratings, special: specialBank, tips });
+
+describe('jefes: datos y reglas', () => {
+  it('hay un jefe por ciudad con nombre, título, lore, mecánica, color y regla propia', () => {
+    expect(Object.keys(BOSSES).map(Number)).toEqual(LEVELS);
+    LEVELS.forEach((level, i) => {
+      const b = BOSSES[level];
+      expect(b.city, `jefe ${level}`).toBe(i);
+      for (const k of ['name', 'title', 'lore', 'mechTag', 'art']) expect(b[k], `${level}.${k}`).toBeTruthy();
+      expect(b.color, `${level} color`).toHaveLength(2);
+      expect(BOSS_RULES[level], `${level} regla`).toBeTruthy();
+    });
+    expect(new Set(Object.values(BOSSES).map((b) => b.name)).size).toBe(10);
+  });
+
+  it('cada jefe tiene su ilustración en public/jefes (las diez, en JPG optimizado)', () => {
+    const missing = LEVELS.filter((l) => !fs.existsSync(`public/jefes/${BOSSES[l].art}.jpg`)).map((l) => `${l}:${BOSSES[l].art}`);
+    expect(missing).toEqual([]);
+    expect(fs.existsSync('public/jefes/sentinel.jpg')).toBe(true);   // la imagen de reserva (si falta alguna, el juego usa esta)
+  });
+
+  it('las reglas se alternan: hay jefes de turnos, de contrarreloj y de las dos cosas, y los finales usan ambas', () => {
+    const kinds = LEVELS.map((l) => bossRule(l).kind);
+    expect(new Set(kinds)).toEqual(new Set(['turns', 'time', 'both']));
+    expect(kinds[0]).toBe('turns');
+    expect(kinds[8]).toBe('both');
+    expect(kinds[9]).toBe('both');
+    expect(bossRule(11)).toBeNull();
+    expect(bossCapFor(11)).toBe(false);
+  });
+
+  it('el límite de turnos del jefe nunca supera su tope y nunca baja de mínimo + 2', () => {
+    for (const l of LEVELS) {
+      const normal = moveLimit(30, 1, l, false, false);
+      const boss = moveLimit(30, 1, l, false, bossCapFor(l));
+      expect(boss, `jefe ${l}`).toBeLessThanOrEqual(normal);
+      expect(boss, `jefe ${l}`).toBeLessThanOrEqual(Math.max(32, Math.round(30 * bossRule(l).cap)));
+      expect(boss, `jefe ${l}`).toBeGreaterThanOrEqual(32);
+    }
+    expect(bossRule(60).cap).toBeLessThan(bossRule(10).cap);                    // los jefes de turnos aprietan más según avanzas
+    expect(heroLimit('lia', 30, 1, 60, false, bossCapFor(60))).toBeLessThan(heroLimit('lia', 30, 1, 60, false, false));
+    expect(bonusTurns('lia', 40, 1, true)).toBeLessThan(bonusTurns('lia', 40, 1, false));   // en jefes la reserva de Lía es menor
+    expect(bonusTurns('jean', 40, 1, true)).toBe(0);
+  });
+
+  it('la contrarreloj crece con el mínimo, se redondea a 5 s, nunca baja de 1:00 y no pasa de 6:00', () => {
+    expect(bossTimeFor(10, 30)).toBe(0);                  // jefe de turnos: sin reloj
+    expect(bossTimeFor(11, 30)).toBe(0);
+    expect(bossTimeFor(50, 40)).toBeGreaterThan(bossTimeFor(50, 20));
+    for (const l of LEVELS.filter((x) => bossRule(x).kind !== 'turns')) {
+      let prev = 0;
+      for (const opt of [8, 15, 25, 35, 39]) {
+        const t = bossTimeFor(l, opt);
+        expect(t % 5, `${l}/${opt}`).toBe(0);
+        expect(t, `${l}/${opt}`).toBeGreaterThanOrEqual(60);
+        expect(t, `${l}/${opt}`).toBeLessThanOrEqual(360);
+        expect(t, `${l}/${opt}`).toBeGreaterThanOrEqual(prev);
+        prev = t;
+      }
+    }
+  });
+
+  it('el rating mínimo de cada jefe evita tableros diminutos en las primeras ciudades del camino Normal', () => {
+    expect(bossRating(10, 14)).toBeGreaterThanOrEqual(26);
+    expect(bossRating(10, 60)).toBe(60);                  // si el nivel ya es más difícil, no se toca
+    expect(bossRating(11, 14)).toBe(14);                  // fuera de los jefes no hace nada
+    for (let i = 1; i < LEVELS.length; i++) expect(BOSS_RATING_FLOOR[LEVELS[i]]).toBeGreaterThan(BOSS_RATING_FLOOR[LEVELS[i - 1]]);
+  });
+
+  it('los textos de la regla son claros', () => {
+    expect(bossRuleLabel(10)).toBe('Turnos ajustados');
+    expect(bossRuleLabel(50, 125)).toBe('Contrarreloj 2:05');
+    expect(bossRuleLabel(100, 185)).toBe('Contrarreloj 3:05 y turnos ajustados');
+  });
+});
+
+describe('jefes: niveles generados', () => {
+  it('cada nivel de jefe trae su contrarreloj (si la tiene) y la práctica no tiene presión de tiempo', () => {
+    for (const l of LEVELS) {
+      const G = build(l);
+      expect(G.timeLimit, `jefe ${l}`).toBe(bossTimeFor(l, G.opt));
+      expect(G.timeLeft, `jefe ${l}`).toBe(G.timeLimit);
+      expect(build(l, 'p').timeLimit, `práctica ${l}`).toBe(0);
+    }
+    expect(build(11).timeLimit).toBe(0);
+  }, 120000);
+
+  it('al reanudar una partida guardada se conserva el tiempo que quedaba', () => {
+    const G = build(20);
+    expect(G.timeLimit).toBeGreaterThan(0);
+    const run = { seed: 46, hero: 'lia', start: 1, level: 20, route: 'normal', mode: 'c', adj: 0, hints: 3, score: 0,
+      board: { level: 20, rate: G.rate, pieces: G.pieces, walls: G.walls, doors: G.doors, pos: G.pos, start: G.start, opt: G.opt, limit: G.limit, moves: 0, hist: [], timeLimit: G.timeLimit, timeLeft: 47 } };
+    const R = buildAdventureLevel(run, { levels: levelBank.ratings, special: specialBank, tips });
+    expect(R.timeLeft).toBe(47);
+    expect(R.timeLimit).toBe(G.timeLimit);
+  }, 60000);
+});
+
+describe('jefes: música', () => {
+  it('la música de jefe es distinta de todas las de ciudad', () => {
+    expect(ZONE_THEMES.some((t) => t.boss)).toBe(false);
+  });
+});

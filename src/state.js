@@ -23,8 +23,8 @@ export const rkey=()=>S.run.mode+S.run.start;
 /* Estado mutable compartido entre módulos: la aventura en curso, el tablero activo y si la UI está ocupada. */
 export const S={run:null,G:null,busy:false,lastCfg:{start:1,mode:'c'}};
 export const heroOf=(id=S.run?.hero)=>heroById(id);
-/** Puntos que dan `moves` movimientos en el tablero actual (incluye racha y bono de ruta aventurera). */
-export const gainNow=(moves=S.G.moves)=>routeGain(S.run,S.G.rate,moves,S.G.opt,S.run.streak||0);
+/** Puntos que dan `moves` movimientos en el tablero actual (incluye racha, bono de ruta heroica y bono de jefe). */
+export const gainNow=(moves=S.G.moves)=>routeGain(S.run,S.G.rate,moves,S.G.opt,S.run.streak||0,S.G.n);
 function mergeRecords(a,b){                              // conserva el máximo de cada registro (p. ej. con dos pestañas abiertas)
   const out={...a};
   for(const k in b){const x=out[k]||{score:0,level:0,runs:0},y=b[k]||{};

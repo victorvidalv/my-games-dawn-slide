@@ -16,7 +16,7 @@ const bank = read('../../src/data/levels.json');
 const special = read('../../src/data/special.json');
 
 const kindsOf = (pieces) => [...new Set(pieces.map((p) => p.kind).filter(Boolean))].sort();
-const stripped = (b) => ({ pieces: b.pieces.map(({ o, len, fix }) => ({ o, len, fix })), pos: b.pos, walls: [] });
+const stripped = (b) => ({ pieces: b.pieces.map(({ o, len, fix }) => ({ o, len, fix })), pos: b.pos, walls: [], doors: [] });
 const MAXV = 6; // violaciones que se guardan por tablero (basta para diagnosticar)
 
 /**
@@ -25,7 +25,7 @@ const MAXV = 6; // violaciones que se guardan por tablero (basta para diagnostic
  * que acerca a la salida, rangos del tablero = rangos del solver, el hielo solo va a los topes.
  */
 function checkStates(b, an, sample) {
-  const { pieces, walls } = b;
+  const { pieces, walls, doors = [] } = b;
   const n = pieces.length;
   const hasIce = pieces.some((p) => p.kind === 'ice');
   const v = [];
@@ -41,9 +41,9 @@ function checkStates(b, an, sample) {
     const d = an.dist.get(k);
     const here = decode(k, n);
     checked++;
-    if (!isValidState(pieces, here, walls)) bad(`estado inválido ${k}`);
+    if (!isValidState(pieces, here, walls, doors)) bad(`estado inválido ${k}`);
     if (d === undefined) { bad(`estado sin salida ${k}`); continue; }
-    const ranges = pieces.map((_, i) => slideRange(pieces, here, i, walls));
+    const ranges = pieces.map((_, i) => slideRange(pieces, here, i, walls, doors));
     let moves = 0;
     let closer = false;
     expand(pieces, k, tmp, g, (i, y, nk) => {
@@ -58,10 +58,10 @@ function checkStates(b, an, sample) {
       if (pieces[i].kind === 'ice' && y !== lo && y !== hi) bad('hielo se detiene a medias');
       if (pieces[i].kind !== 'ice' || here[i] === lo || here[i] === hi) {
         let back = false;
-        expand(pieces, nk, tmp2, g2, (j, z, bk) => { if (bk === k) back = true; }, walls);
+        expand(pieces, nk, tmp2, g2, (j, z, bk) => { if (bk === k) back = true; }, walls, doors);
         if (!back) bad(`movimiento irreversible ${k}→${nk}`);
       }
-    }, walls);
+    }, walls, doors);
     if (!moves) bad(`sin movimientos en ${k}`);
     if (d > 0 && !closer) bad(`sin jugada óptima en ${k}`);
     if (v.length >= MAXV) break;
@@ -73,9 +73,10 @@ const tasks = {
   /** Resumen completo de un tablero del banco: {text, rating, family, strip?:true, sample?:n}. */
   board({ text, rating, strip = false, sample = 60 }) {
     const b = decodeBoard(text);
+    const doors = b.doors || [];
     const r = {
-      rating, kinds: kindsOf(b.pieces), walls: b.walls.length, pieces: b.pieces.length,
-      valid: isValidState(b.pieces, b.pos, b.walls), keyPlain: b.pieces[0].kind === undefined,
+      rating, kinds: kindsOf(b.pieces), walls: b.walls.length, doors: doors.length, pieces: b.pieces.length,
+      valid: isValidState(b.pieces, b.pos, b.walls, doors), keyPlain: b.pieces[0].kind === undefined && b.pieces[0].tone === undefined,
       keyOk: b.pieces[0].o === 'h' && b.pieces[0].len === 2 && b.pieces[0].fix === 2,
       platesOk: true, violations: [],
     };
@@ -85,7 +86,7 @@ const tasks = {
       const onWall = b.walls.some(([wr, wc]) => wr === p.plate[0] && wc === p.plate[1]);
       if (inLane || onWall || p.plate[0] >= N || p.plate[1] >= N) r.platesOk = false;
     }
-    const an = r.valid ? analyze(b.pieces, b.pos, 600000, b.walls) : null;
+    const an = r.valid ? analyze(b.pieces, b.pos, 600000, b.walls, doors) : null;
     r.solvable = !!an;
     if (!an) return r;
     r.states = an.list.length;
@@ -109,11 +110,12 @@ const tasks = {
     const board = varyBoard(base, rating, hash32(seed, level, 7));
     const lvl = buildLevel(board, { rating, adj, brave: false, rng: mulberry32(level) });
     const walls = lvl.walls || [];
-    const an = analyze(lvl.pieces, lvl.pos, 600000, walls);
+    const doors = lvl.doors || [];
+    const an = analyze(lvl.pieces, lvl.pos, 600000, walls, doors);
     const out = {
       start, level, rating, planFamily: plan.family, family: base.family, boss: plan.boss, opt: lvl.opt,
-      target: curve(rating).target, kinds: kindsOf(lvl.pieces), walls: walls.length,
-      valid: isValidState(lvl.pieces, lvl.pos, walls), won0: isWon(lvl.pos), solvable: !!an, deadEnds: 0, optReal: null, moves: -1,
+      target: curve(rating).target, kinds: kindsOf(lvl.pieces), walls: walls.length, doors: doors.length,
+      valid: isValidState(lvl.pieces, lvl.pos, walls, doors), won0: isWon(lvl.pos), solvable: !!an, deadEnds: 0, optReal: null, moves: -1,
     };
     if (!an) return out;
     out.deadEnds = an.list.length - an.dist.size;
@@ -125,7 +127,7 @@ const tasks = {
     while (an.dist.get(key) > 0 && moves < 500) {
       const d = an.dist.get(key);
       let nxt = null;
-      expand(lvl.pieces, key, tmp, g, (i, y, nk) => { if (nxt === null && an.dist.get(nk) === d - 1) nxt = nk; }, walls);
+      expand(lvl.pieces, key, tmp, g, (i, y, nk) => { if (nxt === null && an.dist.get(nk) === d - 1) nxt = nk; }, walls, doors);
       if (nxt === null) break;
       key = nxt;
       moves++;
@@ -167,24 +169,26 @@ const tasks = {
     const combos = [['base', base], ...families.map((f) => [f, decorateBoard(base, f, seed * 31 + rating)])];
     for (const [family, d] of combos) {
       if (!d) { out.combos.push({ family, missing: true }); continue; }
-      const an = analyze(d.pieces, d.pos, 600000, d.walls || []);
-      const c = { family, kinds: kindsOf(d.pieces), walls: (d.walls || []).length, keyPlain: d.pieces[0].kind === undefined, valid: isValidState(d.pieces, d.pos, d.walls || []), solvable: !!an, violations: [] };
+      const wallsD = d.walls || [];
+      const doorsD = d.doors || [];
+      const an = analyze(d.pieces, d.pos, 600000, wallsD, doorsD);
+      const c = { family, kinds: kindsOf(d.pieces), walls: wallsD.length, doors: doorsD.length, keyPlain: d.pieces[0].kind === undefined && d.pieces[0].tone === undefined, valid: isValidState(d.pieces, d.pos, wallsD, doorsD), solvable: !!an, violations: [] };
       if (an) {
         c.deadEnds = an.list.length - an.dist.size;
         c.opt = an.dist.get(an.k0);
         c.plain = d.plain;
         c.minGain = FAMILIES[family]?.minGain ?? 0;
-        Object.assign(c, checkStates({ pieces: d.pieces, walls: d.walls || [] }, an, sample));
+        Object.assign(c, checkStates({ pieces: d.pieces, walls: wallsD, doors: doorsD }, an, sample));
         // nivel construido sobre ese tablero: mínimo exacto, límite = 2×, y la pista lleva a la salida en `opt` pasos
-        const lvl = buildLevel({ ...d, walls: d.walls || [] }, { rating, adj: 0, brave: rating % 2 === 1, rng: mulberry32(rating) });
-        const la = analyze(lvl.pieces, lvl.pos, 600000, lvl.walls);
+        const lvl = buildLevel({ ...d, walls: wallsD, doors: doorsD }, { rating, adj: 0, brave: rating % 2 === 1, rng: mulberry32(rating) });
+        const la = analyze(lvl.pieces, lvl.pos, 600000, lvl.walls, lvl.doors);
         c.lvlOpt = lvl.opt;
         c.lvlReal = la?.dist.get(la.k0);
         c.limitOk = moveLimit(lvl.opt) === lvl.opt * 2;
         let cur = lvl.pos.slice();
         let hintOk = true;
         for (let st = 0; st < lvl.opt; st++) {
-          const h = hintMove(lvl.pieces, cur, lvl.walls);
+          const h = hintMove(lvl.pieces, cur, lvl.walls, lvl.doors);
           if (!h || h.left !== lvl.opt - st) { hintOk = false; break; }
           cur[h.i] = h.to;
         }

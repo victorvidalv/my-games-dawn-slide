@@ -1,18 +1,87 @@
+import { slideRange, snapDrag } from '../engine/board.js';
 import { tone, vib } from '../audio/sound.js';
 import { $, cssUrl } from '../dom.js';
 import { saveRun } from '../game/session.js';
 import { S, heroOf } from '../state.js';
 import { zoneIdx } from '../data/zones.js';
-import { GAME_SYMBOLS, SEQUENCE, bonusIndex, claimBonus, ensureBonusPlan, earnedPart, finishBonus, gameFor, maxPrize, memoryDone, memoryTap, recordTiming, sequenceTap, timingPosition } from '../game/minigames.js';
+import { BESTMOVE, GAME_SYMBOLS, SEQUENCE, SPRINT, bestMoveCurrent, bestMovePick, bonusIndex, claimBonus, ensureBonusPlan, earnedPart, finishBonus, gameFor, maxPrize, memoryDone, memoryTap, recordTiming, sequenceTap, sprintCurrent, sprintMove, sprintStart, sprintTimeout, timingPosition } from '../game/minigames.js';
 import { heroArt } from './story.js';
 import { icon } from './icons.js';
 export { isBonusLevel } from '../game/minigames.js';
 
 // Reduced motion removes decorative transitions, never the time needed to read or remember.
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const rules = { memory: 'Encuentra las 4 parejas. Toca dos cartas.', sequence: 'Mira las luces y repítelas en el mismo orden.', timing: 'Toca SELLAR cuando la marca esté en la zona dorada.' };
+const rules = {
+  memory: 'Encuentra las 4 parejas. Toca dos cartas.',
+  sequence: 'Mira las luces y repítelas en el mismo orden.',
+  timing: 'Toca SELLAR cuando la marca esté en la zona dorada.',
+  sprint: 'Resuelve 3 tableros miniatura en pocos segundos.',
+  bestmove: 'Observa el tablero y elige la única jugada que acerca la salida.',
+};
 const fmt = n => `${n} pista${n === 1 ? '' : 's'}`;
 const sounds = [392, 494, 587, 784];
+const OPT_LETTERS = ['A', 'B', 'C'];
+
+function renderMiniBoard(host, pieces, pos, { draggable = false, onMove, highlight = null } = {}) {
+  host.innerHTML = '<div class="mini-board-grid"><div class="mini-slot-row"></div></div>';
+  const grid = host.querySelector('.mini-board-grid');
+  const cell = () => grid.clientWidth / 6;
+  const els = pieces.map((p, i) => {
+    const el = document.createElement('div');
+    const cIdx = i === 0 ? 'red' : `c${(i + 1) % 7}`;
+    const optMark = highlight?.get(i);
+    el.className = `mini-piece ${p.o} ${cIdx}${optMark ? ' has-opt' : ''}`;
+    el.innerHTML = `<div class="mini-face"></div>${optMark ? `<span class="mini-opt-badge">${optMark.label}</span>` : ''}`;
+    grid.appendChild(el);
+    return el;
+  });
+  const placeAll = () => {
+    const s = cell();
+    pieces.forEach((p, i) => {
+      const el = els[i];
+      el.style.width = `${(p.o === 'h' ? p.len : 1) * s}px`;
+      el.style.height = `${(p.o === 'v' ? p.len : 1) * s}px`;
+      el.style.left = `${(p.o === 'h' ? pos[i] : p.fix) * s}px`;
+      el.style.top = `${(p.o === 'v' ? pos[i] : p.fix) * s}px`;
+    });
+  };
+  placeAll();
+  if (draggable && onMove) {
+    pieces.forEach((p, i) => {
+      const el = els[i];
+      el.classList.add('is-live');
+      el.addEventListener('pointerdown', e => {
+        if (!draggable()) return;
+        e.preventDefault();
+        try { el.setPointerCapture(e.pointerId); } catch (_) {}
+        const s = cell(), [lo, hi] = slideRange(pieces, pos, i), x0 = pos[i], start = p.o === 'h' ? e.clientX : e.clientY;
+        el.classList.add('drag');
+        let cur = x0, delta = 0, lastC = x0, done = false;
+        const move = ev => {
+          if (ev.pointerId !== e.pointerId) return;
+          delta = ((p.o === 'h' ? ev.clientX : ev.clientY) - start) / s;
+          cur = Math.max(lo, Math.min(hi, x0 + delta));
+          el.style[p.o === 'h' ? 'left' : 'top'] = `${cur * s}px`;
+          const c = Math.round(cur);
+          if (c !== lastC) { lastC = c; vib(4); }
+        };
+        const end = commit => {
+          if (done) return; done = true;
+          for (const t of ['pointermove', 'pointerup', 'pointercancel', 'lostpointercapture']) el.removeEventListener(t, handlers[t]);
+          try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+          el.classList.remove('drag');
+          const x = commit ? snapDrag(x0, lo, hi, delta, p.kind) : x0;
+          if (x !== x0) pos[i] = x;
+          placeAll();
+          if (x !== x0) onMove(i, x);
+        };
+        const handlers = { pointermove: move, pointerup: ev => { if (ev.pointerId === e.pointerId) end(true); }, pointercancel: () => end(false), lostpointercapture: () => end(false) };
+        for (const t in handlers) el.addEventListener(t, handlers[t]);
+      });
+    });
+  }
+  return { grid, els, placeAll };
+}
 
 export function showBonus() {
   const run = S.run, plan = ensureBonusPlan(run), hero = heroOf(plan.hero), symbols = GAME_SYMBOLS[hero.id];
@@ -32,7 +101,7 @@ export function showBonus() {
     $('bHints').textContent = run.hints;
     $('bLegend').textContent = `Premio: 1–${maxPrize(plan.level, plan.start)} pistas · Sin perder tu reserva`;
     $('bRes').replaceChildren(); stage.replaceChildren(); stage.className = `bonus-stage mini-${plan.kind}`;
-    action.hidden = plan.kind === 'memory'; action.disabled = false;
+    action.hidden = plan.kind === 'memory' || plan.kind === 'bestmove'; action.disabled = false;
     go.hidden = true; go.disabled = false; leave.hidden = false;
     let busy = false, ended = false, token = 0, raf = 0, t0 = 0;
     const alive = () => S.run === run && run.bonusPlan === plan && !ended;
@@ -119,6 +188,113 @@ export function showBonus() {
       });
       render(); status('Pulsa Ver secuencia cuando estés listo');
 
+    } else if (plan.kind === 'sprint') {
+      stage.innerHTML = `${stats('Resueltos <b id="spSolved">0</b>/3', '<b id="spTime">10.0s</b>')}<div class="sprint-timer"><i id="spBar"></i></div><div class="mini-board-host" id="spBoard"></div><div class="mini-pips" id="spPips"></div>`;
+      const host = $('spBoard');
+      let timerStop = 0;
+      const drawSprint = () => {
+        const solved = plan.sprintSolved || 0;
+        const round = plan.sprintRound || 0;
+        $('spSolved').textContent = solved;
+        $('spPips').innerHTML = Array.from({ length: SPRINT.rounds }, (_, i) => {
+          const r = plan.sprintResults?.[i];
+          return `<span class="${r === true ? 'hit' : r === false ? 'miss' : i === round ? 'cur' : ''}">${i + 1}</span>`;
+        }).join('');
+        const { pieces, pos } = sprintCurrent(plan);
+        renderMiniBoard(host, pieces, pos, {
+          draggable: () => plan.phase === 'running' && !busy && !ended && alive(),
+          onMove: async (pi, to) => {
+            vib(6); tone(sounds[pi % 4], .08, 'triangle', .035);
+            const res = sprintMove(plan, pi, to);
+            if (!res) return;
+            save();
+            if (res.won) {
+              cancelAnimationFrame(raf); busy = true; vib([16, 20, 24]);
+              tone(587, .14, 'triangle', .05); tone(880, .18, 'sine', .04, .08);
+              status('¡Tablero resuelto!');
+              await wait(480); busy = false;
+              if (!alive()) return;
+              if (res.done) finish(); else { drawSprint(); status('Pulsa Siguiente tablero'); }
+            }
+          },
+        });
+        const locked = plan.phase !== 'running';
+        host.classList.toggle('board-locked', locked);
+        if (locked) { $('spTime').textContent = `${SPRINT.seconds}.0s`; $('spBar').style.width = '100%'; }
+        action.textContent = round ? 'Siguiente tablero' : 'Comenzar tablero';
+        action.hidden = !locked || ended;
+      };
+      const tickSprint = () => {
+        if (!alive() || plan.phase !== 'running' || ended) return;
+        const left = Math.max(0, (timerStop - performance.now()) / 1000);
+        $('spTime').textContent = `${left.toFixed(1)}s`;
+        $('spBar').style.width = `${(left / SPRINT.seconds) * 100}%`;
+        if (left <= 0) {
+          const res = sprintTimeout(plan); save(); vib([30, 30]); tone(196, .22, 'sawtooth', .04);
+          status('Tiempo agotado en este tablero');
+          if (!res) return;
+          if (res.done) finish(); else drawSprint();
+          return;
+        }
+        raf = requestAnimationFrame(tickSprint);
+      };
+      action.onclick = () => {
+        if (busy || !alive() || plan.phase !== 'ready') return;
+        sprintStart(plan); timerStop = performance.now() + SPRINT.seconds * 1000;
+        vib(8); drawSprint(); save(); status('¡Desliza la llave roja hasta la salida ➜!');
+        tickSprint();
+      };
+      drawSprint(); status('Tres tableros cortos de 3 movimientos. Sin prisas para empezar.');
+
+    } else if (plan.kind === 'bestmove') {
+      stage.innerHTML = `${stats('Aciertos <b id="bmHits">0</b>/3', 'Ronda <b id="bmRound">1</b>/3')}<div class="mini-board-host" id="bmBoard"></div><div class="bestmove-opts" id="bmOpts"></div>`;
+      const host = $('bmBoard'), optsHost = $('bmOpts');
+      const dirArrow = (p, from, to) => p.o === 'h' ? (to > from ? '→' : '←') : (to > from ? '↓' : '↑');
+      const dirText = (p, from, to) => `${dirArrow(p, from, to)} ${Math.abs(to - from)}`;
+      const drawBestMove = () => {
+        $('bmHits').textContent = plan.bestHits || 0;
+        $('bmRound').textContent = Math.min(BESTMOVE.rounds, (plan.bestRound || 0) + 1);
+        const cur = bestMoveCurrent(plan);
+        const map = new Map();
+        cur.options.forEach((o, idx) => map.set(o.i, { label: OPT_LETTERS[idx], opt: o }));
+        const { els } = renderMiniBoard(host, cur.pieces, cur.pos, { highlight: map });
+        optsHost.innerHTML = '';
+        const pickOpt = async idx => {
+          if (busy || !alive()) return;
+          busy = true;
+          const res = bestMovePick(plan, idx);
+          if (!res) { busy = false; return; }
+          const buttons = [...optsHost.querySelectorAll('button')];
+          buttons.forEach((b, k) => {
+            b.disabled = true;
+            if (k === res.bestIdx) b.classList.add('is-right');
+            else if (k === idx && !res.hit) b.classList.add('is-wrong');
+          });
+          if (res.hit) { tone(659, .18, 'triangle', .05); vib([12, 16]); status('¡Jugada óptima!'); }
+          else { tone(196, .2, 'sawtooth', .045); vib([26, 26]); status(`La óptima era ${OPT_LETTERS[res.bestIdx]}`); }
+          const s = host.querySelector('.mini-board-grid').clientWidth / 6;
+          const p = cur.pieces[cur.options[res.bestIdx].i];
+          els[cur.options[res.bestIdx].i].style[p.o === 'h' ? 'left' : 'top'] = `${cur.options[res.bestIdx].to * s}px`;
+          save();
+          await wait(700); busy = false;
+          if (!alive()) return;
+          if (res.done) finish(); else { drawBestMove(); status('Elige la pieza que abre el camino más corto'); }
+        };
+        cur.options.forEach((o, idx) => {
+          const p = cur.pieces[o.i];
+          const btn = document.createElement('button');
+          btn.type = 'button'; btn.className = 'bestmove-btn';
+          btn.innerHTML = `<b>${OPT_LETTERS[idx]}</b><span>${dirText(p, cur.pos[o.i], o.to)}</span>`;
+          btn.onmouseenter = () => els[o.i]?.classList.add('opt-focus');
+          btn.onmouseleave = () => els[o.i]?.classList.remove('opt-focus');
+          btn.onclick = () => pickOpt(idx);
+          optsHost.appendChild(btn);
+          els[o.i].style.cursor = 'pointer';
+          els[o.i].onclick = () => pickOpt(idx);
+        });
+      };
+      drawBestMove(); status('¿Qué movimiento acerca más rápido la llave roja?');
+
     } else {
       stage.innerHTML = `${stats('Sellos <b id="tRound">0</b>/3', '<b id="tScore">0</b> puntos')}<div class="timing-emblem">${icon(hero.icon)}</div><div class="timing-track" aria-label="Zona dorada en el centro"><span class="timing-zone"><i></i></span><b id="timingMarker"></b></div><div class="timing-labels"><span>Zona dorada</span><b>Centro: doble</b></div><div class="timing-hits" id="timingHits"></div>`;
       const marker = $('timingMarker');
@@ -147,8 +323,9 @@ export function showBonus() {
     function suspend() {
       if (!document.hidden || !alive()) return;
       if (plan.phase === 'watch' || plan.phase === 'input' || plan.phase === 'running') {
-        token++; cancelAnimationFrame(raf); busy = false; plan.phase = 'ready'; plan.input = 0; save();
-        action.disabled = false; action.hidden = false; action.textContent = plan.kind === 'timing' ? 'Reanudar sello' : 'Ver secuencia';
+        token++; cancelAnimationFrame(raf); busy = false; plan.phase = 'ready'; plan.input = 0; plan.sprintPos = null; save();
+        action.disabled = false; action.hidden = plan.kind === 'memory' || plan.kind === 'bestmove';
+        action.textContent = plan.kind === 'timing' ? 'Reanudar sello' : plan.kind === 'sprint' ? 'Reanudar tablero' : 'Ver secuencia';
         if(plan.kind==='sequence')stage.querySelectorAll('.sequence-pad').forEach(b=>b.disabled=true);
         stage.querySelectorAll('.lit,.wrong').forEach(b => b.classList.remove('lit', 'wrong')); status('En pausa. Continúa cuando quieras.');
       }

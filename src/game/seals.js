@@ -2,14 +2,19 @@ import { N, WIN_POS, encode, occupancy } from '../engine/board.js';
 import { analyze, expand } from '../engine/solver.js';
 import { baseScore, calcGain } from '../engine/scoring.js';
 import { hash32 } from '../engine/rng.js';
-import { TUTORIALS } from './mechanics.js';
+import { TUTORIALS, isBossLevel } from './mechanics.js';
 import { heroicPoints } from './routes.js';
 
 const intros = new Set([...Object.values(TUTORIALS).map(t => t.level), 51]);
 const SEAL_FIRST_LEVEL = 20;
 export const SEAL_LEVELS = (() => {
   const levels = []; let level = SEAL_FIRST_LEVEL, gap = 3;
-  while (level < 100) { levels.push(level); let next = level + gap; if (intros.has(next)) next = level + (gap === 3 ? 4 : 3); level = next; gap = gap === 3 ? 4 : 3; }
+  while (level < 100) {
+    if (!intros.has(level) && !isBossLevel(level)) levels.push(level);
+    let next = level + gap;
+    while (intros.has(next) || isBossLevel(next)) { next += (gap === 3 ? 1 : 1); }
+    level = next; gap = gap === 3 ? 4 : 3;
+  }
   return levels;
 })();
 export const isSealLevel = level => SEAL_LEVELS.includes(level);
@@ -60,11 +65,12 @@ const searches = new WeakMap();
  * Ice may be directed: no reversibility assumptions are made. Every emitted candidate has a complete witness.
  * The deterministic state budget limits work on phones; a truncated search still only emits certified routes.
  */
-function candidatesFor(pieces, start, walls, opt, an, stateCap) {
+function candidatesFor(pieces, start, walls, doors, opt, an, stateCap) {
   const root = encode(start), bound = opt + maxSealDetour(opt);
   let cache = searches.get(an); if (!cache) { cache = new Map(); searches.set(an, cache); }
   const cacheKey = `${root}:${bound}:${stateCap}`; if (cache.has(cacheKey)) return cache.get(cacheKey);
   const occupied = occupancy(pieces, start, walls), plates = new Set(pieces.filter(p => p.kind === 'gate').map(p => p.plate[0] * N + p.plate[1]));
+  const doorCells = new Set((doors || []).map(([r, c]) => r * N + c));
   const nodes = new Map([[root, { g: 0, parent: null }]]), queue = [root], candidates = new Map();
   const pos = Array(pieces.length).fill(0), grid = new Int8Array(N * N);
   let truncated = false;
@@ -75,10 +81,10 @@ function candidatesFor(pieces, start, walls, opt, an, stateCap) {
       const d = an.dist.get(next); if (d === undefined || g + 1 + d > bound) return;
       const p = pieces[i], from = pos[i], required = g + 1 + d;
       if (i > 0) for (let x = Math.min(from, to); x < Math.max(from, to) + p.len; x++) {
-        // The seal starts outside its own piece and never covers a wall or a pressure plate.
+        // The seal starts outside its own piece and never covers a wall, pressure plate or color door.
         if (x >= start[i] && x < start[i] + p.len) continue;
         const cell = p.o === 'h' ? [p.fix, x] : [x, p.fix], index = cell[0] * N + cell[1];
-        if (plates.has(index) || walls.some(([r,c]) => r === cell[0] && c === cell[1])) continue;
+        if (plates.has(index) || doorCells.has(index) || walls.some(([r,c]) => r === cell[0] && c === cell[1])) continue;
         const id = `${i}:${index}`, previous = candidates.get(id);
         if (!previous || required < previous.required || (required === previous.required && g < previous.g)) {
           candidates.set(id, { piece: i, cell, required, extra: required - opt, key, next, to, g, occupied: occupied[index] >= 0 });
@@ -88,29 +94,29 @@ function candidatesFor(pieces, start, walls, opt, an, stateCap) {
         if (nodes.size < stateCap) { nodes.set(next, { g: g + 1, parent: key, piece: i, to }); queue.push(next); }
         else truncated = true;
       }
-    }, walls);
+    }, walls, doors);
   }
   const result = { candidates: [...candidates.values()], nodes, truncated }; cache.set(cacheKey, result); return result;
 }
 
-function witnessFor(candidate, nodes, pieces, walls, an) {
+function witnessFor(candidate, nodes, pieces, walls, doors, an) {
   const prefix = []; let key = candidate.key;
   while (nodes.get(key).parent !== null) { const n = nodes.get(key); prefix.push({ i: n.piece, to: n.to }); key = n.parent; }
   prefix.reverse(); prefix.push({ i: candidate.piece, to: candidate.to }); key = candidate.next;
   const pos = Array(pieces.length).fill(0), grid = new Int8Array(N * N);
   while (key % 8 !== WIN_POS) {
     const distance = an.dist.get(key); let step;
-    expand(pieces, key, pos, grid, (i, to, next) => { if (!step && an.dist.get(next) === distance - 1) step = { i, to, next }; }, walls);
+    expand(pieces, key, pos, grid, (i, to, next) => { if (!step && an.dist.get(next) === distance - 1) step = { i, to, next }; }, walls, doors);
     if (!step) throw new Error('Invalid seal winning suffix');
     prefix.push({ i: step.i, to: step.to }); key = step.next;
   }
   return prefix;
 }
 
-export function planSeal({ pieces, pos, walls = [], opt, limit, rate, level, seed = 0, analysis, withProof = false, stateCap = 20000 }) {
+export function planSeal({ pieces, pos, walls = [], doors = [], opt, limit, rate, level, seed = 0, analysis, withProof = false, stateCap = 20000 }) {
   if (!isSealLevel(level) || pos[0] === WIN_POS) return null;
-  const an = analysis || analyze(pieces, pos, 600000, walls); if (!an) return null;
-  const search = candidatesFor(pieces, pos, walls, opt, an, stateCap), cap = limit + maxSealAdjustment(opt);
+  const an = analysis || analyze(pieces, pos, 600000, walls, doors); if (!an) return null;
+  const search = candidatesFor(pieces, pos, walls, doors, opt, an, stateCap), cap = limit + maxSealAdjustment(opt);
   const usable = search.candidates.filter(c => c.required + 1 <= cap);
   const want = requestedSealTier(level, seed), tierOf = c => sealTierOf(c.extra, c.occupied);
   const target = { 1: 1, 2: 2.5, 3: Math.min(8, maxSealDetour(opt)) }[want];
@@ -119,8 +125,8 @@ export function planSeal({ pieces, pos, walls = [], opt, limit, rate, level, see
   const chosen = usable[0]; if (!chosen) return null; // fail closed: preserve the original solvable board
   const tier = tierOf(chosen);                          // el premio depende de lo que cuesta de verdad, no de lo que se pidió
   const seal = { piece: chosen.piece, cell: chosen.cell, tier, value: sealPoints(rate,opt,chosen.required,tier), requiredMoves: chosen.required, extraMoves: chosen.extra, collected: false };
-  const adjustedLimit=sealLimit(seal,limit),proof=witnessFor(chosen,search.nodes,pieces,walls,an);
-  if(!verifySealProof({pieces,pos,walls},seal,proof,adjustedLimit))return null;
+  const adjustedLimit=sealLimit(seal,limit),proof=witnessFor(chosen,search.nodes,pieces,walls,doors,an);
+  if(!verifySealProof({pieces,pos,walls,doors},seal,proof,adjustedLimit))return null;
   return { seal, limit: adjustedLimit, visited: search.nodes.size, truncated: search.truncated,
     ...(withProof ? { proof } : {}) };
 }
@@ -131,7 +137,7 @@ export function verifySealProof(G, seal, proof, limit) {
   for (let n = 0; n < proof.length; n++) {
     if (pos[0] === WIN_POS) return false;
     const step = proof[n], key = encode(pos); let legal = false;
-    expand(G.pieces,key,Array(pos.length).fill(0),new Int8Array(N*N),(i,to)=>{if(i===step.i&&to===step.to)legal=true},G.walls || []);
+    expand(G.pieces,key,Array(pos.length).fill(0),new Int8Array(N*N),(i,to)=>{if(i===step.i&&to===step.to)legal=true},G.walls || [], G.doors || []);
     if (!legal) return false;
     const after = pos.slice(); after[step.i] = step.to;
     collected ||= crossesSeal(G.pieces,pos,after,seal); pos = after;

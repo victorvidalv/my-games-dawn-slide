@@ -90,7 +90,8 @@ describe('secuenciador (con audio simulado)', () => {
     let prev = 0;
     const counts = [];
     for (let l = 1; l <= 10; l++) {
-      Music.setLevel(l);                 // ciudad 1, nivel l → capa l
+      Music.setLevel(Math.min(l, 9));    // ciudad 1, nivel l → capa l (el nivel 10 es el jefe, con su propio tema: la capa 10 se fuerza sobre el tema de la ciudad)
+      if (l === 10) Music.setLayer(10);
       Music.start();
       play(2300);                        // deja entrar la capa en el siguiente compás
       expect(Music.layer).toBe(l);
@@ -102,6 +103,44 @@ describe('secuenciador (con audio simulado)', () => {
     }
     expect(counts[9]).toBeGreaterThan(counts[0] * 3);   // el nivel 10 suena mucho más lleno que el 1
     expect(new Set(counts).size).toBeGreaterThanOrEqual(7);
+    Music.stop(0.1);
+  });
+
+  it('los niveles jefe (10, 20… 100) suenan con la marcha del jefe, en otra tonalidad en cada ciudad, y los demás con el tema de su ciudad', () => {
+    const names = {};
+    for (const level of [9, 10, 20, 100, 11]) {
+      Music.setLevel(level);
+      Music.start();
+      play(2300);
+      names[level] = Music.themeName;
+    }
+    expect(names[10]).toBe('El guardián del umbral');
+    expect(names[20]).toBe(names[10]);
+    expect(names[100]).toBe(names[10]);
+    expect(names[9]).not.toBe(names[10]);
+    expect(names[11]).not.toBe(names[10]);
+    Music.stop(0.1);
+  });
+
+  it('la música de jefe es épica: mucho más llena que la de la ciudad con todas sus capas, sin infrasonidos ni chillidos', () => {
+    const measure = (go) => {
+      go();
+      Music.start();
+      play(2300);
+      stats.osc = 0; stats.maxFreq = 0; stats.minFreq = Infinity;
+      play(9000);
+      return { osc: stats.osc, min: stats.minFreq, max: stats.maxFreq };
+    };
+    const city = measure(() => { Music.setLevel(9); Music.setLayer(10); });
+    const boss = measure(() => Music.setLevel(10));
+    expect(boss.osc, 'densidad de sonido').toBeGreaterThan(city.osc * 1.35);
+    expect(boss.min).toBeGreaterThan(25);
+    expect(boss.max).toBeLessThan(9000);
+    for (const level of [20, 50, 100]) {
+      const b = measure(() => Music.setLevel(level));
+      expect(b.osc, `jefe ${level}`).toBeGreaterThan(city.osc * 1.35);
+      expect(b.min, `jefe ${level}`).toBeGreaterThan(25);
+    }
     Music.stop(0.1);
   });
 

@@ -96,8 +96,12 @@ const limitFactor = (start = 1, level = 1) => {
  */
 const BRAVE_SHARE = 0.1;
 const BRAVE_LIMIT_CUT = 0.04;
+export const BOSS_LIMIT_CUT = 0.12;
 export const braveExtra = (opt) => Math.max(1, Math.round(opt * BRAVE_SHARE));
 
-/** Límite de movimientos permitido para completar un tablero de mínimo `opt` en ese camino y nivel (nivel 1 si no se indica). */
-export const moveLimit = (opt, start = 1, level = 1, brave = false) =>
-  Math.max(opt + 2, Math.round(opt * (limitFactor(start, level) - (brave ? BRAVE_LIMIT_CUT : 0))));
+/** Límite de movimientos permitido para completar un tablero de mínimo `opt` en ese camino y nivel (más ajustado en jefes: `boss` es true (recorte general) o el TOPE del factor de ese jefe: en jefes el límite nunca supera opt × tope). */
+export const moveLimit = (opt, start = 1, level = 1, brave = false, boss = false) => {
+  const factor = limitFactor(start, level) - (brave ? BRAVE_LIMIT_CUT : 0);
+  const bossFactor = boss ? (typeof boss === 'number' ? Math.min(factor, boss) : factor - BOSS_LIMIT_CUT) : factor;   // jefe: un tope propio del factor (o el recorte general)
+  return Math.max(opt + 2, Math.round(opt * bossFactor));
+};

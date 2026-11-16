@@ -18,8 +18,10 @@ const FALLBACK = {
   gates: ['gates'],
   heavy: ['heavy'],
   ice: ['ice', 'gates'],
+  doors: ['doors', 'gates', 'walls'],
+  doorduo: ['doorduo', 'doors', 'duo', 'gates'],
   duo: ['duo', 'ice', 'gates', 'heavy'],
-  mixed: ['mixed', 'duo', 'ice', 'walls', 'gates', 'heavy'],
+  mixed: ['mixed', 'doorduo', 'duo', 'ice', 'walls', 'gates', 'heavy'],
 };
 
 export function pickBoard(bank, rating, seed, level, family = 'plain', special = null) {
@@ -43,13 +45,14 @@ export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) 
   const rng = mulberry32(seed);
   const { target, pLong } = curve(rating);
   const walls = board.walls || [];
-  let cur = { pieces: board.pieces, pos: board.pos, walls };
+  const doors = board.doors || [];
+  let cur = { pieces: board.pieces, pos: board.pos, walls, doors };
   let accepted = 0;
   const hasIce = board.pieces.some((p) => p.kind === 'ice');
   for (let t = 0; t < tries && accepted < changes; t++) {
     const cand = mutate(cur, rng, pLong);
     if (!cand) continue;
-    const an = analyze(cand.pieces, cand.pos, 600000, walls);
+    const an = analyze(cand.pieces, cand.pos, 600000, walls, doors);
     if (an && (!hasIce || an.dist.size === an.list.length) && maxDistance(an) >= target) {
       cur = cand;
       accepted++;
@@ -62,11 +65,12 @@ export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) 
  * Elige el estado inicial de un tablero para el nivel.
  *  - adj: ajuste adaptativo (-2..+2) según la eficiencia del jugador en niveles anteriores.
  *  - brave: ruta aventurera → usa la siguiente distancia mayor disponible.
- * Devuelve {pieces, pos, opt} donde opt = movimientos mínimos reales del estado elegido.
+ * Devuelve {pieces, pos, walls, doors, opt} donde opt = movimientos mínimos reales del estado elegido.
  */
 export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.random, boost = 0, withAnalysis = false }) {
   const walls = board.walls || [];
-  const an = analyze(board.pieces, board.pos, 600000, walls);
+  const doors = board.doors || [];
+  const an = analyze(board.pieces, board.pos, 600000, walls, doors);
   if (!an) throw new Error('Tablero sin solución');
   const target = curve(rating).target;
   let maxd = 0;
@@ -90,6 +94,6 @@ export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.r
   const key = keys[Math.floor(rng() * keys.length)];
   const pos = [];
   for (let i = 0, v = key; i < board.pieces.length; i++, v = Math.floor(v / 8)) pos.push(v % 8);
-  return { pieces: board.pieces, pos, walls, opt, ...(withAnalysis ? { analysis: an } : {}) };
+  return { pieces: board.pieces, pos, walls, doors, opt, ...(withAnalysis ? { analysis: an } : {}) };
 }
 

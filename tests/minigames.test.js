@@ -1,17 +1,24 @@
 import { describe, it, expect } from 'vitest';
-import { BONUS_KINDS, HERO_GAMES, bonusIndex, isBonusLevel, gameFor, createBonusPlan, ensureBonusPlan, memoryTap, memoryDone, memoryPart, sequenceTap, sequencePart, timingPosition, timingPoints, recordTiming, timingPart, maxPrize, bonusPrize, finishBonus, claimBonus } from '../src/game/minigames.js';
+import {
+  BONUS_KINDS, HERO_GAMES, bonusIndex, isBonusLevel, gameFor, createBonusPlan, ensureBonusPlan,
+  memoryTap, memoryDone, memoryPart, sequenceTap, sequencePart, timingPosition, timingPoints, recordTiming, timingPart,
+  sprintStart, sprintMove, sprintTimeout, sprintPart,
+  bestMoveCurrent, bestMovePick, bestMovePart,
+  maxPrize, bonusPrize, finishBonus, claimBonus,
+} from '../src/game/minigames.js';
+import { isValidState, minMoves, slideRange } from '../src/engine/index.js';
 
-describe('tres juegos por héroe, entrada directa y ciclo fijo',()=>{
- it('mantiene las nueve paradas intermedias y el orden 1,2,3,1',()=>{
+describe('cinco juegos por héroe, entrada directa y ciclo fijo',()=>{
+ it('mantiene las nueve paradas intermedias y el ciclo de 5 mecánicas por héroe',()=>{
   const levels=Array.from({length:100},(_,i)=>i+1).filter(isBonusLevel);
   expect(levels).toEqual([15,25,35,45,55,65,75,85,95]);
-  expect(levels.map(l=>bonusIndex(l)%3)).toEqual([0,1,2,0,1,2,0,1,2]);
-  for(const hero of ['lia','jean','van'])expect(levels.map(l=>gameFor(hero,l).kind)).toEqual([...HERO_GAMES[hero],...HERO_GAMES[hero],...HERO_GAMES[hero]].map(g=>g.kind));
+  expect(levels.map(l=>bonusIndex(l)%5)).toEqual([0,1,2,3,4,0,1,2,3]);
+  for(const hero of ['lia','jean','van'])expect(levels.map(l=>gameFor(hero,l).kind)).toEqual(levels.map((_,i)=>HERO_GAMES[hero][i%5].kind));
  });
- it('nueve nombres propios, tres mecánicas conocidas y ninguna ruleta o tragaperras',()=>{
-  const games=Object.values(HERO_GAMES).flat();expect(new Set(games.map(g=>g.title)).size).toBe(9);
-  expect(BONUS_KINDS).toEqual(['memory','sequence','timing']);
-  for(const list of Object.values(HERO_GAMES))expect(new Set(list.map(g=>g.kind)).size).toBe(3);
+ it('quince nombres propios, cinco mecánicas reales y ninguna ruleta o tragaperras',()=>{
+  const games=Object.values(HERO_GAMES).flat();expect(new Set(games.map(g=>g.title)).size).toBe(15);
+  expect(BONUS_KINDS).toEqual(['memory','sequence','timing','sprint','bestmove']);
+  for(const list of Object.values(HERO_GAMES))expect(new Set(list.map(g=>g.kind)).size).toBe(5);
  });
  it('la semilla cambia cartas y secuencias, nunca el orden del juego',()=>{
   const a=createBonusPlan('lia',15,42),b=createBonusPlan('lia',15,43);
@@ -57,6 +64,65 @@ describe('precisión: tres sellos y cálculo en el instante real del toque',()=>
   const p=createBonusPlan('jean',15,1);expect(recordTiming(p,600)).toBeNull();
   for(let i=0;i<3;i++){p.phase='running';expect(recordTiming(p,600)).toBe(2);expect(recordTiming(p,600)).toBeNull();}
   expect(p.hits).toEqual([2,2,2]);expect(timingPart(p)).toBe(3);expect(p.phase).toBe('done');
+ });
+});
+
+describe('tablero relámpago (sprint) y ojo maestro (bestmove) ligados al puzle',()=>{
+ it('sprint: resuelve 3 minitableros válidos en exactamente 3 movimientos óptimos cada uno',()=>{
+  const p=createBonusPlan('lia',45,9);
+  expect(p.kind).toBe('sprint');
+  for(let round=0;round<3;round++){
+   const st=sprintStart(p);
+   expect(isValidState(st.pieces,st.pos)).toBe(true);
+   expect(minMoves(st.pieces,st.pos)).toBe(3);
+   // Resuelve moviendo paso a paso como en la interfaz
+   const pos=st.pos.slice();
+   for(let s=0;s<3;s++){
+    const d=minMoves(st.pieces,pos);
+    let moved=null;
+    for(let i=0;i<st.pieces.length&&!moved;i++){
+     const [lo,hi]=slideRange(st.pieces,pos,i);
+     for(const cand of [lo,hi]){
+      const nxt=pos.slice();nxt[i]=cand;
+      if(minMoves(st.pieces,nxt)===d-1){moved={i,to:cand};break;}
+     }
+    }
+    expect(moved).not.toBeNull();
+    pos[moved.i]=moved.to;
+    const res=sprintMove(p,moved.i,moved.to);
+    expect(res.won).toBe(s===2);
+   }
+  }
+  expect(p.phase).toBe('done');
+  expect(sprintPart(p)).toBe(3);
+ });
+ it('sprintTimeout registra fallo del tablero y avanza hasta cerrar',()=>{
+  const p=createBonusPlan('jean',45,3);
+  sprintStart(p);expect(sprintTimeout(p).done).toBe(false);
+  sprintStart(p);sprintTimeout(p);sprintStart(p);
+  expect(sprintTimeout(p).done).toBe(true);
+  expect(sprintPart(p)).toBe(0);
+ });
+ it('bestmove: presenta 3 jugadas únicas (1 óptima + 2 señuelos) y puntúa los aciertos',()=>{
+  const p=createBonusPlan('van',55,11);
+  expect(p.kind).toBe('bestmove');
+  for(let r=0;r<3;r++){
+   const cur=bestMoveCurrent(p);
+   expect(isValidState(cur.pieces,cur.pos)).toBe(true);
+   expect(cur.options).toHaveLength(3);
+   const opt=minMoves(cur.pieces,cur.pos);
+   const goodIdx=cur.options.findIndex((o)=>o.best);
+   expect(goodIdx).toBeGreaterThanOrEqual(0);
+   cur.options.forEach((o,idx)=>{
+    const nxt=cur.pos.slice();nxt[o.i]=o.to;
+    if(idx===goodIdx)expect(minMoves(cur.pieces,nxt)).toBe(opt-1);
+    else expect(minMoves(cur.pieces,nxt)).toBeGreaterThanOrEqual(opt);
+   });
+   const pick=bestMovePick(p,goodIdx);
+   expect(pick.hit).toBe(true);
+   expect(pick.done).toBe(r===2);
+  }
+  expect(bestMovePart(p)).toBe(3);
  });
 });
 

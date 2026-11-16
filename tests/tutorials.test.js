@@ -6,28 +6,30 @@ const board = (t) => decodeBoard(t.board);
 
 describe('tableros de aprendizaje', () => {
   it('uno por pieza especial, en el primer nivel donde aparece, y ese nivel es de esa mecánica', () => {
-    expect(Object.keys(TUTORIALS).sort()).toEqual(['gate', 'heavy', 'ice', 'wall']);
+    expect(Object.keys(TUTORIALS).sort()).toEqual(['door', 'gate', 'heavy', 'ice', 'wall']);
     for (const [mech, t] of Object.entries(TUTORIALS)) {
       const plan = levelPlan(t.level);
       expect(plan.intro, `nivel ${t.level}`).toBe(true);
       expect(plan.mechanics, `nivel ${t.level}`).toContain(mech);
     }
-    // el orden de aprendizaje: rocas (10) → pesada (20) → candado (30) → hielo (40)
-    expect(TUTORIALS.wall.level).toBe(10);
-    expect(TUTORIALS.heavy.level).toBe(20);
-    expect(TUTORIALS.gate.level).toBe(30);
-    expect(TUTORIALS.ice.level).toBe(40);
+    // el orden de aprendizaje: rocas (8) → pesada (18) → candado (28) → hielo (38) → portón (48)
+    expect(TUTORIALS.wall.level).toBe(8);
+    expect(TUTORIALS.heavy.level).toBe(18);
+    expect(TUTORIALS.gate.level).toBe(28);
+    expect(TUTORIALS.ice.level).toBe(38);
+    expect(TUTORIALS.door.level).toBe(48);
   });
 
   it('cada tablero es válido, se resuelve en exactamente 3 movimientos y contiene la pieza que enseña', () => {
     for (const [mech, t] of Object.entries(TUTORIALS)) {
       const b = board(t);
-      expect(isValidState(b.pieces, b.pos, b.walls), mech).toBe(true);
-      expect(minMoves(b.pieces, b.pos, b.walls), mech).toBe(3);
+      expect(isValidState(b.pieces, b.pos, b.walls, b.doors), mech).toBe(true);
+      expect(minMoves(b.pieces, b.pos, b.walls, b.doors), mech).toBe(3);
       if (mech === 'wall') expect(b.walls.length).toBeGreaterThan(0);
       if (mech === 'gate') expect(b.pieces.some((p) => p.kind === 'gate')).toBe(true);
       if (mech === 'heavy') expect(b.pieces.some((p) => p.kind === 'heavy')).toBe(true);
       if (mech === 'ice') expect(b.pieces.some((p) => p.kind === 'ice')).toBe(true);
+      if (mech === 'door') expect(b.doors.length).toBeGreaterThan(0);
       expect(t.steps.length, mech).toBe(3);
     }
   });
@@ -37,7 +39,7 @@ describe('tableros de aprendizaje', () => {
       const b = board(t);
       let pos = b.pos.slice();
       for (let step = 0; step < 3; step++) {
-        const h = hintMove(b.pieces, pos, b.walls);
+        const h = hintMove(b.pieces, pos, b.walls, b.doors);
         expect(h, `${mech} paso ${step}`).not.toBeNull();
         expect(h.left).toBe(3 - step);
         pos = pos.slice();
@@ -89,13 +91,21 @@ describe('tableros de aprendizaje', () => {
     expect(iceMoves).toEqual([3]);
   });
 
+  it('portón de color: la pieza azul ◆ cruza su portón ◆ al despejar arriba, pero el portón ámbar ● la bloquea abajo', () => {
+    const b = board(TUTORIALS.door);
+    const blue = b.pieces.findIndex((p) => p.tone === 0);
+    expect(slideRange(b.pieces, b.pos, blue, b.walls, b.doors)).toEqual([1, b.pos[blue]]);
+    const posCleared = [b.pos[0], b.pos[1], 3];
+    expect(slideRange(b.pieces, posCleared, blue, b.walls, b.doors)).toEqual([0, b.pos[blue]]);
+  });
+
   it('todos los estados de cada tablero de aprendizaje tienen movimientos (no se puede atascar)', () => {
     for (const [mech, t] of Object.entries(TUTORIALS)) {
       const b = board(t);
-      const an = analyze(b.pieces, b.pos, 600000, b.walls);
+      const an = analyze(b.pieces, b.pos, 600000, b.walls, b.doors);
       for (const k of an.list) {
         let moves = 0;
-        expand(b.pieces, k, new Array(b.pieces.length).fill(0), new Int8Array(N * N), () => moves++, b.walls);
+        expand(b.pieces, k, new Array(b.pieces.length).fill(0), new Int8Array(N * N), () => moves++, b.walls, b.doors);
         expect(moves, `${mech} ${k}`).toBeGreaterThan(0);
         expect(an.dist.get(k), `${mech} ${k}`).not.toBeUndefined();
       }
@@ -103,12 +113,14 @@ describe('tableros de aprendizaje', () => {
   });
 
   it('tutorialFor: solo la primera vez que se ve la pieza', () => {
-    expect(tutorialFor(10, {})?.mech).toBe('wall');
-    expect(tutorialFor(10, { tut_wall: true })).toBeNull();
-    expect(tutorialFor(20, {})?.mech).toBe('heavy');
-    expect(tutorialFor(30, {})?.mech).toBe('gate');
-    expect(tutorialFor(40, {})?.mech).toBe('ice');
-    expect(tutorialFor(40, { tut_ice: true })).toBeNull();
+    expect(tutorialFor(8, {})?.mech).toBe('wall');
+    expect(tutorialFor(8, { tut_wall: true })).toBeNull();
+    expect(tutorialFor(18, {})?.mech).toBe('heavy');
+    expect(tutorialFor(28, {})?.mech).toBe('gate');
+    expect(tutorialFor(38, {})?.mech).toBe('ice');
+    expect(tutorialFor(38, { tut_ice: true })).toBeNull();
+    expect(tutorialFor(48, {})?.mech).toBe('door');
+    expect(tutorialFor(48, { tut_door: true })).toBeNull();
     expect(tutorialFor(7, {})).toBeNull();
     expect(decode(encode([1, 2, 3]), 3)).toEqual([1, 2, 3]);
   });

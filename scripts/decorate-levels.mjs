@@ -36,7 +36,7 @@ if (!isMainThread) {
     const board = decodeBoard(text);
     const minOpt = base && !bases[base]?.[rating - 1]?.[slot] ? minReach(rating) - 2 : 0;
     const d = decorateBoard(board, family, hash32(rating, slot, family.length, 0xdec0), { minOpt });
-    parentPort.postMessage({ rating, slot, family, text: d ? encodeBoard(d.pieces, d.pos, d.walls) : null });
+    parentPort.postMessage({ rating, slot, family, text: d ? encodeBoard(d.pieces, d.pos, d.walls, d.doors) : null });
   }
   process.exit(0);
 }
@@ -45,8 +45,10 @@ const arg = (name, def) => { const i = process.argv.indexOf('--' + name); return
 const [from, to] = String(arg('only', '1-100')).split('-').map(Number);
 const { ratings } = JSON.parse(readFileSync(BANK, 'utf8'));
 const out = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : {};
-const families = Object.keys(FAMILIES);
-for (const f of [...families, 'walls']) out[f] = out[f] || Array.from({ length: 100 }, () => []);
+const allFamilies = Object.keys(FAMILIES);
+const rawFam = arg('families', '');
+const families = rawFam ? rawFam.split(',').map((s) => s.trim()).filter((f) => FAMILIES[f]) : allFamilies;
+for (const f of [...allFamilies, 'walls']) out[f] = out[f] || Array.from({ length: 100 }, () => []);
 const jobs = [];
 for (let rating = from; rating <= (to || from); rating++) {
   for (const f of families) out[f][rating - 1] = [];

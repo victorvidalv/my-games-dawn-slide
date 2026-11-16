@@ -11,13 +11,14 @@ import { mulberry32 } from '../src/engine/rng.js';
 import { minMoves } from '../src/engine/solver.js';
 const levels=JSON.parse(readFileSync(new URL('../src/data/levels.json',import.meta.url))).ratings;
 const special=JSON.parse(readFileSync(new URL('../src/data/special.json',import.meta.url)));
-const tips={wall:true,gate:true,heavy:true,ice:true,tut_wall:true,tut_gate:true,tut_heavy:true,tut_ice:true};
-const run=(extra={})=>({seed:46,hero:'jean',start:1,level:20,route:'normal',mode:'c',score:10000,hints:3,adj:0,...extra});
+const tips={wall:true,gate:true,heavy:true,ice:true,door:true,tut_wall:true,tut_gate:true,tut_heavy:true,tut_ice:true,tut_door:true};
+const run=(extra={})=>({seed:46,hero:'jean',start:1,level:SEAL_LEVELS[0],route:'normal',mode:'c',score:10000,hints:3,adj:0,...extra});
 
-it('aparecen desde el cinco cada tres o cuatro niveles, sin coincidir con introducciones',()=>{
- expect(SEAL_LEVELS[0]).toBe(20);expect(SEAL_LEVELS.at(-1)).toBeLessThan(100);
- for(let i=1;i<SEAL_LEVELS.length;i++)expect([3,4]).toContain(SEAL_LEVELS[i]-SEAL_LEVELS[i-1]);
- for(const level of [1,2,3,4,5,10,19,21,30,40,51,100])expect(isSealLevel(level)).toBe(false);
+it('aparecen desde el cinco cada tres o cuatro niveles, sin coincidir con introducciones ni jefes',()=>{
+ expect(SEAL_LEVELS[0]).toBe(23);expect(SEAL_LEVELS.at(-1)).toBeLessThan(100);
+ expect(SEAL_LEVELS.some((l)=>l%10===0)).toBe(false);
+ for(let i=1;i<SEAL_LEVELS.length;i++){const g=SEAL_LEVELS[i]-SEAL_LEVELS[i-1];expect(g).toBeGreaterThanOrEqual(3);expect(g).toBeLessThanOrEqual(6);}
+ for(const level of [1,2,3,4,5,8,10,18,19,20,21,28,30,38,40,48,51,100])expect(isSealLevel(level)).toBe(false);
 });
 
 it('atravesar una casilla intermedia de hielo recoge el sello; mover otra pieza no lo recoge',()=>{
@@ -28,11 +29,11 @@ it('atravesar una casilla intermedia de hielo recoge el sello; mover otra pieza 
 });
 
 for(const start of [1,50,75])for(const route of ['normal','brave'])it(`certifica recogida y salida en ${start}/${route} sin alterar el mínimo`,()=>{
- const r=run({start,route,level:38});const G=buildAdventureLevel(r,{levels,special,tips,withProof:true});
+ const r=run({start,route,level:39});const G=buildAdventureLevel(r,{levels,special,tips,withProof:true});
  expect(G.seal).toBeTruthy();expect(G.seal.piece).toBeGreaterThan(0);
  expect(verifySealProof(G,G.seal,G.sealProof,G.limit)).toBe(true);
  expect(G.limit).toBeLessThanOrEqual(heroLimit(r.hero,G.opt,start,r.level,route==='brave')+maxSealAdjustment(G.opt));
- expect(minMoves(G.pieces,G.pos,G.walls)).toBe(G.opt);
+ expect(minMoves(G.pieces,G.pos,G.walls,G.doors)).toBe(G.opt);
  expect(G.seal.requiredMoves).toBeLessThan(G.limit);
  const [row,col]=G.seal.cell;expect(occupancy(G.pieces,G.pos,G.walls)[row*6+col]).not.toBe(99);
  for(const p of G.pieces)if(p.kind==='gate')expect(p.plate).not.toEqual(G.seal.cell);
@@ -85,7 +86,7 @@ it('un sello ya cobrado no reaparece por un indicador visual antiguo en el guard
  expect(buildAdventureLevel(r,{tips}).seal.collected).toBe(true);
 });
 
-for(const family of ['plain','walls','gates','heavy','ice','duo','mixed'])it(`certifica el sello con reglas ${family} incluso con límite experto`,()=>{
+for(const family of ['plain','walls','gates','heavy','ice','doors','duo','doorduo','mixed'])it(`certifica el sello con reglas ${family} incluso con límite experto`,()=>{
  const raw=family==='plain'?levels[49][0]:special[family][49][0];
  const built=buildLevel(decodeBoard(raw),{rating:50,brave:true,rng:mulberry32(46),withAnalysis:true});
  const limit=heroLimit('jean',built.opt,75,98,true);

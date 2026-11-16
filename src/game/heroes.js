@@ -31,16 +31,18 @@ const LIA_TURNS_SHARE = 0.25; // +23 % del límite de movimientos (calibrado con
 const LIA_MIN_TURNS = 2;     // y como mínimo 2 turnos
 
 /** Turnos extra que da el héroe sobre un límite base (solo Lía). */
-export const bonusTurns = (heroId, baseLimit, start = 1) => {
+/** En los jefes la reserva de Lía se reduce a la mitad: si no, el límite de turnos ajustado de un jefe no apretaría nunca. */
+export const BOSS_RESERVE = 0.5;
+export const bonusTurns = (heroId, baseLimit, start = 1, boss = false) => {
   if (heroId !== 'lia') return 0;
-  const k = powerScale(start);
+  const k = powerScale(start) * (boss ? BOSS_RESERVE : 1);
   return Math.max(Math.max(1, Math.round(LIA_MIN_TURNS * k)), Math.round(baseLimit * LIA_TURNS_SHARE * k));
 };
 
-/** Límite de movimientos de un tablero de mínimo `opt` para ese héroe y camino. */
-export const heroLimit = (heroId, opt, start = 1, level = 1, brave = false) => {
-  const base = moveLimit(opt, start, level, brave);
-  return base + bonusTurns(heroId, base, start);
+/** Límite de movimientos de un tablero de mínimo `opt` para ese héroe, camino y jefe. */
+export const heroLimit = (heroId, opt, start = 1, level = 1, brave = false, boss = false) => {
+  const base = moveLimit(opt, start, level, brave, boss);
+  return base + bonusTurns(heroId, base, start, boss);
 };
 
 /** Foto del tablero para repetirlo desde el principio con 0 movimientos (la usa el revivir). */
@@ -50,6 +52,7 @@ export function snapshotRescue(G) {
     rate: G.rate,
     pieces: G.pieces.map((p) => ({ ...p })),
     walls: (G.walls || []).map((w) => w.slice()),
+    doors: (G.doors || []).map((d) => d.slice()),
     start: G.start.slice(),
     opt: G.opt,
     seal: G.seal ? { ...G.seal, cell: G.seal.cell.slice() } : null,

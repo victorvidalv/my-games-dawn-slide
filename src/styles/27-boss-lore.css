@@ -1,0 +1,73 @@
+/* Jefe de ciudad: ilustración artesanal a pantalla completa con texto superpuesto limpio */
+#bossIntro{background:#091118;padding:0}
+.boss-stage{position:relative;width:100%;height:100dvh;overflow:hidden;display:grid;place-items:center}
+.boss-backdrop{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 18%;filter:contrast(1.04) saturate(.98);pointer-events:none}
+.boss-vignette{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,#081018e6 0%,#08101866 28%,#08101822 50%,#081018c8 74%,#081018f7 100%)}
+.boss-shell{position:relative;z-index:2;width:min(100%,560px);height:100%;display:flex;flex-direction:column;justify-content:space-between;
+  padding:calc(env(safe-area-inset-top) + 22px) clamp(18px,5vw,32px) calc(env(safe-area-inset-bottom) + 26px);text-align:center}
+.boss-head{display:flex;flex-direction:column;align-items:center;gap:6px}
+.boss-tag{display:inline-block;padding:4px 12px;border-radius:99px;background:#1b1214cc;border:1px solid #d4af6488;
+  color:#f5ce74;font:800 11px/1.2 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.boss-name{margin:2px 0 0;font:800 clamp(26px,7vw,40px)/1.08 var(--font-book);color:#fff2d6;text-shadow:0 3px 0 #091118,0 0 24px #000}
+.boss-title{margin:0;font:600 14px/1.3 system-ui,sans-serif;color:#d6cbb3;text-shadow:0 2px 0 #091118}
+.boss-bottom{display:flex;flex-direction:column;align-items:center;gap:12px}
+.boss-lore{margin:0;max-width:34ch;padding:10px 16px;border-radius:14px;background:#0b131bd4;border:1px solid #d4af6444;
+  font:italic 600 clamp(15px,4vw,19px)/1.35 var(--font-book);color:#f7ecd2;text-shadow:0 1px 0 #000}
+.boss-mech{padding:5px 13px;border-radius:99px;background:#2a1419dd;border:1px solid #f08a6c77;
+  color:#ffd5c2;font:700 12px/1.2 system-ui,sans-serif;letter-spacing:.04em}
+.boss-fight{min-width:210px;min-height:48px;font:800 16px/1 var(--font-book);box-shadow:0 5px 0 #091118,0 10px 28px #000c}
+@media(min-aspect-ratio:11/10){
+  .boss-backdrop{object-fit:contain;background:#0a1118}
+}
+
+/* Lore compacto en paradas entre ciudades */
+.travel-lore-chip{display:flex;align-items:center;gap:10px;margin-top:12px;padding:8px 12px;border-radius:14px;
+  background:#0a151ed4;border:1px solid #d4af6455;box-shadow:0 6px 18px #0008;max-width:440px}
+.travel-lore-chip[hidden]{display:none!important}
+.travel-lore-chip img{width:44px;height:44px;border-radius:10px;object-fit:cover;border:1.5px solid #d4af64aa;flex:none}
+.travel-lore-chip div{min-width:0;text-align:left}
+.travel-lore-chip b{display:block;font:700 12px/1.2 system-ui,sans-serif;color:#f5ce74}
+.travel-lore-chip span{display:block;margin-top:2px;font:italic 500 12.5px/1.3 var(--font-book);color:#efe4ca}
+
+/* Tablero de jefe */
+.frame:has(#board.is-boss){box-shadow:0 26px 50px #000a,0 0 0 2.5px #d4a652,0 0 24px #d95b4344,inset 0 2px 0 #ffd9a277}
+
+/* Portones de color y piezas con gema */
+.door{position:absolute;padding:calc(var(--gap) + 1px);pointer-events:none;z-index:1;display:grid;place-items:center}
+.door b{position:absolute;inset:calc(var(--gap) + 3px);border-radius:11px;border:2.5px dashed var(--door-c);
+  background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--door-c) 26%,transparent),color-mix(in srgb,var(--door-c) 10%,transparent));
+  box-shadow:inset 0 0 12px color-mix(in srgb,var(--door-c) 35%,transparent)}
+.door i{position:relative;z-index:1;font-style:normal;font-size:clamp(15px,calc(var(--cell) * .36),24px);line-height:1;
+  color:var(--door-c);text-shadow:0 2px 4px #091118,0 0 10px var(--door-c);opacity:.92}
+.door.tone-0,.piece.tone-0{--door-c:#57ccff;--door-bg:#0d4666}
+.door.tone-1,.piece.tone-1{--door-c:#ffbf52;--door-bg:#6b3e09}
+.door.tone-2,.piece.tone-2{--door-c:#64e39c;--door-bg:#145633}
+.piece.toned .face{box-shadow:0 5px 0 var(--d),0 9px 12px #0009,inset 0 0 0 2.5px var(--door-c),inset 0 2px 0 #ffffff77}
+.piece .mk.tone{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;font-size:16px;line-height:1;color:var(--door-c);background:var(--door-bg);
+  border:2px solid var(--door-c);box-shadow:0 2px 4px #091118aa,0 0 8px color-mix(in srgb,var(--door-c) 45%,transparent);pointer-events:none}
+.door.door-pass b{animation:door-pass .5s ease-out}
+.door.deny-door{animation:deny-door .42s ease-in-out}
+@keyframes door-pass{0%{transform:scale(1);box-shadow:0 0 22px var(--door-c)}50%{transform:scale(1.12);background:#ffffff44}100%{transform:scale(1)}}
+@keyframes deny-door{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px);filter:brightness(1.4)}75%{transform:translateX(4px)}}
+
+/* Mini demo del portón en la guía */
+.door-demo .door-arch{position:absolute;left:94px;top:8px;width:calc(var(--c) + 12px);height:calc(var(--c) + 12px);
+  border:3px dashed #57ccff;border-radius:12px;display:grid;place-items:center;color:#57ccff;font-size:22px;background:#57ccff18}
+.door-demo .door-arch i{font-style:normal}
+.door-demo .door-p{left:14px;background:linear-gradient(#53b6e8,#2a78a8);border:2px solid #57ccff;display:grid;place-items:center;
+  color:#e8f8ff;font-size:20px;animation:demo-door 3s ease-in-out infinite}
+@keyframes demo-door{0%,15%{left:14px}60%,80%{left:168px}100%{left:14px}}
+
+/* Retroalimentación táctil / micro-vibración visual */
+.frame.board-shake{animation:board-shake .22s ease-in-out}
+.frame.board-thud{animation:board-thud .18s ease-out}
+.piece.bump-hit .face{animation:piece-bump .18s ease-out}
+@keyframes board-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}60%{transform:translateX(4px)}}
+@keyframes board-thud{0%,100%{transform:translateY(0)}45%{transform:translateY(3px)}}
+@keyframes piece-bump{50%{transform:scale(.96)}}
+
+@media(prefers-reduced-motion:reduce){
+  .door.door-pass b,.door.deny-door,.door-demo .door-p,.frame.board-shake,.frame.board-thud,.piece.bump-hit .face{animation:none!important}
+}

@@ -50,7 +50,7 @@ describe('idioma: el inglés es el idioma por defecto y cubre la historia', () =
     const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
     const spanish = /[áéíóúñ¿¡ÁÉÍÓÚÑ]|\b(el|la|los|las|de|del|un|una|tu|tus|que|con|para|por|se|te|al|nivel|niveles|pista|turnos?|puntos?|tienda|elige|volver|siguiente|jugar|salir|héroe|camino|tablero|pieza|movimientos?|llave|sello|aventura|partida|ahora|aquí|cada|más|sin|ya|como|pero|este|esta|todo|hasta|sobre|solo|muy|bien|otra|otro)\b/i;
     // Textos que se componen por trozos (se traducen por separado en pantalla) o que no se ven: se revisaron a mano con scripts/i18n-diff.js
-    const REVIEWED = /(Pieza ilegible|^Lía$|^Don Dublón$|X\+X puntos|es propio de tu héroe|XXX Sellos|XArrastra|Mueve la pieza brillante|Pagaste por revivir|XNivel máx)/;
+    const REVIEWED = /(Pieza ilegible|^Lía$|^Don Dublón$|X\+X puntos|es propio de tu héroe|XXX Sellos|XArrastra|Mueve la pieza brillante|Pagaste por revivir|XNivel máx|X en el nivel X\. El Sello)/;
     const missing = [];
     for (const f of walk('src').filter((x) => x.endsWith('.js') && !/i18n|tools|audio[\\/]themes|qr\.js/.test(x))) {
       const re = /(['"`])((?:\\.|(?!\1)[^\\\n])*?)\1/g;
