@@ -1,0 +1,1799 @@
+{
+ "saved_at": "2026-11-16T05:37:14.842Z",
+ "note": "Salida del calibrador. 0 = no, 1 = aparece, 2 = aparece y con tutorial aparte. Los mínimos son turnos mínimos objetivo por camino.",
+ "levels": {
+  "1": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 2,
+    "hard": 10,
+    "expert": 17
+   },
+   "note": ""
+  },
+  "2": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 2,
+    "hard": 10,
+    "expert": 17
+   },
+   "note": ""
+  },
+  "3": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 3,
+    "hard": 11,
+    "expert": 18
+   },
+   "note": ""
+  },
+  "4": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 3,
+    "hard": 11,
+    "expert": 19
+   },
+   "note": ""
+  },
+  "5": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 5,
+    "hard": 12,
+    "expert": 19
+   },
+   "note": ""
+  },
+  "6": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": true
+   },
+   "min": {
+    "normal": 5,
+    "hard": 13,
+    "expert": 20
+   },
+   "note": ""
+  },
+  "7": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 5,
+    "hard": 13,
+    "expert": 20
+   },
+   "note": ""
+  },
+  "8": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 7,
+    "hard": 14,
+    "expert": 21
+   },
+   "note": ""
+  },
+  "9": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 7,
+    "hard": 14,
+    "expert": 22
+   },
+   "note": ""
+  },
+  "10": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 7,
+    "hard": 15,
+    "expert": 22
+   },
+   "note": ""
+  },
+  "11": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 7,
+    "hard": 15,
+    "expert": 23
+   },
+   "note": ""
+  },
+  "12": {
+   "mechanics": {
+    "wall": 2,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 8,
+    "hard": 16,
+    "expert": 23
+   },
+   "note": ""
+  },
+  "13": {
+   "mechanics": {
+    "wall": 1,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 8,
+    "hard": 17,
+    "expert": 24
+   },
+   "note": ""
+  },
+  "14": {
+   "mechanics": {
+    "wall": 1,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 9,
+    "hard": 17,
+    "expert": 25
+   },
+   "note": ""
+  },
+  "15": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 9,
+    "hard": 17,
+    "expert": 25
+   },
+   "note": ""
+  },
+  "16": {
+   "mechanics": {
+    "wall": 1,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 10,
+    "hard": 18,
+    "expert": 26
+   },
+   "note": ""
+  },
+  "17": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 10,
+    "hard": 19,
+    "expert": 27
+   },
+   "note": ""
+  },
+  "18": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 10,
+    "hard": 19,
+    "expert": 27
+   },
+   "note": ""
+  },
+  "19": {
+   "mechanics": {
+    "wall": 1,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 3,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 10,
+    "hard": 20,
+    "expert": 28
+   },
+   "note": ""
+  },
+  "20": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 12,
+    "hard": 20,
+    "expert": 29
+   },
+   "note": ""
+  },
+  "21": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 11,
+    "hard": 21,
+    "expert": 29
+   },
+   "note": ""
+  },
+  "22": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 2,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 12,
+    "hard": 21,
+    "expert": 30
+   },
+   "note": ""
+  },
+  "23": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 12,
+    "hard": 22,
+    "expert": 30
+   },
+   "note": ""
+  },
+  "24": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 13,
+    "hard": 23,
+    "expert": 31
+   },
+   "note": ""
+  },
+  "25": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 13,
+    "hard": 23,
+    "expert": 31
+   },
+   "note": ""
+  },
+  "26": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 13,
+    "hard": 24,
+    "expert": 32
+   },
+   "note": ""
+  },
+  "27": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 14,
+    "hard": 24,
+    "expert": 32
+   },
+   "note": ""
+  },
+  "28": {
+   "mechanics": {
+    "wall": 1,
+    "heavy": 1,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 14,
+    "hard": 25,
+    "expert": 33
+   },
+   "note": ""
+  },
+  "29": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 3,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 15,
+    "hard": 25,
+    "expert": 33
+   },
+   "note": ""
+  },
+  "30": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 15,
+    "hard": 26,
+    "expert": 33
+   },
+   "note": ""
+  },
+  "31": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 15,
+    "hard": 27,
+    "expert": 34
+   },
+   "note": ""
+  },
+  "32": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 2,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 16,
+    "hard": 27,
+    "expert": 34
+   },
+   "note": ""
+  },
+  "33": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 16,
+    "hard": 28,
+    "expert": 35
+   },
+   "note": ""
+  },
+  "34": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 17,
+    "hard": 29,
+    "expert": 35
+   },
+   "note": ""
+  },
+  "35": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 17,
+    "hard": 29,
+    "expert": 36
+   },
+   "note": ""
+  },
+  "36": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 17,
+    "hard": 30,
+    "expert": 36
+   },
+   "note": ""
+  },
+  "37": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 18,
+    "hard": 30,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "38": {
+   "mechanics": {
+    "wall": 1,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 18,
+    "hard": 31,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "39": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 3,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 19,
+    "hard": 31,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "40": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 19,
+    "hard": 32,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "41": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 2,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 19,
+    "hard": 33,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "42": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 20,
+    "hard": 33,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "43": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 20,
+    "hard": 34,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "44": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 21,
+    "hard": 34,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "45": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 0,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 21,
+    "hard": 35,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "46": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 21,
+    "hard": 35,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "47": {
+   "mechanics": {
+    "wall": 1,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 22,
+    "hard": 36,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "48": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 22,
+    "hard": 36,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "49": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 0,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 3,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 23,
+    "hard": 36,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "50": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 23,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "51": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 2
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 23,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "52": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 23,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "53": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 1,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 24,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "54": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 24,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "55": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 0,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 25,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "56": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 25,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "57": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 0,
+    "ice": 0,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 25,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "58": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 26,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "59": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 26,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "60": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 3,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 27,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "61": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 27,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "62": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 1,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 27,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "63": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 28,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "64": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 28,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "65": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 28,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "66": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 29,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "67": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 0,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 29,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "68": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 29,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "69": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 30,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "70": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 3,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 30,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "71": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 30,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "72": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 30,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "73": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 1,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 31,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "74": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 31,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "75": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 31,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "76": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 0,
+    "ice": 0,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 31,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "77": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 32,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "78": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": {
+    "tier": 3,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 32,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "79": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 32,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "80": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 32,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "81": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 33,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "82": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 33,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "83": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 33,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "84": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 1,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 33,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "85": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 34,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "86": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 34,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "87": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 34,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "88": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 3,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 34,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "89": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 35,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "90": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 35,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "91": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 35,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "92": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 1,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 35,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "93": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 0,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 1,
+   "seal": null,
+   "min": {
+    "normal": 36,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "94": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 1,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 36,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "95": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 0,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 36,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "96": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 1,
+    "door": 1
+   },
+   "curse": 0,
+   "seal": {
+    "tier": 2,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 36,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "97": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 0,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 36,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "98": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 37,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "99": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 1,
+    "door": 0
+   },
+   "curse": 0,
+   "seal": null,
+   "min": {
+    "normal": 37,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  },
+  "100": {
+   "mechanics": {
+    "wall": 0,
+    "heavy": 1,
+    "gate": 1,
+    "ice": 1,
+    "door": 1
+   },
+   "curse": 1,
+   "seal": {
+    "tier": 3,
+    "tutorial": false
+   },
+   "min": {
+    "normal": 37,
+    "hard": 37,
+    "expert": 37
+   },
+   "note": ""
+  }
+ }
+}

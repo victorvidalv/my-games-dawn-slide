@@ -70,6 +70,7 @@ export const sfx={
   /** Cada paso del poder: nota del arpegio de la tónica (sube con Destino, baja con Rebobinar) y un tintineo. */
   powerStep:(n,up)=>{const j=up?n:Math.max(0,6-n);tone(keyHz(j,1),.3,'sine',.07,0,0,3600);tone(keyHz(j+3,1),.18,'triangle',.03,.03,0,4200);noise(.07,.03,5200,'highpass')},
   /* Jefe: el golpe de la presentación y el salto al tablero */
+  thunder:()=>{noise(.9,.16,180,'lowpass',0);tone(48,1,'sawtooth',.1,.02,-18);tone(36,1.3,'triangle',.12,.08,-10);noise(.4,.08,900,'bandpass',.3)},
   bossGo:()=>{noise(.55,.13,500,'bandpass',0,3600);tone(keyHz(0,0),.7,'sawtooth',.07,0,-20,520);tone(keyHz(2,1),.45,'triangle',.05,.06,0,2400);noise(.25,.1,300,'lowpass',.32)},
   powerEnd:(up)=>{[0,1,2,3].forEach((k,i)=>tone(keyHz(up?i:3-i,2),.5,'sine',.045,i*.06,0,4200));tone(keyHz(0,1),.8,'triangle',.05,0,0,1500)},
   win:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.28,'sine',.13,i*.08)),

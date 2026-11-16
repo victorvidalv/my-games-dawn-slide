@@ -1,6 +1,6 @@
 import { it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { SEAL_LEVELS, isSealLevel, planSeal, verifySealProof, crossesSeal, collectSeal, sealReward, sealPoints, maxSealAdjustment } from '../src/game/seals.js';
+import { SEAL_LEVELS, isSealLevel, requestedSealTier, planSeal, verifySealProof, crossesSeal, collectSeal, sealReward, sealPoints, maxSealAdjustment } from '../src/game/seals.js';
 import { HEROIC_BENEFITS } from '../src/game/routes.js';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { heroLimit, snapshotRescue } from '../src/game/heroes.js';
@@ -8,17 +8,19 @@ import { buy, payRevive } from '../src/game/shop.js';
 import { decodeBoard, occupancy } from '../src/engine/board.js';
 import { buildLevel } from '../src/engine/levels.js';
 import { mulberry32 } from '../src/engine/rng.js';
+import { TUTORIAL_LEVELS } from '../src/engine/calibration.js';
 import { minMoves } from '../src/engine/solver.js';
 const levels=JSON.parse(readFileSync(new URL('../src/data/levels.json',import.meta.url))).ratings;
 const special=JSON.parse(readFileSync(new URL('../src/data/special.json',import.meta.url)));
 const tips={wall:true,gate:true,heavy:true,ice:true,door:true,tut_wall:true,tut_gate:true,tut_heavy:true,tut_ice:true,tut_door:true};
 const run=(extra={})=>({seed:46,hero:'jean',start:1,level:SEAL_LEVELS[0],route:'normal',mode:'c',score:10000,hints:3,adj:0,...extra});
 
-it('aparecen desde el cinco cada tres o cuatro niveles, sin coincidir con introducciones ni jefes',()=>{
- expect(SEAL_LEVELS[0]).toBe(23);expect(SEAL_LEVELS.at(-1)).toBeLessThan(100);
+it('los sellos y su tipo los decide el calibrador: nunca en jefes ni en niveles de tutorial de una pieza',()=>{
+ expect(SEAL_LEVELS.length).toBeGreaterThanOrEqual(20);
  expect(SEAL_LEVELS.some((l)=>l%10===0)).toBe(false);
- for(let i=1;i<SEAL_LEVELS.length;i++){const g=SEAL_LEVELS[i]-SEAL_LEVELS[i-1];expect(g).toBeGreaterThanOrEqual(3);expect(g).toBeLessThanOrEqual(6);}
- for(const level of [1,2,3,4,5,8,10,18,19,20,21,28,30,38,40,48,51,100])expect(isSealLevel(level)).toBe(false);
+ for(const mech of ['wall','heavy','gate','ice','door'])expect(isSealLevel(TUTORIAL_LEVELS[mech]),mech).toBe(false);
+ for(const level of SEAL_LEVELS)expect([1,2,3]).toContain(requestedSealTier(level));
+ for(const level of [1,2,3,4,5,10,20,30,40,50,100])expect(isSealLevel(level)).toBe(false);
 });
 
 it('atravesar una casilla intermedia de hielo recoge el sello; mover otra pieza no lo recoge',()=>{
@@ -86,10 +88,11 @@ it('un sello ya cobrado no reaparece por un indicador visual antiguo en el guard
  expect(buildAdventureLevel(r,{tips}).seal.collected).toBe(true);
 });
 
-for(const family of ['plain','walls','gates','heavy','ice','doors','duo','doorduo','mixed'])it(`certifica el sello con reglas ${family} incluso con límite experto`,()=>{
- const raw=family==='plain'?levels[49][0]:special[family][49][0];
- const built=buildLevel(decodeBoard(raw),{rating:50,brave:true,rng:mulberry32(46),withAnalysis:true});
- const limit=heroLimit('jean',built.opt,75,98,true);
- const planned=planSeal({...built,rate:50,level:98,limit,analysis:built.analysis,withProof:true});
+const anyBoard=(family,from=40)=>{if(family==='plain')return {raw:levels[49][0],rating:50};const r=special[family].findIndex((l,k)=>k>=from&&l.length);return r<0?null:{raw:special[family][r][0],rating:r+1}};
+for(const family of ['plain','walls','gates','heavy','ice','doors','combo_hg','combo_gid'])it(`certifica el sello con reglas ${family} incluso con límite experto`,()=>{
+ const {raw,rating}=anyBoard(family);
+ const built=buildLevel(decodeBoard(raw),{rating,brave:true,rng:mulberry32(46),withAnalysis:true});
+ const L=SEAL_LEVELS.at(-1),limit=heroLimit('jean',built.opt,75,L,true);
+ const planned=planSeal({...built,rate:rating,level:L,limit,analysis:built.analysis,withProof:true});
  expect(planned).toBeTruthy();expect(verifySealProof(built,planned.seal,planned.proof,planned.limit)).toBe(true);
 });

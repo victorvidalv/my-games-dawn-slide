@@ -19,7 +19,10 @@ import { levelPlan } from './mechanics.js';
  */
 
 /** Cuánto más se equivoca el jugador en cada familia de tableros (multiplica su «1 − habilidad»). */
-export const FAMILY_HARD = { plain: 1, walls: 1.05, heavy: 1.1, gates: 1.15, ice: 1.15, doors: 1.18, duo: 1.25, doorduo: 1.3, mixed: 1.35 };
+const MECH_HARD = { wall: 0.05, heavy: 0.1, gate: 0.15, ice: 0.15, door: 0.18 };
+/** Cuánto multiplica los errores un tablero con esas mecánicas: la suma de lo que añade cada una y un 10 % más por cada pieza extra mezclada. */
+export const hardOfMechanics = (mechs) => Math.round((1 + mechs.reduce((a, m) => a + (MECH_HARD[m] ?? 0), 0) * (1 + 0.1 * Math.max(0, mechs.length - 1))) * 1000) / 1000;
+export const FAMILY_HARD = { plain: 1, walls: hardOfMechanics(['wall']), heavy: hardOfMechanics(['heavy']), gates: hardOfMechanics(['gate']), ice: hardOfMechanics(['ice']), doors: hardOfMechanics(['door']), all: hardOfMechanics(['wall', 'heavy', 'gate', 'ice', 'door']) };
 
 /** Reloj humano: segundos por movimiento = ejecutar + pensar; con una dispersión natural entre partidas. */
 export const HUMAN = {
@@ -44,7 +47,7 @@ export function bossBoardLength(level, start = 1) {
 export function bossDuel({ level, start = 1, skill, seed, hero = 'lia', hints = startHintsFor(start) + 2, rule = bossRule(level) }) {
   const rng = mulberry32(seed);
   const d = bossBoardLength(level, start);
-  const hard = FAMILY_HARD[levelPlan(level).family] ?? 1.2;
+  const hard = hardOfMechanics(levelPlan(level).mechanics);
   const res = playBoard(rng, { hero, skill, d, start, level, hints, boss: rule.cap, hard });
   const seconds = solveSeconds(rng, skill, d, res.moves);
   const timeLimit = bossTimeFor(level, d, rule);

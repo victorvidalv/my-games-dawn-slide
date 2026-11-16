@@ -1,3 +1,7 @@
 node_modules
 dist
 .DS_Store
+
+# calibrador: la base SQLite es local; el JSON exportado sí se versiona
+tools/calibrator/calibration.db*
+tools/calibrator/plan.json

@@ -15,7 +15,7 @@ describe('segundo simulador: reloj humano y piezas especiales', () => {
   it('las piezas especiales hacen los tableros más propensos a errores', () => {
     expect(FAMILY_HARD.plain).toBe(1);
     for (const k of Object.keys(FAMILY_HARD)) expect(FAMILY_HARD[k], k).toBeGreaterThanOrEqual(1);
-    expect(FAMILY_HARD.mixed).toBeGreaterThan(FAMILY_HARD.walls);
+    expect(FAMILY_HARD.all).toBeGreaterThan(FAMILY_HARD.walls);
   });
   it('un duelo se pierde por turnos o por tiempo, y la contrarreloj solo existe en los jefes que la tienen', () => {
     for (const level of BOSS_LEVELS) {

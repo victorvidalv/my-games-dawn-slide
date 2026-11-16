@@ -1,6 +1,7 @@
 /** Niveles por camino y nivel de dificultad máximo. */
 export const MAX_LEVEL = 100;
-const MAX_RATING = 100;
+import { MAX_RATING, targetFor } from './targets.js';
+import { minFor } from './calibration.js';
 
 /**
  * Puntos de control nivel → dificultad (1-100) de cada camino (entre ellos se interpola linealmente).
@@ -20,8 +21,29 @@ export const pathKey = (start = 1) => (start >= 75 ? 75 : start >= 50 ? 50 : 1);
 /** Valor de una tabla indexada por camino. */
 export const byPath = (table, start) => table[pathKey(start)];
 
-/** Dificultad (1-100) del nivel `level` en el camino `start` (1, 50 o 75). */
+/** Dificultad (1-100) cuyo mínimo objetivo se acerca más a `min` movimientos (la más baja si hay empate). */
+export function ratingForMin(min) {
+  let best = 1;
+  let d = Infinity;
+  for (let r = 1; r <= MAX_RATING; r++) {
+    const x = Math.abs(targetFor(r) - min);
+    if (x < d) { d = x; best = r; }
+  }
+  return best;
+}
+const RATINGS = {};
+/**
+ * Dificultad (1-100) del nivel `level` en el camino `start` (1, 50 o 75): la que corresponde a los turnos mínimos calibrados
+ * de ese nivel (src/data/calibration.json, ver `npm run calibrate`).
+ */
 export function rateAt(start, level) {
+  const key = pathKey(start);
+  const table = (RATINGS[key] ||= Array.from({ length: MAX_LEVEL }, (_, i) => ratingForMin(minFor(key, i + 1))));
+  return table[Math.max(1, Math.min(MAX_LEVEL, level)) - 1];
+}
+
+/** Curva antigua (por puntos de control), conservada como referencia. */
+export function curveRateAt(start, level) {
   const knots = byPath(PATH_CURVES, start);
   const l = Math.max(1, Math.min(MAX_LEVEL, level));
   for (let i = 1; i < knots.length; i++) {
@@ -32,25 +54,7 @@ export function rateAt(start, level) {
   return knots[knots.length - 1][1];
 }
 
-/**
- * Movimientos mínimos objetivo por dificultad (puntos de control; entre ellos se interpola).
- *   1-20   tutorial suave (2 a 6 movimientos)
- *   30     «hay que pensar» (11)         ← en el camino Normal, nivel 30
- *   50     el Difícil empieza aquí (19)
- *   75     el Experto empieza aquí (29)
- *   100    desafiante de verdad (37)
- */
-export const TARGET_KNOTS = [[1, 2], [10, 3], [20, 6], [30, 11], [40, 15], [50, 19], [60, 23], [75, 29], [90, 34], [100, 37]];
-
-export function targetFor(rating) {
-  const r = Math.max(1, Math.min(MAX_RATING, rating));
-  for (let i = 1; i < TARGET_KNOTS.length; i++) {
-    const [r1, t1] = TARGET_KNOTS[i];
-    const [r0, t0] = TARGET_KNOTS[i - 1];
-    if (r <= r1) return Math.round(t0 + ((t1 - t0) * (r - r0)) / (r1 - r0));
-  }
-  return TARGET_KNOTS[TARGET_KNOTS.length - 1][1];
-}
+export { TARGET_KNOTS, targetFor } from './targets.js';
 
 /**
  * Curva de dificultad de un nivel:

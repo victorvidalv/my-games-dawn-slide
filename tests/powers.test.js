@@ -28,8 +28,8 @@ describe('Jean: ~33 % de los movimientos hechos, mínimo 3', () => {
 });
 
 describe('Juth: ~25 % de los pasos que faltan, legales',()=>{
- for(const family of ['plain','walls','gates','heavy','ice','duo','mixed']) it(`respeta ${family} y reduce la distancia exacta en su parte`,()=>{
-  const raw=family==='plain'?bank.ratings[29][0]:special[family][29][0];
+ for(const family of ['plain','walls','gates','heavy','ice','combo_hg','combo_wh']) it(`respeta ${family} y reduce la distancia exacta en su parte`,()=>{
+  const raw=family==='plain'?bank.ratings[29][0]:special[family].find((l,k)=>k>=20&&l.length)[0];
   const G={...decodeBoard(raw),n:45,moves:0,limit:100,hist:[]};
   const an=analyze(G.pieces,G.pos,600000,G.walls),before=an.dist.get(encode(G.pos));
   expect(before).toBeGreaterThan(2);

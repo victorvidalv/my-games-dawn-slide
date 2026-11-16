@@ -71,6 +71,11 @@ function ambientStep() {
     const y = board.top + (side === 0 ? 0 : side === 2 ? board.height : Math.random() * board.height);
     burst(x, y, 5 + t * 4, [active.color[0], active.color[1], '#fff'], 3 + t);
   }
+  if (tick % 9 === 4 && t >= 1) {   // relámpago: un destello blanco-violeta y un trueno lejano cuando la tensión sube
+    body.classList.add('boss-lightning');
+    sfx.thunder();
+    setTimeout(() => body.classList.remove('boss-lightning'), 340);
+  }
   if (tick % 14 === 0) {  // oleada de intensidad: el color se enciende un instante
     body.classList.add('boss-surge');
     setTimeout(() => body.classList.remove('boss-surge'), 1100);
@@ -112,6 +117,9 @@ export function bossArrive(boss) {
     setTimeout(() => ring.remove(), 1100);
     burst(board.left + board.width / 2, board.top + board.height / 2, 36, [boss.color[0], boss.color[1], '#fff'], 10);
   }
+  const frame = document.querySelector('.frame');
+  frame?.classList.remove('board-shake'); void frame?.offsetWidth; frame?.classList.add('board-shake');
+  setTimeout(() => frame?.classList.remove('board-shake'), 320);
   setTimeout(() => body.classList.remove('boss-arrive', 'boss-surge'), 1500);
 }
 

@@ -53,7 +53,7 @@ const toneMark=(t)=>`<span class="mk tone t${t}" title="Gema ${TONE_NAMES[t]}">$
 export function buildPieces(){
   boardEl.querySelectorAll('.piece,.wall,.door,.plate,.links,.seal-floor').forEach(e=>e.remove());
   boardEl.dataset.city=zoneIdx(S.G.n);
-  S.G.rot=boardRotation(S.run?.seed,S.G.n,!!S.G.tutorial);                       // la salida cambia de lado (derecha, abajo, izquierda, arriba)
+  S.G.rot=boardRotation(S.run?.seed,S.G.n,S.G.tutorial||false);                       // la salida cambia de lado (derecha, abajo, izquierda, arriba)
   boardEl.parentElement.style.setProperty('--rot',S.G.rot+'deg');boardEl.parentElement.dataset.rot=S.G.rot;
   if(S.G.rot&&!S.G.moves)showCurse(S.G.rot);else hideCurse();
   boardEl.classList.toggle('is-boss',!!S.G.plan?.boss);

@@ -2,9 +2,10 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import levelBank from '../src/data/levels.json';
 import specialBank from '../src/data/special.json';
-import { BOSSES, BOSS_RATING_FLOOR, BOSS_RULES, bossCapFor, bossRating, bossRule, bossRuleLabel, bossTimeFor } from '../src/game/bosses.js';
+import { BOSSES, BOSS_RULES, bossCapFor, bossMechLabel, bossRating, bossRule, bossRuleLabel, bossTimeFor } from '../src/game/bosses.js';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { moveLimit } from '../src/engine/difficulty.js';
+import { minFor } from '../src/engine/calibration.js';
 import { bonusTurns, heroLimit } from '../src/game/heroes.js';
 import { ZONE_THEMES } from '../src/audio/themes.js';
 
@@ -18,7 +19,7 @@ describe('jefes: datos y reglas', () => {
     LEVELS.forEach((level, i) => {
       const b = BOSSES[level];
       expect(b.city, `jefe ${level}`).toBe(i);
-      for (const k of ['name', 'title', 'lore', 'mechTag', 'art']) expect(b[k], `${level}.${k}`).toBeTruthy();
+      for (const k of ['name', 'title', 'lore', 'art']) expect(b[k], `${level}.${k}`).toBeTruthy();
       expect(b.color, `${level} color`).toHaveLength(2);
       expect(BOSS_RULES[level], `${level} regla`).toBeTruthy();
     });
@@ -72,11 +73,17 @@ describe('jefes: datos y reglas', () => {
     }
   });
 
-  it('el rating mínimo de cada jefe evita tableros diminutos en las primeras ciudades del camino Normal', () => {
-    expect(bossRating(10, 14)).toBeGreaterThanOrEqual(26);
-    expect(bossRating(10, 60)).toBe(60);                  // si el nivel ya es más difícil, no se toca
-    expect(bossRating(11, 14)).toBe(14);                  // fuera de los jefes no hace nada
-    for (let i = 1; i < LEVELS.length; i++) expect(BOSS_RATING_FLOOR[LEVELS[i]]).toBeGreaterThan(BOSS_RATING_FLOOR[LEVELS[i - 1]]);
+  it('el tablero del jefe es 2 movimientos más duro que sus vecinos (turnos mínimos calibrados, sin suelo aparte)', () => {
+    for (const level of LEVELS) {
+      if (level < 20) continue;
+      expect(minFor(1, level), `jefe ${level}`).toBeGreaterThanOrEqual(minFor(1, level - 1) + 1);
+    }
+    expect(bossRating(10, 14)).toBe(14);
+    expect(bossRating(11, 14)).toBe(14);
+  });
+  it('cada jefe describe cuántas piezas especiales lleva su tablero y el último las lleva todas', () => {
+    expect(bossMechLabel(100)).toBe('Todas las piezas juntas');
+    for (const level of LEVELS) expect(bossMechLabel(level), `jefe ${level}`).toBeTruthy();
   });
 
   it('los textos de la regla son claros', () => {

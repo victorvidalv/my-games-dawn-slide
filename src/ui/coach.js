@@ -45,13 +45,14 @@ const DEMO = {
   gate: '<div class="mini gate-demo"><div class="plate demo"><i></i></div><div class="mp blk slide-onto"></div><div class="mp gate-p"><span class="lock-shut">🔒</span><span class="lock-free">🔓</span></div></div>',
   heavy: '<div class="mini heavy-demo"><div class="mp heavy-p"><b>1</b></div><span class="steps">▸ ▹ ▹</span></div>',
   ice: '<div class="mini ice-demo"><div class="mp ice-p">❄</div><div class="wall demo"><i></i></div><span class="glide">» »</span></div>',
+  curse: '<div class="mini curse-demo"><div class="mp curse-p"></div><span class="curse-spin">➜</span></div>',
   door: '<div class="mini door-demo"><div class="door-arch"><i>◆</i></div><div class="mp door-p"><b>◆</b></div></div>',
 };
 
 function tipFor(id) {
   if (MECHANICS[id]) {
     const h = heroOf(), talk = HERO_TUTORIAL_TALK[h.id]?.[id];
-    return { tag: 'PIEZA NUEVA', title: `${icon(MECHANICS[id].icon)} ${MECHANICS[id].name}`, text: MECHANICS[id].tip + (talk ? `<br><br><i><b>${h.name}:</b> «${talk}»</i>` : ''), demo: id };
+    return { tag: id === 'curse' ? 'MALEFICIO' : 'PIEZA NUEVA', title: `${icon(MECHANICS[id].icon)} ${MECHANICS[id].name}`, text: MECHANICS[id].tip + (talk ? `<br><br><i><b>${h.name}:</b> «${talk}»</i>` : ''), demo: id };
   }
   const h = heroOf();
   return {
@@ -131,6 +132,7 @@ export function startCoach() {
   if (G.timeLimit > 0) queue.push('bosstime');
   if (G.seal) queue.push('seal');
   queue.push(...mechanicsPresent(G));
+  if (G.rot) queue.push('curse');                // tablero con maleficio: se explica la primera vez
   const todo = queue.filter((id) => !store.tips[id]);
   if (!todo.length) { guide(); return; }
   showing = true;

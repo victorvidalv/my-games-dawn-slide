@@ -12,7 +12,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { decodeBoard, encodeBoard } from '../src/engine/board.js';
-import { decorateBoard, FAMILIES } from '../src/engine/decorate.js';
+import { decorateBoard, FAMILIES, familySpec } from '../src/engine/decorate.js';
 import { minReach } from '../src/engine/difficulty.js';
 import { hash32 } from '../src/engine/rng.js';
 
@@ -30,7 +30,7 @@ if (!isMainThread) {
     return null;
   };
   for (const { rating, slot, family } of jobs) {
-    const base = FAMILIES[family].base;
+    const base = familySpec(family).base;
     const text = base ? (bases[base]?.[rating - 1]?.[slot] || pickWallFallback(rating, slot)) : ratings[rating - 1][slot];
     if (!text) { parentPort.postMessage({ rating, slot, family, text: null }); continue; }
     const board = decodeBoard(text);
@@ -47,12 +47,27 @@ const { ratings } = JSON.parse(readFileSync(BANK, 'utf8'));
 const out = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : {};
 const allFamilies = Object.keys(FAMILIES);
 const rawFam = arg('families', '');
-const families = rawFam ? rawFam.split(',').map((s) => s.trim()).filter((f) => FAMILIES[f]) : allFamilies;
-for (const f of [...allFamilies, 'walls']) out[f] = out[f] || Array.from({ length: 100 }, () => []);
+const families = rawFam ? rawFam.split(',').map((s) => s.trim()).filter((f) => familySpec(f)) : arg('plan', '') ? [] : allFamilies;
+for (const f of [...allFamilies, 'walls', ...families]) out[f] = out[f] || Array.from({ length: 100 }, () => []);
 const jobs = [];
+const planFile = arg('plan', '');   // --plan archivo.json: {familia: [dificultades]}; solo se generan esas (el calibrador calcula lo que hace falta)
+if (planFile) {
+  const plan = JSON.parse(readFileSync(planFile, 'utf8'));
+  for (const [family, rs] of Object.entries(plan)) {
+    if (!familySpec(family)) continue;
+    out[family] = out[family] || Array.from({ length: 100 }, () => []);
+    for (const rating of rs) {
+      if (out[family][rating - 1]?.length >= 4) continue;               // ya generada
+      out[family][rating - 1] = [];
+      ratings[rating - 1].forEach((_, slot) => jobs.push({ rating, slot, family }));
+    }
+    if (!families.includes(family)) families.push(family);
+  }
+} else {
 for (let rating = from; rating <= (to || from); rating++) {
   for (const f of families) out[f][rating - 1] = [];
   ratings[rating - 1].forEach((_, slot) => { for (const family of families) jobs.push({ rating, slot, family }); });
+}
 }
 jobs.sort((a, b) => b.rating - a.rating);
 const threads = Math.max(1, cpus().length - 1);

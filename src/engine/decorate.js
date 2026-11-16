@@ -23,7 +23,28 @@ export const FAMILIES = {
   doors:   { door: 1, minGain: 1 },
   doorduo: { doorDuo: 1, minGain: 2 },
   mixed:   { gate: 1, heavy: 1, ice: 1, minGain: 2, base: 'walls' },
+  all:     { gate: 1, heavy: 1, ice: 1, door: 1, minGain: 2, base: 'walls' },   // las cinco piezas a la vez (roca, candado, pesada, hielo y portón)
 };
+
+/**
+ * Familias exactas por combinación de mecánicas (las que decide el calibrador): `combo_<letras>` con las letras de
+ * w = roca, h = pesada, g = candado, i = hielo, d = portón, siempre en ese orden (p. ej. `combo_hg`, `combo_gid`).
+ * Con roca el tablero parte de uno con rocas (`base: 'walls'`); el resto se decora pieza a pieza.
+ */
+export const comboKey = (letters) => 'combo_' + [...'whgid'].filter((c) => letters.includes(c)).join('');
+export function familySpec(name) {
+  if (FAMILIES[name]) return FAMILIES[name];
+  const m = /^combo_([whgid]+)$/.exec(name);
+  if (!m) return null;
+  const l = m[1];
+  const spec = { minGain: l.replace('w', '').length >= 2 ? 2 : 1 };
+  if (l.includes('h')) spec.heavy = 1;
+  if (l.includes('g')) spec.gate = 1;
+  if (l.includes('i')) spec.ice = 1;
+  if (l.includes('d')) spec.door = 1;
+  if (l.includes('w')) spec.base = 'walls';
+  return spec;
+}
 
 const DUO_PAIRS = [['heavy', 'ice'], ['gate', 'ice'], ['gate', 'heavy']];
 const DOOR_COMBOS = [['door2'], ['door', 'heavy'], ['door', 'ice'], ['door', 'gate']];
@@ -45,7 +66,7 @@ function laneCells(pieces, skip = -1) {
  * Devuelve {pieces, pos, walls, doors, plain, opt} o null si no lo consigue en `tries` intentos. Determinista por semilla.
  */
 export function decorateBoard(board, family, seed, { tries, minOpt = 0 } = {}) {
-  const spec = FAMILIES[family];
+  const spec = familySpec(family);
   if (!spec) throw new Error(`Familia desconocida: ${family}`);
   const rng = mulberry32(seed);
   const walls = board.walls || [];
@@ -57,7 +78,7 @@ export function decorateBoard(board, family, seed, { tries, minOpt = 0 } = {}) {
   const cap = Math.min(600000, Math.max(120000, plainAn.list.length * 2));
   const n = board.pieces.length;
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
-  const attempts = tries ?? (spec.ice ? 90 : spec.duo || spec.doorDuo ? 90 : spec.door ? 120 : 48);
+  const attempts = tries ?? (spec.ice || spec.duo || spec.doorDuo ? 90 : spec.door ? 120 : 48);
 
   for (let t = 0; t < attempts; t++) {
     const pieces = board.pieces.map((p) => ({ ...p }));

@@ -11,23 +11,29 @@ import { hash32 } from './rng.js';
  * `special[familia][rating-1]` trae los mismos tableros decorados con muros, candados o piezas pesadas
  * (`npm run levels:decorate`); si falta una familia se usa el tablero normal.
  */
-/** Si una familia no tiene tableros a esa dificultad (los muros no se consiguen por encima de 85) se prueba con otra especial. */
-const FALLBACK = {
-  plain: ['plain'],
-  walls: ['walls', 'gates'],
-  gates: ['gates'],
-  heavy: ['heavy'],
-  ice: ['ice', 'gates'],
-  doors: ['doors', 'gates', 'walls'],
-  doorduo: ['doorduo', 'doors', 'duo', 'gates'],
-  duo: ['duo', 'ice', 'gates', 'heavy'],
-  mixed: ['mixed', 'doorduo', 'duo', 'ice', 'walls', 'gates', 'heavy'],
-};
+/** Letras (w h g i d) de una familia de tableros especiales, o null. */
+const LETTERS = { walls: 'w', heavy: 'h', gates: 'g', ice: 'i', doors: 'd' };
+const lettersOf = (f) => LETTERS[f] ?? /^combo_([whgid]+)$/.exec(f)?.[1] ?? null;
+const keyOf = (l) => (l.length === 1 ? Object.keys(LETTERS).find((k) => LETTERS[k] === l) : `combo_${l}`);
+/**
+ * Si una familia no tiene tableros a esa dificultad se prueba con la más parecida: primero la misma, luego las combinaciones que contienen
+ * la mayoría de sus mecánicas (de más a menos letras) y al final las piezas sueltas.
+ */
+export function fallbackChain(family, special = null) {
+  if (family === 'plain') return ['plain'];
+  const want = lettersOf(family);
+  if (!want) return [family, 'plain'];
+  const keys = Object.keys(special || {}).filter((k) => lettersOf(k));
+  const overlap = (k) => [...lettersOf(k)].filter((c) => want.includes(c)).length;
+  const rest = keys.filter((k) => k !== family && overlap(k) > 0)
+    .sort((a, b) => overlap(b) - overlap(a) || Math.abs(lettersOf(a).length - want.length) - Math.abs(lettersOf(b).length - want.length) || a.localeCompare(b));
+  return [family, ...rest, keyOf(want[0])].filter((v, i, a) => a.indexOf(v) === i);
+}
 
 export function pickBoard(bank, rating, seed, level, family = 'plain', special = null) {
   let used = 'plain';
   let list = bank[rating - 1];
-  for (const f of FALLBACK[family] ?? ['plain']) {
+  for (const f of fallbackChain(family, special)) {
     const l = f === 'plain' ? bank[rating - 1] : special?.[f]?.[rating - 1];
     if (l?.length) { used = f; list = l; break; }
   }

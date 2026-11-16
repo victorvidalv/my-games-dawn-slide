@@ -1,10 +1,8 @@
 import { zoneIdx } from '../data/zones.js';
+import { TUTORIAL_LEVELS, lettersAt } from '../engine/calibration.js';
+import { comboKey } from '../engine/decorate.js';
 
-/**
- * Piezas especiales y calendario de niveles. Cada ciudad tiene su mecánica; los primeros niveles de cada ciudad
- * son normales y la mecánica aparece en los tramos 3, 5, 6, 8, 9 y 10.
- * (El Valle empieza más tarde, en el 6, para que los primeros niveles enseñen lo básico.)
- */
+/** Piezas especiales (con su texto de ayuda) y el calendario de mecánicas de los 100 niveles. */
 export const MECHANICS = {
   wall: {
     id: 'wall', icon: 'rock', name: 'Roca fija', chip: 'Roca fija',
@@ -22,72 +20,50 @@ export const MECHANICS = {
     id: 'ice', icon: 'ice', name: 'Pieza de hielo', chip: 'Hielo: hasta el tope',
     tip: 'Resbala sin freno: en cuanto la empujas, patina hasta chocar con otra pieza, una roca o el borde. No puede parar a medias.',
   },
+  curse: {
+    id: 'curse', icon: 'flame', name: 'Maleficio', chip: 'Maleficio: salida movida',
+    tip: 'Un maleficio gira el tablero: la salida ➜ cambia de lado (abajo, a la izquierda o arriba). Las piezas se oscurecen y la llave roja brilla en violeta. Todo funciona igual: solo busca hacia dónde sale la llave.',
+  },
   door: {
     id: 'door', icon: 'door', name: 'Portón de color', chip: 'Portón: su tinte',
     tip: 'Solo deja pasar piezas con la gema de su mismo color y símbolo (◆ ● ▲). Para las demás funciona como una pared.',
   },
 };
 
-/** Familia dominante por ciudad (referencia de progresión; ver LEVEL_FAMILIES para cada nivel 1..100). */
-export const CITY_FAMILY = ['walls', 'heavy', 'gates', 'ice', 'doors', 'doorduo', 'duo', 'doorduo', 'mixed', 'mixed'];
-
 /** Nivel jefe al cierre de cada una de las 10 ciudades (10, 20, ..., 100). */
 export const isBossLevel = (level) => level >= 10 && level % 10 === 0;
 
 /**
- * Calendario de los 100 niveles:
- *   1–7   solo tableros normales (`plain`)
- *   8+    rocas (`walls`, tutorial en el 8; primer jefe en el 10 con rocas)
- *   18+   pesadas (`heavy`, tutorial en el 18; jefe 20)
- *   28+   candados (`gates`, tutorial en el 28; jefe 30)
- *   38+   hielo (`ice`, tutorial en el 38; jefe 40)
- *   48+   portones de color (`doors`, tutorial en el 48; jefe 50)
- *   51+   combinaciones de piezas (`duo`, `doorduo`, `mixed`) con todos los jefes cargando piezas especiales
+ * CALENDARIO DE MECÁNICAS (1..100): lo decide el calibrador (`tools/calibrator`) y lo optimiza `npm run calibrate`
+ * (src/data/calibration.json). Cada mecánica llega con su tutorial en un nivel propio, nunca dos novedades a la vez, y después vuelve
+ * cada pocos niveles sin repetir la misma mezcla; las mezclas crecen con el nivel hasta usar todas juntas al final.
  */
-const LEVEL_FAMILIES = [
-  // 1..10 (tutorial roca 8, jefe 10)
-  'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 'walls', 'plain', 'walls',
-  // 11..20 (tutorial pesada 18, jefe 20)
-  'plain', 'plain', 'walls', 'plain', 'plain', 'walls', 'plain', 'heavy', 'plain', 'heavy',
-  // 21..30 (tutorial candado 28, jefe 30)
-  'plain', 'walls', 'plain', 'plain', 'heavy', 'plain', 'walls', 'gates', 'heavy', 'gates',
-  // 31..40 (tutorial hielo 38, jefe 40)
-  'plain', 'heavy', 'plain', 'walls', 'plain', 'gates', 'plain', 'ice', 'gates', 'ice',
-  // 41..50 (tutorial portón 48, jefe 50)
-  'plain', 'walls', 'plain', 'ice', 'gates', 'plain', 'heavy', 'doors', 'ice', 'doors',
-  // 51..60 (combinaciones + jefe 60)
-  'duo', 'plain', 'doors', 'plain', 'duo', 'heavy', 'plain', 'doorduo', 'plain', 'doorduo',
-  // 61..70 (jefe 70)
-  'gates', 'plain', 'duo', 'doors', 'mixed', 'plain', 'ice', 'doorduo', 'plain', 'duo',
-  // 71..80 (jefe 80)
-  'duo', 'plain', 'mixed', 'doors', 'plain', 'doorduo', 'plain', 'mixed', 'ice', 'doorduo',
-  // 81..90 (jefe 90)
-  'mixed', 'plain', 'doorduo', 'doors', 'mixed', 'heavy', 'plain', 'mixed', 'duo', 'mixed',
-  // 91..100 (jefe 100)
-  'mixed', 'doorduo', 'plain', 'mixed', 'doors', 'plain', 'mixed', 'doorduo', 'mixed', 'mixed',
-];
+const LETTER_MECH = { w: 'wall', h: 'heavy', g: 'gate', i: 'ice', d: 'door' };
+const LETTER_FAMILY = { w: 'walls', h: 'heavy', g: 'gates', i: 'ice', d: 'doors' };
+/** Nombre de la familia de tableros para unas letras de mecánicas ('' = plain; una sola = su familia clásica; varias = `combo_<letras>`). */
+export const familyOfLetters = (letters) => (!letters ? 'plain' : letters.length === 1 ? LETTER_FAMILY[letters] : comboKey(letters));
+/** Letras (w h g i d) de una familia; null si no es una combinación conocida. */
+export const lettersOfFamily = (family) => {
+  if (family === 'plain') return '';
+  const single = Object.entries(LETTER_FAMILY).find(([, f]) => f === family);
+  if (single) return single[0];
+  return /^combo_([whgid]+)$/.exec(family)?.[1] ?? null;
+};
 
-const INTRO_LEVELS = new Set([8, 18, 28, 38, 48, 51]);
+/** Niveles donde llega una mecánica nueva (con tutorial aparte): no se les suma otra novedad. */
+export const INTRO_LEVEL_LIST = Object.values(TUTORIAL_LEVELS).sort((a, b) => a - b);
+const INTRO_LEVELS = new Set(INTRO_LEVEL_LIST);
 
-/** Qué mecánicas contiene una familia de tableros. */
-export const mechanicsOfFamily = (family) => ({
-  plain: [],
-  walls: ['wall'],
-  gates: ['gate'],
-  heavy: ['heavy'],
-  ice: ['ice'],
-  doors: ['door'],
-  doorduo: ['door', 'gate', 'heavy', 'ice'],
-  duo: ['gate', 'heavy', 'ice'],
-  mixed: ['wall', 'gate', 'heavy', 'ice'],
-}[family] ?? []);
+/** Qué mecánicas contiene una familia (en el orden roca, pesada, candado, hielo, portón). */
+export const mechanicsOfFamily = (family) => [...(lettersOfFamily(family) ?? '')].map((c) => LETTER_MECH[c]);
 
 /** Plan de un nivel (1..100): {family, city, step, intro, boss, mechanics}. */
 export function levelPlan(level) {
   const city = zoneIdx(level);
   const step = ((level - 1) % 10) + 1;
-  const family = LEVEL_FAMILIES[level - 1] ?? 'mixed';
-  return { family, city, step, intro: INTRO_LEVELS.has(level), boss: isBossLevel(level), mechanics: mechanicsOfFamily(family) };
+  const letters = [...'whgid'].filter((c) => lettersAt(level).includes(c)).join('');
+  const family = familyOfLetters(letters);
+  return { family, letters, city, step, intro: INTRO_LEVELS.has(level), boss: isBossLevel(level), mechanics: mechanicsOfFamily(family) };
 }
 
 /**
@@ -97,7 +73,7 @@ export function levelPlan(level) {
  */
 export const TUTORIALS = {
   wall: {
-    level: 8,
+    level: TUTORIAL_LEVELS.wall,
     board: 'h2.2.0 v2.3.2 h2.4.3 #1.3',          // la roca (1,3) impide subir el bloque vertical: hay que bajarlo
     steps: [
       'Esta roca no se mueve. Rodéala: mueve el bloque que brilla.',
@@ -106,7 +82,7 @@ export const TUTORIALS = {
     ],
   },
   heavy: {
-    level: 18,
+    level: TUTORIAL_LEVELS.heavy,
     board: 'h2.2.0 v2.3.2p #4.3',                // pesada: sube de a una casilla; la roca (4,3) impide bajarla
     steps: [
       'Esta pieza es pesada: solo avanza UNA casilla por movimiento. Muévela hacia arriba.',
@@ -115,7 +91,7 @@ export const TUTORIALS = {
     ],
   },
   gate: {
-    level: 28,
+    level: TUTORIAL_LEVELS.gate,
     board: 'h2.2.0 v2.3.1g5.0 h2.5.3',            // candado vertical con la placa en (5,0); solo el bloque de abajo llega a ella
     steps: [
       'Este bloque tiene candado y está atrapado. Cubre la placa ▣ con el bloque que brilla.',
@@ -124,7 +100,7 @@ export const TUTORIALS = {
     ],
   },
   ice: {
-    level: 38,
+    level: TUTORIAL_LEVELS.ice,
     board: 'h2.2.0 v3.3.0i h2.3.2',             // hielo: primero aparta el tope de abajo y luego patina de golpe hasta el fondo
     steps: [
       'Esta pieza es de hielo y patina sin parar hasta un tope. Primero aparta el bloque que brilla.',
@@ -132,8 +108,18 @@ export const TUTORIALS = {
       '¡Patina en un solo movimiento! Ahora saca la llave roja.',
     ],
   },
+  curse: {
+    level: TUTORIAL_LEVELS.curse,
+    rot: 180,                                    // el tablero se ve girado: la salida queda a la izquierda
+    board: 'h2.2.0 v3.3.0 h2.4.3 h2.1.0',       // 3 movimientos: aparta la barra de abajo, baja la vertical y saca la llave
+    steps: [
+      '¡Maleficio! El tablero giró: la salida ➜ está ahora a la IZQUIERDA. Mueve el bloque que brilla.',
+      'Bien. Piensa en la llave roja: ella siempre sale hacia la flecha dorada.',
+      '¡Camino libre! Saca la llave roja por la izquierda.',
+    ],
+  },
   door: {
-    level: 48,
+    level: TUTORIAL_LEVELS.door,
     board: 'h2.2.0 v2.2.2t0 h2.0.1 d1.2.0 d4.2.1', // portón ◆ en (1,2): deja pasar al bloque ◆; el portón ● en (4,2) lo frena abajo
     steps: [
       'Los portones solo dejan pasar gemas de su mismo color. Primero aparta el bloque de arriba.',

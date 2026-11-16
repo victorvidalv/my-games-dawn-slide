@@ -2,21 +2,11 @@ import { N, WIN_POS, encode, occupancy } from '../engine/board.js';
 import { analyze, expand } from '../engine/solver.js';
 import { baseScore, calcGain } from '../engine/scoring.js';
 import { hash32 } from '../engine/rng.js';
-import { TUTORIALS, isBossLevel } from './mechanics.js';
+import { sealAt } from '../engine/calibration.js';
 import { heroicPoints } from './routes.js';
 
-const intros = new Set([...Object.values(TUTORIALS).map(t => t.level), 51]);
-const SEAL_FIRST_LEVEL = 20;
-export const SEAL_LEVELS = (() => {
-  const levels = []; let level = SEAL_FIRST_LEVEL, gap = 3;
-  while (level < 100) {
-    if (!intros.has(level) && !isBossLevel(level)) levels.push(level);
-    let next = level + gap;
-    while (intros.has(next) || isBossLevel(next)) { next += (gap === 3 ? 1 : 1); }
-    level = next; gap = gap === 3 ? 4 : 3;
-  }
-  return levels;
-})();
+/** Niveles con sello (y su tipo) según el calibrador. */
+export const SEAL_LEVELS = Array.from({ length: 100 }, (_, i) => i + 1).filter((l) => sealAt(l));
 export const isSealLevel = level => SEAL_LEVELS.includes(level);
 export const maxSealDetour = opt => Math.min(8, Math.max(2, Math.ceil(opt * .18)));
 export const maxSealAdjustment = opt => Math.min(6, Math.max(1, Math.ceil(opt * .12)));
@@ -35,11 +25,8 @@ export const SEAL_TIERS = [
 const sealTierOf = (extra, occupied = false) => { const s = extra + (occupied ? 1 : 0); return s >= 4 ? 3 : s >= 2 ? 2 : 1; };
 export const sealTier = seal => Math.max(1, Math.min(3, seal?.tier || 2));      // los sellos guardados antes de existir los tipos cuentan como plata
 export const sealPoints = (rate, opt, required, tier = 2) => Math.round(baseScore(rate) * SEAL_TIERS[tier - 1].mult + Math.max(0, calcGain(rate, opt, opt, 0).total - calcGain(rate, required, opt, 0).total));
-/** Qué tipo de sello se intenta colocar en un nivel: al principio casi todos de bronce, y cada vez más de plata y de oro. */
-export function requestedSealTier(level, seed = 0) {
-  const r = hash32(seed, level, 4646) % 100, w = level < 35 ? [60, 35] : level < 70 ? [30, 45] : [15, 40];
-  return r < w[0] ? 1 : r < w[0] + w[1] ? 2 : 3;
-}
+/** Tipo de sello que se intenta colocar en un nivel (el del calibrador; el motor lo baja si el tablero no da para tanto rodeo). */
+export const requestedSealTier = (level) => sealAt(level)?.tier ?? 1;
 export const sealReward = (run, seal) => Math.round(seal.value * (1 + heroicPoints(run)));
 export const sealLimit = (seal, base) => seal ? Math.max(base, seal.requiredMoves + 1) : base;
 

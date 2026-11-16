@@ -1,18 +1,17 @@
 import { hash32 } from '../engine/rng.js';
+import { TUTORIALS } from './mechanics.js';
 
-/** Primer nivel con el tablero girado: hasta el 16 la salida siempre está a la derecha. */
-export const FIRST_ROTATED_LEVEL = 17;
+import { hasCurse } from '../engine/calibration.js';
 
 /**
- * Niveles con el tablero girado: el primero es el 17 y después uno cada 6 o 7 niveles (irregular, según la partida), para que sea una
- * sorpresa; el resto, la orientación de siempre (salida a la derecha). Los jefes y los tutoriales nunca giran.
+ * Maleficio: los niveles con el tablero girado los decide el calibrador (irregulares, nunca en jefes ni en tutoriales de piezas);
+ * el primero lleva su tutorial. El resto de niveles mantienen la salida a la derecha, así que el giro es una sorpresa.
  */
-export function rotatedLevels(seed, max = 100) {
+export const FIRST_ROTATED_LEVEL = TUTORIALS.curse.level;
+/** Conjunto de niveles girados (no depende de la partida; solo el sentido del giro cambia). */
+export function rotatedLevels(_seed, max = 100) {
   const set = new Set();
-  for (let l = FIRST_ROTATED_LEVEL, k = 0; l <= max; k++) {
-    set.add(l);
-    l += 6 + (hash32(seed ?? 0, k, 67) % 2);
-  }
+  for (let l = 1; l <= max; l++) if (hasCurse(l)) set.add(l);
   return set;
 }
 
@@ -22,7 +21,8 @@ export function rotatedLevels(seed, max = 100) {
  * Es determinista por partida y nivel, así que al reanudar, reintentar o revivir el tablero se ve igual.
  */
 export function boardRotation(seed, level, tutorial = false) {
-  if (tutorial || level < FIRST_ROTATED_LEVEL || level % 10 === 0 || !rotatedLevels(seed, level).has(level)) return 0;
+  if (tutorial) return TUTORIALS[tutorial]?.rot ?? 0;                      // solo el tutorial del maleficio gira
+  if (!hasCurse(level)) return 0;
   return (1 + (hash32(seed ?? 0, level, 90) % 3)) * 90;
 }
 

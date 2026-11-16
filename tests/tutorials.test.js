@@ -1,23 +1,26 @@
 import { describe, it, expect } from 'vitest';
 import { TUTORIALS, tutorialFor, levelPlan } from '../src/game/mechanics.js';
-import { decodeBoard, isValidState, minMoves, hintMove, analyze, slideRange, isLocked, expand, N, decode, encode } from '../src/engine/index.js';
+import { TUTORIAL_LEVELS } from '../src/engine/calibration.js';
+import { decodeBoard, isValidState, minMoves, hintMove, analyze, slideRange, isLocked, expand, N, encode } from '../src/engine/index.js';
 
 const board = (t) => decodeBoard(t.board);
 
 describe('tableros de aprendizaje', () => {
-  it('uno por pieza especial, en el primer nivel donde aparece, y ese nivel es de esa mecánica', () => {
-    expect(Object.keys(TUTORIALS).sort()).toEqual(['door', 'gate', 'heavy', 'ice', 'wall']);
+  it('uno por mecánica (cinco piezas y el maleficio), en el nivel que decide el calibrador, y ese nivel es de esa mecánica', () => {
+    expect(Object.keys(TUTORIALS).sort()).toEqual(['curse', 'door', 'gate', 'heavy', 'ice', 'wall']);
     for (const [mech, t] of Object.entries(TUTORIALS)) {
+      expect(t.level, mech).toBe(TUTORIAL_LEVELS[mech]);
       const plan = levelPlan(t.level);
       expect(plan.intro, `nivel ${t.level}`).toBe(true);
-      expect(plan.mechanics, `nivel ${t.level}`).toContain(mech);
+      if (mech !== 'curse') expect(plan.mechanics, `nivel ${t.level}`).toContain(mech);
     }
-    // el orden de aprendizaje: rocas (8) → pesada (18) → candado (28) → hielo (38) → portón (48)
-    expect(TUTORIALS.wall.level).toBe(8);
-    expect(TUTORIALS.heavy.level).toBe(18);
-    expect(TUTORIALS.gate.level).toBe(28);
-    expect(TUTORIALS.ice.level).toBe(38);
-    expect(TUTORIALS.door.level).toBe(48);
+    // el orden de aprendizaje de las piezas: roca → pesada → candado → hielo → portón (el maleficio, entre medias)
+    const L = (m) => TUTORIALS[m].level;
+    expect(L('wall')).toBeLessThan(L('heavy'));
+    expect(L('heavy')).toBeLessThan(L('gate'));
+    expect(L('gate')).toBeLessThan(L('ice'));
+    expect(L('ice')).toBeLessThan(L('door'));
+    expect(new Set(Object.values(TUTORIALS).map((t) => t.level)).size).toBe(6);   // nunca dos tutoriales en el mismo nivel
   });
 
   it('cada tablero es válido, se resuelve en exactamente 3 movimientos y contiene la pieza que enseña', () => {
@@ -113,15 +116,11 @@ describe('tableros de aprendizaje', () => {
   });
 
   it('tutorialFor: solo la primera vez que se ve la pieza', () => {
-    expect(tutorialFor(8, {})?.mech).toBe('wall');
-    expect(tutorialFor(8, { tut_wall: true })).toBeNull();
-    expect(tutorialFor(18, {})?.mech).toBe('heavy');
-    expect(tutorialFor(28, {})?.mech).toBe('gate');
-    expect(tutorialFor(38, {})?.mech).toBe('ice');
-    expect(tutorialFor(38, { tut_ice: true })).toBeNull();
-    expect(tutorialFor(48, {})?.mech).toBe('door');
-    expect(tutorialFor(48, { tut_door: true })).toBeNull();
-    expect(tutorialFor(7, {})).toBeNull();
-    expect(decode(encode([1, 2, 3]), 3)).toEqual([1, 2, 3]);
+    for (const mech of Object.keys(TUTORIALS)) {
+      const L = TUTORIAL_LEVELS[mech];
+      expect(tutorialFor(L, {})?.mech, mech).toBe(mech);
+      expect(tutorialFor(L, { ['tut_' + mech]: true }), mech).toBeNull();
+      expect(tutorialFor(L - 1, {})?.mech, `${mech} un nivel antes`).not.toBe(mech);
+    }
   });
 });

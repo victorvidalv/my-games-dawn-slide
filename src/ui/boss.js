@@ -2,7 +2,7 @@ import { Music } from '../audio/music.js';
 import { sfx, vib } from '../audio/sound.js';
 import { ZONES } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
-import { bossFor, bossRuleLabel } from '../game/bosses.js';
+import { bossFor, bossMechLabel, bossRuleLabel } from '../game/bosses.js';
 import { S } from '../state.js';
 import { burst } from './fx.js';
 import { bossArrive, loadBossArt } from './boss-phase.js';
@@ -26,9 +26,16 @@ export function showBossIntro(level) {
     $('bossName').textContent = boss.name;
     $('bossTitle').textContent = boss.title;
     $('bossLore').textContent = boss.lore;
-    $('bossMech').textContent = `${boss.mechTag} · ${bossRuleLabel(level, S.G?.timeLimit || 0)} · +30 % pts`;
+    // objetivo claro del duelo: qué hay que hacer y bajo qué presión
+    const secs = S.G?.timeLimit || 0;
+    const goals = [['🔑', 'Saca la llave roja']];
+    goals.push(['👣', `Máximo ${S.G?.limit ?? '?'} turnos`]);
+    if (secs) goals.push(['⏳', `Antes de ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`]);
+    $('bossGoals').innerHTML = goals.map(([i, t]) => `<li><i aria-hidden="true">${i}</i><span>${t}</span></li>`).join('');
+    $('bossMech').innerHTML = [bossMechLabel(level), bossRuleLabel(level, S.G?.timeLimit || 0), '+30 % pts'].map((t) => `<span>${t}</span>`).join(' · ');
     Music.duck(0.8);   // la música de jefe ya suena (fuerte) durante la presentación
     sfx.bossIntro();
+    setTimeout(() => sfx.thunder(), 380);
     vib([20, 40, 65]);
     // destellos de poder desde el centro, con el color del jefe
     const pulse = (n) => burst(innerWidth / 2, innerHeight * 0.42, n, [boss.color[0], boss.color[1], '#fff'], 9);
@@ -51,6 +58,7 @@ export function showBossIntro(level) {
       // transición al tablero: la imagen se abalanza, destello del color del jefe, el iris se cierra y el tablero «aterriza» con una onda
       modal.classList.add('leaving');
       sfx.bossGo();
+      setTimeout(() => sfx.thunder(), 260);
       vib([30, 20, 50]);
       burst(innerWidth / 2, innerHeight * 0.5, 46, [boss.color[0], boss.color[1], '#fff'], 12);
       setTimeout(finish, 720);

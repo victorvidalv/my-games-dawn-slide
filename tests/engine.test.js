@@ -113,11 +113,11 @@ describe('codificación', () => {
 });
 
 describe('dificultad', () => {
-  it('rateAt sube sin bajar nunca desde la dificultad inicial de cada camino hasta 100', () => {
+  it('rateAt sube desde la dificultad inicial de cada camino hasta 100 (solo baja tras un jefe)', () => {
     for (const start of [1, 50, 75]) {
-      expect(rateAt(start, 1)).toBe(start === 1 ? 1 : start === 50 ? 27 : 44);
-      expect(rateAt(start, MAX_LEVEL)).toBe(100);
-      for (let l = 2; l <= MAX_LEVEL; l++) expect(rateAt(start, l)).toBeGreaterThanOrEqual(rateAt(start, l - 1));
+      expect(rateAt(start, 1)).toBeGreaterThanOrEqual(start === 1 ? 5 : start === 50 ? 25 : 40);   // Normal parte de 3 movimientos
+      expect(rateAt(start, MAX_LEVEL)).toBeGreaterThanOrEqual(95);
+      for (let l = 2; l <= MAX_LEVEL; l++) if (l % 10 !== 1) expect(rateAt(start, l)).toBeGreaterThanOrEqual(rateAt(start, l - 1));   // solo baja justo después de un jefe (+2)
     }
   });
   it('los movimientos objetivo crecen con la dificultad (tutorial suave → 37)', () => {
