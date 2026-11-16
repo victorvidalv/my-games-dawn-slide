@@ -6,7 +6,8 @@ import { HERO_TALK } from '../data/story.js';
 import { LORE_PORTRAITS, WORLD, lorePortraitSrc } from '../data/lore.js';
 import { ZONES, zoneIdx } from '../data/zones.js';
 import { $ } from '../dom.js';
-import { MAX_LEVEL, startHintsFor } from '../engine/difficulty.js';
+import { MAX_LEVEL } from '../engine/difficulty.js';
+import { canStartAt, startHintsAt } from './starts.js';
 import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { loadBanks } from '../data/banks.js';
@@ -36,13 +37,14 @@ export function saveRun(){
 }
 export async function startRun(start,mode){
   mode='c';
-  const chosen=await chooseHero(start,mode);if(!chosen){openMenu();return}
+  const picked=await chooseHero(start,mode);if(!picked){openMenu();return}
+  const chosen=picked.hero,from=canStartAt(store.paths['c'+start]?.level||0,picked.from)?picked.from:1;
   if(S.run) recordBest(true);                         // si abandonas, lo logrado cuenta
   const seed=Math.floor(Math.random()*2**31);
   S.G=null;
-  S.run={seed,level:1,start,mode,hero:chosen,lifeUsed:false,revive:0,revivesBought:0,undoUsedAt:0,undoUsedLevel:0,undoUsedCount:0,vanAwardedAt:0,score:0,hints:startHintsFor(start),adj:0,streak:0,recBroken:false};
-  syncHero();syncRouteStyle();applyZone(0);saveRun();
-  S.run.route='normal';S.run.routeZone=0;S.run.travelFrom=0;saveRun();await resumeAdventure();
+  S.run={seed,level:from,start,mode,hero:chosen,lifeUsed:false,revive:0,revivesBought:0,undoUsedAt:0,undoUsedLevel:0,undoUsedCount:0,vanAwardedAt:0,score:0,hints:startHintsAt(start,from),adj:0,streak:0,recBroken:false};
+  syncHero();syncRouteStyle();applyZone(zoneIdx(from));saveRun();
+  S.run.route='normal';S.run.routeZone=zoneIdx(from);S.run.travelFrom=zoneIdx(from);saveRun();await resumeAdventure();
 }
 async function startLevel(){
   S.busy=true;

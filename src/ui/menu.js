@@ -4,6 +4,7 @@ import { zoneIdx } from '../data/zones.js';
 import { $ } from '../dom.js';
 import { recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
 import { PATHS, S, heroOf, pathOf, persist, store } from '../state.js';
+import { startOptions } from '../game/starts.js';
 import { syncRouteStyle } from './board.js';
 import { syncHero } from './heroes.js';
 import { showMap } from './map.js';
@@ -21,12 +22,13 @@ function renderPaths(){
     const big=mode==='c'?(rec&&rec.score?rec.score.toLocaleString(numLocale()):'—'):(lvl?lvl:'—');
     const lbl=mode==='c'?'RÉCORD':'NIVEL MÁX.';
     const txt=`${lvl>=100?'👑 ':''}Nivel máx. ${lvl}/100`;
+    const opts=startOptions(lvl).slice(1),flags=opts.map(o=>`<i class="pflag ${o.unlocked?'on':'off'}" title="${o.level}"></i>`).join(''),flagsLabel=`Puntos de reinicio: ${opts.filter(o=>o.unlocked).map(o=>o.level).join(', ')||'ninguno'}`;
     const d=document.createElement('div');d.className='path';d.style.setProperty('--pc',p.c);
     d.setAttribute('role','button');d.tabIndex=0;
     d.innerHTML=`<div class="pemo">${p.e}</div>
       <div class="pinfo"><b>${p.n}</b><small>${p.d}</small></div>
       <div class="pscore"><small>${lbl}</small><b>${big}</b></div>
-      <div class="pach"><div class="pbar"><i style="width:${prog}%"></i></div><span>${txt}</span></div>`;
+      <div class="pach"><div class="pbar"><i style="width:${prog}%"></i></div><span class="prow"><em>${txt}</em><b class="pflags" role="img" aria-label="${flagsLabel}">${flags}</b></span></div>`;
     d.onkeydown=(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pickPath(p.s,mode)}};
     d.onclick=()=>pickPath(p.s,mode);
     box.appendChild(d);

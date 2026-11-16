@@ -3,18 +3,17 @@ export const EN_GAME = {
   /* héroes */
   'Portadora de la Brasa': 'Ember Bearer', 'Vigía del Péndulo': 'Pendulum Watcher', 'Escriba de las Runas': 'Rune Scribe',
   'Turnos de reserva': 'Reserve turns', 'Más turnos en cada tablero': 'More turns on every board',
-  'Cada tablero te da un margen extra de turnos para perdonar los errores pequeños sin quitarte el reto.': 'Every board gives you an extra margin of turns to forgive small mistakes without taking away the challenge.',
+  'Cada tablero te da turnos extra (un cuarto del mínimo necesario) para perdonar los errores pequeños sin quitarte el reto.': 'Every board gives you extra turns (a quarter of the minimum needed) to forgive small mistakes without taking away the challenge.',
   'Retrocede varios movimientos': 'Go back several moves',
-  'Una vez por tablero, devuelve las piezas y los turnos unos movimientos atrás (más cuanto más difícil el camino). Si llevas menos, regresas al inicio.': 'Once per board, it puts the pieces and turns back a few moves (more the harder the path). If you have made fewer, you return to the start.',
+  'Una vez por tablero, devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.': 'Once per board, it puts the pieces and turns back about a third of your moves (at least three). If you have made fewer, you return to the start.',
   'Ejecuta movimientos óptimos': 'Plays optimal moves',
-  'Una vez por tablero, las runas mueven las piezas unos pasos hacia la salida (nunca el último). Consume turnos y requiere varios pasos pendientes.': 'Once per board, the runes move the pieces a few steps toward the exit (never the last one). It uses turns and needs several steps left.',
+  'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos tres pasos pendientes.': 'Once per board, the runes move the pieces toward the exit, about a quarter of the steps left (never the last one). It uses turns and needs at least three steps left.',
   'Hero': 'Hero',
 
   /* caminos heroicos */
   'Camino de la Brasa': 'Path of the Ember', 'Camino del Péndulo': 'Path of the Pendulum', 'Camino de las Runas': 'Path of the Runes',
-  '+{p} de puntos · pista gratis cada {n} tableros': '+{p} points · free hint every {n} boards',
-  '+{p} de puntos · rebobina +{n}': '+{p} points · rewind +{n}',
-  '+{p} de puntos · Destino de {n} pasos · tienda −{d}': '+{p} points · {n}-step Destiny · shop −{d}',
+  '+{p} de puntos · poderes a la mitad · tienda −{d} · pista gratis cada {n} tableros': '+{p} points · half-strength powers · shop −{d} · free hint every {n} boards',
+  '+{p} de puntos · poderes a la mitad · tienda −{d}': '+{p} points · half-strength powers · shop −{d}',
   '+{p} de puntos': '+{p} points',
   'La forjadora, acompañante de Lía': 'The blacksmith, Lía\'s companion', 'La elfa, acompañante de Jean': 'The elf, Jean\'s companion', 'El erudito, acompañante de Juth': 'The scholar, Juth\'s companion',
 

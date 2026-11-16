@@ -13,6 +13,7 @@ import { updateHeroHud } from './heroes.js';
 import { lowState, renderTurns } from './turns.js';
 import { renderSeal, processSealMove } from './seals.js';
 import { numLocale } from '../i18n.js';
+import { boardRotation, localDelta } from '../game/orientation.js';
 export const boardEl=$('board'), cellPx=()=>boardEl.clientWidth/6;
 /* Mide el espacio libre real y da al tablero el mayor tamaño posible (sin scroll) */
 export function fitBoard(){
@@ -51,6 +52,8 @@ const toneMark=(t)=>`<span class="mk tone t${t}" title="Gema ${TONE_NAMES[t]}">$
 export function buildPieces(){
   boardEl.querySelectorAll('.piece,.wall,.door,.plate,.links,.seal-floor').forEach(e=>e.remove());
   boardEl.dataset.city=zoneIdx(S.G.n);
+  S.G.rot=boardRotation(S.run?.seed,S.G.n,!!S.G.tutorial);                       // la salida cambia de lado (derecha, abajo, izquierda, arriba)
+  boardEl.parentElement.style.setProperty('--rot',S.G.rot+'deg');boardEl.parentElement.dataset.rot=S.G.rot;
   boardEl.classList.toggle('is-boss',!!S.G.plan?.boss);
   S.G.gateLocked={};
   S.G.wallEls=(S.G.walls||[]).map(()=>{const el=document.createElement('div');el.className='wall';el.innerHTML='<i></i>';boardEl.appendChild(el);return el});
@@ -69,13 +72,14 @@ export function buildPieces(){
     const el=document.createElement('div');
     const toneCls=p.tone!==undefined?` toned tone-${p.tone}`:'';
     el.className='piece enter '+p.o+' '+(i===0?'red':'c'+S.G.colors[i%8])+(p.kind?' '+p.kind:'')+toneCls;
-    el.style.setProperty('--dl',(i*18)+'ms');
+    el.style.setProperty('--dl',Math.min(i*9,110)+'ms');
     const badge=p.kind==='gate'?STRAPS+'<span class="mk gate">'+LOCK_SVG+'</span>':p.kind==='heavy'?HEAVY_MARK:p.kind==='ice'?ICE_MARK:'';
     el.innerHTML='<div class="face"></div>'+badge+(p.tone!==undefined?toneMark(p.tone):'');
     el.addEventListener('animationend',e=>{if(e.animationName==='enter')el.classList.remove('enter')});
     boardEl.appendChild(el);attach(el,i);return el;
   });
   boardEl.classList.remove('board-lock');layout();
+  boardEl.classList.remove('deal');void boardEl.offsetWidth;boardEl.classList.add('deal');setTimeout(()=>boardEl.classList.remove('deal'),320);
 }
 export function place(i,x=S.G.pos[i]){
   const p=S.G.pieces[i],el=S.G.els[i],s=cellPx();
@@ -152,7 +156,7 @@ function attach(el,i){
     if(!S.G||S.G.done||S.busy) return;
     if(activeDrag) activeDrag.cancel();          // un arrastre anterior que no terminó nunca bloquea el tablero
     e.preventDefault();try{el.setPointerCapture(e.pointerId)}catch(_){}
-    const p=S.G.pieces[i],s=cellPx(),[lo,hi]=slideRange(S.G.pieces,S.G.pos,i,S.G.walls,S.G.doors),x0=S.G.pos[i],start=p.o==='h'?e.clientX:e.clientY;
+    const p=S.G.pieces[i],s=cellPx(),[lo,hi]=slideRange(S.G.pieces,S.G.pos,i,S.G.walls,S.G.doors),x0=S.G.pos[i],rot=S.G.rot||0,start=localDelta(e.clientX,e.clientY,rot,p.o);
     if(p.kind==='gate'&&isLocked(S.G.pieces,S.G.pos,i,S.G.walls)){      // candado cerrado: sacude, avisa y señala la placa
       flashEl(el,'deny',450);flashEl(boardEl.parentElement,'board-shake',260);flashEl(S.G.plateEls[i],'hint',1500);sfx.locked();vib([30,30,30]);
       $('msg').textContent='Está atrapada. Cubre la placa ▣ con otra pieza para abrirla.';return;
@@ -161,7 +165,7 @@ function attach(el,i){
     const trail=p.kind==='ice'?iceTrail(p,x0,lo,hi,s,el):null;
     const move=ev=>{
       if(ev.pointerId!==e.pointerId) return;
-      delta=((p.o==='h'?ev.clientX:ev.clientY)-start)/s;
+      delta=(localDelta(ev.clientX,ev.clientY,rot,p.o)-start)/s;
       const raw=x0+delta;cur=Math.max(lo,Math.min(hi,raw));
       el.style[p.o==='h'?'left':'top']=cur*s+'px';trail?.aim(delta);
       const c=Math.round(cur);if(c!==lastCell){lastCell=c;sfx.tick(c);vib(4)}

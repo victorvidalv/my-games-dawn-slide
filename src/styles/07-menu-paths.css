@@ -19,7 +19,7 @@
 .pinfo small{font-size:11px;opacity:.6}
 .pgo{font-size:20px;color:var(--pc);flex:none}
 .pach{margin-top:9px;padding-top:8px;border-top:1px dashed #ffffff22;display:flex;flex-direction:column;gap:5px;font-size:12px}
-.pach span{opacity:.85}
+.pach span{opacity:.85}.pach .prow{display:flex;align-items:center;justify-content:space-between;gap:8px;opacity:1}.pach .prow em{font-style:normal;opacity:.85}
 .pbar{height:7px;border-radius:5px;background:#0006;overflow:hidden}
 .pbar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--pc),#fff8)}
 .cont{width:100%;margin-bottom:12px}
@@ -71,3 +71,10 @@
 .linkbtn{background:none;box-shadow:none;border:0;opacity:.8;font-size:13px;text-decoration:underline;text-underline-offset:3px;margin-top:4px;padding:8px;min-height:0}
 .linkbtn:active{transform:none;box-shadow:none}
 .optb{display:none;align-items:center;justify-content:center;gap:8px}
+
+/* Puntos de reinicio (niveles 21 · 51 · 71): banderines encendidos o apagados, sin texto */
+.pflags{display:inline-flex;gap:6px;align-items:center;font-weight:400}
+.pflag{display:block;width:11px;height:14px;background:#f0cf86;clip-path:polygon(0 0,100% 28%,0 56%,0 100%,0 100%,0 100%,12% 100%,12% 56%,0 56%);filter:drop-shadow(0 1px 0 #091118)}
+.pflag{clip-path:polygon(0 0,100% 25%,14% 52%,14% 100%,0 100%)}
+.pflag.on{background:linear-gradient(135deg,#ffe9a8,#e2a83a)}
+.pflag.off{background:#5b6b75;opacity:.55}

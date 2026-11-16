@@ -3,7 +3,7 @@ import { curve, rateAt, moveLimit, braveExtra, startHintsFor, MAX_LEVEL } from '
 import { calcGain } from '../engine/scoring.js';
 import { hintEvery, CITY_EVERY, bonusTurns } from './heroes.js';
 import { MAX_REVIVES, REVIVE_SHARE, priceOf, extraTurns } from './shop.js';
-import { rewindSteps as pathRewindSteps, DESTINY_STEPS, JUTH_MIN_REMAINING, powerReady } from './powers.js';
+import { rewindCount, DESTINY_SHARE, JUTH_MIN_REMAINING, destinyCount, powerReady } from './powers.js';
 import { BOSS_POINTS_BONUS, HEROIC_BENEFITS } from './routes.js';
 import { bossCapFor, bossRating } from './bosses.js';
 import { isBossLevel } from './mechanics.js';
@@ -21,8 +21,8 @@ import { bonusPrize, isBonusLevel } from './minigames.js';
  * MODEL.unnoticedCost. Una pista evita el error entero (y se gasta); se guardan para tableros duros (d ≥ MODEL.hintMinD).
  * Se pierde al agotar los turnos sin llegar a la salida. Poderes (una vez por tablero, como en el juego):
  *   Lía  – turnos de reserva (más límite) y, en su camino heroico, 1 pista gratis cada dos tableros;
- *   Jean – Rebobinar: devuelve hasta 5 movimientos (borra el primer error del tablero, hasta 5 movimientos erróneos);
- *   Juth – Trazar destino: 3 movimientos óptimos (si quedan más de 3 pasos y 3 turnos): sin error en esos 3 pasos.
+ *   Jean – Rebobinar: devuelve ~33 % de los movimientos hechos, mínimo 3 (borra el primer error del tablero);
+ *   Juth – Trazar destino: ~25 % de los pasos que faltan (si quedan al menos 3): sin error en esos pasos.
  * Sellos (cada 3-4 niveles desde el 5): el jugador hábil rodea un poco para recogerlos y cobra puntos extra.
  * Minijuegos (niveles 15, 25…): pistas según habilidad, con el premio máximo proporcional al nivel.
  */
@@ -56,10 +56,10 @@ const minigamePart = (skill, u) => (u < 0.08 + 0.42 * skill ? 3 : u < 0.5 + 0.4 
  */
 export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, shop = null, brave = false, boss = false, seal = false, powers = {}, hard = 1 }) {
   const heroic = brave;
-  const rewindSteps = powers.rewindSteps ?? pathRewindSteps(start) + (heroic && hero === 'jean' ? HEROIC_BENEFITS.jeanRewind : 0);
-  const destinySteps = powers.destinySteps ?? (heroic && hero === 'van' ? HEROIC_BENEFITS.juthDestiny : DESTINY_STEPS);   // camino heroico de Juth: Destino más largo
+  const power = heroic ? HEROIC_BENEFITS.powerScale : 1;   // camino heroico: los poderes valen la mitad
+  const destinyShare = DESTINY_SHARE * power;
   const baseLimit = moveLimit(d, start, level, brave, boss);
-  let limit = baseLimit + (powers.liaTurns && hero === 'lia' ? Math.max(1, Math.round(baseLimit * powers.liaTurns * (powers.liaScale?.[start] ?? 1))) : bonusTurns(hero, baseLimit, start, boss));
+  let limit = baseLimit + (powers.liaTurns && hero === 'lia' ? Math.max(1, Math.round(d * powers.liaTurns)) : bonusTurns(hero, d, boss, power));
   let extra = 0;
   if (seal) {                                                  // rodeo para recoger el sello: más movimientos y, si hace falta, más límite
     extra = seal.extra;
@@ -88,14 +88,14 @@ export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, sh
         f--;                                                   // pista gratis del tablero: evita el error
       } else if (h > 0 && need >= MODEL.hintMinD && rng() < MODEL.hintAware) {
         h--;                                                   // la pista evita el error
-      } else if (destiny && need - step > (powers.juthMin ?? JUTH_MIN_REMAINING) && limit - moves >= Math.min(destinySteps, need - step - 1)) {
-        destiny = false;                                       // Juth traza el destino: hasta tres pasos sin error (nunca el último: deja siempre uno al jugador)
-        safe = Math.min(destinySteps, need - step - 1) - 1;
+      } else if (destiny && need - step > (powers.juthMin ?? JUTH_MIN_REMAINING) && limit - moves >= destinyCount(need - step, destinyShare)) {
+        destiny = false;                                       // Juth traza el destino: ~25 % de los pasos que faltan sin error (nunca el último)
+        safe = destinyCount(need - step, destinyShare) - 1;
       } else {
         const k = 1 + Math.floor(Math.log(1 - rng()) / Math.log(0.5)); // 1 + geométrica (media 2)
         let waste = 0;
         for (let j = 0; j < k; j++) waste += rng() >= MODEL.notice ? MODEL.unnoticedCost : 2;
-        if (rewind) { rewind = false; waste = Math.max(0, waste - 2 * rewindSteps); }   // Jean rebobina hasta 5 movimientos erróneos
+        if (rewind) { rewind = false; waste = Math.max(0, waste - 2 * rewindCount(moves, power)); }   // Jean rebobina ~33 % de los movimientos hechos (mín. 3)
         moves += waste;
       }
     }
@@ -164,7 +164,7 @@ export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = 
       return { cleared: level - 1, score, completed: false, revivesBought: bought, spent: spentTotal, turnsBought, hintsBought, sealPts };
     }
     const gain = calcGain(rating, res.moves, d, streak);
-    const heroicBonus = heroic ? HEROIC_BENEFITS.points + (hero === 'jean' ? HEROIC_BENEFITS.jeanPoints : 0) : 0;
+    const heroicBonus = heroic ? HEROIC_BENEFITS.points[hero] ?? 0 : 0;
     const bonus = heroicBonus + (boss ? BOSS_POINTS_BONUS : 0);
     score += gain.total + Math.round(gain.total * bonus);
     if (goForSeal) {                                           // sello recogido: puntos extra (con el bono heroico)

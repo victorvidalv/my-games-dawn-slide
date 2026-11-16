@@ -3,7 +3,7 @@ import { $ } from '../dom.js';
 import { isLow, isWon, movesLeft } from '../engine/rules.js';
 import { S } from '../state.js';
 import { bonusTurns } from '../game/heroes.js';
-import { moveLimit } from '../engine/difficulty.js';
+import { powerFactor } from '../game/routes.js';
 import { reserveState } from '../game/powers.js';
 import { burst } from './fx.js';
 import { bossCapFor } from '../game/bosses.js';
@@ -48,7 +48,7 @@ function liaToast(left) {
 export function renderTurns() {
   const G = S.G;
   const bought = G.bought || 0;
-  const reserve = bonusTurns(S.run.hero, moveLimit(G.opt,S.run.start,G.n,S.run.route==='brave',bossCapFor(G.n)),S.run.start,bossCapFor(G.n));
+  const reserve = bonusTurns(S.run.hero, G.opt, bossCapFor(G.n), powerFactor(S.run));
   const segment=$('liaReserve'),label=$('liaReserveLabel');segment.hidden=label.hidden=!reserve;
   if(reserve){
     const r=reserveState(G,reserve);

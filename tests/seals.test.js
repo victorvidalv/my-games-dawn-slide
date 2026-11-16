@@ -65,10 +65,10 @@ it('se guarda y se cobra una vez, incluso tras rebobinar, rehacer o revivir',()=
  payRevive(loaded);expect(loaded.sealClaims[G.n]).toBe(total);
 });
 
-it('el bono heroico también se aplica al sello (más para Jean) y coincide con el importe mostrado',()=>{
+it('el bono heroico también se aplica al sello (según el héroe) y coincide con el importe mostrado',()=>{
  const seal={value:100},B=HEROIC_BENEFITS;
- expect(sealReward(run({route:'brave'}),seal)).toBe(Math.round(100*(1+B.points+B.jeanPoints)));
- expect(sealReward(run({hero:'lia',route:'brave'}),seal)).toBe(Math.round(100*(1+B.points)));
+ expect(sealReward(run({route:'brave'}),seal)).toBe(Math.round(100*(1+B.points.jean)));
+ expect(sealReward(run({hero:'lia',route:'brave'}),seal)).toBe(Math.round(100*(1+B.points.lia)));
  expect(sealReward(run(),seal)).toBe(100);
 });
 

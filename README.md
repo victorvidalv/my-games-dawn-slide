@@ -165,7 +165,7 @@ falta una familia usa otra), `varyBoard()` crea una variante propia de cada part
 - **Normal:** distancia = objetivo de la curva + ajuste adaptativo.
 - **Adaptativo:** si juegas con ≥ 90 % de eficiencia el ajuste sube (máx. +1 hasta el nivel 10, +2 después);
   si < 40 %, baja (mín. −2).
-- **Camino heroico** (al terminar una ciudad): conserva el reto de la antigua ruta aventurera —más movimientos mínimos y un límite algo más estricto— para los tres héroes. El beneficio depende del héroe: Jean +10 % de puntos; Lía dos pistas gratis por tablero; Juth −33 % en tienda. El modelo histórico de `npm run simulate` no calibra estos nuevos beneficios.
+- **Camino heroico** (al terminar una ciudad): tablero más duro, límite más estricto y los poderes de los tres héroes valen **la mitad**. A cambio da más puntos (Lía +45 %, Jean +40 %, Juth +35 %) y una tienda más barata (−30 %, −30 %, −20 %); Lía además recibe una pista gratis cada 4 tableros (`HEROIC_BENEFITS`, calibrado con `npm run simulate`).
 - Siempre dentro de ±3 del objetivo, y el límite de movimientos baja de ×2 a ×1,3 del mínimo entre el nivel 1 y el 100 (`limitFactor`).
 
 > Si cambias `curve()` o las reglas de generación, ejecuta `npm run levels:all` y `npm test`
@@ -190,15 +190,15 @@ Elegir héroe es permanente durante la aventura. Las reglas están en [`src/game
 
 | Héroe | Poder | Función |
 |---|---|---|
-| **Lía** | Conserva su proporción actual de turnos de reserva. La barra distingue el tramo verde y muestra cuántos quedan, antes de los turnos comprados. | `bonusTurns`, `heroLimit`, `reserveState` |
-| **Jean** | Rebobinar: una vez por tablero devuelve hasta cinco movimientos reales, pieza a pieza, y recupera los turnos. Con menos de cinco vuelve al inicio. No devuelve compras ni pistas. | `powerState`, `beginPower` |
-| **Juth** | Trazar destino: una vez por tablero ejecuta tres movimientos de una solución óptima desde la posición actual, consumiendo turnos. Solo se habilita con más de tres pasos pendientes y al menos tres turnos disponibles. | `destinyPlan`, `beginPower` |
+| **Lía** | Turnos de reserva: +25 % del mínimo del tablero (8 → +2). La barra distingue el tramo verde y muestra cuántos quedan, antes de los turnos comprados. | `bonusTurns`, `heroLimit`, `reserveState` |
+| **Jean** | Rebobinar: una vez por tablero devuelve ~33 % de los movimientos hechos (mínimo 3), pieza a pieza, y recupera los turnos. Con menos de tres vuelve al inicio. No devuelve compras ni pistas. | `powerState`, `beginPower` |
+| **Juth** | Trazar destino: una vez por tablero ejecuta ~25 % de los pasos que faltan (mínimo 1, nunca el último) de una solución óptima desde la posición actual, consumiendo turnos. Solo se habilita con al menos 3 pasos pendientes y turnos suficientes. | `destinyPlan`, `beginPower` |
 
 Reglas comunes: el botón Poder sustituye Deshacer; Lía tiene poder pasivo y no muestra botón. Todos conservan las pistas de su reserva y ganan **+1 pista cada 5 niveles**. Guardar, recargar, rehacer en tienda o revivir no renueva una carga gastada en el mismo nivel. Los pasos se guardan durante la animación; al recargar se conserva lo ya ejecutado y la carga gastada.
 
-**Equilibrio por camino.** Los poderes de Jean y Juth están listos en todos los tableros de Normal, en ~85 % de Difícil y en ~70 % de Experto (`POWER_READY_SHARE`; los demás tableros «descansan»). La reserva de turnos de Lía conserva el 65 % en Difícil y el 40 % en Experto (`POWER_SCALE`). Las pistas ganadas por nivel son más escasas (cada 5, 6 y 8 niveles: `hintEvery`) y los premios de los minijuegos también (×1, ×0,8 y ×0,6: `PRIZE_PATH_SCALE`).
+**Equilibrio por camino.** Los poderes de Jean y Juth están listos en todos los tableros de Normal, en ~85 % de Difícil y en ~70 % de Experto (`POWER_READY_SHARE`; los demás tableros «descansan»). La reserva de Lía es el 25 % del mínimo del tablero en todos los caminos. Las pistas ganadas por nivel son más escasas (cada 5, 6 y 8 niveles: `hintEvery`) y los premios de los minijuegos también (×1, ×0,8 y ×0,6: `PRIZE_PATH_SCALE`).
 
-`src/game/balance.js` modela estas reglas (rebobinado de 3/6/8 pasos según el camino, tres movimientos de Juth, reserva de Lía, camino heroico, sellos, minijuegos, tienda y revivir) y `npm run simulate` imprime las tablas con las que se calibró; `tests/balance.test.js` vigila los rangos. Resumen de lo calibrado (jugador medio / bueno / experto, media de los tres héroes): Normal llega a ~55 / ~84 / ~94 niveles, Difícil a ~33 / ~64 / ~91 y Experto a ~17 / ~44 / ~80. Los tres poderes aportan entre 8 y 32 niveles extra según el camino (en Normal Jean destaca algo más que Lía y Juth).
+`src/game/balance.js` modela estas reglas (rebobinado del 33 % de Jean, ~25 % de los pasos de Juth, reserva de Lía, camino heroico, sellos, minijuegos, tienda y revivir) y `npm run simulate` imprime las tablas con las que se calibró; `tests/balance.test.js` vigila los rangos. Resumen de lo calibrado (jugador medio / bueno / experto, media de los tres héroes): Normal llega a ~55 / ~84 / ~94 niveles, Difícil a ~33 / ~64 / ~91 y Experto a ~17 / ~44 / ~80. Los tres poderes aportan entre 8 y 32 niveles extra según el camino (en Normal Jean destaca algo más que Lía y Juth).
 
 En **Práctica** todo es gratis y no se gasta nada. Los poderes se leen del objeto `run`, así que sobreviven
 a recargar la página y a las partidas guardadas antiguas.
@@ -214,7 +214,7 @@ a recargar la página y a las partidas guardadas antiguas.
 - **Banco de niveles:** las 100 dificultades × 12 tableros son válidos, resolubles y alcanzan su objetivo.
 - **Construcción de niveles:** el mínimo anunciado es el real para cada ajuste adaptativo y ruta, y crece a lo largo de cada camino.
 - **Partida completa:** 3 caminos × 100 niveles jugados de forma óptima; siempre se gana con el mínimo y puntos perfectos.
-- **Poderes:** turnos de reserva de Lía, rebobinado de Jean y tres movimientos óptimos de Juth, una carga guardada por tablero, Práctica sin consumo.
+- **Poderes:** turnos de reserva de Lía, rebobinado de Jean (33 %) y destino de Juth (25 % de los pasos), una carga guardada por tablero, Práctica sin consumo.
 - **Reglas:** movimientos restantes y estados ok / aviso / último / eliminado.
 
 ## Mundo e historia
@@ -295,8 +295,8 @@ Tras los niveles 10, 20…90 solo se elige **Avanzar** (dificultad habitual) o *
 Todos los caminos heroicos dan **+15 % de puntos** (también en los sellos) como premio base al riesgo, y además:
 
 - Lía: una pista gratis cada 6 tableros, antes de gastar la reserva. No se acumula ni se recarga al rehacer o revivir. Símbolo de brasa y acompañante forjadora.
-- Jean: +10 % adicional de puntos (+25 % en total) y Rebobinar devuelve 3 movimientos más. Símbolo de reloj y la acompañante elfa original.
-- Juth: Trazar destino llega a 6 pasos (en vez de 3) y 40 % de descuento en la tienda, redondeado al punto. No afecta a revivir fuera de la tienda. Símbolo de runas y acompañante erudito.
+- Jean: +10 % adicional de puntos (+25 % en total) y Rebobinar devuelve el 50 % (en vez del 33 %). Símbolo de reloj y la acompañante elfa original.
+- Juth: Trazar destino llega al 40 % de los pasos que faltan (en vez del 25 %) y 40 % de descuento en la tienda, redondeado al punto. No afecta a revivir fuera de la tienda. Símbolo de runas y acompañante erudito.
 
 Valores en `HEROIC_BENEFITS` (`src/game/routes.js`), calibrados con `npm run simulate`: en jugadores hábiles el riesgo cuesta de 0 a 2 niveles y da ≈ +10 % de puntos con cualquiera de los tres héroes.
 
@@ -321,6 +321,14 @@ La simulación de la versión 46 está en [`seal-simulation-report.json`](seal-s
 ## Posicionamiento (SEO)
 
 `index.html` incluye título y descripción, URL canónica, Open Graph y Twitter Card (imagen `public/og-image.jpg`, 1200×630), datos estructurados `VideoGame` (JSON-LD) y un texto de respaldo `<noscript>`. Al compilar se generan `robots.txt` y `sitemap.xml`. La dirección pública se define al construir: `SITE_URL=https://dawnslide.com npm run build` (por defecto `https://dawnslide.com`). Tras publicar: dar de alta el sitio en Google Search Console y enviar `sitemap.xml`.
+
+## Salida en cualquier lado
+
+Desde el nivel 11 el tablero se gira (0°, 90°, 180° o 270°, según la semilla y el nivel), de modo que la llave puede salir a la derecha, abajo, a la izquierda o arriba (`src/game/orientation.js`). Es un giro visual: el motor no cambia; el arrastre se traduce al eje del tablero y las marcas (gemas, candados) se contragiran para leerse derechas. Los tutoriales no giran.
+
+## Empezar desde un nivel desbloqueado
+
+En la pantalla de héroe, bajo el poder, hay cuatro opciones de inicio: **Inicio (1)**, **21**, **51** y **71** (`src/game/starts.js`). Las tres últimas aparecen bloqueadas hasta alcanzar ese nivel antes **en el mismo camino**; son opcionales. Al empezar más adelante se reciben las pistas que se habrían ganado subiendo, y los tutoriales de mecánicas aún no vistas siguen apareciendo.
 
 ## Simuladores de equilibrio
 

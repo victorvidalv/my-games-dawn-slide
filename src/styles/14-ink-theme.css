@@ -28,8 +28,13 @@ button:active,button.primary:active{transform:translateY(2px);box-shadow:0 1px 0
 .piece.red .face{box-shadow:0 4px 0 #091118,0 7px 12px #0006,inset 0 -4px 0 var(--d),inset 0 0 0 1.5px #ffd98a66,inset 0 2px 0 #fff4d655}
 .piece.red .face::after{border:0;width:54%;height:54%;opacity:.96;filter:drop-shadow(0 2px 0 #091118);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffe9ad' stroke='%23091118' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
 .piece.drag .face{transform:translateY(-4px) scale(1.03);box-shadow:0 8px 0 #091118,0 14px 18px #0007,inset 0 -3px 0 var(--d),inset 0 2px 0 #fff5d866,0 0 0 2px #f2cf7e88}
-.piece.enter .face{animation:enter .28s cubic-bezier(.2,1.4,.4,1) both;animation-delay:var(--dl)}
-@keyframes enter{from{opacity:0;transform:translateY(-18px) scale(.88)}to{opacity:1;transform:none}}
+.piece.enter{transition:none}
+.piece.enter .face{animation:enter .2s cubic-bezier(.22,.9,.3,1) both;animation-delay:var(--dl)}
+@keyframes enter{from{opacity:0;transform:translateY(-8px) scale(.82);filter:brightness(1.7)}to{opacity:1;transform:none;filter:none}}
+/* el tablero entra con un destello rápido (nivel nuevo, cambio de mapa, reintento) */
+#board.deal{animation:dealboard .26s ease-out}
+@keyframes dealboard{from{opacity:.35;transform:scale(.97);filter:brightness(1.5) saturate(1.2)}to{opacity:1;transform:none;filter:none}}
+@media(prefers-reduced-motion:reduce){.piece.enter .face,#board.deal{animation-duration:.01s}}
 .piece.exit{transition:left .42s cubic-bezier(.4,0,.7,.4),opacity .42s;filter:drop-shadow(0 0 16px #ffd87a)}
 .piece.hint{animation:hint .55s ease-in-out 3}
 @keyframes hint{50%{filter:drop-shadow(0 0 12px #ffd87a) brightness(1.22);transform:scale(1.04)}}

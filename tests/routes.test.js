@@ -11,11 +11,11 @@ describe('camino heroico propio de cada héroe',()=>{
   expect(new Set(Object.values(HEROIC_PATHS).map(p=>p.guide)).size).toBe(3);
   expect(HEROIC_PATHS.jean.guide).toBe('guia-elfa.webp');
  });
- it('todos ganan un porcentaje base de puntos y Jean uno adicional',()=>{
+ it('cada héroe gana su porcentaje de puntos en el camino heroico',()=>{
   const base=calcGain(30,12,10,2).total;
-  expect(HEROIC_BENEFITS.points).toBeGreaterThan(0);expect(HEROIC_BENEFITS.jeanPoints).toBeGreaterThan(0);
+  for(const hero of ['lia','jean','van'])expect(HEROIC_BENEFITS.points[hero]).toBeGreaterThan(0);
   for(const hero of ['lia','jean','van']){
-   const gain=routeGain(run(hero),30,12,10,2),extra=HEROIC_BENEFITS.points+(hero==='jean'?HEROIC_BENEFITS.jeanPoints:0);
+   const gain=routeGain(run(hero),30,12,10,2),extra=HEROIC_BENEFITS.points[hero];
    expect(gain.total).toBe(base+Math.round(base*extra));
    expect(routeGain(run(hero,'normal'),30,12,10,2).total).toBe(base);
   }
@@ -38,12 +38,14 @@ describe('camino heroico propio de cada héroe',()=>{
  it('ni Jean ni Juth reciben las pistas de Lía',()=>{
   for(const hero of ['jean','van'])expect(heroicHintsLeft(run(hero),HEROIC_BENEFITS.liaEvery)).toBe(0);
  });
- it('el descuento de Juth es el configurado en todos los productos y dificultades',()=>{
+ it('cada héroe tiene el descuento de tienda configurado en todos los productos y dificultades',()=>{
   for(const start of [1,50,75])for(const item of SHOP_ITEMS){
-   const r={...run('van'),start},base=priceOf(item.id,40,start);
-   expect(priceOf(item.id,40,start,r)).toBe(Math.round(base*(1-HEROIC_BENEFITS.juthDiscount)));
-   for(const hero of ['lia','jean'])expect(priceOf(item.id,40,start,run(hero))).toBe(base);
-   expect(priceOf(item.id,40,start,{...r,route:'normal'})).toBe(base);
+   const base=priceOf(item.id,40,start);
+   for(const hero of ['lia','jean','van']){
+    const r={...run(hero),start};
+    expect(priceOf(item.id,40,start,r)).toBe(Math.round(base*(1-HEROIC_BENEFITS.shop[hero])));
+    expect(priceOf(item.id,40,start,{...r,route:'normal'})).toBe(base);
+   }
   }
  });
  it('se cobra lo anunciado incluso cuando solo alcanza con el descuento',()=>{
@@ -53,7 +55,7 @@ describe('camino heroico propio de cada héroe',()=>{
   expect(buy('hint',{run:r,G})).toMatchObject({ok:true,price});expect(r.score).toBe(0);expect(r.hints).toBe(4);
  });
  it('el descuento no se aplica al revivir fuera de la tienda',()=>{
-  expect(reviveCost(1000)).toBe(330);expect(shopDiscount(run('van'))).toBe(.4);
+  expect(reviveCost(1000)).toBe(330);expect(shopDiscount(run('van'))).toBe(HEROIC_BENEFITS.shop.van);
  });
  it('en práctica o sin elegir camino no hay beneficios heroicos',()=>{
   for(const hero of ['lia','jean','van']){

@@ -3,20 +3,16 @@
  * funciones puras sobre el objeto `run` (la aventura en curso), sin DOM, y están cubiertas por tests.
  */
 import { moveLimit, byPath } from '../engine/difficulty.js';
-import { heroicHintsLeft, useHeroicHint } from './routes.js';
+import { HEROIC_BENEFITS, heroicHintsLeft, useHeroicHint } from './routes.js';
 
 /* Ojo: el identificador interno de Juth sigue siendo 'van' (imágenes heroes/van*.webp y partidas guardadas). Solo cambia el nombre que se ve. */
 export const HEROES = [
-  { id: 'lia', name: 'Lía', role: 'Portadora de la Brasa', icon: 'heart', color: '#68d8bd', power: 'Turnos de reserva', short: 'Más turnos en cada tablero', detail: 'Cada tablero te da un margen extra de turnos para perdonar los errores pequeños sin quitarte el reto.', quote: '«Incluso la ceniza recuerda el calor.»' },
-  { id: 'jean', name: 'Jean', role: 'Vigía del Péndulo', icon: 'clock', color: '#8fb9ff', power: 'Rebobinar', short: 'Retrocede varios movimientos', detail: 'Una vez por tablero, devuelve las piezas y los turnos unos movimientos atrás (más cuanto más difícil el camino). Si llevas menos, regresas al inicio.', quote: '«Todo error deja una grieta por donde volver.»' },
-  { id: 'van', name: 'Juth', role: 'Escriba de las Runas', icon: 'stars', color: '#c5a2ff', power: 'Trazar destino', short: 'Ejecuta movimientos óptimos', detail: 'Una vez por tablero, las runas mueven las piezas unos pasos hacia la salida (nunca el último). Consume turnos y requiere varios pasos pendientes.', quote: '«Lo que no se nombra sigue buscando salida.»' },
+  { id: 'lia', name: 'Lía', role: 'Portadora de la Brasa', icon: 'heart', color: '#68d8bd', power: 'Turnos de reserva', short: 'Más turnos en cada tablero', detail: 'Cada tablero te da turnos extra (un cuarto del mínimo necesario) para perdonar los errores pequeños sin quitarte el reto.', quote: '«Incluso la ceniza recuerda el calor.»' },
+  { id: 'jean', name: 'Jean', role: 'Vigía del Péndulo', icon: 'clock', color: '#8fb9ff', power: 'Rebobinar', short: 'Retrocede varios movimientos', detail: 'Una vez por tablero, devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.', quote: '«Todo error deja una grieta por donde volver.»' },
+  { id: 'van', name: 'Juth', role: 'Escriba de las Runas', icon: 'stars', color: '#c5a2ff', power: 'Trazar destino', short: 'Ejecuta movimientos óptimos', detail: 'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos tres pasos pendientes.', quote: '«Lo que no se nombra sigue buscando salida.»' },
 ];
 
 export const heroById = (id) => HEROES.find((h) => h.id === id) || HEROES[0];
-
-/** Qué parte de su reserva de turnos conserva Lía en cada camino: Normal 100 %, Difícil 55 %, Experto 35 %. */
-const POWER_SCALE = { 1: 1, 50: 0.55, 75: 0.35 };
-export const powerScale = (start = 1) => byPath(POWER_SCALE, start);
 
 export const CITY_EVERY = 10; // niveles por ciudad
 /** Cada cuántos niveles se gana una pista: Normal 5, Difícil 6, Experto 8 (cuanto más difícil el camino, más escasas). */
@@ -27,23 +23,20 @@ const isPractice = (mode) => mode === 'p';
 
 /* ───────────── Lía: turnos de reserva (un % más de turnos en cada tablero) ───────────── */
 
-const LIA_TURNS_SHARE = 0.25; // +23 % del límite de movimientos (calibrado con npm run simulate)
-const LIA_MIN_TURNS = 2;     // y como mínimo 2 turnos
+const LIA_TURNS_SHARE = 0.25; // +25 % del mínimo de movimientos del tablero (mínimo 8 → +2), igual en todos los caminos
+const LIA_MIN_TURNS = 1;
 
-/** Turnos extra que da el héroe sobre un límite base (solo Lía). */
 /** En los jefes la reserva de Lía se reduce a la mitad: si no, el límite de turnos ajustado de un jefe no apretaría nunca. */
 export const BOSS_RESERVE = 0.5;
-export const bonusTurns = (heroId, baseLimit, start = 1, boss = false) => {
+/** Turnos extra que da el héroe sobre el límite base (solo Lía): ~25 % del mínimo `opt` del tablero. */
+export const bonusTurns = (heroId, opt, boss = false, power = 1) => {
   if (heroId !== 'lia') return 0;
-  const k = powerScale(start) * (boss ? BOSS_RESERVE : 1);
-  return Math.max(Math.max(1, Math.round(LIA_MIN_TURNS * k)), Math.round(baseLimit * LIA_TURNS_SHARE * k));
+  return Math.max(LIA_MIN_TURNS, Math.round(opt * LIA_TURNS_SHARE * power * (boss ? BOSS_RESERVE : 1)));
 };
 
 /** Límite de movimientos de un tablero de mínimo `opt` para ese héroe, camino y jefe. */
-export const heroLimit = (heroId, opt, start = 1, level = 1, brave = false, boss = false) => {
-  const base = moveLimit(opt, start, level, brave, boss);
-  return base + bonusTurns(heroId, base, start, boss);
-};
+export const heroLimit = (heroId, opt, start = 1, level = 1, brave = false, boss = false) =>
+  moveLimit(opt, start, level, brave, boss) + bonusTurns(heroId, opt, boss, brave ? HEROIC_BENEFITS.powerScale : 1);
 
 /** Foto del tablero para repetirlo desde el principio con 0 movimientos (la usa el revivir). */
 export function snapshotRescue(G) {

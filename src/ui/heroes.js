@@ -2,7 +2,6 @@ import { Music, setTensionFx } from '../audio/music.js';
 import { $, cssUrl } from '../dom.js';
 import { saveRun } from '../game/session.js';
 import { HEROES, canHint, bonusTurns } from '../game/heroes.js';
-import { moveLimit } from '../engine/difficulty.js';
 import { reviveCost } from '../game/shop.js';
 import { S, heroOf, pathOf, persist, store } from '../state.js';
 import { boardEl, layout, updateHud } from './board.js';
@@ -10,7 +9,8 @@ import { heroArt } from './story.js';
 import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
-import { heroicPath, heroicHintsLeft } from '../game/routes.js';
+import { startOptions } from '../game/starts.js';
+import { heroicPath, heroicHintsLeft, powerFactor } from '../game/routes.js';
 import { bossCapFor } from '../game/bosses.js';
 import { preloadAwakening } from './power-art.js';
 import { numLocale } from '../i18n.js';
@@ -19,23 +19,31 @@ export function syncHero(id=S.run?.hero){const h=heroOf(id);const art=document.q
 export function chooseHero(start,mode){
  return new Promise(resolve=>{
   const modal=$('heroSelect'),cards=$('heroCards');let selected=heroOf(store.heroChoice||S.run?.hero).id;
+  const reached=store.paths['c'+start]?.level||0,options=startOptions(reached);let from=1;
+  const renderStarts=()=>{
+   const box=$('heroStarts');
+   box.innerHTML=options.map(o=>`<button type="button" class="start-chip${o.level===from?' selected':''}${o.unlocked?'':' locked'}" role="radio" aria-checked="${o.level===from}" data-level="${o.level}" ${o.unlocked?'':'aria-disabled="true"'} aria-label="${o.level===1?'Desde el principio':o.unlocked?'Empezar desde el nivel '+o.level:'Nivel '+o.level+' bloqueado: llega a él en este camino para desbloquearlo'}">${o.unlocked?'':icon('lock')}<b>${o.level===1?'Inicio':'Nivel '+o.level}</b><small>${o.level===1?'Nivel 1':o.unlocked?'Desbloqueado':'Alcanza el '+o.level}</small></button>`).join('');
+   const next=options.find(o=>!o.unlocked);
+   $('heroStartNote').textContent=next?`Llega al nivel ${next.level} en este camino para poder empezar desde ahí.`:'Elige desde dónde quieres empezar.';
+   box.querySelectorAll('button').forEach(b=>b.onclick=()=>{const o=options.find(x=>x.level===+b.dataset.level);if(!o.unlocked){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('heroStartNote').textContent=`Alcanza el nivel ${o.level} en este camino para desbloquearlo.`;return}from=o.level;renderStarts();$('heroStarts').querySelector(`[data-level="${from}"]`).focus();$('heroConfirm').textContent=from===1?'Comenzar aventura ➜':`Comenzar desde el nivel ${from} ➜`});
+  };
   $('heroPath').textContent=`${pathOf(start).n.toUpperCase()} · AVENTURA`;
   const render=()=>{const h=heroOf(selected);modal.style.setProperty('--chosen',h.color);modal.style.setProperty('--hero-scene',cssUrl(`heroes/${h.id}.webp`));
    cards.innerHTML=HEROES.map(v=>`<button class="hero-choice ${v.id===selected?'selected':''}" role="radio" aria-checked="${v.id===selected}" tabindex="${v.id===selected?0:-1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${v.short}"><img src="${heroArt(v.id,v.id===selected?'ready':'start')}" alt="${v.name}, ${v.role}" width="360" height="720"><span class="hero-choice-name">${v.name}</span><span class="hero-check" aria-hidden="true">✓</span></button>`).join('');
    $('heroPowerIcon').innerHTML=icon(h.icon);$('heroPowerTitle').textContent=h.power;$('heroPowerShort').textContent=h.short;$('heroPowerDetail').textContent=h.detail;$('heroQuote').textContent=h.quote;const path=heroicPath(h.id);$('heroRouteIcon').innerHTML=icon(path.icon);$('heroRouteBenefit').textContent=path.benefit;$('heroRouteInfo').setAttribute('aria-label',`${path.name}: ${path.benefit}. Más difícil, desde el nivel 11.`);
-   $('heroConfirm').textContent='Comenzar aventura ➜';
+   $('heroConfirm').textContent=from===1?'Comenzar aventura ➜':`Comenzar desde el nivel ${from} ➜`;renderStarts();
    cards.querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.hero;render();cards.querySelector(`[data-hero="${selected}"]`).focus()});
   };
   const close=value=>{modal.classList.remove('show');modal.removeEventListener('keydown',keyboard);resolve(value)};
   const keyboard=e=>{if(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown'].includes(e.key)&&cards.contains(document.activeElement)){e.preventDefault();const delta=e.key==='ArrowRight'||e.key==='ArrowDown'?1:-1;selected=HEROES[(HEROES.findIndex(h=>h.id===selected)+delta+3)%3].id;render();cards.querySelector(`[data-hero="${selected}"]`).focus()}else if(e.key==='Escape')close(null);else if(e.key==='Tab'){const bs=[...modal.querySelectorAll('button')].filter(b=>b.tabIndex>=0);if(e.shiftKey&&document.activeElement===bs[0]){e.preventDefault();bs.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===bs.at(-1)){e.preventDefault();bs[0].focus()}}};
-  $('heroCancel').onclick=()=>close(null);$('heroConfirm').onclick=()=>{store.heroChoice=selected;persist();close(selected)};render();modal.classList.add('show');Music.scene('heroes');modal.addEventListener('keydown',keyboard);cards.querySelector('[aria-checked=true]').focus();
+  $('heroCancel').onclick=()=>close(null);$('heroConfirm').onclick=()=>{store.heroChoice=selected;persist();close({hero:selected,from})};render();modal.classList.add('show');Music.scene('heroes');modal.addEventListener('keydown',keyboard);cards.querySelector('[aria-checked=true]').focus();
  });
 }
 export function updateHeroHud(){
  if(!S.run||!S.G)return;const h=heroOf(),prac=S.run.mode==='p';
  $('heroHudImg').src=`heroes/${h.id}.webp`;$('heroHudImg').alt=h.name;$('heroHudName').textContent=h.name;
  const status=powerState(S.run,S.G);
- $('heroHudPower').textContent=h.id==='lia'?`+${bonusTurns('lia',moveLimit(S.G.opt,S.run.start,S.run.level,S.run.route==='brave',bossCapFor(S.G.n)),S.run.start,bossCapFor(S.G.n))} turnos de reserva`:status.reason;
+ $('heroHudPower').textContent=h.id==='lia'?`+${bonusTurns('lia',S.G.opt,bossCapFor(S.G.n),powerFactor(S.run))} turnos de reserva`:status.reason;
  const free=heroicHintsLeft(S.run,S.G.n);
  $('hintN').textContent=prac?'∞':free?`${free} gratis`:S.run.hints;
  $('bHint').setAttribute('aria-label',`Pista. ${free} gratis en este tablero y ${S.run.hints} en reserva.`);$('bHint').disabled=S.busy||!canHint(S.run,S.run.mode,S.G.n);

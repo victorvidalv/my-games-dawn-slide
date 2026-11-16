@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { moveLimit } from '../src/engine/difficulty.js';
 import {
-  HEROES, bonusTurns, heroLimit, clearRewards, powerScale, spendHint, canHint } from '../src/game/heroes.js';
+  HEROES, bonusTurns, heroLimit, clearRewards, spendHint, canHint } from '../src/game/heroes.js';
 
 const newRun = (extra = {}) => ({ hints: 3, lifeUsed: false, undoUsedAt: 0, undoUsedLevel: 0, undoUsedCount: 0, vanAwardedAt: 0, ...extra });
 
@@ -13,31 +13,17 @@ describe('héroes', () => {
 });
 
 describe('Lía · turnos de reserva', () => {
-  it('solo Lía recibe turnos extra: el 25 % del límite, mínimo 2', () => {
+  it('solo Lía recibe turnos extra: el 25 % del mínimo del tablero (8 → +2)', () => {
     expect(bonusTurns('lia', 8)).toBe(2);
     expect(bonusTurns('lia', 40)).toBe(10);
-    expect(bonusTurns('lia', 74)).toBe(19);
+    expect(bonusTurns('lia', 2)).toBe(1);
     expect(bonusTurns('jean', 40)).toBe(0);
     expect(bonusTurns('van', 40)).toBe(0);
   });
-  it('heroLimit suma el bonus al límite normal y para el resto de héroes no cambia', () => {
-    for (const opt of [2, 7, 20, 37]) {
-      expect(heroLimit('jean', opt, 1)).toBe(moveLimit(opt, 1));
-      expect(heroLimit('lia', opt, 1)).toBe(moveLimit(opt, 1) + bonusTurns('lia', moveLimit(opt, 1)));
-      expect(heroLimit('lia', opt, 75)).toBeGreaterThan(moveLimit(opt, 75));
-    }
-  });
-});
-
-describe('poderes por camino: Normal 100 %, Difícil 55 %, Experto 35 %', () => {
-  it('powerScale baja con la dificultad del camino', () => {
-    expect([1, 50, 75].map(powerScale)).toEqual([1, 0.55, 0.35]);
-  });
-  it('La reserva de Lía da menos en Difícil y menos aún en Experto (nunca cero)', () => {
-    for (const opt of [14, 25, 37]) {
-      expect(bonusTurns('lia', 60, 75)).toBeLessThan(bonusTurns('lia', 60, 50));
-      expect(bonusTurns('lia', 60, 50)).toBeLessThan(bonusTurns('lia', 60, 1));
-      expect(heroLimit('lia', opt, 75)).toBeGreaterThan(moveLimit(opt, 75));
+  it('heroLimit suma el bonus al límite normal, igual en todos los caminos, y no cambia para el resto de héroes', () => {
+    for (const opt of [2, 7, 20, 37]) for (const start of [1, 50, 75]) {
+      expect(heroLimit('jean', opt, start)).toBe(moveLimit(opt, start));
+      expect(heroLimit('lia', opt, start)).toBe(moveLimit(opt, start) + bonusTurns('lia', opt));
     }
   });
 });

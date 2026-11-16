@@ -51,8 +51,8 @@ describe('jefes: datos y reglas', () => {
     }
     expect(bossRule(60).cap).toBeLessThan(bossRule(10).cap);                    // los jefes de turnos aprietan más según avanzas
     expect(heroLimit('lia', 30, 1, 60, false, bossCapFor(60))).toBeLessThan(heroLimit('lia', 30, 1, 60, false, false));
-    expect(bonusTurns('lia', 40, 1, true)).toBeLessThan(bonusTurns('lia', 40, 1, false));   // en jefes la reserva de Lía es menor
-    expect(bonusTurns('jean', 40, 1, true)).toBe(0);
+    expect(bonusTurns('lia', 40, true)).toBeLessThan(bonusTurns('lia', 40, false));   // en jefes la reserva de Lía es menor
+    expect(bonusTurns('jean', 40, true)).toBe(0);
   });
 
   it('la contrarreloj crece con el mínimo, se redondea a 5 s, nunca baja de 1:00 y no pasa de 6:00', () => {

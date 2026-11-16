@@ -9,7 +9,7 @@ const names = { 1: 'Normal', 50: 'Difícil', 75: 'Experto' };
 const f1 = (n) => n.toFixed(1).padStart(5);
 const k = (n) => Math.round(n).toLocaleString('es').padStart(8);
 
-console.log(`Poderes (una vez por tablero): Lía reserva de turnos · Jean rebobina 5 movimientos · Juth traza 3 movimientos óptimos (${runs} partidas por celda)\n`);
+console.log(`Poderes (una vez por tablero): Lía reserva de turnos · Jean rebobina ~33 % de sus movimientos · Juth traza ~25 % de los pasos que faltan (${runs} partidas por celda)\n`);
 const rows = balanceReport({ runs });
 console.log('camino   hab.  sin poder |  +Lía  +Jean  +Juth   (niveles extra frente a no tener poder)');
 for (const r of rows) console.log(`${names[r.start].padEnd(8)} ${r.skill.toFixed(2)}  ${f1(r.base)}    | ${f1(r.lia)} ${f1(r.jean)} ${f1(r.van)}`);
@@ -22,7 +22,7 @@ for (const s of PATHS) {
 console.log(`  Total    Lía ${mean('lia').toFixed(1)} · Jean ${mean('jean').toFixed(1)} · Juth ${mean('van').toFixed(1)}`);
 
 console.log('\nCamino heroico frente a Avanzar (sin tienda): niveles y puntos, media de los tres caminos');
-console.log('hab.   Lía (pista gratis periódica)     Jean (+puntos, rebobina más) Juth (Destino largo, tienda)');
+console.log('hab.   Lía (poderes a la mitad, +pistas)  Jean (poderes a la mitad) Juth (poderes a la mitad)');
 for (const skill of [0.6, 0.8, 0.92]) {
   const cells = ['lia', 'jean', 'van'].map((hero) => {
     let dl = 0; let pr = 0;
@@ -35,11 +35,11 @@ for (const skill of [0.6, 0.8, 0.92]) {
   });
   console.log(`${skill.toFixed(2)}   ${cells[0].padEnd(28)} ${cells[1].padEnd(26)} ${cells[2]}`);
 }
-console.log('Juth con tienda (su camino heroico = 40 % de descuento):');
-for (const start of PATHS) {
-  const a = averageRuns({ hero: 'van', start, skill: 0.8, runs, shop: true });
-  const b = averageRuns({ hero: 'van', start, skill: 0.8, runs, shop: true, route: 'brave' });
-  console.log(`  ${names[start].padEnd(8)} 0.80  niveles ${f1(a.cleared)} → ${f1(b.cleared)}   puntos ${k(a.score)} → ${k(b.score)} (×${(b.score / Math.max(1, a.score)).toFixed(2)})`);
+console.log('Camino heroico CON tienda (cada héroe tiene su precio): niveles y puntos, habilidad 0,80');
+for (const hero of ['lia', 'jean', 'van']) for (const start of PATHS) {
+  const a = averageRuns({ hero, start, skill: 0.8, runs, shop: true });
+  const b = averageRuns({ hero, start, skill: 0.8, runs, shop: true, route: 'brave' });
+  console.log(`  ${hero.padEnd(5)} ${names[start].padEnd(8)} niveles ${f1(a.cleared)} → ${f1(b.cleared)}   puntos ${k(a.score)} → ${k(b.score)} (×${(b.score / Math.max(1, a.score)).toFixed(2)})`);
 }
 
 console.log('\nRevivir (comprar uno al empezar cada ciudad desde la 3ª, máx. 1): efecto en niveles y puntos');
