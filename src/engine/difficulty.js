@@ -3,19 +3,7 @@ export const MAX_LEVEL = 100;
 import { MAX_RATING, targetFor } from './targets.js';
 import { minFor } from './calibration.js';
 
-/**
- * Puntos de control nivel → dificultad (1-100) de cada camino (entre ellos se interpola linealmente).
- * La clave es el identificador del camino (1 = Normal, 50 = Difícil, 75 = Experto; no cambia: lo usan los récords guardados).
- *   Normal  : empieza en 2 movimientos y en el nivel 20 ya hay que pensar (11); llega al máximo en el 100.
- *   Difícil : empieza donde Normal ya exige pensar (~11 mov.) y sube mucho más rápido: máximo al llegar al nivel 50.
- *   Experto : empieza en ~19 movimientos y alcanza el máximo (37) en el nivel 38; el resto aprieta el límite de turnos.
- */
-const PATH_CURVES = {
-  1: [[1, 1], [20, 30], [45, 55], [70, 78], [100, 100]],
-  50: [[1, 27], [25, 60], [50, 100], [100, 100]],
-  75: [[1, 44], [20, 74], [38, 100], [100, 100]],
-};
-
+/** Los tres caminos: 1 = Normal, 50 = Difícil, 75 = Experto (los identificadores no cambian: los usan los récords guardados). */
 /** Camino al que pertenece un valor de inicio: 1 (Normal), 50 (Difícil) o 75 (Experto). */
 export const pathKey = (start = 1) => (start >= 75 ? 75 : start >= 50 ? 50 : 1);
 /** Valor de una tabla indexada por camino. */
@@ -40,18 +28,6 @@ export function rateAt(start, level) {
   const key = pathKey(start);
   const table = (RATINGS[key] ||= Array.from({ length: MAX_LEVEL }, (_, i) => ratingForMin(minFor(key, i + 1))));
   return table[Math.max(1, Math.min(MAX_LEVEL, level)) - 1];
-}
-
-/** Curva antigua (por puntos de control), conservada como referencia. */
-export function curveRateAt(start, level) {
-  const knots = byPath(PATH_CURVES, start);
-  const l = Math.max(1, Math.min(MAX_LEVEL, level));
-  for (let i = 1; i < knots.length; i++) {
-    const [l1, r1] = knots[i];
-    const [l0, r0] = knots[i - 1];
-    if (l <= l1) return Math.round(r0 + ((r1 - r0) * (l - l0)) / (l1 - l0));
-  }
-  return knots[knots.length - 1][1];
 }
 
 export { TARGET_KNOTS, targetFor } from './targets.js';

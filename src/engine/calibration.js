@@ -5,7 +5,6 @@ import data from '../data/calibration.js';
  * Por nivel: letras de las mecánicas (w roca, h pesada, g candado, i hielo, d portón), maleficio, tipo de sello, tutorial del sello y
  * turnos mínimos de cada camino (Normal, Difícil, Experto).
  */
-export const CAL = data;
 export const TUTORIAL_LEVELS = data.tutorials;
 const PATH_COL = { 1: 4, 50: 5, 75: 6 };
 

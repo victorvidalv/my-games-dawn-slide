@@ -44,13 +44,6 @@ export function doorGrid(doors = []) {
   return dm;
 }
 
-/** Tinte del portón en (r, c), o -1 si no hay ninguno. */
-export function doorAt(doors, r, c) {
-  if (!doors?.length) return -1;
-  for (let i = 0; i < doors.length; i++) if (doors[i][0] === r && doors[i][1] === c) return doors[i][2];
-  return -1;
-}
-
 /** true si el estado es válido: dentro del tablero, sin solapamientos y sin pisar muros ni portones de otro tinte. */
 export function isValidState(pieces, pos, walls = [], doors = []) {
   if (pieces.length !== pos.length) return false;
