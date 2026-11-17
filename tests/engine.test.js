@@ -175,7 +175,8 @@ describe('puntaje y límite de movimientos', () => {
   });
   it('estado del contador: ok → pocos → último turno → sin turnos (ya no se puede mover)', () => {
     expect(moveStatus(3, 10)).toBe('ok');
-    expect(moveStatus(7, 10)).toBe('ok');
+    expect(moveStatus(6, 10)).toBe('ok');
+    expect(moveStatus(7, 10)).toBe('warn');      // quedan 3: «piensa bien»
     expect(moveStatus(8, 10)).toBe('warn');      // quedan 2
     expect(moveStatus(9, 10)).toBe('last');      // queda 1
     expect(moveStatus(10, 10)).toBe('over');     // 0 turnos: terminó
@@ -183,8 +184,16 @@ describe('puntaje y límite de movimientos', () => {
     expect(movesLeft(7, 10)).toBe(3);
     expect(movesLeft(12, 10)).toBe(0);
   });
-  it('«pocos turnos» = queda el 20 % del límite o menos (siempre al menos el último turno) y aún se puede mover', () => {
-    expect(isLow(7, 10)).toBe(false);
+  it('«pocos turnos» = quedan 3 movimientos (o el 20 % del límite si es más; en tableros cortos, no antes de gastar el 60 %) y aún se puede mover', () => {
+    expect(isLow(6, 10)).toBe(false);
+    expect(isLow(7, 10)).toBe(true);             // quedan 3
+    expect(isLow(17, 20)).toBe(true);
+    expect(isLow(4, 6)).toBe(true);              // límite 6: avisa con 2
+    expect(isLow(3, 6)).toBe(false);
+    expect(isLow(5, 8)).toBe(true);              // límite 8: avisa con 3
+    expect(isLow(27, 30)).toBe(true);
+    expect(isLow(23, 30)).toBe(false);           // 30: el 20 % son 6
+    expect(isLow(24, 30)).toBe(true);
     expect(isLow(8, 10)).toBe(true);
     expect(isLow(9, 10)).toBe(true);
     expect(isLow(10, 10)).toBe(false);           // sin turnos: ya no hay aviso, hay derrota

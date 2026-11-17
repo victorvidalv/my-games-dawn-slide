@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { SHOP_ITEMS, extraTurns, pathPrice, REVIVE_SHARE, MAX_REVIVES, reviveCost, canPaidRevive, payRevive, hasRevive, useRevive, priceOf, availability, buy } from '../src/game/shop.js';
+import { SHOP_ITEMS, extraTurns, pathPrice, REVIVE_SHARE, MAX_REVIVES, reviveCost, canPaidRevive, payRevive, hasRevive, useRevive, freeRetry, useFreeRetry, FREE_RETRY_UNTIL, priceOf, availability, buy } from '../src/game/shop.js';
 import { moveStatus } from '../src/engine/rules.js';
 import { baseScore } from '../src/engine/scoring.js';
 
@@ -195,6 +195,27 @@ describe('Don Dublón: vendedor sarcástico con frases variadas', () => {
     for (const fn of ['merchantBell', 'merchantCoin', 'merchantNope']) expect(readFileSync(new URL('../src/audio/sound.js', import.meta.url), 'utf8')).toContain(fn);
     expect(readFileSync(new URL('../src/audio/sound.js', import.meta.url), 'utf8')).not.toContain('merchantTalk');   // sin balbuceo grave de fondo
     expect(src).toMatch(/sin repetir la anterior/);
+  });
+});
+
+describe('primeros pasos: en la primera ciudad del camino Normal se repite el tablero en vez de perder la partida', () => {
+  it('solo niveles 1-9 de Normal, nunca el jefe ni los caminos difíciles ni la práctica', () => {
+    const run = { start: 1, mode: 'c' };
+    expect(FREE_RETRY_UNTIL).toBe(9);
+    for (let l = 1; l <= 9; l++) expect(freeRetry(run, l)).toBe(true);
+    expect(freeRetry(run, 10)).toBe(false);
+    expect(freeRetry(run, 5, true)).toBe(false);
+    expect(freeRetry({ start: 50, mode: 'c' }, 3)).toBe(false);
+    expect(freeRetry({ start: 75, mode: 'c' }, 3)).toBe(false);
+    expect(freeRetry({ start: 1, mode: 'p' }, 3)).toBe(false);
+    expect(freeRetry(null, 3)).toBe(false);
+  });
+  it('repetir no cuesta puntos ni pistas, pero corta la racha, y deja el tablero listo para empezar de cero', () => {
+    const run = { start: 1, mode: 'c', score: 900, hints: 2, streak: 4, revive: 0 };
+    const G = { n: 3, rate: 5, pieces: [{ o: 'h', len: 2, fix: 2 }], start: [0], pos: [3], opt: 4, moves: 9, limit: 9 };
+    useFreeRetry(run, G);
+    expect(run).toMatchObject({ score: 900, hints: 2, streak: 0, revive: 0 });
+    expect(run.rescue).toMatchObject({ kind: 'learn', level: 3, start: [0], opt: 4 });
   });
 });
 

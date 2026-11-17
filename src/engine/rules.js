@@ -9,10 +9,16 @@ export const movesLeft = (moves, limit) => Math.max(0, limit - moves);
 /** Sin turnos: se hicieron todos los movimientos permitidos (si no ganaste en el último, pierdes y no puedes mover más). */
 const isOver = (moves, limit) => moves >= limit;
 
-/** Quedan pocos turnos: ≈ 20 % del límite o menos (al menos el aviso salta con 1 restante) y todavía se puede mover. */
+/** El aviso salta, como muy tarde, cuando quedan estos movimientos (si el tablero es lo bastante largo para que tenga sentido). */
+export const WARN_LEFT = 3;
+
+/** Movimientos restantes a partir de los cuales se avisa: 3 (o el 20 % del límite si es más); en tableros cortos, nunca antes de gastar el 60 %. */
+export const warnAt = (limit) => Math.max(1, Math.ceil(limit * WARN_FRACTION), Math.min(WARN_LEFT, Math.floor(limit * 0.4)));
+
+/** Quedan pocos turnos (ver `warnAt`) y todavía se puede mover. */
 export function isLow(moves, limit) {
   const left = limit - moves;
-  return left > 0 && left <= Math.max(1, Math.ceil(limit * WARN_FRACTION));
+  return left > 0 && left <= warnAt(limit);
 }
 
 /**

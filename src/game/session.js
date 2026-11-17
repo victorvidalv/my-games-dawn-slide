@@ -16,7 +16,7 @@ import { bossCapFor } from './bosses.js';
 import { sealLimit } from './seals.js';
 import { baseScore } from '../engine/scoring.js';
 import { clearRewards, heroLimit } from './heroes.js';
-import { canPaidRevive, hasRevive, payRevive, useRevive } from './shop.js';
+import { canPaidRevive, freeRetry, hasRevive, payRevive, useFreeRetry, useRevive } from './shop.js';
 import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
 import { boardEl, buildPieces, cellPx, fitBoard, layout, recLine, syncRouteStyle, updateHud } from '../ui/board.js';
 import { isBonusLevel, showBonus } from '../ui/bonus.js';
@@ -210,6 +210,7 @@ async function offerPaidRevive(why){
 }
 function finalFail(why){
   if(S.G.done)return;
+  if(freeRetry(S.run,S.G.n,!!S.G.plan?.boss)){useFreeRetry(S.run,S.G);saveRun();showRescue('learn');return}   // primera ciudad: se repite el tablero
   if(hasRevive(S.run)){useRevive(S.run,S.G);saveRun();showRescue('revive');return}                           // compatibilidad con cargas antiguas
   if(canPaidRevive(S.run,S.run.mode)){S.run.pendingRevive=why||'limit';saveRun();offerPaidRevive(why);return}
   triggerGameOver(why);

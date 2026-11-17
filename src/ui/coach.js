@@ -67,6 +67,8 @@ function tipFor(id) {
 }
 
 let showing = false;
+/** Explicaciones que pueden esperar a otro nivel si en este ya hay algo más importante que enseñar. */
+const CAN_WAIT = ['score', 'tools', 'hero', 'seal'];
 
 function show(ids, done) {
   if (!ids.length) { done?.(); return; }
@@ -125,15 +127,19 @@ export function startCoach() {
   store.tips = store.tips || {};
   const queue = [];
   if (G.n === 1) queue.push('drag');
-  if (G.n === 2) queue.push('score');
-  if (G.n === 3) queue.push('tools');
-  if (G.n === 4) queue.push('hero');
+  if (G.n >= 2) queue.push('score');
+  if (G.n >= 3) queue.push('tools');
+  if (G.n >= 4) queue.push('hero');
   if (G.plan?.boss && !G.tutorial) queue.push('boss');
   if (G.timeLimit > 0) queue.push('bosstime');
   if (G.seal) queue.push('seal');
   queue.push(...mechanicsPresent(G));
   if (G.rot) queue.push('curse');                // tablero con maleficio: se explica la primera vez
-  const todo = queue.filter((id) => !store.tips[id]);
+  // Una sola explicación general por nivel: lo que hace falta YA para jugar este tablero (arrastrar, piezas nuevas, jefe, maleficio)
+  // se enseña siempre; las demás (puntos, ayudas, héroe, sellos) esperan su turno si ya hay otra ventana en este nivel.
+  const pending = queue.filter((id) => !store.tips[id]);
+  const urgent = pending.filter((id) => !CAN_WAIT.includes(id));
+  const todo = urgent.length ? urgent : pending.slice(0, 1);
   if (!todo.length) { guide(); return; }
   showing = true;
   const wasBusy = S.busy;

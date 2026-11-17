@@ -96,6 +96,18 @@ export function payRevive(run) {
   return { ok: true, cost };
 }
 
+/**
+ * Primeros pasos: en la primera ciudad del camino Normal (niveles 1-9; el jefe del 10 ya va en serio) quedarse sin movimientos
+ * no termina la partida: se repite el tablero. Así nadie abandona por perderlo todo antes de entender el juego.
+ */
+export const FREE_RETRY_UNTIL = 9;
+export const freeRetry = (run, level, boss = false) => !!run && run.mode !== 'p' && (run.start || 1) === 1 && level <= FREE_RETRY_UNTIL && !boss;
+/** Prepara el tablero para repetirlo desde el principio sin coste (la racha se pierde). */
+export function useFreeRetry(run, G) {
+  run.streak = 0;
+  run.rescue = { ...snapshotRescue(G), kind: 'learn' };
+}
+
 /** ¿Tienes un revivir guardado? (compatibilidad con partidas guardadas antiguas). */
 export const hasRevive = (run) => (run?.revive || 0) > 0;
 

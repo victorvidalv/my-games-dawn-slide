@@ -10,6 +10,7 @@ import { icon } from './icons.js';
 import { zoneIdx } from '../data/zones.js';
 import { coachOnMove } from './coach.js';
 import { updateHeroHud } from './heroes.js';
+import { freeRetry } from '../game/shop.js';
 import { lowState, renderTurns } from './turns.js';
 import { renderSeal, processSealMove } from './seals.js';
 import { numLocale } from '../i18n.js';
@@ -231,8 +232,9 @@ export function afterMove(){
   if(isWon(S.G.pos)){win();return}                         // ganar en el último turno vale
   if(status==='over'){fail('limit');return}                // sin turnos: ya no se puede mover
   if(prac){if(S.G.moves===S.G.opt+1)$('msg').textContent='Vas por encima del mínimo. En práctica no pasa nada: ¡sigue!';return}
-  if(status==='last'){$('msg').textContent='ÚLTIMO TURNO: si no sacas la llave con este movimiento, la aventura termina.';sfx.warn();vib([30,40,30])}
-  else if(status==='warn'){$('msg').textContent=`Te quedan ${movesLeft(S.G.moves,S.G.limit)} turnos.`;sfx.warn()}
+  const retry=freeRetry(S.run,S.G.n,!!S.G.plan?.boss);
+  if(status==='last'){$('msg').textContent=retry?'ÚLTIMO MOVIMIENTO: si la llave no sale ahora, repites el tablero.':'ÚLTIMO TURNO: si no sacas la llave con este movimiento, la aventura termina.';sfx.warn();vib([30,40,30])}
+  else if(status==='warn'){$('msg').textContent=`Te quedan ${movesLeft(S.G.moves,S.G.limit)} movimientos. Piensa bien cada paso.`;sfx.warn()}
 }
 function fitScores(){                 // reduce la cifra si no cabe en su cuadro (p. ej. 123.456 en móviles estrechos)
   ['score','scoreMax'].forEach(id=>{const el=$(id);el.style.fontSize='';let fs=parseFloat(getComputedStyle(el).fontSize);

@@ -7,6 +7,7 @@ import { powerFactor } from '../game/routes.js';
 import { reserveState } from '../game/powers.js';
 import { burst } from './fx.js';
 import { bossCapFor } from '../game/bosses.js';
+import { freeRetry } from '../game/shop.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const center = (el) => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
@@ -23,10 +24,13 @@ export function lowState() {
 function announceLow(last) {
   const G = S.G;
   const left = movesLeft(G.moves, G.limit);
-  $('lowTitle').textContent = last ? 'Último turno' : 'Pocos turnos';
-  $('lowSub').textContent = `${left} ${left === 1 ? 'restante' : 'restantes'}`;
+  const retry = freeRetry(S.run, G.n, !!G.plan?.boss);        // en la primera ciudad perder solo repite el tablero
+  $('lowTitle').textContent = last ? '¡Último movimiento!' : `Te quedan ${left} movimientos`;
+  $('lowSub').textContent = last
+    ? (retry ? 'Si la llave no sale ahora, repites el tablero.' : 'Si la llave no sale ahora, la partida termina.')
+    : (retry ? 'Piensa bien cada paso: si se acaban, repites el tablero.' : 'Piensa bien cada paso: si se acaban, la partida termina.');
   $('lowBanner').classList.toggle('last', last);
-  flash($('lowBanner'), 'show', 1700);
+  flash($('lowBanner'), 'show', 3000);
   flash($('meter'), 'low-hit', 600);
 }
 
@@ -62,10 +66,13 @@ export function renderTurns() {
   $('left').textContent = movesLeft(G.moves, G.limit);
   const { low, last } = lowState();
   $('meter').classList.toggle('low', low);
-  if (low && !G.lowShown) { G.lowShown = true; announceLow(last); }
-  else if (low && last && !G.lastShown) { announceLow(true); }
-  if (!low) G.lowShown = false;
-  G.lastShown = last;
+  const chip = $('leftChip'), n = movesLeft(G.moves, G.limit);              // contador fijo mientras dure el riesgo: «Quedan 3»
+  chip.hidden = !low;
+  chip.classList.toggle('last', last);
+  if (low) { const text = n === 1 ? 'Queda 1' : `Quedan ${n}`; if (chip.textContent !== text) { chip.textContent = text; flash(chip, 'tick', 380); } }
+  // El cartel sale al entrar en la zona de riesgo, otra vez cuando quedan exactamente 3 (si se entró antes) y en el último.
+  if (!low) G.lowShown = 0;
+  else if (!G.lowShown || (n === 3 && G.lowShown > 3) || (last && G.lowShown > 1)) { G.lowShown = n; announceLow(last); }
   const box = $('bought');
   box.hidden = !bought;
   if (!bought) { G.usedShown = 0; $('meter').style.setProperty('--bought','0%'); return; }
