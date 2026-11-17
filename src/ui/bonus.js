@@ -15,7 +15,7 @@ import { zoneIdx } from '../data/zones.js';
 import { MAX_GRADE, bonusIndex, claimBonus, ensureBonusPlan, finishBonus, gameFor, maxPrize, setupFor } from '../game/minigames.js';
 import { saveRun } from '../game/session.js';
 import { S, heroOf } from '../state.js';
-import { countStat } from './achievements.js';
+import { countStat, markStat } from './achievements.js';
 import { burst } from './fx.js';
 import { icon } from './icons.js';
 import { catchGame, stackGame, whackGame } from './minigames/lia.js';
@@ -155,7 +155,7 @@ export function showBonus() {
       phase = 'result'; modal.dataset.phase = 'result';
       teardown();
       const prize = finishBonus(plan, grade), g = plan.grade ?? 0;
-      if (!restore && g === MAX_GRADE) countStat('mini5');
+      if (!restore && g === MAX_GRADE) { markStat('mini5Kinds', plan.kind); countStat('mini5'); }
       saveRun();
       skip.hidden = true;
       say('');

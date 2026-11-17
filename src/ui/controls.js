@@ -18,7 +18,7 @@ $('bHint').onclick=()=>{
   if(!S.G||S.G.done||S.busy||!canHint(S.run,S.run.mode,S.G.n))return;
   const h=hintMove(S.G.pieces,S.G.pos,S.G.walls,S.G.doors);
   if(!h){$('msg').textContent='No encuentro pista desde aquí.';return}
-  spendHint({run:S.run,mode:S.run.mode,level:S.G.n});saveRun();updateHeroHud();
+  spendHint({run:S.run,mode:S.run.mode,level:S.G.n});S.run.helpAt=S.G.n;saveRun();updateHeroHud();
   const p=S.G.pieces[h.i],n=Math.abs(h.to-h.from);
   const dir=p.o==='h'?(h.to>h.from?'derecha':'izquierda'):(h.to>h.from?'abajo':'arriba');
   $('msg').textContent=`Mueve la pieza brillante ${n} casilla${n>1?'s':''} hacia ${dir}. Quedan ${h.left} movimientos.`;

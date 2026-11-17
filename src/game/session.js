@@ -19,7 +19,8 @@ import { clearRewards, heroLimit } from './heroes.js';
 import { buildDaily, challengeById, dayNumber } from './daily.js';
 import { snapshotRescue } from './heroes.js';
 import { finishDaily } from '../ui/daily.js';
-import { celebrate, countStat } from '../ui/achievements.js';
+import { celebrate, countStat, markStat } from '../ui/achievements.js';
+import { boardStats } from './achievements.js';
 import { canPaidRevive, freeRetry, hasRevive, payRevive, useFreeRetry, useRevive } from './shop.js';
 import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
 import { boardEl, buildPieces, cellPx, fitBoard, layout, recLine, syncRouteStyle, updateHud } from '../ui/board.js';
@@ -48,7 +49,8 @@ export async function startRun(start,mode){
   if(S.run) recordBest(true);                         // si abandonas, lo logrado cuenta
   const seed=Math.floor(Math.random()*2**31);
   S.G=null;
-  S.run={seed,level:from,start,mode,hero:chosen,lifeUsed:false,revive:0,revivesBought:0,undoUsedAt:0,undoUsedLevel:0,undoUsedCount:0,vanAwardedAt:0,score:0,hints:startHintsAt(start,from),adj:0,streak:0,recBroken:false};
+  S.run={seed,level:from,start,mode,hero:chosen,lifeUsed:false,revive:0,revivesBought:0,undoUsedAt:0,undoUsedLevel:0,undoUsedCount:0,vanAwardedAt:0,score:0,hints:startHintsAt(start,from),adj:0,streak:0,recBroken:false,firstLevel:from};
+  markStat('heroes',chosen);
   syncHero();syncRouteStyle();applyZone(zoneIdx(from));saveRun();
   S.run.route='normal';S.run.routeZone=zoneIdx(from);S.run.travelFrom=zoneIdx(from);saveRun();await resumeAdventure();
 }
@@ -186,7 +188,7 @@ export function win(){                                  // la voz del héroe NO 
   const d=S.run.daily,moves=S.G.moves,opt=S.G.opt;
   setTimeout(()=>finishDaily(d,moves,opt),matchMedia('(prefers-reduced-motion: reduce)').matches?150:750);return;
  }
- if(S.G.moves<=S.G.opt)countStat('perfects');
+ countStat(...boardStats(S.G,S.run));                // logros: perfectos, mecánicas, jefes, ciudad sin ayuda
  const gain=gainNow(),previous=S.run.score;
  S.run.score+=gain.total;S.run.cleared=(S.run.cleared||0)+1;S.run.streak=gain.eff>=.9?(S.run.streak||0)+1:0;
  S.run.adj=Math.max(-2,Math.min(S.run.level<10?1:2,S.run.adj+(gain.eff>=.9?1:gain.eff<.4?-1:0)));
@@ -213,7 +215,7 @@ export function fail(why){
 export function skipLevel(){
   if(!S.G||S.G.done)return;
   S.G.done=true;S.busy=true;boardEl.classList.add('board-lock');
-  S.run.streak=0;S.run.pendingClear={level:S.G.n,gain:0,moves:S.G.moves,opt:S.G.opt,routeChosen:false,skipped:true};
+  S.run.streak=0;S.run.helpAt=S.G.n;S.run.pendingClear={level:S.G.n,gain:0,moves:S.G.moves,opt:S.G.opt,routeChosen:false,skipped:true};
   recordBest();saveRun();setTensionFx(0,false);
   $('msg').textContent='Nivel saltado. Sin puntos.';
   playSkipEffect().then(()=>advanceClear());

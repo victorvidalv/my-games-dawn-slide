@@ -7,20 +7,13 @@ import { Music } from '../audio/music.js';
 import { sfx } from '../audio/sound.js';
 import { MENU_THEME, ZONE_THEMES, bossThemeFor } from '../audio/themes.js';
 import { $ } from '../dom.js';
-import { ACHIEVEMENTS, REWARDS, REWARD_TYPES, claimAchievements, isDone, lookOf, progressOf, rewardUnlocked, setLook, sourceOf, statsOf } from '../game/achievements.js';
+import { ACHIEVEMENTS, GROUPS, REWARDS, REWARD_TYPES, bumpStat, claimAchievements, lookOf, markStat as addToCollection, progressOf, rewardUnlocked, setLook, sourceOf, statsOf } from '../game/achievements.js';
 import { S, persist, store } from '../state.js';
 import { burst } from './fx.js';
 import { icon } from './icons.js';
 
 const TYPE_NAME = { music: 'Música del menú', key: 'Llave', pieces: 'Piezas', fx: 'Celebración' };
 const TYPE_ICON = { music: 'stars', key: 'unlock', pieces: 'rock', fx: 'crown' };
-const GROUP_NAME = { adventure: 'Aventura', daily: 'Retos diarios' };
-const FX = {
-  embers: { n: 26, colors: ['#ff9a3d', '#ffd24a', '#ff6a3d', '#fff0b8'], speed: 7 },
-  sparks: { n: 34, colors: ['#ffd24a', '#fff6c9', '#e0b04f', '#ffffff'], speed: 9 },
-  petals: { n: 30, colors: ['#ffb7d0', '#ff8fb8', '#ffe3ee', '#f7c6d9'], speed: 5 },
-  stars: { n: 36, colors: ['#d7c3ff', '#8fd8ff', '#ffffff', '#ffe9ad'], speed: 8 },
-};
 const themeOf = (id) => (id === 'boss' ? bossThemeFor(0) : id?.startsWith('z') ? ZONE_THEMES[Number(id.slice(1))] : MENU_THEME) || MENU_THEME;
 const rewardName = (type, id) => REWARDS[type].find((r) => r.id === id)?.name || '';
 
@@ -34,7 +27,7 @@ export function applyLook() {
 }
 /** Celebración elegida al sacar la llave (nada si es «Sin adornos»). */
 export function celebrate(el) {
-  const fx = FX[lookOf(store).fx];
+  const fx = REWARDS.fx.find((r) => r.id === lookOf(store).fx)?.burst;
   if (!fx || !el || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const b = $('board').getBoundingClientRect(), r = el.getBoundingClientRect();
   burst(b.right - 8, r.top + r.height / 2, fx.n, fx.colors, fx.speed);
@@ -65,10 +58,16 @@ export function checkAchievements({ silent = false } = {}) {
   $('tabAch')?.classList.add('has-news');
   return fresh;
 }
-/** Suma 1 a una estadística de logros («perfects», «mini5», «completed») y comprueba los logros. */
-export function countStat(name) {
-  store.stats = store.stats || {};
-  store.stats[name] = (store.stats[name] || 0) + 1;
+/** Suma 1 a uno o varios contadores de logros (ver COUNTERS en src/game/achievements.js) y comprueba los logros. */
+export function countStat(...names) {
+  if (!names.length) return;
+  for (const name of names) bumpStat(store, name);
+  persist();
+  checkAchievements();
+}
+/** Anota `key` en una colección de logros (héroes jugados, caminos completados…) y comprueba los logros si es nuevo. */
+export function markStat(name, key) {
+  if (!addToCollection(store, name, key)) return;
   persist();
   checkAchievements();
 }
@@ -89,7 +88,7 @@ export function renderAchievements() {
     return `<li class="ach${got ? ' got' : ''}"><i class="ach-ico" aria-hidden="true">${icon(got ? 'trophy' : 'lock')}</i><div class="ach-copy"><b>${a.name}</b><span>${a.desc}</span>${a.reward ? `<small>${icon(TYPE_ICON[a.reward[0]])}<em>${rewardName(a.reward[0], a.reward[1])}</em></small>` : ''}</div><div class="ach-prog" role="img" aria-label="${p}/${a.goal}"><u><i style="width:${(p / a.goal) * 100}%"></i></u><span>${p}/${a.goal}</span></div></li>`;
   }).join('');
   box.innerHTML = `<div class="ach-total"><p><b>${done}</b> / ${ACHIEVEMENTS.length} <span>logros</span></p><u role="img" aria-label="${done}/${ACHIEVEMENTS.length}"><i style="width:${(done / ACHIEVEMENTS.length) * 100}%"></i></u></div>
-    ${['adventure', 'daily'].map((g) => `<h3 class="panel-h">${GROUP_NAME[g]}</h3><ul class="ach-list">${list(g)}</ul>`).join('')}
+    ${GROUPS.map((g) => `<h3 class="panel-h">${g.name}</h3><ul class="ach-list">${list(g.id)}</ul>`).join('')}
     <h3 class="panel-h">Recompensas</h3><p class="look-note" id="lookNote" role="status">Toca una recompensa para activarla.</p>${rewards}`;
   box.querySelectorAll('.look-opt').forEach((b) => {
     b.onclick = () => {

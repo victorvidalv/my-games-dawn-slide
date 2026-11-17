@@ -122,7 +122,7 @@ describe('logros y recompensas', () => {
     for (const a of ACHIEVEMENTS) {
       expect(a.stat in stats, a.id).toBe(true);
       expect(a.goal).toBeGreaterThan(0);
-      expect(['adventure', 'daily']).toContain(a.group);
+      expect(['adventure', 'mastery', 'daily']).toContain(a.group);
       if (a.reward) expect(REWARDS[a.reward[0]].some((r) => r.id === a.reward[1]), a.id).toBe(true);
     }
     // toda recompensa que no es de serie se consigue con algún logro
