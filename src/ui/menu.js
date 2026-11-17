@@ -93,7 +93,7 @@ const continueLabel=(sr)=>`▶ Continuar<small>${pathOf(sr.start||1).n} · Nivel
 export function openMenu(){
   syncRouteStyle();
   renderPaths();
-  const active=S.run&&S.G&&!S.G.done, canCont=!!store.run&&!active;
+  const active=S.run&&S.G&&!S.G.done, canCont=Number.isFinite(store.run?.level)&&!active;
   if(!active)leaveBossPhase();                    // el menú principal no lleva el ambiente de jefe
   const b=$('bContinue');b.style.display=canCont?'':'none';
   if(canCont)b.innerHTML=continueLabel(store.run);
@@ -107,6 +107,7 @@ $('bResume').onclick=()=>{$('menu').classList.remove('show');Music.muffle(false)
 $('bContinue').onclick=()=>{
   $('menu').classList.remove('show');Music.muffle(false);
   if(S.run&&S.G&&!S.G.done) return;
+  if(!Number.isFinite(store.run?.level)||!Number.isFinite(store.run?.seed)){store.run=null;persist();openMenu();$('menu').classList.add('show');return}   // sin partida guardada válida no hay nada que continuar
   S.run={start:1,mode:'c',hero:'lia',lifeUsed:false,revive:0,revivesBought:0,undoUsedAt:0,undoUsedLevel:0,undoUsedCount:0,vanAwardedAt:0,recBroken:false,...store.run};syncHero();
   resumeAdventure();
 };

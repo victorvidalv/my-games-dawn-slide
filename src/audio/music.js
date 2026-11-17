@@ -1,10 +1,11 @@
 import { AC, audioPageHidden, clearAudioRecoveryHint, ctx, muted, setSfxKey } from './sound.js';
 import { zoneIdx } from '../data/zones.js';
-import { HEROES_THEME, LAYERS_PER_CITY, MENU_THEME, SCALES, ZONE_THEMES, bossThemeFor, chordMidi, entryAt, layerOfLevel, layersFor } from './themes.js';
+import { ALT_VOICE, FORM, HEROES_THEME, LAYERS_PER_CITY, MENU_THEME, SCALES, ZONE_THEMES, bossThemeFor, chordMidi, entryAt, layerOfLevel, layersFor, sectionAt, shiftEntry } from './themes.js';
 import { isBossLevel } from '../game/mechanics.js';
 
 /* ============================ Música procedural ============================
-   Secuenciador por pasos de 1/16 que toca los temas de themes.js: melodía, acordes con séptima, bajo caminante,
+   Secuenciador por pasos de 1/16 que toca los temas de themes.js como CANCIONES con forma (intro, estrofas, coro, puente,
+   coro final modulado; ver FORM en themes.js): melodía, acordes con séptima, bajo caminante,
    «comping» de guitarra/piano/acordeón, escobillas suaves y, según `epic`, cuerdas, timbal y metales.
    El swing retrasa las corcheas de contratiempo. El tempo sube con los movimientos gastados y entra en
    «modo pánico» en el último movimiento. */
@@ -109,11 +110,12 @@ export const Music=(()=>{
     if(mode==='none')return;
     const g=GROOVES[th.groove]||GROOVES.pop,has=a=>a&&a.includes(st),full=mode==='full';
     const fill=full&&bar%4===3&&st>=13;                            // redoble al final de cada frase
-    if(full&&has(g.k)&&!(fill&&st>=14))kick(t,KV.k);
-    if(full&&has(g.s)&&!(fill&&st>=13))snare(t,KV.s);
+    if(full&&has(g.k)&&!(fill&&st>=14)){kick(t,KV.k);noise(t,.012,.02,3200,'bandpass')}                 // bombo con «clic»: se oye en altavoces pequeños
+    if(full&&has(g.s)&&!(fill&&st>=13)){snare(t,KV.s);noise(t+.011,.05,KV.s*.45,1400,'bandpass')}        // caja + palmada en el contratiempo
+    if(full&&g.s&&!fill&&bar%2===1&&(st===7||st===15))snare(t,.013);                                      // notas fantasma: el ritmo «camina»
     if(fill)snare(t,.03+.012*(st-13));
     if(has(g.rim))rim(t,KV.rim);
-    if(has(g.h))noise(t,.035,st%4===2?KV.h*1.3:KV.h,7000);
+    if(has(g.h))noise(t,.035,(st%4===2?KV.h*1.45:st%4===0?KV.h*1.1:KV.h*.8),7000);
     if(has(g.oh))noise(t,.16,KV.oh,6000);
     if(has(g.sh))noise(t,.05,st%4===2?KV.sh*1.5:KV.sh,5200);
     if(has(g.tm)){noise(t,.09,KV.tm,8000);noise(t,.07,KV.tm*.6,5500,'bandpass')}
@@ -169,19 +171,43 @@ export const Music=(()=>{
     if(bar%4===3&&st>=12&&st%2===0)timpani(t,fifth>root?fifth-12:fifth,.04+.005*(st-12));
   }
 
+  /* ---------- Forma de canción: ver FORM en themes.js ---------- */
+  const rootDeg=e=>{const x=Array.isArray(e)?e[0]:e;return typeof x==='string'?Number(x.split(':')[0]):x};
+  const modCache=new WeakMap();
+  /** El mismo tema `semi` semitonos arriba (la modulación del coro final). */
+  const modulated=(th,semi)=>{
+    if(!semi)return th;
+    let m=modCache.get(th);
+    if(!m||m.root!==th.root+semi){m={...th,root:th.root+semi};modCache.set(th,m)}
+    return m;
+  };
+  /** Compás (absoluto) en el que empieza una sección de la forma: la música entra por ahí al cambiar de tema. */
+  let songBar=0;
+
   function play(s,t){
     if(s%16===0)layerNow=layerNext;                                          // las capas entran siempre al empezar un compás
-    const th=theme,bar=Math.floor(s/16),st=s%16,sd=60/bpm()/4,E=th.epic||0,L=layersFor(layerNow);
-    const chord=chordMidi(th,entryAt(th,bar,st));                            // [fundamental, 3ª, 5ª, 7ª, …]
-    const firstOfBar=chordMidi(th,entryAt(th,bar,0));
-    const nextRoot=chordMidi(th,entryAt(th,bar+1,0))[0];
+    const bar=Math.floor(s/16),st=s%16,sd=60/bpm()/4,E=theme.epic||0;
+    const {sec,k}=sectionAt(bar);songBar=bar;
+    const th=modulated(theme,sec.mod||0),n=SC[th.sc].length;
+    // compás de origen: A = 0-7, B = 8-15 (el coro final recorre B y luego A)
+    const half=sec.src==='BA'?(k<8?8:0):sec.src==='B'?8:0,src=half+k%8,nextSrc=half+(k+1)%8,sh=sec.shift||0;
+    const ent=(b,step)=>{const e=entryAt(th,b,step);return sh?shiftEntry(e,sh,n):e};
+    const chord=chordMidi(th,ent(src,st));                                   // [fundamental, 3ª, 5ª, 7ª, …]
+    const firstOfBar=chordMidi(th,ent(src,0));
+    const nextRoot=chordMidi(th,ent(nextSrc,0))[0];
+    const L=layersFor(Math.max(1,Math.min(th.boss?LAYERS_PER_CITY:sec.cap,layerNow+sec.lift)));   // el jefe nunca se aligera: orquesta completa en todas las secciones
+    const last=k===sec.bars-1,building=sec.drums==='build'||(!!sec.build&&last);
+    const rise=building?(sec.drums==='build'?(k*16+st)/(sec.bars*16):st/16):0;   // 0→1 a lo largo del redoble
+    const hasLead=sec.lead!==false&&!(sec.leadBars&&k>=sec.leadBars);
 
     // colchón suave de acordes (cuerdas largas)
     if(st===0)firstOfBar.slice(0,3).forEach(m=>voice('strings',m+12,t,sd*15,.0085));
 
-    // bajo: caminante (jazz) o riff sincopado según el estilo
+    // bajo: caminante (jazz) o riff sincopado según el estilo; en los redobles, pedal de corcheas que crece
     let bn=null;
-    if(L.bass==='lite'){                                                    // bajo mínimo: solo la fundamental en los tiempos 1 y 3
+    if(sec.bassFrom>k){/* aún no entra */}
+    else if(building){if(st%2===0)bn=firstOfBar[0]}
+    else if(L.bass==='lite'||sec.drums==='half'){                           // bajo mínimo: solo la fundamental en los tiempos 1 y 3
       if(st===0||st===8)bn=chord[0];
     }else if(th.bassPat==='walk'){
       if(st===0)bn=firstOfBar[0];
@@ -192,38 +218,78 @@ export const Music=(()=>{
       const hit=(RIFFS[th.bassPat]||RIFFS.pop).find(r=>r[0]===st);
       if(hit)bn=hit[1]==='8'?chord[0]+12:chord[IV[hit[1]]];
     }
-    if(bn!==null)voice('upright',bassReg(bn),t,.26,th.bassV);
+    if(bn!==null)voice('upright',bassReg(bn),t,.26,th.bassV*(building?.6+.5*rise:1));
 
     // acompañamiento
-    if(L.comp&&(COMP[th.comp]||[]).includes(st)){
+    if(L.comp&&!building&&(COMP[th.comp]||[]).includes(st)){
       const notes=th.comp==='strum'?chord.slice(0,4):chord.slice(1,4);
       notes.forEach((m,i)=>voice(th.compVoice,m+12,t+i*.01,.13,th.compV));
     }
-    // arpegio suave
-    if(L.arp){
+    // arpegio suave (también en la intro, el puente y el cierre: da aire cuando no hay batería completa)
+    if(L.arp||sec.id==='intro'||sec.id==='bridge'||sec.id==='outro'){
       const every=th.arpEvery||2,pat=th.arpPat||[0,1,2,1];
       if(st%every===0)voice(th.arpVoice||'celesta',chord[pat[(st/every)%pat.length]%chord.length]+12,t,Math.max(.2,sd*2),th.arpV);
     }
 
-    // batería
-    drums(th,st,t,bar,E,L.drums,L.tutti);
+    // gancho rítmico: un ostinato sincopado propio de cada tema sobre las notas del acorde (se repite y se pega)
+    const hk=th.hook;
+    if(hk&&sec.hook!==false&&!building&&(L.bass==='full'||!hasLead)){
+      const j=hk.s.indexOf(st);
+      if(j>=0)voice(hk.voice||'pizz',chord[hk.n[j%hk.n.length]%chord.length]+(hk.oct??12),t,sd*1.5,(hk.v||.017)*(st%8===0?1.3:1)*(hasLead?1:1.25));
+    }
+    // base épica: timbal grave en cada compás y trompas largas al empezar cada frase
+    if(!th.boss&&L.drums==='full'&&!sec.drums){
+      if(st===0)timpani(t,bassReg(firstOfBar[0])-12,k%4===0?.06:.038);
+      if(st===0&&k%4===0)[0,2].forEach(i=>voice('horn',firstOfBar[i],t,sd*14,.011));
+      if(k%4===3&&st>=12&&st%2===0)timpani(t,bassReg(chord[2])-12,.03+.006*(st-12));
+    }
+    // entrada del coro: platillo, timbal y bombo a la vez
+    if(sec.crash&&k===0&&st===0){noise(t,1.9,.05,3600);timpani(t,bassReg(firstOfBar[0])-12,.1);kick(t,.1)}
 
-    if(th.boss&&L.orchestra)bossLayer(th,st,t,bar,sd,chord,firstOfBar);
+    // batería: normal, a medio tiempo (puente) o redoble que crece con ruido ascendente (pre-coro, corte, subida)
+    if(building){
+      const every=rise>.75?1:rise>.4?2:4;
+      if(st%every===0)snare(t,.012+.035*rise);
+      if(st%4===0)kick(t,.05+.04*rise);
+      if(st%4===0)noise(t,sd*4,.006+.02*rise,1200+5200*rise,'bandpass');
+      if(rise>.5&&st%4===0)timpani(t,bassReg(firstOfBar[0])-12,.03+.05*rise);
+    }else if(sec.drums==='half'){
+      if(st===0)kick(t,KV.k);
+      if(st===8){snare(t,KV.s);noise(t+.011,.05,KV.s*.45,1400,'bandpass')}
+      if(st%4===0)noise(t,.05,KV.sh*1.5,5200);
+      if(st===0&&k%4===0)timpani(t,bassReg(firstOfBar[0])-12,.06);
+    }else drums(th,st,t,k,E,sec.drums||L.drums,L.tutti);
+
+    if(th.boss&&L.orchestra&&hasLead)bossLayer(th,st,t,k,sd,chord,firstOfBar);
 
     // capa épica: timbal en las frases y metales que refuerzan la melodía
     if(E>=2&&L.orchestra){
-      if(st===0&&bar%4===0)timpani(t,chord[0]-24,.055);
-      if(bar%4===3&&st>=12&&st%2===0)timpani(t,chord[2]-24,.03+.004*(st-12));
+      if(st===0&&k%4===0)timpani(t,chord[0]-24,.055);
+      if(k%4===3&&st>=12&&st%2===0)timpani(t,chord[2]-24,.03+.004*(st-12));
     }
 
-    // melodía del tema (con refuerzo de metales y eco rítmico si el tema lo pide)
-    for(const [at,deg,dur] of th.tune[bar%th.tune.length])if(at===st){
-      voice(th.leadVoice,noteOf(th,deg)+12,t,dur*sd,th.leadV);
-      if(L.counter&&dur>=3)voice(th.counterVoice||'horn',noteOf(th,deg-2),t+sd*.02,dur*sd,th.leadV*.4);   // armonía una tercera debajo
-      if(L.orchestra)voice(E>=2?'brass':'strings',noteOf(th,deg),t,dur*sd,th.leadV*(E>=2?.5:.35));
-      if(L.octave)voice('celesta',noteOf(th,deg)+24,t,dur*sd*.9,th.leadV*.3);
-      if(L.octave&&E>=3)voice('brass',noteOf(th,deg)+24,t,dur*sd*.9,th.leadV*.22);
-      if(L.tutti&&th.echo&&dur>=2)voice('pizz',noteOf(th,deg)+12,t+sd*3,.1,th.leadV*.3);   // eco a una corchea con puntillo
+    // melodía. En el CORO de los temas de ciudad suena el motivo del primer compás, repetido en secuencia sobre cada acorde
+    // (con el remate original cada 4 compases): la repetición es lo que se queda en la cabeza.
+    if(!hasLead||building)return;
+    let notes=th.tune[src],dshift=sh;
+    if(sec.chorus&&!th.ownChorus&&k%4!==3){
+      notes=th.tune[0];
+      let d=(((rootDeg(th.prog[src])-rootDeg(th.prog[0]))%n)+n)%n;if(d>n/2)d-=n;
+      dshift=d;
+    }
+    const lead=sec.alt?(ALT_VOICE[th.leadVoice]||'horn'):th.leadVoice;
+    const lv=th.leadV*(sec.chorus?1.12:sec.id==='bridge'?.85:sec.id==='outro'?.7:1);
+    for(const [at,deg0,dur] of notes)if(at===st){
+      const deg=deg0+dshift;
+      const top=m=>{while(m>90)m-=12;return m};                             // el solista nunca pasa de ≈ Fa♯6: sin chillidos al subir de tono
+      voice(lead,top(noteOf(th,deg)+12),t,dur*sd,lv);
+      if((L.counter||sec.harmony)&&dur>=3)voice(th.counterVoice||'horn',noteOf(th,deg-2),t+sd*.02,dur*sd,lv*.4);   // armonía una tercera debajo
+      if(sec.chorus&&dur>=2)voice('horn',top(noteOf(th,deg+2)+12),t,dur*sd,lv*.3);                                      // coro: tercera arriba
+      if(L.orchestra)voice(E>=2?'brass':'strings',noteOf(th,deg),t,dur*sd,lv*(E>=2?.5:.35));
+      const up=noteOf(th,deg)+24>98?12:24;                                  // la octava de arriba nunca llega a chillar (tope ≈ Re7)
+      if(L.octave)voice('celesta',noteOf(th,deg)+up,t,dur*sd*.9,lv*.3);
+      if(L.octave&&E>=3)voice('brass',noteOf(th,deg)+up,t,dur*sd*.9,lv*.22);
+      if(L.tutti&&th.echo&&dur>=2)voice('pizz',noteOf(th,deg)+12,t+sd*3,.1,lv*.3);   // eco a una corchea con puntillo
     }
   }
   function loop(){
@@ -244,7 +310,7 @@ export const Music=(()=>{
   }
   /** Cambia de tema entrando al inicio de un compás. */
   function useTheme(nt){
-    if(nt!==theme&&playing)step=Math.ceil(step/16)*16;
+    if(nt!==theme)step=(nt.boss?4:0)*16;                                    // canción nueva: desde su intro (el jefe entra directo a la estrofa)
     theme=nt;setSfxKey(nt);baseBpm=nt.bpm;if(!playing)tempoNow=baseBpm;
   }
   return {
@@ -252,6 +318,8 @@ export const Music=(()=>{
     stop(fade=.5){clearAudioRecoveryHint();playing=false;clearInterval(timer);timer=0;if(bus&&audioOwner.state!=='closed')bus.gain.setTargetAtTime(0,audioOwner.currentTime,fade/3)},
     background(){clearInterval(timer);timer=0},
     recover(){if(!playing||muted||document.hidden||audioPageHidden)return false;init();return armSequencer()},
+    /** Salta al principio de una sección de la forma ('verse', 'chorus', 'bridge', 'final'…); la usan melodies.html y las pruebas. */
+    seek(id){let b=0;for(const sec of FORM){if(sec.id===id){step=b*16;songBar=b;return true}b+=sec.bars}return false},
     /** Fija la capa (1-10) a mano; entra en el próximo compás (lo usa melodies.html). */
     setLayer(n){layerNext=Math.max(1,Math.min(LAYERS_PER_CITY,n))},
     /** Tema de la ciudad del nivel `n` y la capa que le toca (1 = solo lo básico … 10 = todo). */
@@ -268,7 +336,7 @@ export const Music=(()=>{
     duck(v){duckLv=v;if(bus&&playing)bus.gain.setTargetAtTime(vol(),AC.currentTime,.25)},
     muffle(on){muffled=!!on;if(flt)flt.frequency.setTargetAtTime(on?900:9000,AC.currentTime,.15)},
     refresh(){if(muted)this.stop(.2);else if(bus&&playing)bus.gain.setTargetAtTime(vol(),AC.currentTime,.1)},
-    bpm,targetBpm,get layer(){return layerNow},get themeName(){return theme.name},get playing(){return playing}
+    bpm,targetBpm,get layer(){return layerNow},get section(){return sectionAt(songBar).sec.id},get themeName(){return theme.name},get playing(){return playing}
   };
 })();
 /**

@@ -1,6 +1,6 @@
 /** Cache the bytes, never a playing Image: preloading an animated WebP can otherwise leave it on its last frame. */
 const gifs = new Map();
-export const AWAKENING_MS = 1500;
+export const AWAKENING_MS = 1150;
 
 export function preloadAwakening(hero) {
   if (hero === 'lia') return Promise.resolve(null);

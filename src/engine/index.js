@@ -7,3 +7,4 @@ export * from './scoring.js';
 export * from './rng.js';
 export * from './rules.js';
 export * from './decorate.js';
+export * from './interest.js';

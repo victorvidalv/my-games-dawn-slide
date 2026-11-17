@@ -55,6 +55,7 @@ export const EN_UI = {
   '¿Actualizar ahora?': 'Update now?', 'Hay una versión nueva. Tu tablero y los poderes usados se guardan para continuar donde estabas.': 'A new version is available. Your board and used powers are saved so you can continue where you were.',
   'NIVEL SALTADO': 'LEVEL SKIPPED', 'Sin puntos · sin racha': 'No points · no streak',
   'Nivel saltado. Sin puntos.': 'Level skipped. No points.',
+  '¡Jefe!': 'Boss!', 'Poder de {h}': '{h}’s power', 'Jefe · Nivel {l}': 'Boss · Level {l}',
   '¡PODER ACTIVADO!': 'POWER ACTIVATED!', '¡PERFECTO!': 'PERFECT!', 'PERFECTO': 'PERFECT', 'Nivel superado': 'Level cleared',
   'Muy bien': 'Very good', 'Bien hecho': 'Well done', 'Racha ×{n}': 'Streak ×{n}',
   'Nivel {l} superado · +{p} pts': 'Level {l} cleared · +{p} pts',

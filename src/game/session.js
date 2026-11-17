@@ -29,6 +29,7 @@ import { applyZone, renderStage, showMap } from '../ui/map.js';
 import { openMenu } from '../ui/menu.js';
 import { heroArt, storyFor } from '../ui/story.js';
 import { numLocale } from '../i18n.js';
+import { boardSwapDone, boardSwapOut, levelBanner, wipeIn, wipeOut } from '../ui/transitions.js';
 export function saveRun(){
  if(S.run&&S.G&&!S.G.done&&S.G.n===S.run.level&&!S.run.pendingClear&&!S.run.rescue&&!S.run.pendingRevive){
   S.run.board={level:S.G.n,rate:S.G.rate,pieces:S.G.pieces.map(p=>({...p})),walls:(S.G.walls||[]).map(w=>w.slice()),doors:(S.G.doors||[]).map(d=>d.slice()),pos:S.G.pos.slice(),start:S.G.start.slice(),opt:S.G.opt,limit:S.G.limit,bought:S.G.bought||0,timeLimit:S.G.timeLimit||0,timeLeft:Math.ceil(S.G.timeLeft||0),tutorial:S.G.tutorial||null,moves:S.G.moves,hist:S.G.hist.map(p=>p.slice()),colors:S.G.colors?.slice(),family:S.G.family,seal:S.G.seal?{...S.G.seal,cell:S.G.seal.cell.slice()}:null};
@@ -49,7 +50,12 @@ export async function startRun(start,mode){
 async function startLevel(){
   S.busy=true;
   const {levelBank,specialBank}=await loadBanks();
-  S.G=buildAdventureLevel(S.run,{levels:levelBank.ratings,special:specialBank,tips:store.tips||{}});
+  const G=buildAdventureLevel(S.run,{levels:levelBank.ratings,special:specialBank,tips:store.tips||{}});
+  // ¿este tablero abre con la presentación del jefe? Entonces entra el telón de alarma roja; si no, las piezas se disuelven en su sitio
+  const bossIntro=!!(G.plan?.boss&&!G.tutorial&&G.moves===0&&S.run.bossSeen!==G.n&&!S.run.rescue&&!S.run.pendingRevive);
+  if(bossIntro)await wipeIn('boss','¡Jefe!');else await boardSwapOut();
+  if(!S.run){wipeOut();boardSwapDone();return}
+  S.G=G;
   S.G.colors ||= [0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5);
   $('lvl').textContent=S.G.tutorial?`${S.G.n} · TUTORIAL`:S.G.n;$('mn').textContent=S.G.opt;$('base').textContent=S.run.mode==='p'?'—':baseScore(S.G.rate);
   applyZone(zoneIdx(S.G.n));renderStage();syncBossPhase();
@@ -59,15 +65,19 @@ async function startLevel(){
   $('lim').textContent=prac?'∞':S.G.limit;
   $('bUndo').disabled=!S.G.hist.length;
   $('msg').textContent=S.G.n===1?'Desliza los bloques y saca la llave roja ➜ Cada movimiento cuenta.':tipFor(S.G);
-  buildPieces();updateHud();sfx.start();S.busy=true;
+  buildPieces();boardSwapDone();updateHud();S.busy=true;
   fitBoard();Music.setLevel(S.G.n,S.G.rate);setTensionFx(0,false);Music.duck(1);Music.muffle(false);Music.start();
-  if(S.run.rescue){showRescue();return}
-  if(S.run.pendingRevive&&canPaidRevive(S.run,S.run.mode)){offerPaidRevive(S.run.pendingRevive);return}
+  if(S.run.rescue){wipeOut();showRescue();return}
+  if(S.run.pendingRevive&&canPaidRevive(S.run,S.run.mode)){wipeOut();offerPaidRevive(S.run.pendingRevive);return}
   delete S.run.pendingRevive;
   if(S.G.plan?.boss&&!S.G.tutorial&&S.G.moves===0&&S.run.bossSeen!==S.G.n){
    S.run.bossSeen=S.G.n;saveRun();
-   await showBossIntro(S.G.n);
+   const intro=showBossIntro(S.G.n);wipeOut();              // la presentación aparece detrás del telón de alarma
+   await intro;
    if(!S.run||S.G?.done)return;
+  }else{
+   wipeOut();sfx.levelIn();
+   if(!S.G.moves)levelBanner(S.G.tutorial?'Tutorial':`${S.G.plan?.boss?'Jefe · ':''}Nivel ${S.G.n}`,ZONES[zoneIdx(S.G.n)].n,!!S.G.plan?.boss);
   }
   S.busy=false;boardEl.classList.remove('board-lock');updateHud();saveRun();syncBossTimer();
   startCoach();                                        // avisos y guía de los primeros niveles / mecánicas nuevas
@@ -109,9 +119,12 @@ function travelDialog(){
   };
   const choose=choice=>{if(chosen||S.run!==session)return;chosen=true;buttons.forEach(b=>b.disabled=true);S.run.route=choice;S.run.routeZone=city;S.run.storyChapterSeen=city;S.run.storySeen=city*10+1;
    if(S.run.pendingClear)S.run.pendingClear.routeChosen=true;
-   saveRun();modal.classList.remove('show');modal.removeEventListener('keydown',key);resolve();
+   saveRun();modal.removeEventListener('keydown',key);
+   const picked=buttons[choice==='brave'?1:0];picked.classList.add('picked');buttons.forEach(b=>b!==picked&&b.classList.add('unpicked'));sfx.routePick();
+   setTimeout(async()=>{await wipeIn('gold');modal.classList.remove('show');buttons.forEach(b=>b.classList.remove('picked','unpicked'));wipeOut();resolve()},matchMedia('(prefers-reduced-motion: reduce)').matches?0:420);
   };
-  buttons[0].onclick=()=>choose('normal');buttons[1].onclick=()=>choose('brave');modal.classList.add('show');modal.addEventListener('keydown',key);buttons[0].focus();
+  buttons[0].onclick=()=>choose('normal');buttons[1].onclick=()=>choose('brave');
+  wipeIn('gold').then(()=>{modal.classList.add('show');modal.addEventListener('keydown',key);buttons[0].focus();wipeOut()});
  });
 }
 let advancingClear=false;
@@ -150,7 +163,7 @@ export function win(){                                  // la voz del héroe NO 
  clearRewards(S.run,S.G.n);
  S.run.pendingClear={level:S.G.n,gain:gain.total,moves:S.G.moves,opt:S.G.opt,routeChosen:false};recordBest();saveRun();
  setTensionFx(0,false);Music.duck(.55);if(S.G.moves>S.G.opt)sfx.success();   // si es perfecto suena la fanfarria especial al mostrar el resultado
- S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';
+ S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';boardEl.classList.add('board-win');   // las piezas celebran con una ola de saltos
  $('msg').textContent=`${S.G.moves<=S.G.opt?'Perfecto · ':''}+${gain.total} puntos · ${HERO_TALK[heroOf().id].win[S.G.n%3]}`;
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,done=S.G;
  setTimeout(async()=>{                                   // la llave sale → puntaje rápido → siguiente nivel

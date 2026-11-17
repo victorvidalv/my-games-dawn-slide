@@ -56,7 +56,7 @@ export function renderTurns() {
     segment.setAttribute('aria-label',`Reserva de Lía: ${r.left} de ${reserve} turnos`);
     label.textContent=`Brasa de Lía · ${r.left}/${reserve} turnos de reserva`;
     label.classList.toggle('active',G.moves>=r.start&&r.left>0);
-    if(G.moves>=r.start&&r.left>0&&!G.reserveLit){G.reserveLit=true;flash($('meter'),'reserve-awaken',800);liaToast(r.left);tone(330,.5,'sawtooth',.03,0,400);tone(440,.3,'triangle',.05,.05);tone(660,.35,'sine',.05,.18);tone(990,.3,'sine',.035,.34)}
+    if(G.moves>=r.start&&r.left>0&&!G.reserveLit){G.reserveLit=true;flash($('meter'),'reserve-awaken',800);liaToast(r.left);sfx.heroSig('lia');}
     if(G.moves<r.start)G.reserveLit=false;
   }
   $('left').textContent = movesLeft(G.moves, G.limit);

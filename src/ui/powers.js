@@ -4,20 +4,21 @@ import { beginPower } from '../game/powers.js';
 import { saveRun } from '../game/session.js';
 import { S, heroOf } from '../state.js';
 import { afterMove, cancelDrag, layout, updateHud } from './board.js';
-import { icon } from './icons.js';
 import { processSealMove } from './seals.js';
-import { AWAKENING_MS, prepareAwakening } from './power-art.js';
-import { burst } from './fx.js';
+import { motes } from './fx.js';
+import { openPowerStage } from './power-stage.js';
 
 /** Chispas del color del hechizo sobre la pieza que el poder mueve, y una onda que cruza el tablero. */
 function pulse(piece, colors) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || !piece) return;
   const r = piece.getBoundingClientRect();
-  burst(r.left + r.width / 2, r.top + r.height / 2, 14, colors, 4);
+  motes(0, 0, 22, colors, 3.4, r);
   const board = $('board');
   board.classList.remove('wave'); void board.offsetWidth; board.classList.add('wave');
 }
 
+/** Carga del poder antes de la descarga (rótulo y rayos sobre el tablero). */
+const POWER_CHARGE_MS = 850;
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function activatePower() {
@@ -27,18 +28,12 @@ export async function activatePower() {
   if (!action) { updateHud(); return; }
   const G = S.G, run = S.run, h = heroOf();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const board = $('board'), fx = $('heroPowerFx');
+  const board = $('board');
   S.busy = true; saveRun(); updateHud();
   $('bShop').disabled = true;
   const name = action.kind === 'rewind' ? 'Rebobinar' : 'Trazar destino';
-  fx.dataset.hero = h.id; fx.dataset.kind = action.kind;
-  let art;
-  const rect=$('bPower').getBoundingClientRect();
-  const height=Math.max(80,Math.min(380,rect.top-28,innerHeight-40)),width=height/2;
-  fx.style.setProperty('--awakening-height',height+'px');
-  fx.style.left=Math.max(width/2+12,Math.min(innerWidth-width/2-12,rect.left+rect.width/2))+'px';
-  fx.style.top=Math.max(12,rect.top-height-12)+'px';
-  $('powerSeal').innerHTML = icon(h.id === 'jean' ? 'clock' : 'stars');
+  // sin retrato: el poder estalla SOBRE el tablero (rayos, haces de luz y el rótulo «Poder de …») y luego actúa
+  const stage=reduced?null:openPowerStage(h.id,action.kind,`Poder de ${h.name}`,name);
   $('powerFxName').textContent = `${h.name} · ${name}`;
   $('powerStep').textContent = 'Poder activado';
   board.classList.add('hero-power', action.kind);
@@ -46,28 +41,18 @@ export async function activatePower() {
   // Sonido de poder: barrido grave + acorde brillante (hacia abajo al rebobinar, hacia arriba al trazar el destino).
   const up = action.kind !== 'rewind';
   const spell = h.id === 'van' ? ['#d1b2ec', '#ecd7ff', '#fff'] : ['#a5c8ed', '#d8eaff', '#fff'], spellColors = spell;
-  sfx.power(up);
+  sfx.heroSig(h.id);sfx.powerCharge(up);          // la firma sonora del héroe + la carga
   vib([20, 30, 35]);
   try {
-    try {
-      art = await prepareAwakening(h.id, reduced);
-      $('powerPortrait').replaceWith(art.img);
-    } catch {
-      // Keep the power usable if an asset failed to download.
-      $('powerPortrait').src = `heroes/${h.id}-power.webp`;
-    }
-    fx.classList.add('show');
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    await wait(reduced ? 100 : AWAKENING_MS);
-    // La carta sale disparada hacia el tablero y suelta chispas: el poder «viaja» hacia donde actúa.
     const br = board.getBoundingClientRect();
     if (!reduced) {
-      fx.classList.add('launch');
-      burst(fx.getBoundingClientRect().left + fx.offsetWidth / 2, fx.getBoundingClientRect().top + fx.offsetHeight / 2, 26, spell, 6);
-      await wait(280);
-      burst(br.left + br.width / 2, br.top + br.height / 2, 44, spell, 8);
+      await wait(POWER_CHARGE_MS);
+      stage.unleash();sfx.powerUnleash(up);vib([40, 20, 70]);
+      motes(innerWidth / 2, innerHeight / 2, 90, spell, 22);
+      motes(0, 0, 70, spell, 6, br);
+      await wait(300);
+      setTimeout(() => stage.close(), 340);
     }
-    fx.classList.remove('show', 'launch');
     for (let n = 0; n < action.steps.length; n++) {
       if (S.G !== G || S.run !== run || G.done) break;
       let i;
@@ -99,8 +84,8 @@ export async function activatePower() {
       await wait(reduced ? 40 : 280);
     }
   } finally {
-    art?.release();
-    fx.classList.remove('show'); board.classList.remove('hero-power', 'rewind', 'destiny');
+    stage?.close();
+    board.classList.remove('hero-power', 'rewind', 'destiny');
     board.removeAttribute('aria-busy'); G.els.forEach(el => el.classList.remove('power-piece'));
     if (S.G === G && S.run === run && !G.done) { S.busy = false; saveRun(); updateHud(); }
     $('bShop').disabled = false;

@@ -30,10 +30,27 @@ export function keyHz(i=0,oct=1){
   return 440*Math.pow(2,(key.root+12*oct+key.scale[deg%n]+12*Math.floor(deg/n)-69)/12);
 }
 let noiseBuf=null,noiseOwner=null;
+/* Bus de efectos: un compresor suave «pega» los sonidos y evita picos, y una reverberación corta les da espacio (sala pequeña). */
+let master=null,masterOwner=null;
+function dest(){
+  if(master&&masterOwner===AC)return master;
+  masterOwner=AC;
+  try{
+    const input=AC.createGain(),comp=AC.createDynamicsCompressor();
+    comp.threshold.value=-16;comp.knee.value=18;comp.ratio.value=3;comp.attack.value=.004;comp.release.value=.16;
+    input.connect(comp);comp.connect(AC.destination);
+    const len=Math.floor(AC.sampleRate*1.1),buf=AC.createBuffer(2,len,AC.sampleRate);
+    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.8)}
+    const conv=AC.createConvolver(),wet=AC.createGain();conv.buffer=buf;wet.gain.value=.13;
+    input.connect(conv);conv.connect(wet);wet.connect(AC.destination);
+    master=input;
+  }catch(_){master=AC.destination}
+  return master;
+}
 function out(f,t,v,d,lp){   // cadena común: ataque corto (sin clics), caída exponencial y filtro paso bajo opcional
   const g=AC.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0002,v),t+.006);g.gain.exponentialRampToValueAtTime(.001,t+d);
   let n=g;if(f){const q=AC.createBiquadFilter();q.type=lp?'lowpass':'bandpass';q.frequency.value=f;if(!lp)q.Q.value=1.2;q.connect(g);n=q}
-  g.connect(AC.destination);return n;
+  g.connect(dest());return n;
 }
 export function tone(f,d=.1,type='sine',v=.12,delay=0,slide=0,lp=0){
   if(muted||document.hidden||audioPageHidden) return;
@@ -53,10 +70,59 @@ export function noise(d=.05,v=.1,freq=1200,type='lowpass',delay=0,sweep=0){
     const t=AC.currentTime+delay,s=AC.createBufferSource(),q=AC.createBiquadFilter(),g=AC.createGain();
     s.buffer=noiseBuf;q.type=type;q.frequency.setValueAtTime(freq,t);if(sweep)q.frequency.exponentialRampToValueAtTime(Math.max(60,freq+sweep),t+d);
     g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0002,v),t+.004);g.gain.exponentialRampToValueAtTime(.001,t+d);
-    s.connect(q);q.connect(g);g.connect(AC.destination);s.start(t);s.stop(t+d+.02);
+    s.connect(q);q.connect(g);g.connect(dest());s.start(t);s.stop(t+d+.02);
   }catch(e){}
 }
 export const sfx={
+  /* Interfaz y transiciones */
+  ui:()=>{tone(keyHz(1,2),.05,'triangle',.028,0,0,3200);noise(.018,.018,4200,'highpass')},
+  whoosh:(up=true)=>noise(.3,.06,up?420:2600,'bandpass',0,up?2800:-2000),
+  levelIn:()=>{noise(.26,.05,500,'bandpass',0,2600);[0,2,3].forEach((k,i)=>tone(keyHz(k,1),.22,'triangle',.06,.05+i*.06,0,2800));tone(keyHz(0,0),.3,'sine',.07,.05,0,600)},
+  land:()=>{noise(.03,.04,1700,'bandpass',.1)},
+  bossAlarm:()=>{[0,.28].forEach(d=>{tone(58,.34,'sawtooth',.11,d,-6,620);tone(87,.3,'sawtooth',.06,d,-6,900);noise(.12,.1,260,'lowpass',d)});noise(.7,.07,300,'bandpass',.1,3400);tone(41,1,'triangle',.12,.5,-8)},
+  routePick:()=>{[0,1,2,3,4].forEach((k,i)=>tone(keyHz(k,1),.34,'sine',.07,i*.055,0,3600));tone(keyHz(0,0),.6,'triangle',.08,0,0,700);noise(.25,.04,3000,'highpass',.2,2500)},
+  /**
+   * Firma sonora de cada héroe (suena al despertar su poder, siempre en la tonalidad del tema):
+   *   Jean  – el péndulo: tic-tac de reloj que se acelera y una campana de torre que cae (el tiempo retrocede).
+   *   Juth  – las runas: arpa de cristal que sube en cascada con un coro agudo y chispas.
+   *   Lía   – la brasa: dos latidos graves, un soplo de fuego que se aviva y un acorde cálido.
+   */
+  heroSig:(hero)=>{
+    if(hero==='jean'){
+      [0,.2,.36,.48,.57,.64,.7].forEach((d,i)=>{noise(.018,.07,i%2?2600:3600,'bandpass',d);tone(i%2?1400:1900,.03,'square',.03,d,0,5000)});
+      [3,2,1,0].forEach((k,i)=>{tone(keyHz(k,1),1.1,'sine',.07,.1+i*.16,0,3000);tone(keyHz(k,1)*2.76,.7,'sine',.02,.1+i*.16,0,6000)});
+      tone(keyHz(0,-1),1.2,'triangle',.09,.1,-12,500);
+    }else if(hero==='van'){
+      [0,1,2,3,4,5,6,7].forEach((k,i)=>{tone(keyHz(k,1),.6,'triangle',.05,i*.055,0,5200);tone(keyHz(k,2),.4,'sine',.03,i*.055+.03,0,7000)});
+      [0,2].forEach(k=>{tone(keyHz(k,2),1.1,'sine',.035,.3,6,4200);tone(keyHz(k,2)*1.005,1.1,'sine',.03,.3,-6,4200)});
+      noise(.6,.03,6500,'highpass',.2,2500);
+    }else{
+      [0,.26].forEach(d=>{tone(62,.22,'sine',.2,d,-18,300);noise(.06,.07,180,'lowpass',d)});
+      noise(.9,.07,300,'bandpass',.3,2400);
+      [0,1,2].forEach((k,i)=>{tone(keyHz(k,0),1,'sawtooth',.035,.35+i*.07,0,1400);tone(keyHz(k,1),.9,'sine',.05,.4+i*.07,0,2600)});
+    }
+  },
+  // Poder de héroe: carga (zumbido que sube, chisporroteo) y descarga (trueno seco, golpe grave y acorde de metales)
+  powerCharge:(up)=>{noise(1,.05,up?300:2600,'bandpass',0,up?3600:-2200);tone(keyHz(0,-1),1,'sawtooth',.06,0,up?70:-30,500);[0,1,2,3,4,5,6,7].forEach(i=>noise(.04,.035,5200+i*300,'highpass',.1+i*.11))},
+  /**
+   * Descarga de cada poder (suena cuando el círculo mágico actúa sobre el tablero):
+   *   Rebobinar (Jean)      – el tiempo se retuerce: cinta que rebobina (dos barridos que caen), tonos que resbalan hacia abajo,
+   *                           un golpe grave y la campana del reloj al cerrar.
+   *   Trazar destino (Juth) – purificación: ola de aire que sube, acorde de coro luminoso, cascada de cristales y un brillo final.
+   */
+  powerUnleash:(up)=>{
+    if(!up){
+      noise(.55,.12,4200,'bandpass',0,-3800);noise(.45,.08,2600,'bandpass',.12,-2300);
+      [5,4,3,2,1,0].forEach((k,i)=>tone(keyHz(k,1),.26,'sawtooth',.04,i*.05,-keyHz(k,1)*.35,2200));
+      tone(70,.9,'sine',.2,.05,-30);noise(.3,.14,160,'lowpass',.05);
+      tone(keyHz(0,1),1.4,'sine',.09,.42,0,3200);tone(keyHz(0,1)*2.76,.9,'sine',.025,.42,0,6000);tone(keyHz(2,1),1.2,'sine',.05,.48,0,3200);
+    }else{
+      noise(.8,.09,500,'bandpass',0,5200);noise(.5,.05,5000,'highpass',.15,3000);
+      [0,1,2,3].forEach(k=>{tone(keyHz(k,1),1.5,'sine',.05,.06,4,3600);tone(keyHz(k,1)*1.004,1.5,'triangle',.03,.06,-4,3000)});
+      [3,4,5,6,7,8].forEach((k,i)=>tone(keyHz(k,2),.45,'sine',.04,.1+i*.05,0,8000));
+      tone(keyHz(0,0),1.2,'triangle',.1,0,0,700);tone(keyHz(6,2),.9,'sine',.03,.5,0,9000);
+    }
+  },
   // Pieza deslizante: golpecito de madera (ruido sordo + cuerpo grave) y una nota de la tónica del tema que sube un poco cada vez
   move:()=>{noise(.05,.12,700,'lowpass');tone(keyHz(Math.floor(Math.random()*3),0),.12,'sine',.09,0,-30,900);tone(keyHz(2,1),.1,'triangle',.03,.02,0,2400)},
   /** Marca de casilla al arrastrar: pizzicato suave en la escala del tema (cada casilla una nota distinta). */

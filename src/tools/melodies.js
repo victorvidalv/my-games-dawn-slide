@@ -75,6 +75,8 @@ function stopAll() {
   now.textContent = 'Nada sonando';
 }
 
+/** Secciones de la forma de canción (ver FORM en themes.js) con su nombre para los botones. */
+const SECTIONS = [['intro', 'Intro'], ['verse', 'Estrofa'], ['verse2', 'Estrofa 2'], ['pre', 'Pre-coro'], ['chorus', 'Coro'], ['break', 'Corte'], ['verse3', 'Estrofa 3'], ['chorus2', 'Coro 2'], ['bridge', 'Puente'], ['rise', 'Subida'], ['final', 'Coro final'], ['outro', 'Cierre']];
 ALL_THEMES.forEach((th, i) => {
   const zone = i < ZONE_THEMES.length ? ZONES[i] : null;
   const title = zone ? `${zone.e} ${zone.n}` : i === ZONE_THEMES.length ? '🏠 Menú principal' : '🛡️ Elección de héroe';
@@ -97,11 +99,16 @@ ALL_THEMES.forEach((th, i) => {
       <label>Capa (nivel de la ciudad) <input type="range" min="1" max="${LAYERS_PER_CITY}" value="${LAYERS_PER_CITY}" class="lay"> <b class="lv">${LAYERS_PER_CITY}</b></label>
       <button class="tour">⇢ Recorrer 1→${LAYERS_PER_CITY}</button><small class="what">${LAYER_TEXT[LAYERS_PER_CITY - 1]}</small>
     </div>
+    <div class="layers sections"><span>Sección de la canción:</span> ${SECTIONS.map(([id, label]) => `<button class="sec" data-sec="${id}">${label}</button>`).join(' ')} <b class="secnow"></b></div>
     <div class="chords">${chords}</div>
     <div class="roll">${rollSvg(th)}<div class="cursor"></div></div>
     <div class="legend">Eje horizontal: 16 compases. Cada barra es una nota (largo = duración, altura = tono, color = nota).</div>`;
   list.append(card);
 
+  // saltar a una sección de la forma (intro, estrofa, coro, puente, coro final…) para oírla directamente
+  const secNow = card.querySelector('.secnow');
+  card.querySelectorAll('.sec').forEach((b) => { b.onclick = () => { if (playingId !== i) btn.onclick(); Music.seek(b.dataset.sec); }; });
+  setInterval(() => { secNow.textContent = playingId === i ? `▶ ${(SECTIONS.find(([id]) => id === Music.section) || ['', Music.section])[1]}` : ''; }, 300);
   const btn = card.querySelector('.head button');
   const slider = card.querySelector('.lay');
   const lv = card.querySelector('.lv');

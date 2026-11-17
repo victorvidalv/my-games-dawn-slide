@@ -15,6 +15,7 @@ import { renderSeal, processSealMove } from './seals.js';
 import { numLocale } from '../i18n.js';
 import { boardRotation, localDelta } from '../game/orientation.js';
 import { hideCurse, showCurse } from './curse.js';
+import { motes } from './fx.js';
 export const boardEl=$('board'), cellPx=()=>boardEl.clientWidth/6;
 /* Mide el espacio libre real y da al tablero el mayor tamaño posible (sin scroll) */
 export function fitBoard(){
@@ -52,7 +53,7 @@ const TONE_NAMES=['azul ◆','ámbar ●','verde ▲'];
 const toneMark=(t)=>`<span class="mk tone t${t}" title="Gema ${TONE_NAMES[t]}">${TONE_SYM[t]}</span>`;
 export function buildPieces(){
   boardEl.querySelectorAll('.piece,.wall,.door,.plate,.links,.seal-floor').forEach(e=>e.remove());
-  boardEl.dataset.city=zoneIdx(S.G.n);
+  boardEl.dataset.city=zoneIdx(S.G.n);boardEl.classList.remove('board-win');
   S.G.rot=boardRotation(S.run?.seed,S.G.n,S.G.tutorial||false);                       // la salida cambia de lado (derecha, abajo, izquierda, arriba)
   boardEl.parentElement.style.setProperty('--rot',S.G.rot+'deg');boardEl.parentElement.dataset.rot=S.G.rot;
   if(S.G.rot&&!S.G.moves)showCurse(S.G.rot);else hideCurse();
@@ -93,6 +94,16 @@ function placeStatic(){
   (S.G.walls||[]).forEach(([r,c],k)=>{const el=S.G.wallEls?.[k];if(!el)return;el.style.left=c*s+'px';el.style.top=r*s+'px';el.style.width=el.style.height=s+'px'});
   (S.G.doors||[]).forEach(([r,c],k)=>{const el=S.G.doorEls?.[k];if(!el)return;el.style.left=c*s+'px';el.style.top=r*s+'px';el.style.width=el.style.height=s+'px'});
   S.G.pieces.forEach((p,i)=>{const el=S.G.plateEls?.[i];if(!el)return;el.style.left=p.plate[1]*s+'px';el.style.top=p.plate[0]*s+'px';el.style.width=el.style.height=s+'px'});
+}
+/** La pieza «aterriza»: rebote, aro de luz y un polvo de luz de su color alrededor (tras el deslizamiento). */
+function landFx(el){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  setTimeout(()=>{
+    if(!el.isConnected)return;
+    flashEl(el,'landed',300);sfx.land();
+    const r=el.getBoundingClientRect(),c=getComputedStyle(el);
+    motes(0,0,10,[c.getPropertyValue('--a').trim()||'#fff','#fff3cf','#f1ce82'],1.7,r);
+  },150);
 }
 const flashEl=(el,cls,ms)=>{el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),ms)};
 /** Candados: se cierran o se abren según la placa; al abrirse suena y brilla. */
@@ -196,6 +207,7 @@ function attach(el,i){
       if(x!==x0){
         S.G.hist.push(S.G.pos.slice());S.G.pos[i]=x;S.G.moves++;
         (p.kind==='heavy'?sfx.heavyMove:p.kind==='gate'?sfx.gateMove:p.kind==='ice'?sfx.iceMove:sfx.move)();
+        landFx(el);
         const passDoor=crossedDoorIdx(p,x0,x);
         if(passDoor>=0){sfx.doorOpen();flashEl(S.G.doorEls[passDoor],'door-pass',550);vib([14,18,22])}
         else if(p.kind==='heavy'){flashEl(boardEl.parentElement,'board-thud',180);vib([24,18])}

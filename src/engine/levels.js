@@ -3,6 +3,7 @@ import { analyze, maxDistance } from './solver.js';
 import { mulberry32 } from './rng.js';
 import { braveExtra, curve, WINDOW } from './difficulty.js';
 import { hash32 } from './rng.js';
+import { boardInterest, pickInteresting, INTEREST_MAX_TARGET } from './interest.js';
 
 /**
  * Banco de tableros precalculados: `bank[rating-1]` es una lista de textos de tablero
@@ -45,6 +46,7 @@ export function pickBoard(bank, rating, seed, level, family = 'plain', special =
 /**
  * Variante nueva de un tablero del banco: cambia 1-3 piezas al azar y solo acepta el cambio si el tablero
  * sigue teniendo solución y alcanza el mínimo objetivo de la dificultad (se comprueba con el solver).
+ * En las dificultades bajas tampoco puede perder interés (ver interest.js): la variante no vuelve fome un tablero pensado.
  * Así dos partidas nunca repiten tablero aunque el banco sea finito. Determinista para una semilla.
  */
 export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) {
@@ -55,11 +57,21 @@ export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) 
   let cur = { pieces: board.pieces, pos: board.pos, walls, doors };
   let accepted = 0;
   const hasIce = board.pieces.some((p) => p.kind === 'ice');
+  let quality = null;                                   // interés del tablero actual (solo se calcula en dificultades bajas)
+  if (target <= INTEREST_MAX_TARGET) {
+    const an0 = analyze(cur.pieces, cur.pos, 600000, walls, doors);
+    if (an0) quality = boardInterest(cur.pieces, an0, target, walls, doors);
+  }
   for (let t = 0; t < tries && accepted < changes; t++) {
     const cand = mutate(cur, rng, pLong);
     if (!cand) continue;
     const an = analyze(cand.pieces, cand.pos, 600000, walls, doors);
     if (an && (!hasIce || an.dist.size === an.list.length) && maxDistance(an) >= target) {
+      if (quality !== null) {
+        const q = boardInterest(cand.pieces, an, target, walls, doors);
+        if (q < quality - 0.05) continue;
+        quality = Math.max(quality, q);
+      }
       cur = cand;
       accepted++;
     }
@@ -71,6 +83,7 @@ export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) 
  * Elige el estado inicial de un tablero para el nivel.
  *  - adj: ajuste adaptativo (-2..+2) según la eficiencia del jugador en niveles anteriores.
  *  - brave: ruta aventurera → usa la siguiente distancia mayor disponible.
+ * Entre los estados con ese mínimo NO elige al azar: toma uno de los más interesantes (pickInteresting), así ningún nivel es «despeja y sal».
  * Devuelve {pieces, pos, walls, doors, opt} donde opt = movimientos mínimos reales del estado elegido.
  */
 export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.random, boost = 0, withAnalysis = false }) {
@@ -96,8 +109,8 @@ export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.r
   const higher = ds.filter((v) => v > normal);
   const wantBrave = normal + braveExtra(normal);                   // ruta aventurera: más movimientos, el más cercano disponible
   const opt = brave && higher.length ? higher.reduce((a, b) => (Math.abs(b - wantBrave) < Math.abs(a - wantBrave) ? b : a)) : normal;
-  const keys = byDist.get(opt);
-  const key = keys[Math.floor(rng() * keys.length)];
+  // entre los estados a esa distancia se queda con uno de los que más hacen pensar (dependencias, sentidos variados, trampas)
+  const { key } = pickInteresting(board.pieces, byDist.get(opt), an, walls, doors, { rng });
   const pos = [];
   for (let i = 0, v = key; i < board.pieces.length; i++, v = Math.floor(v / 8)) pos.push(v % 8);
   return { pieces: board.pieces, pos, walls, doors, opt, ...(withAnalysis ? { analysis: an } : {}) };

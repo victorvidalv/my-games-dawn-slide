@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { layersFor, layerOfLevel, LAYERS_PER_CITY, ALL_THEMES, ZONE_THEMES, MENU_THEME, HEROES_THEME, SCALES, parseBar, shiftBar, shiftEntry, chordMidi, entryAt } from '../src/audio/themes.js';
+import { layersFor, layerOfLevel, LAYERS_PER_CITY, ALL_THEMES, ZONE_THEMES, MENU_THEME, HEROES_THEME, SCALES, parseBar, shiftBar, shiftEntry, chordMidi, entryAt, FORM, FORM_BARS, sectionAt } from '../src/audio/themes.js';
 
 const degreesOf = (e, n) => {
   const d = typeof e === 'string' ? Number(e.split(':')[0]) : e;
@@ -117,6 +117,21 @@ describe('temas musicales', () => {
     expect(layersFor(3).drums).toBe('light');
     expect(layersFor(5).drums).toBe('full');
     expect(Object.values(layersFor(10)).every((v) => v === true || v === 'full')).toBe(true);
+  });
+
+  it('forma de canción: 88 compases con intro, estrofas, coros, puente y coro final; dura unos 3 minutos y luego se repite', () => {
+    expect(FORM_BARS).toBe(88);
+    expect(FORM.map((x) => x.id)).toEqual(['intro', 'verse', 'verse2', 'pre', 'chorus', 'break', 'verse3', 'chorus2', 'bridge', 'rise', 'final', 'outro']);
+    expect(sectionAt(0).sec.id).toBe('intro');
+    expect(sectionAt(FORM_BARS).sec.id).toBe('intro');                    // al terminar vuelve a empezar
+    expect(sectionAt(FORM_BARS - 1)).toEqual({ sec: FORM[FORM.length - 1], k: 7 });
+    for (const th of ALL_THEMES) {
+      const seconds = (FORM_BARS * 4 * 60) / th.bpm;
+      expect(seconds, th.name).toBeGreaterThan(150);
+      expect(seconds, th.name).toBeLessThan(215);
+    }
+    expect(FORM.filter((x) => x.chorus).length).toBe(3);
+    expect(FORM.find((x) => x.id === 'final').mod).toBe(2);               // el coro final sube un tono
   });
 
   it('menú y héroes tienen una sección B propia (no es la A desplazada)', () => {
