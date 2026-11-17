@@ -72,7 +72,7 @@ src/
   game/
     shop.js             Tienda: precios y compras como funciones puras (turnos extra, pista, rehacer, saltar).
     mechanics.js        Piezas especiales por ciudad, calendario de niveles (normales, mecánica, jefe) y jefes.
-    minigames.js        Reglas puras de los tres retos, ciclo por héroe, progreso y cobro de premios.
+    minigames.js        Reglas puras de los nueve minijuegos (3 por héroe), nota 0-5 y cobro de premios.
     heroes.js           ★ Héroes y poderes como funciones puras (Lía, Jean, Juth) + recompensas de nivel.
     session.js          Flujo de la aventura: empezar, cargar nivel, ganar, perder, viajar, récord.
   data/
@@ -80,10 +80,10 @@ src/
     special.json        Tableros con muros, candados, piezas pesadas y mixtos (mismas dificultades). Se genera.
     zones.js            Las diez ciudades (colores, nombres).
     story.js            Capítulos, diálogo de los héroes.
-  ui/                   Pantallas y efectos (usan el DOM): board, heroes, map, bonus, finale, menu, controls, story, fx,
+  ui/                   Pantallas y efectos (usan el DOM): board, heroes, map, bonus (+ minigames/), finale, menu, controls, story, fx,
                         coach (guía y leyenda de piezas), shop (tienda de Don Dublón), turns, result.
   audio/                sound.js (efectos, recuperación del audio), music.js (secuenciador) y themes.js (las melodías).
-  styles/               CSS en orden de cascada (01-… a 19-…); main.js los importa en ese orden.
+  styles/               CSS en orden de cascada (01-… a 32-…); main.js los importa en ese orden.
 ```
 
 Regla de oro: **`src/engine` y `src/game/heroes.js` no tocan el DOM.** Toda regla del juego que se pueda
@@ -222,17 +222,26 @@ a recargar la página y a las partidas guardadas antiguas.
 El juego transcurre en **Thyes, año 4133**, un mundo de diez reinos (las diez ciudades). La sombra de **Vhorn** apagó el Faro del Alba y **Tri**, guardiana del Faro, selló los reinos: todos creen que fue ella quien los encerró. Cada sello lleva grabada una frase; leídas en orden revelan por qué cerró Tri. Tres luces pueden despertar lo sellado —la Brasa (Lía), la Hora (Jean) y la Palabra (Juth)— y la llave roja abre cada cerrojo. Cuatro pueblos antiguos guardan pedazos de la historia: los **Kogn** (navegantes, en el Puerto), los **Sahrim** (caravaneros, en el Oasis), los **Ennari** (escribas de la corteza, en la Aldea) y los **Aluen** (tejedores de puentes bajo las estrellas, en la Ciudad Celeste).
 Los nombres y la trama están en [`src/data/lore.js`](src/data/lore.js) y los textos de cada capítulo y héroe en [`src/data/story.js`](src/data/story.js); `tests/lore.test.js` vigila que todo calce.
 
+## Idiomas
+
+El juego está en **inglés, español, chino simplificado y japonés**. El español es el idioma de origen (así están escritos el código y los datos); los demás se aplican en el navegador con el traductor de [`src/i18n.js`](src/i18n.js), que busca cada texto visible en el diccionario del idioma activo.
+
+- **Textos centralizados**: todo lo que se lee en cada idioma vive en `src/i18n/<idioma>-ui.js`, `-game.js`, `-story.js` y `-shop.js` (`en`, `zh`, `ja`), con las mismas claves —el texto en español— y en el mismo orden. Para añadir un idioma: crear sus cuatro archivos, registrarlo en `LANGS`, `DICTS` y `LANG_INFO` y poner su bandera en el selector de `index.html`.
+- **Idioma inicial**: el que eligió el jugador la última vez; si no hay elección, el del navegador (`navigator.languages`, p. ej. `es-CL` → español, `zh-TW` → chino, `ja-JP` → japonés); si no es ninguno de los cuatro, inglés (`detectLang`).
+- **Selector**: cuatro banderas en el menú principal; el cambio es instantáneo y no corta la música.
+- **Nombres propios** (Lía, Jean, Juth, Vhorn, Thyes, Tri, los mercaderes y los cuatro pueblos) se dejan en alfabeto latino en todos los idiomas; las ciudades y los sellos sí se traducen.
+- **Tipografía**: en chino y japonés los rótulos usan serifas CJK del sistema (`32-menus.css`), porque las fuentes de cartel no traen esos signos.
+- `tests/i18n.test.js` comprueba que los tres diccionarios tienen exactamente las mismas claves, que ninguna traducción está vacía, que conservan los marcadores `{x}` y los símbolos del juego, y que en chino y japonés no queda texto en español ni en inglés.
+
 ## Música
 
 Cada ciudad tiene UNA melodía central y, a medida que subes por sus 10 niveles, se le suman capas (nivel 1: melodía, cuerdas y bajo mínimo; 2: bajo completo; 3: percusión ligera; 4: acordes; 5: bombo y caja; 6: arpegio; 7: contramelodía; 8: orquesta; 9: melodía doblada una octava arriba; 10: todo). Al pasar a la ciudad siguiente cambia el tema y vuelve a la capa 1. Los temas y las capas están en [`src/audio/themes.js`](src/audio/themes.js) y el secuenciador en [`src/audio/music.js`](src/audio/music.js).
 Para escucharlas: `npm run melodies:html` genera `output/melodias.html` (un solo archivo, se abre con doble clic) con un deslizador de capa y un botón «Recorrer 1→10»; en desarrollo también está en `/melodies.html`.
 
+**Coros y ritmo.** En los estribillos entra un coro de voces sintetizado por formantes (`choir` en `music.js`): sostiene el acorde, canta la melodía y lanza gritos a compás, con palmas de grupo y pandereta. Cada tema define su `choir` en `themes.js` (vocal `ah`/`oh`/`oo`/`eh`, pasos de los gritos y de las palmas); junto con el `hook`, esa firma rítmica es distinta en las diez ciudades, el menú, la elección de héroe y el jefe (lo comprueba `tests/music.test.js`). El menú y la elección de héroe adelantan el coro a la segunda estrofa y el jefe lo usa en quintas graves.
+
 ## Voces de los héroes
 
-
-## Minijuegos de descanso
-
-En los niveles 15, 25…95 se entra directamente a un reto: **parejas**, **secuencias** o **precisión**. Cada héroe tiene tres nombres y diseños propios, que se repiten en orden **1 → 2 → 3 → 1**. No hay sorteo de juego, ruleta introductoria ni tragaperras. Solo varían las cartas y las secuencias, de forma determinista por semilla. Los premios dependen del desempeño: al menos una pista al participar, y un máximo que crece de tres a diez. El progreso y los premios se guardan; el cobro es atómico y no se duplica al recargar. Reglas en [`src/game/minigames.js`](src/game/minigames.js) e interfaz en [`src/ui/bonus.js`](src/ui/bonus.js).
 
 ## Tienda
 
@@ -261,15 +270,19 @@ Datos y frases propias en `src/game/shop-personas.js`. El descuento heroico de J
 
 ## Minijuegos de descanso
 
-Se mantienen nueve paradas, en los niveles 15, 25…95. No aparecen en el selector de héroe.
+Nueve paradas, en los niveles 15, 25…95. Cada héroe tiene **tres juegos propios**, cada uno una mecánica clásica distinta (nueve en total), y los recorre en ciclo **1 → 2 → 3 → 1**; cada vuelta sube un escalón de dificultad (`bonusTier` 0-2).
 
 | Héroe | Juego 1 | Juego 2 | Juego 3 |
 |---|---|---|---|
-| Lía | Brasas del Juramento (parejas) | El Canto del Alba (secuencia) | El Latido de la Forja (precisión) |
-| Jean | La Última Campanada (precisión) | Fragmentos de la Hora (parejas) | El Eco del Péndulo (secuencia) |
-| Juth | El Nombre de las Estrellas (secuencia) | El Sello del Firmamento (precisión) | El Códice de los Nombres (parejas) |
+| Lía (reflejos) | Lluvia de Brasas · atrapar lo que cae (`catch`) | Sombras Fuera · golpear lo que asoma (`whack`) | La Torre de la Forja · apilar a tiempo (`stack`) |
+| Jean (tiempo) | La Última Campanada · parar la aguja en la zona (`clock`) | El Compás del Péndulo · tocar al ritmo (`rhythm`) | Las Horas en Orden · tocar 1, 2, 3… contrarreloj (`order`) |
+| Juth (memoria) | El Códice de los Nombres · parejas (`pairs`) | El Nombre de las Estrellas · repetir la secuencia (`simon`) | El Sello Errante · seguir el cubilete (`shell`) |
 
-Parejas: cuatro parejas y hasta seis errores, sin cronómetro. Secuencias: repetir dos, tres y cuatro símbolos, con dos oportunidades de error. Precisión: tres intentos, recorrido predecible y zona amplia; los puntos se calculan en el instante real del toque. Los controles principales miden al menos 44 px. Reducir movimiento elimina transiciones decorativas sin acelerar las secuencias. Al poner la app en segundo plano se pausa el reto activo sin gastar un intento. Se puede terminar un reto y recoger el premio parcial. Las cartas, las rondas y el premio pendiente sobreviven a una recarga; la continuación añade las pistas una sola vez. Las antiguas partidas pendientes migran conservando un premio ya decidido.
+**Cada parada tiene cuatro pasos**: *cómo se juega* (una demostración animada, una sola frase, qué suma y qué resta, y el premio en juego) → cuenta atrás 3·2·1 → el juego → resultado. Todos se juegan con un dedo y también con teclado (flechas, espacio o números).
+
+**Premio: de 0 a 5 estrellas.** Todos los juegos se puntúan con la misma nota: 0 = sin premio, 5 = el premio máximo de la parada. El máximo crece con el nivel (`maxPrize`: 3 pistas en el 15 → 10 en el 95; ×0,8 en Difícil y ×0,6 en Experto) y cada estrella vale su parte proporcional (`bonusPrize`; cualquier nota ≥ 1 da al menos una pista). En el nivel 15 la tabla es 0·1·1·2·2·3 y en el 95 es 0·2·4·6·8·10. No hacer nada da 0 en todos los juegos.
+
+**Código.** Las reglas, la generación determinista de cada partida (por la semilla de la aventura) y la nota son funciones puras en [`src/game/minigames.js`](src/game/minigames.js) (`TUNING` reúne los ajustes por juego y escalón); [`src/ui/bonus.js`](src/ui/bonus.js) es el marco común y cada juego se dibuja en `src/ui/minigames/` (`lia.js`, `jean.js`, `juth.js`; `kit.js` aporta el reloj pausable, los efectos y los sonidos). Si la pestaña se oculta el juego se congela; si se cierra la app la parada vuelve a empezar, y una vez decidida la nota el premio se cobra una sola vez. `tests/minigames.test.js` comprueba que todas las partidas generadas son justas (alcanzables, sin solapes, con margen humano) y que la nota es monótona de 0 a 5.
 
 ## Música
 

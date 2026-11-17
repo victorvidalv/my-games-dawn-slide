@@ -1,6 +1,8 @@
 /**
  * Temas musicales: uno por ciudad (mismo orden que ZONES) más el del menú y el de la elección de héroe.
  * Cada tema lleva además un `hook`: un ostinato sincopado propio ({s: pasos, n: notas del acorde, voice}) que le da un ritmo reconocible.
+ * Y un `choir`: la vocal que canta el coro en los estribillos (`ah`, `oh`, `oo`, `eh`), los pasos de sus gritos a compás (`chant`) y los de
+ * las palmas (`clap`). Vocal + gritos + palmas son distintos en cada tema: el estribillo de cada ciudad se reconoce con los ojos cerrados.
  * Estilo «juego acogedor»: acordes con séptima, bajo caminante, ritmo con swing y melodías cantables.
  *
  * Cada tema es una pieza de 16 compases (4/4, 16 pasos por compás) que se repite:
@@ -71,7 +73,7 @@ export const entryAt = (th, bar, st) => {
 
 const THEME_DATA = [
   { // 0 Valle Esmeralda · Do mayor, pop-folk saltarín con guitarra y flauta
-    name: 'Un corazón al sol', hook: { s: [0, 3, 6, 10, 12], n: [0, 2, 1, 2, 3], voice: 'guitar' }, epic: 1, bpm: 124, sc: 'maj', root: 48, swing: 0.1, leadVoice: 'flute', compVoice: 'guitar', comp: 'chop16', bassPat: 'pop', groove: 'pop', echo: true,
+    name: 'Un corazón al sol', choir: { vowel: 'ah', chant: [0, 6], clap: [4, 12] }, hook: { s: [0, 3, 6, 10, 12], n: [0, 2, 1, 2, 3], voice: 'guitar' }, epic: 1, bpm: 124, sc: 'maj', root: 48, swing: 0.1, leadVoice: 'flute', compVoice: 'guitar', comp: 'chop16', bassPat: 'pop', groove: 'pop', echo: true,
     prog: [0, [5, 1], '4:7', [0, 5], 3, [2, 5], [1, '4:7'], 0, 5, '2:7', 1, '4:7', 3, 1, '4:7', [0, '4:7']],
     tuneText: ['11:2 11:1 9:1 7:2 9:2 11:2 14:2 16:3 14:1', '12:2 r:1 11:1 9:2 7:2 8:2 10:2 12:1 14:1 15:2', '13:3 13:1 15:2 13:2 11:2 13:2 10:2 r:2', '14:2 14:1 11:1 9:2 11:2 12:2 11:2 9:2 7:2',
       '10:2 12:2 14:2 16:2 14:1 12:1 10:2 12:2 r:2', '13:2 11:1 9:1 11:2 13:2 14:2 12:2 11:2 9:2', '12:2 12:1 14:1 15:2 14:2 13:2 15:1 13:1 11:2 13:2', '14:4 r:2 11:2 14:2 16:2 14:4',
@@ -79,63 +81,63 @@ const THEME_DATA = [
       '14:3 14:1 16:2 14:2 12:2 14:2 16:2 r:2', '15:2 14:2 12:2 14:2 15:1 14:1 12:2 10:2 r:2', '13:2 15:2 17:4 15:2 13:2 11:2 13:2', '14:2 11:2 14:2 16:2 15:2 13:2 11:2 10:2'],
   },
   { // 1 Puerto de las Velas · Re mixolidio, polka marinera con tamborín
-    name: 'Vals de las pequeñas velas', hook: { s: [0, 4, 6, 8, 12, 14], n: [0, 2, 1, 0, 2, 3], voice: 'pizz' }, epic: 1, bpm: 126, sc: 'mix', root: 50, swing: 0.1, leadVoice: 'whistle', compVoice: 'accordion', comp: 'oompah', bassPat: 'oompah', groove: 'polka', echo: true,
+    name: 'Vals de las pequeñas velas', choir: { vowel: 'eh', chant: [0, 8], clap: [4, 6, 12, 14] }, hook: { s: [0, 4, 6, 8, 12, 14], n: [0, 2, 1, 0, 2, 3], voice: 'pizz' }, epic: 1, bpm: 126, sc: 'mix', root: 50, swing: 0.1, leadVoice: 'whistle', compVoice: 'accordion', comp: 'oompah', bassPat: 'oompah', groove: 'polka', echo: true,
     prog: [0, 6, 3, 0, 0, 6, [3, 4], 0],
     tuneText: ['7:2 7:1 9:1 11:2 11:2 14:2 13:2 11:2 9:2', '13:2 13:1 15:1 13:2 10:2 12:2 13:2 15:2 r:2', '12:2 14:1 12:1 10:2 12:2 14:2 16:2 14:2 12:2', '11:2 9:2 7:2 9:2 11:3 13:1 14:2 r:2',
       '14:2 14:1 11:1 14:2 16:2 14:2 13:2 11:2 9:2', '13:2 15:2 17:2 15:2 13:1 12:1 10:2 12:2 13:2', '12:2 10:1 12:1 14:2 12:2 11:2 13:1 15:1 13:2 11:2', '14:3 11:1 9:2 7:2 9:2 11:2 14:2 r:2'],
     B: { k: 4, endProg: [[3, 4], 0], end: ['12:2 14:2 16:2 14:2 11:2 13:2 15:2 13:2', '14:2 14:1 11:1 9:2 7:2 9:2 11:2 14:2 r:2'] },
   },
   { // 2 Oasis Dorado · frigio dominante, bazar con clave, conga y clarinete
-    name: 'Gotas sobre la arena', hook: { s: [0, 3, 6, 10, 12], n: [0, 1, 2, 1, 3], voice: 'koto' }, epic: 1, bpm: 118, sc: 'phd', root: 52, swing: 0.06, leadVoice: 'clarinet', compVoice: 'pizz', comp: 'montuno', bassPat: 'tumbao', groove: 'latin', echo: true,
+    name: 'Gotas sobre la arena', choir: { vowel: 'oh', chant: [3, 6], clap: [4, 10, 12] }, hook: { s: [0, 3, 6, 10, 12], n: [0, 1, 2, 1, 3], voice: 'koto' }, epic: 1, bpm: 118, sc: 'phd', root: 52, swing: 0.06, leadVoice: 'clarinet', compVoice: 'pizz', comp: 'montuno', bassPat: 'tumbao', groove: 'latin', echo: true,
     prog: [0, 1, 0, 6, 0, 1, [3, 6], 0],
     tuneText: ['9:1 8:1 9:2 11:2 9:2 7:2 9:1 11:1 13:2 11:2', '10:2 12:1 14:1 12:2 10:2 8:2 10:2 12:2 14:2', '13:2 13:1 11:1 9:2 11:2 13:2 15:2 16:2 13:2', '12:2 10:1 8:1 10:2 12:2 13:2 12:2 10:2 8:2',
       '11:2 13:2 14:1 13:1 11:2 9:2 11:2 13:2 11:2', '12:3 14:1 12:2 10:2 8:2 10:2 12:2 r:2', '10:2 12:2 14:2 16:2 13:2 12:1 10:1 8:2 10:2', '7:2 9:2 11:2 13:2 14:4 r:2 11:2'],
     B: { k: -2, endProg: [[3, 6], 0], end: ['12:2 10:2 8:2 10:2 13:2 12:2 10:2 8:2', '11:2 9:1 8:1 7:2 9:2 11:2 13:2 14:4'] },
   },
   { // 3 Aldea de Otoño · La dórico, shuffle folk con violín y pisotones
-    name: 'Las hojas recuerdan', hook: { s: [0, 6, 8, 14], n: [0, 2, 1, 3], voice: 'pizz' }, epic: 1, bpm: 116, sc: 'dor', root: 45, swing: 0.22, leadVoice: 'fiddle', compVoice: 'guitar', comp: 'chop16', bassPat: 'pop', groove: 'shuffle', echo: false,
+    name: 'Las hojas recuerdan', choir: { vowel: 'oo', chant: [0, 14], clap: [4, 12, 13] }, hook: { s: [0, 6, 8, 14], n: [0, 2, 1, 3], voice: 'pizz' }, epic: 1, bpm: 116, sc: 'dor', root: 45, swing: 0.22, leadVoice: 'fiddle', compVoice: 'guitar', comp: 'chop16', bassPat: 'pop', groove: 'shuffle', echo: false,
     prog: [0, 3, [6, 3], 0, 0, 3, [6, 4], 0],
     tuneText: ['9:3 9:1 11:2 9:2 7:2 9:2 11:3 13:1', '10:3 10:1 12:2 14:2 12:2 10:2 9:2 7:2', '13:2 12:1 10:1 8:2 10:2 12:2 14:1 12:1 10:2 12:2', '11:3 9:1 7:2 9:2 11:2 13:2 11:2 9:2',
       '7:2 9:2 11:3 13:1 11:2 9:2 7:2 9:2', '12:2 14:2 16:3 14:1 12:2 10:2 12:2 14:2', '10:2 12:1 10:1 8:2 10:2 11:2 13:2 15:2 13:2', '7:3 9:1 11:2 9:2 7:2 9:2 11:4'],
     B: { k: -3, endProg: [[6, 4], 0], end: ['10:2 12:2 14:2 12:2 11:2 13:2 15:2 13:2', '14:3 11:1 9:2 7:2 9:2 11:2 14:2 r:2'] },
   },
   { // 4 Ciudad del Reloj · Fa mayor, funk-disco de tic-tac con sintetizador
-    name: 'Las horas prestadas', hook: { s: [0, 2, 3, 6, 8, 10, 11, 14], n: [0, 0, 2, 1, 0, 0, 3, 2], voice: 'synth', v: 0.013 }, epic: 1, bpm: 126, sc: 'maj', root: 53, swing: 0.04, leadVoice: 'synth', compVoice: 'pizz', comp: 'chop16', bassPat: 'funk', groove: 'disco', echo: true,
+    name: 'Las horas prestadas', choir: { vowel: 'ah', chant: [2, 10], clap: [4, 7, 12] }, hook: { s: [0, 2, 3, 6, 8, 10, 11, 14], n: [0, 0, 2, 1, 0, 0, 3, 2], voice: 'synth', v: 0.013 }, epic: 1, bpm: 126, sc: 'maj', root: 53, swing: 0.04, leadVoice: 'synth', compVoice: 'pizz', comp: 'chop16', bassPat: 'funk', groove: 'disco', echo: true,
     prog: [0, [1, '4:7'], 0, [5, 1], 3, [2, 5], [1, '4:7'], 0],
     tuneText: ['11:1 r:1 11:1 r:1 9:1 r:1 7:1 r:1 9:2 11:2 14:2 13:2', '12:1 r:1 12:1 r:1 10:2 8:2 11:2 13:1 15:1 13:2 11:2', '13:1 r:1 13:1 r:1 11:1 r:1 9:1 r:1 11:2 13:2 14:4', '12:2 14:1 16:1 14:2 12:2 12:1 10:1 8:2 10:2 12:2',
       '14:2 12:1 14:1 16:2 14:2 12:2 10:2 12:2 14:2', '13:1 r:1 11:1 r:1 9:2 11:2 12:2 14:1 12:1 16:2 14:2', '12:2 10:1 8:1 10:2 12:2 11:2 13:2 15:2 13:2', '14:2 r:1 11:1 9:2 7:2 9:2 11:2 14:2 r:2'],
     B: { k: 2, endProg: [[1, '4:7'], 0], end: ['12:2 10:2 8:2 10:2 11:2 13:2 15:2 13:2', '14:2 r:1 11:1 9:2 7:2 14:4 r:4'] },
   },
   { // 5 Refugio Glacial · Mi bemol mayor, nieve chispeante con celesta y arpegios
-    name: 'Campanas de cristal', hook: { s: [0, 6, 12], n: [0, 2, 3], voice: 'bell', v: 0.014 }, epic: 1, bpm: 104, sc: 'maj', root: 51, swing: 0.08, leadVoice: 'celesta', compVoice: 'piano', comp: 'arp', bassPat: 'pop', groove: 'soft', echo: true, arpVoice: 'glass', arpPat: [0, 2, 3, 2, 1, 2, 3, 2], arpEvery: 1, arpV: 0.012,
+    name: 'Campanas de cristal', choir: { vowel: 'oo', chant: [0], clap: [12] }, hook: { s: [0, 6, 12], n: [0, 2, 3], voice: 'bell', v: 0.014 }, epic: 1, bpm: 104, sc: 'maj', root: 51, swing: 0.08, leadVoice: 'celesta', compVoice: 'piano', comp: 'arp', bassPat: 'pop', groove: 'soft', echo: true, arpVoice: 'glass', arpPat: [0, 2, 3, 2, 1, 2, 3, 2], arpEvery: 1, arpV: 0.012,
     prog: [0, [2, 5], 3, [1, 4], 0, [5, 2], 3, 4],
     tuneText: ['11:2 r:1 9:1 7:2 9:2 11:2 14:2 16:2 14:2', '13:2 11:1 9:1 11:2 13:2 12:2 11:1 9:1 7:2 9:2', '14:3 12:1 10:2 12:2 14:2 16:2 14:2 12:2', '12:2 10:1 8:1 10:2 12:2 11:2 13:1 15:1 13:2 11:2',
       '9:2 11:2 14:2 16:2 14:1 11:1 9:2 11:2 14:2', '12:2 14:1 12:1 11:2 9:2 13:2 11:1 9:1 11:2 13:2', '12:2 14:2 16:3 14:1 12:2 10:2 12:2 14:2', '13:2 15:2 13:2 11:2 13:3 15:1 17:2 r:2'],
     B: { k: -4, endProg: [[1, 4], 0], end: ['12:2 10:2 8:2 10:2 11:2 13:2 15:2 13:2', '14:4 11:2 9:2 7:2 9:2 11:2 14:2'] },
   },
   { // 6 Villa Sakura · Do sostenido mayor, bossa de pétalos con koto
-    name: 'Pétalos en el viento', hook: { s: [0, 3, 8, 11, 14], n: [0, 2, 3, 2, 1], voice: 'guitar' }, epic: 1, bpm: 112, sc: 'maj', root: 49, swing: 0.1, leadVoice: 'koto', compVoice: 'pizz', comp: 'skank', bassPat: 'bossa', groove: 'bossa', echo: true,
+    name: 'Pétalos en el viento', choir: { vowel: 'ah', chant: [8], clap: [6, 12] }, hook: { s: [0, 3, 8, 11, 14], n: [0, 2, 3, 2, 1], voice: 'guitar' }, epic: 1, bpm: 112, sc: 'maj', root: 49, swing: 0.1, leadVoice: 'koto', compVoice: 'pizz', comp: 'skank', bassPat: 'bossa', groove: 'bossa', echo: true,
     prog: [0, 5, 3, 4, 0, [5, 2], 3, [1, 4]],
     tuneText: ['9:2 11:1 9:1 7:2 9:2 11:2 14:2 11:2 9:2', '12:2 14:1 12:1 11:2 12:2 14:2 16:2 14:2 12:2', '12:2 12:1 14:1 16:2 14:2 12:2 9:2 12:2 14:2', '11:2 15:1 11:1 8:2 11:2 15:2 11:2 8:2 11:2',
       '14:2 16:1 14:1 11:2 9:2 11:2 14:2 16:2 14:2', '12:2 14:1 12:1 11:2 9:2 9:2 11:1 9:1 11:2 12:2', '12:3 14:1 12:2 9:2 12:2 14:2 16:2 r:2', '15:2 12:1 8:1 12:2 15:2 11:2 8:1 11:1 15:2 11:2'],
     B: { k: -4, endProg: [[1, 4], 0], end: ['15:2 12:2 8:2 12:2 11:2 8:2 11:2 15:2', '14:4 11:2 9:2 7:2 9:2 11:2 14:2'] },
   },
   { // 7 Puerto del Volcán · Sol menor, marcha al galope con metales
-    name: 'La fragua de los sueños', hook: { s: [0, 2, 3, 8, 10, 11], n: [0, 0, 2, 1, 1, 3], voice: 'pizz', oct: 0, v: 0.022 }, epic: 2, bpm: 128, sc: 'min', root: 43, swing: 0.1, leadVoice: 'brass', compVoice: 'piano', comp: 'charleston', bassPat: 'gallop', groove: 'march', echo: false,
+    name: 'La fragua de los sueños', choir: { vowel: 'oh', chant: [0, 3, 8], clap: [4, 12, 14, 15] }, hook: { s: [0, 2, 3, 8, 10, 11], n: [0, 0, 2, 1, 1, 3], voice: 'pizz', oct: 0, v: 0.022 }, epic: 2, bpm: 128, sc: 'min', root: 43, swing: 0.1, leadVoice: 'brass', compVoice: 'piano', comp: 'charleston', bassPat: 'gallop', groove: 'march', echo: false,
     prog: [0, 5, [3, '4:7'], 0, 5, ['6:7', 2], [3, '4:7'], 0],
     tuneText: ['7:2 7:1 7:1 9:2 11:2 14:3 11:1 9:2 7:2', '12:2 12:1 12:1 14:2 16:2 18:3 16:1 14:2 12:2', '14:2 12:1 10:1 12:2 14:2 11:2 13:1 15:1 17:2 15:2', '14:3 11:1 9:2 7:2 9:2 11:2 14:2 r:2',
       '12:2 12:1 12:1 14:2 16:2 14:3 12:1 14:2 16:2', '13:2 15:1 13:1 17:2 15:2 9:2 11:1 13:1 15:2 13:2', '14:2 12:2 10:2 12:2 11:2 13:1 15:1 17:2 15:2', '7:2 9:2 11:2 14:2 13:2 11:2 14:4'],
     B: { k: 2, endProg: [[3, '4:7'], 0], end: ['14:2 12:2 10:2 12:2 11:2 13:1 15:1 17:2 15:2', '14:2 r:1 11:1 9:2 7:2 14:4 r:4'] },
   },
   { // 8 Ciudad Celeste · Fa sostenido lidio, chill con vibráfono y ecos
-    name: 'Un puente entre estrellas', hook: { s: [0, 5, 10, 14], n: [0, 2, 3, 1], voice: 'celesta', v: 0.014 }, epic: 1, bpm: 108, sc: 'lyd', root: 54, swing: 0.2, leadVoice: 'vibes', compVoice: 'piano', comp: 'charleston', bassPat: 'walk', groove: 'chill', echo: true, arpVoice: 'glass', arpPat: [0, 2, 3, 2], arpEvery: 2, arpV: 0.014,
+    name: 'Un puente entre estrellas', choir: { vowel: 'oo', chant: [0, 10], clap: [4, 11] }, hook: { s: [0, 5, 10, 14], n: [0, 2, 3, 1], voice: 'celesta', v: 0.014 }, epic: 1, bpm: 108, sc: 'lyd', root: 54, swing: 0.2, leadVoice: 'vibes', compVoice: 'piano', comp: 'charleston', bassPat: 'walk', groove: 'chill', echo: true, arpVoice: 'glass', arpPat: [0, 2, 3, 2], arpEvery: 2, arpV: 0.014,
     prog: [0, [1, 0], 5, [4, 1], 0, [2, 5], [1, 4], 0],
     tuneText: ['11:2 13:1 14:1 16:2 14:2 11:2 13:2 14:2 16:2', '12:2 14:1 12:1 10:2 8:2 9:2 11:1 13:1 14:2 11:2', '12:2 14:2 16:1 14:1 12:2 14:2 16:2 18:2 16:2', '13:2 15:1 13:1 11:2 13:2 12:2 10:1 12:1 14:2 12:2',
       '14:3 13:1 11:2 9:2 11:2 13:2 14:2 16:2', '13:2 11:1 9:1 11:2 13:2 14:2 16:1 14:1 12:2 14:2', '14:2 12:1 10:1 12:2 14:2 13:2 15:2 17:2 15:2', '14:4 r:2 11:2 13:2 14:2 16:4'],
     B: { k: -3, endProg: [[1, 0], 0], end: ['14:2 12:2 10:2 12:2 11:2 13:2 14:2 16:2', '14:4 r:2 9:2 11:2 13:2 14:4'] },
   },
   { // 9 Castillo Dorado · Si bemol mayor, big band con metales y platillo
-    name: 'El regreso del alba', hook: { s: [0, 3, 6, 8, 11, 14], n: [0, 2, 3, 0, 2, 1], voice: 'guitar' }, epic: 2, bpm: 132, sc: 'maj', root: 46, swing: 0.2, leadVoice: 'brass', compVoice: 'piano', comp: 'charleston', bassPat: 'walk', groove: 'bigband', echo: false,
+    name: 'El regreso del alba', choir: { vowel: 'ah', chant: [0, 6, 8], clap: [4, 10, 12, 14] }, hook: { s: [0, 3, 6, 8, 11, 14], n: [0, 2, 3, 0, 2, 1], voice: 'guitar' }, epic: 2, bpm: 132, sc: 'maj', root: 46, swing: 0.2, leadVoice: 'brass', compVoice: 'piano', comp: 'charleston', bassPat: 'walk', groove: 'bigband', echo: false,
     prog: [0, 3, [5, 1], 4, 0, 3, [1, 4], 0],
     tuneText: ['7:2 7:1 7:1 11:2 11:2 14:3 11:1 9:2 7:2', '10:2 10:1 10:1 14:2 14:2 16:3 14:1 12:2 10:2', '12:2 12:1 14:1 16:2 14:2 14:2 12:1 10:1 12:2 14:2', '13:2 13:1 15:1 17:2 15:2 13:2 11:2 13:2 15:2',
       '14:2 11:1 14:1 16:2 14:2 11:2 14:2 16:2 r:2', '14:2 12:1 14:1 16:2 14:2 12:2 14:2 16:2 r:2', '14:2 12:2 10:2 12:2 13:2 15:1 13:1 11:2 13:2', '14:3 11:1 14:2 16:2 14:4 r:2 11:2'],
@@ -148,7 +150,7 @@ const THEME_DATA = [
  * que se repite subiendo con los acordes (eso es lo que se pega); la sección B responde arriba con llamadas cortas.
  */
 const MENU_DATA = {
-  name: 'Crónicas de la llave roja', ownChorus: true, epic: 3, bpm: 126, sc: 'maj', root: 50, swing: 0.04, leadVoice: 'brass', counterVoice: 'strings', compVoice: 'guitar', comp: 'pump', bassPat: 'funk', groove: 'drive', echo: true, leadV: 0.04, compV: 0.014,
+  name: 'Crónicas de la llave roja', choir: { vowel: 'ah', chant: [0, 3, 6], clap: [4, 12, 15] }, ownChorus: true, epic: 3, bpm: 126, sc: 'maj', root: 50, swing: 0.04, leadVoice: 'brass', counterVoice: 'strings', compVoice: 'guitar', comp: 'pump', bassPat: 'funk', groove: 'drive', echo: true, leadV: 0.04, compV: 0.014,
   hook: { s: [0, 3, 6, 8, 11, 14], n: [0, 2, 3, 0, 2, 1], voice: 'pizz', v: 0.02 },
   prog: [5, 3, 0, 4, 5, 3, 0, [4, 0],   3, 4, 5, 0, 3, 4, [1, 4], 0],
   tuneText: [
@@ -163,7 +165,7 @@ const MENU_DATA = {
  * compás y sube; la sección B contesta con golpes cortos y silencios, cada vez más arriba, hasta el remate.
  */
 const HEROES_DATA = {
-  name: 'Un compañero, un poder', ownChorus: true, epic: 3, bpm: 132, sc: 'dor', root: 47, swing: 0.03, leadVoice: 'brass', counterVoice: 'horn', compVoice: 'pizz', comp: 'chop16', bassPat: 'gallop', groove: 'march', echo: false, leadV: 0.042, compV: 0.016,
+  name: 'Un compañero, un poder', choir: { vowel: 'oh', chant: [0, 2, 3], clap: [4, 8, 12] }, ownChorus: true, epic: 3, bpm: 132, sc: 'dor', root: 47, swing: 0.03, leadVoice: 'brass', counterVoice: 'horn', compVoice: 'pizz', comp: 'chop16', bassPat: 'gallop', groove: 'march', echo: false, leadV: 0.042, compV: 0.016,
   hook: { s: [0, 2, 3, 6, 8, 10, 11, 14], n: [0, 0, 2, 1, 0, 0, 3, 2], voice: 'pizz', oct: 0, v: 0.022 },
   prog: [0, 3, 0, 6, 0, 3, 6, [3, 4],   2, 6, 3, 0, 2, 6, 3, [4, 0]],
   tuneText: [
@@ -178,7 +180,7 @@ const HEROES_DATA = {
  * Cada jefe la toca en una tonalidad distinta (`bossThemeFor`), para que suene a duelo y no se repita igual.
  */
 const BOSS_DATA = {
-  name: 'El guardián del umbral', ownChorus: true, hook: { s: [0, 2, 3, 6, 8, 10, 11, 14], n: [0, 0, 2, 0, 1, 1, 3, 2], voice: 'pizz', oct: 0, v: 0.024 }, boss: true, epic: 3, bpm: 134, sc: 'hmin', root: 38, swing: 0.08, leadVoice: 'brass', compVoice: 'strings', comp: 'charleston', bassPat: 'gallop', groove: 'march', echo: false, leadV: 0.05,
+  name: 'El guardián del umbral', choir: { vowel: 'oh', chant: [0, 8], clap: [] }, ownChorus: true, hook: { s: [0, 2, 3, 6, 8, 10, 11, 14], n: [0, 0, 2, 0, 1, 1, 3, 2], voice: 'pizz', oct: 0, v: 0.024 }, boss: true, epic: 3, bpm: 134, sc: 'hmin', root: 38, swing: 0.08, leadVoice: 'brass', compVoice: 'strings', comp: 'charleston', bassPat: 'gallop', groove: 'march', echo: false, leadV: 0.05,
   prog: [0, 5, 3, 4, 0, 5, [3, 4], 0,   3, 3, 5, 4, 0, 5, '4:7', 0],
   tuneText: [
     '7:2 r:2 9:2 7:2 11:4 9:2 7:2', '12:2 r:2 14:2 12:2 11:4 9:2 7:2', '10:2 r:2 12:2 14:2 12:4 10:2 12:2', '11:2 13:2 15:2 13:2 11:4 13:2 r:2',

@@ -1,6 +1,6 @@
 {
   "name": "slide-and-slay",
-  "version": "46.0.0",
+  "version": "47.0.0",
   "private": true,
   "type": "module",
   "description": "DAWNSLIDE: puzle de bloques con tres héroes y cien niveles (PWA).",

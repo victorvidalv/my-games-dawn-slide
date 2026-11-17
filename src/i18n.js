@@ -1,55 +1,88 @@
 /**
- * Idiomas: inglés (por defecto) y español.
+ * Idiomas: inglés, español, chino (simplificado) y japonés.
  *
- * El código y los datos del juego están escritos en español (idioma de origen); el inglés se aplica en el navegador con un
- * traductor de la interfaz: cada texto que aparece en pantalla (también los que el juego genera después: mensajes, ventanas,
- * etiquetas de accesibilidad) se busca en el diccionario `src/i18n/en*.js`.
+ * El código y los datos del juego están escritos en español (idioma de origen). Los demás idiomas se aplican en el navegador
+ * con un traductor de la interfaz: cada texto que aparece en pantalla (también los que el juego genera después: mensajes,
+ * ventanas, etiquetas de accesibilidad) se busca en el diccionario del idioma activo. TODOS los textos de cada idioma están
+ * centralizados en `src/i18n/<idioma>*.js`, con las mismas claves (el texto en español) en todos: añadir un idioma es añadir
+ * un diccionario aquí, y `tests/i18n.test.js` comprueba que ninguno se deja una clave ni un marcador `{x}`.
  *   · Clave exacta:  'Pista': 'Hint'
  *   · Plantilla:     'Te quedan {n} turnos.': 'You have {n} turns left.'  ({x} captura cualquier trozo; si el trozo es un texto
  *                    conocido, como un nombre de ciudad, también se traduce; las plantillas con más texto fijo van primero)
- * Cambiar de idioma es instantáneo (no recarga la página, así la música no se corta): se restauran los textos originales o se
- * traduce de nuevo la pantalla, y se avisa con el evento `langchange` para que la interfaz repinte números y listas.
+ * Idioma inicial: el que eligió el jugador la última vez; si no hay elección, el del navegador (`navigator.languages`) cuando
+ * es uno de los nuestros; si no, inglés.
+ * Cambiar de idioma es instantáneo (no recarga la página, así la música no se corta): se restauran los textos originales y
+ * se traduce de nuevo la pantalla, y se avisa con el evento `langchange` para que la interfaz repinte números y listas.
  */
 import { EN } from './i18n/en.js';
+import { ZH } from './i18n/zh.js';
+import { JA } from './i18n/ja.js';
 
 const KEY = 'slideslay.lang';
-export const LANGS = ['en', 'es'];
+export const LANGS = ['en', 'es', 'zh', 'ja'];
+/** Diccionario de cada idioma traducido (el español es el idioma de origen y no necesita ninguno). */
+export const DICTS = { en: EN, zh: ZH, ja: JA };
+/** Datos de cada idioma: etiqueta HTML (`lang`), formato de números y nombre propio para el selector. */
+export const LANG_INFO = {
+  en: { html: 'en', locale: 'en-US', name: 'English' },
+  es: { html: 'es', locale: 'de-DE', name: 'Español' },   // de-DE: separador de miles con punto también por debajo de 10.000
+  zh: { html: 'zh-Hans', locale: 'zh-CN', name: '中文' },
+  ja: { html: 'ja', locale: 'ja-JP', name: '日本語' },
+};
+/** Idioma del juego que corresponde a una lista de preferencias del navegador («es-CL», «zh-TW», «ja»…), o inglés. */
+export function detectLang(preferred = []) {
+  for (const tag of preferred) {
+    const base = String(tag || '').toLowerCase().split(/[-_]/)[0];
+    if (LANGS.includes(base)) return base;
+  }
+  return 'en';
+}
 const stored = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
-export let lang = LANGS.includes(stored) ? stored : 'en';
+/* Solo en el navegador: en Node (tests, scripts) el idioma por defecto es siempre el inglés, sea cual sea el del sistema. */
+const browser = (() => { try { return typeof document === 'undefined' || typeof navigator === 'undefined' ? [] : (navigator.languages?.length ? navigator.languages : [navigator.language]); } catch { return []; } })();
+export let lang = LANGS.includes(stored) ? stored : detectLang(browser);
+/** true cuando el idioma activo es el inglés (se conserva por compatibilidad; para saber si hay que traducir usa `lang !== 'es'`). */
 export let isEnglish = lang === 'en';
-export const numLocale = () => (isEnglish ? 'en-US' : 'de-DE');
+export const numLocale = () => LANG_INFO[lang].locale;
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim();
-const exact = new Map();
-const patterns = [];
 const esc = (s) => s.replace(/[.*+?^$()|[\]\\]/g, '\\$&');
-for (const [es, en] of Object.entries(EN)) {
-  if (/\{\w+\}/.test(es)) {
-    const names = [];
-    const source = esc(norm(es)).replace(/\{(\w+)\}/g, (_, n) => { names.push(n); return '(.+?)'; });
-    patterns.push({ re: new RegExp(`^${source}$`), names, en, literal: norm(es).replace(/\{\w+\}/g, '').length });
-  } else {
-    exact.set(norm(es), en.trim());
-    const quoted = norm(es).match(/^«(.+)»$/);   // una frase entre «» también se reconoce sin las comillas (se cita dentro de otros textos)
-    if (quoted) exact.set(quoted[1], en.trim().replace(/^[“"]|[”"]$/g, ''));
+const unquote = (s) => s.replace(/^[“"「『]|[”"」』]$/g, '');
+/** Índice de búsqueda de un diccionario: claves exactas + plantillas (las más específicas primero). Se construye una vez por idioma. */
+function compile(dict) {
+  const exact = new Map();
+  const patterns = [];
+  for (const [es, out] of Object.entries(dict)) {
+    if (/\{\w+\}/.test(es)) {
+      const names = [];
+      const source = esc(norm(es)).replace(/\{(\w+)\}/g, (_, n) => { names.push(n); return '(.+?)'; });
+      patterns.push({ re: new RegExp(`^${source}$`), names, out, literal: norm(es).replace(/\{\w+\}/g, '').length });
+    } else {
+      exact.set(norm(es), out.trim());
+      const quoted = norm(es).match(/^«(.+)»$/);   // una frase entre «» también se reconoce sin las comillas (se cita dentro de otros textos)
+      if (quoted) exact.set(quoted[1], unquote(out.trim()));
+    }
   }
+  patterns.sort((a, b) => b.literal - a.literal);
+  return { exact, patterns, memo: new Map() };
 }
-patterns.sort((a, b) => b.literal - a.literal);   // las plantillas más específicas se prueban primero
-const memo = new Map();
+const compiled = {};
+const indexOf = (code) => (compiled[code] ||= compile(DICTS[code]));
 
-/** Traduce un texto ya compuesto (o devuelve el mismo si no hay traducción). */
-export function tr(text) {
-  if (!isEnglish) return text;
+/** Traduce un texto ya compuesto al idioma `to` (por defecto, el activo) o devuelve el mismo si no hay traducción. */
+export function tr(text, to = lang) {
+  if (!DICTS[to]) return text;
   const core = norm(text);
   if (!core || !/[A-Za-zÁ-ú]/.test(core)) return text;
+  const { exact, patterns, memo } = indexOf(to);
   if (memo.has(core)) return memo.get(core);
   let out = exact.get(core);
   if (out === undefined) {
     for (const p of patterns) {
       const m = core.match(p.re);
       if (!m) continue;
-      const vars = Object.fromEntries(p.names.map((n, i) => [n, tr(m[i + 1])]));
-      out = p.en.replace(/\{(\w+)\}/g, (_, n) => vars[n] ?? '');
+      const vars = Object.fromEntries(p.names.map((n, i) => [n, tr(m[i + 1], to)]));
+      out = p.out.replace(/\{(\w+)\}/g, (_, n) => vars[n] ?? '');
       break;
     }
   }
@@ -114,7 +147,7 @@ function restore() {
 const OPTIONS = { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS };
 let observer = null;
 function startTranslating() {
-  document.documentElement.lang = 'en';
+  document.documentElement.lang = LANG_INFO[lang].html;
   walk(document.body);
   if (observer) return;
   observer = new MutationObserver((records) => {
@@ -142,12 +175,12 @@ export function setLang(next) {
   lang = next;
   isEnglish = next === 'en';
   try { localStorage.setItem(KEY, next); } catch { /* sin almacenamiento: no se recuerda */ }
-  memo.clear();
-  if (isEnglish) startTranslating(); else stopTranslating();
+  stopTranslating();                               // vuelve al español de origen y, si toca, traduce desde ahí al idioma nuevo
+  if (DICTS[lang]) startTranslating();
   document.dispatchEvent(new CustomEvent('langchange', { detail: { lang } }));
 }
 
 if (typeof document !== 'undefined') {
-  const start = () => { if (isEnglish) startTranslating(); else document.documentElement.lang = 'es'; };
+  const start = () => { if (DICTS[lang]) startTranslating(); else document.documentElement.lang = 'es'; };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 }

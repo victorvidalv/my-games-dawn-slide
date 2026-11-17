@@ -83,6 +83,23 @@ describe('temas musicales', () => {
     expect(new Set(ZONE_THEMES.map((t) => t.leadVoice)).size).toBeGreaterThanOrEqual(6);
   });
 
+  it('coros épicos: cada tema tiene su coro (vocal, gritos a compás y palmas) y ninguno repite la firma rítmica de otro', () => {
+    const sigs = new Set();
+    const rhythms = new Set();
+    for (const th of ALL_THEMES) {
+      expect(['ah', 'oh', 'oo', 'eh'], th.name).toContain(th.choir.vowel);
+      expect(th.choir.chant.length, th.name).toBeGreaterThanOrEqual(1);
+      for (const st of [...th.choir.chant, ...th.choir.clap]) { expect(st).toBeGreaterThanOrEqual(0); expect(st).toBeLessThan(16); expect(Number.isInteger(st)).toBe(true); }
+      sigs.add(JSON.stringify(th.choir));
+      rhythms.add(JSON.stringify([th.choir.chant, th.choir.clap, th.hook.s]));
+    }
+    expect(sigs.size).toBe(ALL_THEMES.length);
+    expect(rhythms.size).toBe(ALL_THEMES.length);
+    for (const th of ZONE_THEMES) expect(th.choir.clap.length, th.name).toBeGreaterThanOrEqual(1);   // palmas en todas las ciudades
+    expect(MENU_THEME.choir).not.toEqual(HEROES_THEME.choir);
+    expect(new Set(ZONE_THEMES.map((t) => t.choir.vowel)).size).toBeGreaterThanOrEqual(4);
+  });
+
   it('son alegres y bailables: tempo entre 100 y 136, con swing y mayoría de escalas luminosas', () => {
     for (const th of ALL_THEMES) {
       expect(th.bpm, th.name).toBeGreaterThanOrEqual(100);

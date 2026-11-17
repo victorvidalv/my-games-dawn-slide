@@ -47,8 +47,11 @@ function sealPlan(level, d, seed = 0) {
 }
 
 
-/** Parte del premio del minijuego (0-3) según la habilidad: los juegos son sencillos y previsibles. */
-const minigamePart = (skill, u) => (u < 0.08 + 0.42 * skill ? 3 : u < 0.5 + 0.4 * skill ? 2 : u < 0.9 ? 1 : 0);
+/**
+ * Nota del minijuego (0-5 estrellas) según la habilidad. Los juegos son accesibles: un jugador flojo ronda las 2-3 estrellas y uno
+ * experto las 4-5; el 0 (sin premio) queda para un desastre poco habitual.
+ */
+const minigameGrade = (skill, u) => Math.max(0, Math.min(5, Math.round(2.8 + 1.4 * skill + (u - 0.5) * 3)));
 
 /**
  * Jugador que usa la tienda (`shop = {score, rating}`): al quedarse sin turnos compra los turnos más baratos que le alcancen,
@@ -176,7 +179,7 @@ export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = 
     adj = Math.max(-2, Math.min(level < 10 ? 1 : 2, adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
     const rate = powers.hintMult?.[hero] ?? 1;                 // ritmo de pistas propio de cada héroe (Juth las encuentra más a menudo)
     if (Math.floor((level * rate) / hintEvery(start)) > Math.floor(((level - 1) * rate) / hintEvery(start))) hints++;
-    if (isBonusLevel(level)) hints += bonusPrize(minigamePart(skill, rng()), level, start);
+    if (isBonusLevel(level)) hints += bonusPrize(minigameGrade(skill, rng()), level, start);
   }
   return { cleared: MAX_LEVEL, score, completed: true, revivesBought: bought, spent: spentTotal, turnsBought, hintsBought, sealPts };
 }

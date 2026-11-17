@@ -35,6 +35,7 @@ import './styles/28-boss-polish.css';
 import './styles/29-boss-phase.css';
 import './styles/30-curse.css';
 import './styles/31-polish.css';
+import './styles/32-menus.css';
 import './ui/transitions.js';
 import { hooks } from './audio/sound.js';
 import './ui/sound-button.js';

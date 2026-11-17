@@ -162,7 +162,8 @@ describe('economía de pistas y sellos (simulación)', () => {
     expect(maxPrize(95, NORMAL)).toBe(10);
     expect(maxPrize(95, DIFICIL)).toBeLessThan(maxPrize(95, NORMAL));
     expect(maxPrize(95, EXPERTO)).toBeLessThan(maxPrize(95, DIFICIL));
-    expect(bonusPrize(0, 95, EXPERTO)).toBeGreaterThanOrEqual(1);     // participar siempre da al menos una pista
+    expect(bonusPrize(0, 95, EXPERTO)).toBe(0);                      // 0 estrellas: sin premio
+    expect(bonusPrize(1, 95, EXPERTO)).toBeGreaterThanOrEqual(1);     // cualquier estrella da al menos una pista
   });
 
   it('los sellos opcionales son un riesgo con premio: dan entre un 8 % y un 25 % de los puntos y cuestan algunos niveles', () => {

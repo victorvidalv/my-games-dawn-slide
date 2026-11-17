@@ -1,13 +1,14 @@
 import { Music, setTensionFx } from '../audio/music.js';
 import { soundLabel, toggleSound } from '../audio/sound.js';
 import { zoneIdx } from '../data/zones.js';
-import { $ } from '../dom.js';
+import { $, cssUrl } from '../dom.js';
 import { recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
 import { PATHS, S, heroOf, pathOf, persist, store } from '../state.js';
 import { startOptions } from '../game/starts.js';
 import { syncRouteStyle } from './board.js';
 import { syncHero } from './heroes.js';
 import { showMap } from './map.js';
+import { heroArt } from './story.js';
 /* ---------- Menú: elegir camino ---------- */
 const MODE_INFO={
   c:'Sube puntos nivel a nivel. Si agotas los turnos (el doble del mínimo) sin sacar la llave, la partida termina.',
@@ -64,6 +65,7 @@ async function pickPath(s,mode){
 function openPause(){
  if(!S.run||!S.G||S.G.done)return;
  $('pauseContext').textContent=`${heroOf().name} · Nivel ${S.run.level} de 100`;
+ $('pauseHero').src=heroArt(heroOf().id,'story');$('pause').style.setProperty('--pause-scene',cssUrl(`backgrounds/zone-${zoneIdx(S.run.level)+1}.webp`));
  soundLabel();$('pause').classList.add('show');Music.muffle(true);$('pResume').focus();
 }
 function closePause(){$('pause').classList.remove('show');Music.muffle(false)}

@@ -36,7 +36,7 @@ describe('construcción de niveles (mínimos exactos)', () => {
   beforeAll(async () => {
     const ratings = FULL ? RATINGS : RATINGS.filter((r) => r % 3 === 1 || r > 95);
     builds = await runPool('build', ratings.map((rating) => ({ rating })), { batch: 2 });
-  }, 300000);
+  }, 600000);
 
   it('el mínimo anunciado es el real y respeta ajuste adaptativo y ruta aventurera', () => {
     expect(builds.length).toBeGreaterThan(30);

@@ -31,7 +31,7 @@ const of = (family) => results.filter((r) => r.family === family);
 beforeAll(async () => {
   const out = await runPool('board', jobs, { batch: 6 });
   results = out.map((r, i) => ({ ...r, family: jobs[i].family, text: jobs[i].text }));
-}, 300000);
+}, 1200000);   // ~9 minutos de CPU: en un runner de 4 núcleos compartido con los otros tests pesados pasa de los 5 minutos
 
 describe('banco de tableros normales', () => {
   it('tiene tableros para las 100 dificultades', () => {

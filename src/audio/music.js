@@ -7,6 +7,7 @@ import { isBossLevel } from '../game/mechanics.js';
    Secuenciador por pasos de 1/16 que toca los temas de themes.js como CANCIONES con forma (intro, estrofas, coro, puente,
    coro final modulado; ver FORM en themes.js): melodía, acordes con séptima, bajo caminante,
    «comping» de guitarra/piano/acordeón, escobillas suaves y, según `epic`, cuerdas, timbal y metales.
+   En los estribillos entra un CORO de voces (síntesis por formantes), gritos a compás y palmas con el ritmo propio de cada tema.
    El swing retrasa las corcheas de contratiempo. El tempo sube con los movimientos gastados y entra en
    «modo pánico» en el último movimiento. */
 export const Music=(()=>{
@@ -68,6 +69,22 @@ export const Music=(()=>{
     }
   }
 
+  /* Formantes de cada vocal (Hz): el coro canta «aah», «ooh», «uuh» o un «¡eh!» corto según el tema. */
+  const VOWELS={ah:[800,1150],oh:[450,800],oo:[325,700],eh:[530,1840]};
+  /**
+   * Coro: dos voces de sierra ligeramente desafinadas que pasan por los dos formantes de la vocal, con ataque lento y cola.
+   * Suena a grupo de voces, no a un instrumento; se usa en los estribillos (acordes largos + la melodía) y en los gritos a compás.
+   */
+  function choir(midi,t,dur,v,vowel='ah'){
+    const f=hz(midi),g=AC.createGain(),F=VOWELS[vowel]||VOWELS.ah,a=Math.min(.11,dur*.3);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.setValueAtTime(v,t+Math.max(a,dur*.72));g.gain.exponentialRampToValueAtTime(.0001,t+dur+.14);
+    const bands=F.map((fq,i)=>{const q=AC.createBiquadFilter();q.type='bandpass';q.frequency.value=fq;if(q.Q)q.Q.value=i?6:4.5;q.connect(g);return q});
+    for(const det of [-9,8]){const o=AC.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=det;bands.forEach(b=>o.connect(b));o.start(t);o.stop(t+dur+.2)}
+    g.connect(bus);
+  }
+  /** Registro de coro mixto: las voces cantan entre Sol3 y Re5 (se oye lleno, nunca chilla). */
+  const choirReg=m=>{while(m<55)m+=12;while(m>74)m-=12;return m};
+
   function noise(t,dur,v,f,type='highpass'){
     const s=AC.createBufferSource(),g=AC.createGain(),q=AC.createBiquadFilter();s.buffer=noiseBuf;q.type=type;q.frequency.value=f;
     g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(q);q.connect(g);g.connect(bus);s.start(t);s.stop(t+dur+.02);
@@ -92,6 +109,8 @@ export const Music=(()=>{
   const snare=(t,v)=>{noise(t,.13,v,1900,'bandpass');osc('triangle',190,t,.07,v*.7,.002)};
   const rim=(t,v)=>{noise(t,.03,v,2600,'bandpass');osc('triangle',950,t,.02,v*.5,.001)};
   const conga=(t,v,f=330)=>osc('sine',f,t,.1,v,.002,1200);
+  /** Palmas de grupo: tres ráfagas muy juntas de ruido medio (varias manos que no caen a la vez). */
+  const clap=(t,v)=>{noise(t,.012,v,1500,'bandpass');noise(t+.011,.014,v*.9,1700,'bandpass');noise(t+.024,.1,v,1350,'bandpass')};
   const GROOVES={
     pop:    {k:[0,8],         s:[4,12],       h:[0,2,4,6,8,10,12,14]},
     polka:  {k:[0,8],         s:[4,12],       tm:[2,6,10,14],h:[0,4,8,12]},
@@ -150,6 +169,7 @@ export const Music=(()=>{
       firstOfBar.slice(0,3).forEach(m=>{voice('horn',m,t,sd*15.5,.016);voice('strings',m+12,t,sd*15.5,.011)});       // coro de metales suaves + cuerdas
       voice('upright',bassReg(firstOfBar[0])-12,t,sd*15,.11);                                                         // bordón grave
       timpani(t,low,.12);
+      [root,fifth].forEach(m=>choir(choirReg(m)-12,t,sd*15,.042,'oh'));                                                // coro de voces graves: quinta vacía
       if(bar%4===0)noise(t,1.9,.04,3200);                                                                          // platillo al empezar cada frase
     }
     if(st===8){timpani(t,fifth>root?fifth-12:fifth,.09)}
@@ -235,7 +255,7 @@ export const Music=(()=>{
     const hk=th.hook;
     if(hk&&sec.hook!==false&&!building&&(L.bass==='full'||!hasLead)){
       const j=hk.s.indexOf(st);
-      if(j>=0)voice(hk.voice||'pizz',chord[hk.n[j%hk.n.length]%chord.length]+(hk.oct??12),t,sd*1.5,(hk.v||.017)*(st%8===0?1.3:1)*(hasLead?1:1.25));
+      if(j>=0)voice(hk.voice||'pizz',chord[hk.n[j%hk.n.length]%chord.length]+(hk.oct??12),t,sd*1.5,(hk.v||.017)*(st%8===0?1.3:1)*(hasLead?1:1.25)*(sec.chorus?1.35:1));
     }
     // base épica: timbal grave en cada compás y trompas largas al empezar cada frase
     if(!th.boss&&L.drums==='full'&&!sec.drums){
@@ -245,6 +265,25 @@ export const Music=(()=>{
     }
     // entrada del coro: platillo, timbal y bombo a la vez
     if(sec.crash&&k===0&&st===0){noise(t,1.9,.05,3600);timpani(t,bassReg(firstOfBar[0])-12,.1);kick(t,.1)}
+
+    // CORO ÉPICO Y PALMAS (estribillos): voces sosteniendo el acorde, un bajo coral, gritos a compás con el ritmo propio del tema
+    // y palmas de grupo; en el coro final todo canta más fuerte. En el puente, un colchón de voces suaves («uuh»).
+    const cho=th.choir;
+    if(cho&&sec.chorus&&!building){
+      const big=sec.id==='final'?1.25:1,cv=(th.boss?.048:.042)*big;
+      if(st===0){
+        firstOfBar.slice(0,3).forEach((m,i)=>choir(choirReg(m),t+i*.012,sd*15,cv,cho.vowel));
+        choir(bassReg(firstOfBar[0])+12,t,sd*15,cv*.9,'oh');
+      }
+      if(st===8&&chord[0]!==firstOfBar[0])chord.slice(0,3).forEach((m,i)=>choir(choirReg(m),t+i*.012,sd*7,cv,cho.vowel));
+      if(cho.chant.includes(st)){choir(choirReg(chord[2])+12,t,sd*1.5,cv*1.5,'eh');choir(choirReg(chord[0]),t,sd*1.5,cv*1.3,'eh')}
+      if(cho.clap.includes(st))clap(t,.03*big);
+      if(st%4===2)noise(t,.06,.011,6800);                                    // pandereta en los contratiempos: el estribillo «salta»
+    }else if(cho&&sec.id==='bridge'&&st===0){
+      firstOfBar.slice(0,3).forEach((m,i)=>choir(choirReg(m),t+i*.02,sd*15,.028,'oo'));
+    }else if(cho&&th.epic>=3&&sec.id==='verse2'&&st===0&&!th.boss){
+      [0,2].forEach(i=>choir(choirReg(firstOfBar[i]),t,sd*15,.024,'oo'));    // menú y héroes: el coro ya asoma en la 2.ª estrofa
+    }
 
     // batería: normal, a medio tiempo (puente) o redoble que crece con ruido ascendente (pre-coro, corte, subida)
     if(building){
@@ -285,6 +324,7 @@ export const Music=(()=>{
       voice(lead,top(noteOf(th,deg)+12),t,dur*sd,lv);
       if((L.counter||sec.harmony)&&dur>=3)voice(th.counterVoice||'horn',noteOf(th,deg-2),t+sd*.02,dur*sd,lv*.4);   // armonía una tercera debajo
       if(sec.chorus&&dur>=2)voice('horn',top(noteOf(th,deg+2)+12),t,dur*sd,lv*.3);                                      // coro: tercera arriba
+      if(sec.chorus&&th.choir&&dur>=2)choir(choirReg(noteOf(th,deg)+12),t,dur*sd,lv*(dur>=3?1.3:.95),th.choir.vowel);    // las voces cantan el estribillo
       if(L.orchestra)voice(E>=2?'brass':'strings',noteOf(th,deg),t,dur*sd,lv*(E>=2?.5:.35));
       const up=noteOf(th,deg)+24>98?12:24;                                  // la octava de arriba nunca llega a chillar (tope ≈ Re7)
       if(L.octave)voice('celesta',noteOf(th,deg)+up,t,dur*sd*.9,lv*.3);
