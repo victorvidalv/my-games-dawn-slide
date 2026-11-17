@@ -37,6 +37,7 @@ import './styles/30-curse.css';
 import './styles/31-polish.css';
 import './styles/32-menus.css';
 import './styles/33-daily.css';
+import './styles/34-menu-home.css';
 import './ui/transitions.js';
 import './ui/achievements.js';
 import { hooks } from './audio/sound.js';

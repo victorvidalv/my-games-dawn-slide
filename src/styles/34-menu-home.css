@@ -1,0 +1,87 @@
+/*
+ * Pantalla de inicio: tres entradas grandes (Aventura · Retos diarios · Logros). Cada una abre su sección con cabecera fija
+ * («Volver» + título) y contenido que se desplaza hacia abajo dentro de la placa. Móvil en vertical y pantallas apaisadas (PC).
+ */
+/* ---------- inicio: tres placas grandes ---------- */
+#menu .menu-home{display:grid;gap:14px;margin:2px 0 4px;animation:panel-in .25s ease-out}
+#menu .menu-home[hidden]{display:none}
+#menu .home-btn{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;width:100%;min-height:86px;margin:0;padding:12px 16px 12px 12px;text-align:left;
+  border:3px solid #150e0c;border-radius:var(--wob-b);color:#fff5e0;text-shadow:none;
+  background:var(--hatch),linear-gradient(170deg,var(--hb1),var(--hb2));box-shadow:inset 0 0 0 1.5px #ffffff22,inset 0 -4px 0 #0005,4px 6px 0 #150e0c;
+  transition:transform .12s,filter .12s,box-shadow .12s}
+#menu .home-btn:nth-child(2){border-radius:var(--wob-d)}
+#menu .home-btn:nth-child(3){border-radius:var(--wob-c)}
+#menu .hb-adv{--hb1:#c9472e;--hb2:#8f2814;--hbg:#ee6a46}
+#menu .hb-daily{--hb1:#2f8094;--hb2:#1d4f5e;--hbg:#58d8c8}
+#menu .hb-ach{--hb1:#8a6a24;--hb2:#4d3a14;--hbg:#f2c45c}
+#menu .home-btn:hover{transform:translate(-1px,-2px);filter:brightness(1.08)}
+#menu .home-btn:active{transform:translate(2px,3px);box-shadow:inset 0 0 0 1.5px #ffffff22,1px 2px 0 #150e0c}
+#menu .home-btn:focus-visible{outline:3px solid #ffdb8f;outline-offset:3px}
+#menu .hb-ico{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;border:3px solid #150e0c;background:radial-gradient(circle at 35% 28%,#ffffff40,#150e0c66 70%);
+  box-shadow:inset 0 0 0 2px #ffffff33,2px 3px 0 #150e0c,0 0 14px var(--hbg)}
+#menu .hb-ico .ic{display:block;width:34px;height:34px}
+#menu .hb-copy{display:grid;gap:4px;min-width:0}
+#menu .hb-copy b{font:700 clamp(17px,5vw,21px)/1.05 var(--font-title);letter-spacing:.04em;overflow-wrap:anywhere;text-transform:uppercase;color:#fff0c8;text-shadow:0 2px 0 #150e0c}
+#menu .hb-copy small{font:700 12.5px/1.25 var(--font-ui);color:#f3e9f5;opacity:1}
+#menu .hb-go{font:900 32px/1 var(--font-title);font-style:normal;color:#fff0c8;text-shadow:0 2px 0 #150e0c;transition:transform .15s}
+#menu .home-btn:hover .hb-go{transform:translateX(3px)}
+#menu .home-btn.has-news::after{content:'';position:absolute;top:-6px;right:-5px;width:16px;height:16px;border-radius:50%;background:#ffd24a;border:2.5px solid #150e0c;animation:tab-news 1.4s ease-in-out infinite}
+@keyframes tab-news{50%{transform:scale(1.25)}}
+#menu.show .home-btn{animation:tr-card .45s cubic-bezier(.2,1.4,.4,1) both}
+#menu.show .home-btn:nth-child(1){animation-delay:.15s}#menu.show .home-btn:nth-child(2){animation-delay:.22s}#menu.show .home-btn:nth-child(3){animation-delay:.29s}
+#menu .stack:has(button:not([style*="none"])){margin-top:12px}
+
+/* ---------- sección abierta: cabecera fija y contenido que se desplaza ---------- */
+#menuCard:not([data-view="home"]){display:flex;flex-direction:column;overflow:hidden;padding-bottom:10px}
+#menuCard:not([data-view="home"]) .stack{display:none}
+#menu .menu-head{flex:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:0 0 10px;padding:0 0 10px;border-bottom:2.5px dashed #e0b04f55}
+#menu .menu-head[hidden]{display:none}
+#menu .menu-back{justify-self:start;display:flex;align-items:center;gap:4px;min-height:40px;margin:0;padding:6px 14px 6px 10px;border:2.5px solid #150e0c;border-radius:99px;
+  background:var(--hatch),linear-gradient(180deg,#4a3350,#33223c);color:#fff5e0;font:800 13px/1 var(--font-ui);text-shadow:none;box-shadow:inset 0 0 0 1.5px #ffffff18,2px 4px 0 #150e0c}
+#menu .menu-back span{font-size:22px;line-height:.7;margin-top:-2px}
+#menu .menu-back:active{transform:translate(2px,3px);box-shadow:0 1px 0 #150e0c}
+#menu .menu-back:focus-visible{outline:3px solid #ffdb8f;outline-offset:3px}
+#menu .menu-title{margin:0;text-align:center;font:700 20px/1.1 var(--font-title);letter-spacing:.08em;text-transform:uppercase;color:#ffe29a;text-shadow:0 2px 0 #150e0c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#menu .menu-panel{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:0 -6px;padding:2px 6px 8px;scrollbar-width:thin;scrollbar-color:#e0b04f88 transparent}
+#menu .menu-panel::-webkit-scrollbar{width:6px}
+#menu .menu-panel::-webkit-scrollbar-thumb{background:#e0b04f88;border-radius:9px}
+#menu #panelAdv .cont{width:100%;margin:0 0 12px}
+
+/* ---------- logros: resumen con barra, lista hacia abajo y recompensas al final en cuadrícula ---------- */
+#menu .ach-total{display:grid;gap:7px;justify-items:center;margin:0 0 4px}
+#menu .ach-total p{margin:0;font:700 13px/1 var(--font-ui);color:#e6dcf2;opacity:1}
+#menu .ach-total p b{font:900 28px/1 var(--font-title);color:#ffe29a}
+#menu .ach-total u{display:block;width:min(240px,80%);height:10px;border:2px solid #150e0c;border-radius:99px;background:#150e1e;overflow:hidden;text-decoration:none}
+#menu .ach-total u i{display:block;height:100%;background:linear-gradient(90deg,#d39528,#ffe08a)}
+#menu .look-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+#menu .look-opt{border-radius:12px;min-height:42px;text-align:left}
+#menu .look-opt span{flex:1;min-width:0}
+
+/* ---------- móvil en vertical: en una sección se oculta el adorno del título y el idioma para dar sitio a la lista ---------- */
+@media(max-aspect-ratio:13/10){
+  #menu[data-view]:not([data-view="home"]) :is(.lang-switch,.title-crest,.title-sub){display:none}
+  #menu[data-view]:not([data-view="home"]) .card{max-height:calc(100dvh - 96px)}
+  #menu[data-view]:not([data-view="home"]){justify-content:flex-start}
+}
+@media(max-height:700px) and (max-aspect-ratio:13/10){
+  #menu .home-btn{min-height:72px;padding:9px 14px 9px 10px}
+  #menu .hb-ico{width:48px;height:48px}#menu .hb-ico .ic{width:28px;height:28px}
+  #menu .hb-copy b{font-size:clamp(16px,4.6vw,19px)}
+}
+@media(max-width:360px){#menu .home-btn{gap:10px}#menu .look-opts{grid-template-columns:1fr}}
+
+/* ---------- PC y pantallas apaisadas: título e idioma a la izquierda, placa a la derecha ---------- */
+@media(min-aspect-ratio:13/10){
+  #menu.show{grid-template-columns:minmax(260px,1fr) minmax(360px,480px)}
+  #menu .card{max-width:480px}
+  #menuCard:not([data-view="home"]){max-height:min(720px,calc(100dvh - 32px))}
+  #menu .home-btn{min-height:96px}
+  #menu .look-opts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(min-aspect-ratio:13/10) and (max-height:520px){
+  #menu .menu-home{gap:9px}
+  #menu .home-btn{min-height:62px;padding:7px 12px 7px 9px}
+  #menu .hb-ico{width:42px;height:42px}#menu .hb-ico .ic{width:24px;height:24px}
+  #menu .hb-copy b{font-size:17px}#menu .hb-copy small{font-size:11.5px}
+}
+@media(prefers-reduced-motion:reduce){#menu .menu-home,#menu.show .home-btn,#menu .home-btn.has-news::after{animation:none}}

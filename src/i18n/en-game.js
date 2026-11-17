@@ -203,4 +203,9 @@ export const EN_GAME = {
   'Puedes repetir el reto de hoy las veces que quieras. Cuenta tu mejor resultado del día.': 'You can replay today\'s challenge as many times as you like. Your best result of the day counts.',
   'Repetir reto': 'Replay challenge',
   'Salir del reto': 'Leave challenge',
+  'Tres caminos · cien niveles': 'Three paths · a hundred levels',
+  'Partida guardada · nivel {n}': 'Saved game · level {n}',
+  'Hecho hoy · racha de {n}': 'Done today · {n}-day streak',
+  'Reto de hoy pendiente': "Today's challenge awaits",
+  '{a} de {b} conseguidos': '{a} of {b} unlocked',
 };

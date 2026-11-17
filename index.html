@@ -242,18 +242,24 @@
     <h1 class="logo">DAWN<i>SLIDE</i></h1>
     <p class="title-sub">Puzle de bloques · tres héroes · cien niveles</p>
   </div>
-  <div class="card" id="menuCard" data-tab="adv">
-    <div class="menu-tabs" id="menuTabs" role="tablist" aria-label="Modos de juego">
-      <button type="button" class="menu-tab" id="tabAdv" role="tab" data-tab="adv" aria-selected="true"><i class="bi" data-icon="flag" aria-hidden="true"></i><span>Aventura</span></button>
-      <button type="button" class="menu-tab" id="tabDaily" role="tab" data-tab="daily" aria-selected="false" tabindex="-1"><i class="bi" data-icon="flame" aria-hidden="true"></i><span>Retos diarios</span></button>
-      <button type="button" class="menu-tab" id="tabAch" role="tab" data-tab="ach" aria-selected="false" tabindex="-1"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Logros</span></button>
+  <div class="card" id="menuCard" data-view="home">
+    <nav class="menu-home" id="menuHome" aria-label="Modos de juego">
+      <button type="button" class="home-btn hb-adv" id="tabAdv" data-view="adv"><i class="hb-ico bi" data-icon="flag" aria-hidden="true"></i><span class="hb-copy"><b>Aventura</b><small id="homeAdvSub">Tres caminos · cien niveles</small></span><i class="hb-go" aria-hidden="true">›</i></button>
+      <button type="button" class="home-btn hb-daily" id="tabDaily" data-view="daily"><i class="hb-ico bi" data-icon="flame" aria-hidden="true"></i><span class="hb-copy"><b>Retos diarios</b><small id="homeDailySub"></small></span><i class="hb-go" aria-hidden="true">›</i></button>
+      <button type="button" class="home-btn hb-ach" id="tabAch" data-view="ach"><i class="hb-ico bi" data-icon="trophy" aria-hidden="true"></i><span class="hb-copy"><b>Logros</b><small id="homeAchSub"></small></span><i class="hb-go" aria-hidden="true">›</i></button>
+    </nav>
+    <div class="menu-head" id="menuHead" hidden>
+      <button type="button" class="menu-back" id="menuBack"><span aria-hidden="true">‹</span> Volver</button>
+      <h2 class="menu-title" id="menuTitle"></h2>
     </div>
-    <div class="menu-panel" id="panelDaily" role="tabpanel" aria-labelledby="tabDaily" hidden></div>
-    <div class="menu-panel" id="panelAch" role="tabpanel" aria-labelledby="tabAch" hidden></div>
-    <p class="menu-pick">Escoge el nivel</p>
-    <button class="primary cont" id="bContinue" style="display:none"></button>
-    <p class="modeinfo" id="modeInfo" hidden></p>
-    <div class="paths" id="paths"></div>
+    <div class="menu-panel" id="panelAdv" hidden>
+      <button class="primary cont" id="bContinue" style="display:none"></button>
+      <p class="menu-pick">Escoge el nivel</p>
+      <p class="modeinfo" id="modeInfo" hidden></p>
+      <div class="paths" id="paths"></div>
+    </div>
+    <div class="menu-panel" id="panelDaily" hidden></div>
+    <div class="menu-panel" id="panelAch" hidden></div>
     <div class="stack">
       <button id="bResume" style="display:none">↩ Volver al juego</button>
       <button class="install optb">📲 Instalar app</button>

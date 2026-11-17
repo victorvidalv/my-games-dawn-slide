@@ -88,9 +88,9 @@ export function renderAchievements() {
     const got = !!ach[a.id], p = got ? a.goal : progressOf(a, stats);
     return `<li class="ach${got ? ' got' : ''}"><i class="ach-ico" aria-hidden="true">${icon(got ? 'trophy' : 'lock')}</i><div class="ach-copy"><b>${a.name}</b><span>${a.desc}</span>${a.reward ? `<small>${icon(TYPE_ICON[a.reward[0]])}<em>${rewardName(a.reward[0], a.reward[1])}</em></small>` : ''}</div><div class="ach-prog" role="img" aria-label="${p}/${a.goal}"><u><i style="width:${(p / a.goal) * 100}%"></i></u><span>${p}/${a.goal}</span></div></li>`;
   }).join('');
-  box.innerHTML = `<p class="ach-total"><b>${done}</b> / ${ACHIEVEMENTS.length} <span>logros</span></p>
-    <h3 class="panel-h">Recompensas</h3><p class="look-note" id="lookNote" role="status">Toca una recompensa para activarla.</p>${rewards}
-    ${['adventure', 'daily'].map((g) => `<h3 class="panel-h">${GROUP_NAME[g]}</h3><ul class="ach-list">${list(g)}</ul>`).join('')}`;
+  box.innerHTML = `<div class="ach-total"><p><b>${done}</b> / ${ACHIEVEMENTS.length} <span>logros</span></p><u role="img" aria-label="${done}/${ACHIEVEMENTS.length}"><i style="width:${(done / ACHIEVEMENTS.length) * 100}%"></i></u></div>
+    ${['adventure', 'daily'].map((g) => `<h3 class="panel-h">${GROUP_NAME[g]}</h3><ul class="ach-list">${list(g)}</ul>`).join('')}
+    <h3 class="panel-h">Recompensas</h3><p class="look-note" id="lookNote" role="status">Toca una recompensa para activarla.</p>${rewards}`;
   box.querySelectorAll('.look-opt').forEach((b) => {
     b.onclick = () => {
       const { type, id } = b.dataset, note = $('lookNote');

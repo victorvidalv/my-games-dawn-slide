@@ -43,7 +43,7 @@ export function saveRun(){
 }
 export async function startRun(start,mode){
   mode='c';
-  const picked=await chooseHero(start,mode);if(!picked){openMenu();return}
+  const picked=await chooseHero(start,mode);if(!picked){openMenu('adv');return}
   const chosen=picked.hero,from=canStartAt(store.paths['c'+start]?.level||0,picked.from)?picked.from:1;
   if(S.run) recordBest(true);                         // si abandonas, lo logrado cuenta
   const seed=Math.floor(Math.random()*2**31);

@@ -3,7 +3,8 @@ import { soundLabel, toggleSound } from '../audio/sound.js';
 import { zoneIdx } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
 import { leaveDaily, recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
-import { challengeById } from '../game/daily.js';
+import { challengeById, currentStreak, dayNumber, todayResult } from '../game/daily.js';
+import { ACHIEVEMENTS } from '../game/achievements.js';
 import { renderAchievements } from './achievements.js';
 import { renderDaily } from './daily.js';
 import { PATHS, S, heroOf, pathOf, persist, store } from '../state.js';
@@ -98,32 +99,47 @@ $('pQuit').onclick=()=>{
 };
 $('pSound').onclick=toggleSound;
 const continueLabel=(sr)=>`▶ Continuar<small>${pathOf(sr.start||1).n} · Nivel ${sr.level}`+(sr.mode==='p'?' · Práctica':` · ${sr.score.toLocaleString(numLocale())} pts`)+'</small>';
-/* Pestañas del menú: Aventura · Retos diarios · Logros (los tres comparten la misma placa) */
-const TABS=['adv','daily','ach'];
-let tabNow='adv';
-function showTab(tab){
-  tabNow=TABS.includes(tab)?tab:'adv';
-  $('menuCard').dataset.tab=tabNow;
-  document.querySelectorAll('.menu-tab').forEach(b=>{const on=b.dataset.tab===tabNow;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1});
-  $('panelDaily').hidden=tabNow!=='daily';$('panelAch').hidden=tabNow!=='ach';
-  if(tabNow==='daily')renderDaily();else if(tabNow==='ach')renderAchievements();
-  $('menuCard').scrollTop=0;
+/* Menú de inicio: primero las tres entradas (Aventura · Retos diarios · Logros); al tocar una se abre su sección con «Volver» */
+const VIEWS={adv:{title:'Aventura',panel:'panelAdv'},daily:{title:'Retos diarios',panel:'panelDaily'},ach:{title:'Logros',panel:'panelAch'}};
+let viewNow='home';
+function paintHome(){
+  const sr=store.run,active=S.run&&S.G&&!S.G.done;
+  $('homeAdvSub').textContent=!active&&Number.isFinite(sr?.level)?`Partida guardada · nivel ${sr.level}`:'Tres caminos · cien niveles';
+  const d=store.daily,day=dayNumber(),streak=d?currentStreak(d,day):0;
+  $('homeDailySub').textContent=d&&todayResult(d,'classic',day)?`Hecho hoy · racha de ${streak}`:'Reto de hoy pendiente';
+  $('homeAchSub').textContent=`${ACHIEVEMENTS.filter(a=>store.ach?.[a.id]).length} de ${ACHIEVEMENTS.length} conseguidos`;
 }
-document.querySelectorAll('.menu-tab').forEach(b=>{b.onclick=()=>showTab(b.dataset.tab)});
-$('menuTabs').addEventListener('keydown',e=>{
-  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();
-  const next=TABS[(TABS.indexOf(tabNow)+(e.key==='ArrowRight'?1:2))%3];showTab(next);document.querySelector(`.menu-tab[data-tab="${next}"]`).focus();
+function showView(view,{focus=false}={}){
+  viewNow=VIEWS[view]?view:'home';
+  const home=viewNow==='home';
+  $('menuCard').dataset.view=viewNow;$('menu').dataset.view=viewNow;
+  $('menuHome').hidden=!home;$('menuHead').hidden=home;
+  Object.entries(VIEWS).forEach(([k,v])=>{$(v.panel).hidden=k!==viewNow});
+  if(home)paintHome();
+  else{
+    $('menuTitle').textContent=VIEWS[viewNow].title;
+    if(viewNow==='daily')renderDaily();else if(viewNow==='ach')renderAchievements();
+  }
+  $('menuCard').scrollTop=0;Object.values(VIEWS).forEach(v=>{$(v.panel).scrollTop=0});
+  if(focus)(home?document.querySelector('.home-btn'):$('menuBack')).focus();
+}
+document.querySelectorAll('.home-btn').forEach(b=>{b.onclick=()=>showView(b.dataset.view,{focus:true})});
+$('menuBack').onclick=()=>{const from=viewNow;showView('home');document.querySelector(`.home-btn[data-view="${from}"]`)?.focus()};
+$('menu').addEventListener('keydown',e=>{
+  if(e.key!=='Escape'||viewNow==='home'||!$('menu').classList.contains('show'))return;
+  if(document.querySelector('.modal.show:not(#menu)'))return;      // una ventana encima (confirmación, compartir…) se cierra primero
+  e.preventDefault();$('menuBack').click();
 });
-export function openMenu(tab=tabNow){
+export function openMenu(view='home'){
   syncRouteStyle();
   renderPaths();
-  renderDaily();                                  // también fuera de su pestaña: marca si el reto de hoy está pendiente
-  showTab(tab);
+  renderDaily();                                  // también fuera de su sección: marca si el reto de hoy está pendiente
   const active=S.run&&S.G&&!S.G.done, canCont=Number.isFinite(store.run?.level)&&!active;
   if(!active)leaveBossPhase();                    // el menú principal no lleva el ambiente de jefe
   const b=$('bContinue');b.style.display=canCont?'':'none';
   if(canCont)b.innerHTML=continueLabel(store.run);
   $('bResume').style.display=active?'':'none';
+  showView(view);
   $('menu').classList.add('show');
   if(active)Music.muffle(true);        // hay un nivel en pausa debajo: su música suena apagada
   else Music.scene('menu');            // sin partida: tema del menú principal
@@ -146,6 +162,6 @@ paintLang();
 document.addEventListener('langchange',()=>{
   paintLang();
   renderPaths();                                  // récords y niveles con el formato de números del idioma
-  showTab(tabNow);
+  showView(viewNow);
   const sr=store.run;if($('bContinue').style.display!=='none'&&sr)$('bContinue').innerHTML=continueLabel(sr);
 });
