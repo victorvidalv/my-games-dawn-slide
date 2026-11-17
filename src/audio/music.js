@@ -15,6 +15,7 @@ export const Music=(()=>{
   const THEMES=ZONE_THEMES;
 
   let bus=null,flt=null,noiseBuf=null,timer=0,playing=false,step=0,next=0,duckLv=1,audioOwner=null,muffled=false;
+  let menuTheme=MENU_THEME;                                   // tema del menú principal: el de serie u otro que el jugador haya ganado (logros)
   let theme=THEMES[0],baseBpm=96,tempoNow=96,layerNow=LAYERS_PER_CITY,layerNext=LAYERS_PER_CITY;     // capa que suena / capa que entra en el próximo compás
   const hz=m=>440*Math.pow(2,(m-69)/12);
   function init(){
@@ -368,11 +369,13 @@ export const Music=(()=>{
     playTheme(th,layer=LAYERS_PER_CITY){duckLv=1;muffled=false;theme=th;setSfxKey(th);baseBpm=th.bpm;tempoNow=th.bpm;step=0;layerNow=layerNext=layer;if(playing){playing=false;clearInterval(timer);timer=0}this.start()},
     /** Música fuera de partida: 'menu' (menú principal) o 'heroes' (elección de héroe). Arranca si hace falta. */
     scene(name){
-      useTheme(name==='heroes'?HEROES_THEME:MENU_THEME);layerNext=LAYERS_PER_CITY;if(!playing)layerNow=layerNext;
+      useTheme(name==='heroes'?HEROES_THEME:menuTheme);layerNext=LAYERS_PER_CITY;if(!playing)layerNow=layerNext;
       tempoNow=baseBpm;duckLv=1;muffled=false;
       if(flt)flt.frequency.setTargetAtTime(9000,AC.currentTime,.15);
       this.start();
     },
+    /** Cambia el tema que suena en el menú principal (recompensa de logros). `null` = el de serie. */
+    setMenuTheme(th){menuTheme=th||MENU_THEME},
     duck(v){duckLv=v;if(bus&&playing)bus.gain.setTargetAtTime(vol(),AC.currentTime,.25)},
     muffle(on){muffled=!!on;if(flt)flt.frequency.setTargetAtTime(on?900:9000,AC.currentTime,.15)},
     refresh(){if(muted)this.stop(.2);else if(bus&&playing)bus.gain.setTargetAtTime(vol(),AC.currentTime,.1)},

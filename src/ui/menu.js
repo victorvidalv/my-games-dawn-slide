@@ -2,7 +2,10 @@ import { Music, setTensionFx } from '../audio/music.js';
 import { soundLabel, toggleSound } from '../audio/sound.js';
 import { zoneIdx } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
-import { recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
+import { leaveDaily, recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
+import { challengeById } from '../game/daily.js';
+import { renderAchievements } from './achievements.js';
+import { renderDaily } from './daily.js';
 import { PATHS, S, heroOf, pathOf, persist, store } from '../state.js';
 import { startOptions } from '../game/starts.js';
 import { syncRouteStyle } from './board.js';
@@ -64,7 +67,9 @@ async function pickPath(s,mode){
 /* ---------- Opciones (pausa) ---------- */
 function openPause(){
  if(!S.run||!S.G||S.G.done)return;
- $('pauseContext').textContent=`${heroOf().name} · Nivel ${S.run.level} de 100`;
+ const daily=S.run.daily;
+ $('pauseContext').textContent=daily?`Reto diario · ${challengeById(daily.id).name}`:`${heroOf().name} · Nivel ${S.run.level} de 100`;
+ $('pauseHero').hidden=!!daily;$('pProgress').hidden=$('pSave').hidden=!!daily;$('pQuit').firstElementChild.textContent=daily?'Salir del reto':'Terminar';
  $('pauseHero').src=heroArt(heroOf().id,'story');$('pause').style.setProperty('--pause-scene',cssUrl(`backgrounds/zone-${zoneIdx(S.run.level)+1}.webp`));
  soundLabel();$('pause').classList.add('show');Music.muffle(true);$('pResume').focus();
 }
@@ -87,14 +92,33 @@ $('pSave').onclick=()=>{
  $('pause').classList.remove('show');Music.stop(.2);setTensionFx(0,false);openMenu();
 };
 $('pQuit').onclick=()=>{
- if(!S.run)return;recordBest(true);store.run=null;if(S.G)S.G.done=true;S.run=null;S.busy=false;persist();
+ if(!S.run)return;
+ if(S.run.daily){leaveDaily();$('pause').classList.remove('show');openMenu('daily');return}recordBest(true);store.run=null;if(S.G)S.G.done=true;S.run=null;S.busy=false;persist();
  $('pause').classList.remove('show');Music.stop(.2);setTensionFx(0,false);openMenu();
 };
 $('pSound').onclick=toggleSound;
 const continueLabel=(sr)=>`▶ Continuar<small>${pathOf(sr.start||1).n} · Nivel ${sr.level}`+(sr.mode==='p'?' · Práctica':` · ${sr.score.toLocaleString(numLocale())} pts`)+'</small>';
-export function openMenu(){
+/* Pestañas del menú: Aventura · Retos diarios · Logros (los tres comparten la misma placa) */
+const TABS=['adv','daily','ach'];
+let tabNow='adv';
+function showTab(tab){
+  tabNow=TABS.includes(tab)?tab:'adv';
+  $('menuCard').dataset.tab=tabNow;
+  document.querySelectorAll('.menu-tab').forEach(b=>{const on=b.dataset.tab===tabNow;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1});
+  $('panelDaily').hidden=tabNow!=='daily';$('panelAch').hidden=tabNow!=='ach';
+  if(tabNow==='daily')renderDaily();else if(tabNow==='ach')renderAchievements();
+  $('menuCard').scrollTop=0;
+}
+document.querySelectorAll('.menu-tab').forEach(b=>{b.onclick=()=>showTab(b.dataset.tab)});
+$('menuTabs').addEventListener('keydown',e=>{
+  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();
+  const next=TABS[(TABS.indexOf(tabNow)+(e.key==='ArrowRight'?1:2))%3];showTab(next);document.querySelector(`.menu-tab[data-tab="${next}"]`).focus();
+});
+export function openMenu(tab=tabNow){
   syncRouteStyle();
   renderPaths();
+  renderDaily();                                  // también fuera de su pestaña: marca si el reto de hoy está pendiente
+  showTab(tab);
   const active=S.run&&S.G&&!S.G.done, canCont=Number.isFinite(store.run?.level)&&!active;
   if(!active)leaveBossPhase();                    // el menú principal no lleva el ambiente de jefe
   const b=$('bContinue');b.style.display=canCont?'':'none';
@@ -122,5 +146,6 @@ paintLang();
 document.addEventListener('langchange',()=>{
   paintLang();
   renderPaths();                                  // récords y niveles con el formato de números del idioma
+  showTab(tabNow);
   const sr=store.run;if($('bContinue').style.display!=='none'&&sr)$('bContinue').innerHTML=continueLabel(sr);
 });

@@ -83,7 +83,7 @@ src/
   ui/                   Pantallas y efectos (usan el DOM): board, heroes, map, bonus (+ minigames/), finale, menu, controls, story, fx,
                         coach (guía y leyenda de piezas), shop (tienda de Don Dublón), turns, result.
   audio/                sound.js (efectos, recuperación del audio), music.js (secuenciador) y themes.js (las melodías).
-  styles/               CSS en orden de cascada (01-… a 32-…); main.js los importa en ese orden.
+  styles/               CSS en orden de cascada (01-… a 33-…); main.js los importa en ese orden.
 ```
 
 Regla de oro: **`src/engine` y `src/game/heroes.js` no tocan el DOM.** Toda regla del juego que se pueda
@@ -227,6 +227,30 @@ a recargar la página y a las partidas guardadas antiguas.
 
 El juego transcurre en **Thyes, año 4133**, un mundo de diez reinos (las diez ciudades). La sombra de **Vhorn** apagó el Faro del Alba y **Tri**, guardiana del Faro, selló los reinos: todos creen que fue ella quien los encerró. Cada sello lleva grabada una frase; leídas en orden revelan por qué cerró Tri. Tres luces pueden despertar lo sellado —la Brasa (Lía), la Hora (Jean) y la Palabra (Juth)— y la llave roja abre cada cerrojo. Cuatro pueblos antiguos guardan pedazos de la historia: los **Kogn** (navegantes, en el Puerto), los **Sahrim** (caravaneros, en el Oasis), los **Ennari** (escribas de la corteza, en la Aldea) y los **Aluen** (tejedores de puentes bajo las estrellas, en la Ciudad Celeste).
 Los nombres y la trama están en [`src/data/lore.js`](src/data/lore.js) y los textos de cada capítulo y héroe en [`src/data/story.js`](src/data/story.js); `tests/lore.test.js` vigila que todo calce.
+
+## Modos: Aventura, Retos diarios y Logros
+
+El menú principal tiene tres pestañas.
+
+**Aventura** es la historia de 100 niveles de siempre (Normal, Difícil, Experto).
+
+**Retos diarios** ([`src/game/daily.js`](src/game/daily.js), [`src/ui/daily.js`](src/ui/daily.js)): tableros sueltos, los mismos para todos, que cambian a la medianoche local del jugador (el panel muestra cuánto falta). El tablero sale de la fecha con el mismo banco y generador que la aventura, sin servidor.
+
+| Reto | Se abre | Tablero |
+|---|---|---|
+| Clásico | Desde el principio | Sin piezas especiales, mínimo de 15 movimientos o más |
+| Rocas y hielo | Nivel 25 en Aventura | Un día rocas, al siguiente hielo |
+| Mecanismos | Nivel 50 | Candados y piezas pesadas |
+| Todo junto | Nivel 75 | Todas las piezas especiales |
+| Maestro | Nivel 100 | Todas las piezas, con el límite ajustado de un jefe |
+
+- El nivel que cuenta es el más alto alcanzado en cualquier camino y no se pierde al terminar una partida.
+- Sin héroe, sin tienda y sin pistas. Se puede repetir cuantas veces se quiera; queda la mejor marca del día.
+- **Medallas**: oro en el mínimo exacto, plata hasta un 15 % más (al menos 2 movimientos), bronce al resolver.
+- **Racha**: un día por cada Clásico resuelto; se rompe al saltarse un día. Los demás retos dan medallas, no racha.
+- Un reto no toca la partida guardada de la Aventura (`saveRun` no guarda retos) y se puede compartir el resultado.
+
+**Logros** ([`src/game/achievements.js`](src/game/achievements.js), [`src/ui/achievements.js`](src/ui/achievements.js)): 18 logros de Aventura y de retos diarios, con progreso visible. Cada uno desbloquea una recompensa cosmética que se activa con un toque en la misma pestaña: música del menú (temas de las ciudades y del jefe; al tocarla suena al instante), aspecto de la llave, diseño de las piezas y celebración al resolver. Las bloqueadas se ven con candado y dicen con qué logro se consiguen. Nada cambia las reglas ni la dificultad. Para añadir una recompensa: una entrada en `REWARDS`, un logro que la dé y su estilo en `33-daily.css`.
 
 ## Idiomas
 

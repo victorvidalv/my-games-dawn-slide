@@ -56,14 +56,14 @@ export function updateHeroHud(){
 }
 /** Pantalla de «otra oportunidad»: la vida gratis de Lía o un revivir comprado (se repite el tablero con 0 movimientos). */
 export function showRescue(kind=S.run?.rescue?.kind||'lia'){
- const revive=kind==='revive',learn=kind==='learn',h=heroOf();
+ const revive=kind==='revive',daily=kind==='daily',learn=kind==='learn'||daily,h=heroOf();
  S.G.done=true;S.busy=true;boardEl.classList.add('board-lock');setTensionFx(0,false);Music.duck(.3);
- $('rescueHero').src=heroArt(revive||learn?h.id:'lia',learn?'story':'defeat');$('rescueHero').alt=learn?h.name:revive?`${h.name} te da otra oportunidad`:'Lía protege la aventura';
+ $('rescueHero').src=heroArt(revive||learn?h.id:'lia',learn?'story':'defeat');$('rescueHero').hidden=daily;$('rescueHero').alt=learn?h.name:revive?`${h.name} te da otra oportunidad`:'Lía protege la aventura';
  $('rescueIcon').innerHTML=icon(learn?'undo':revive?'flame':'heart');
- $('rescueTag').textContent=learn?'PRIMEROS PASOS · SIN PENALIZACIÓN':revive?'REVIVIR · COMPRADO CON TUS PUNTOS':'PODER DE LÍA · UNA VEZ POR PARTIDA';
+ $('rescueTag').textContent=daily?'RETO DIARIO · SIN PENALIZACIÓN':learn?'PRIMEROS PASOS · SIN PENALIZACIÓN':revive?'REVIVIR · COMPRADO CON TUS PUNTOS':'PODER DE LÍA · UNA VEZ POR PARTIDA';
  $('rescueTitle').textContent=learn?'Te quedaste sin movimientos':revive?'¡Otra oportunidad!':'La aventura sigue';
- $('rescueText').textContent=learn?'En tu primera ciudad puedes repetir el tablero sin perder nada. Fíjate en el Límite: a partir del nivel 10, quedarte sin movimientos termina la partida.':revive?`Pagaste por revivir. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.${S.run.revive>0?` Te queda ${S.run.revive} revivir guardado.`:''}`:'Lía te da una segunda oportunidad. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.';
- $('rescueContinue').textContent=learn?'Repetir tablero':revive?'Revivir':'Activar poder';
+ $('rescueText').textContent=daily?'Puedes repetir el reto de hoy las veces que quieras. Cuenta tu mejor resultado del día.':learn?'En tu primera ciudad puedes repetir el tablero sin perder nada. Fíjate en el Límite: a partir del nivel 10, quedarte sin movimientos termina la partida.':revive?`Pagaste por revivir. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.${S.run.revive>0?` Te queda ${S.run.revive} revivir guardado.`:''}`:'Lía te da una segunda oportunidad. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.';
+ $('rescueContinue').textContent=daily?'Repetir reto':learn?'Repetir tablero':revive?'Revivir':'Activar poder';
  $('rescue').classList.add('show');$('rescueContinue').focus();
  $('rescueContinue').onclick=()=>{
   if(!S.run?.rescue)return;S.G.pos=S.G.start.slice();S.G.moves=0;S.G.hist=[];S.G.done=false;S.G.limit-=(S.G.bought||0);S.G.bought=0;delete S.run.rescue;saveRun();

@@ -126,10 +126,12 @@ export function startCoach() {
   if (!G || !run || G.done || run.mode === 'p' || showing) return;
   store.tips = store.tips || {};
   const queue = [];
-  if (G.n === 1) queue.push('drag');
-  if (G.n >= 2) queue.push('score');
-  if (G.n >= 3) queue.push('tools');
-  if (G.n >= 4) queue.push('hero');
+  if (!run.daily) {                                 // los retos diarios no enseñan el juego: solo las piezas que traen
+    if (G.n === 1) queue.push('drag');
+    if (G.n >= 2) queue.push('score');
+    if (G.n >= 3) queue.push('tools');
+    if (G.n >= 4) queue.push('hero');
+  }
   if (G.plan?.boss && !G.tutorial) queue.push('boss');
   if (G.timeLimit > 0) queue.push('bosstime');
   if (G.seal) queue.push('seal');

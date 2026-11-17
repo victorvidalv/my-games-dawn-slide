@@ -16,6 +16,10 @@ import { bossCapFor } from './bosses.js';
 import { sealLimit } from './seals.js';
 import { baseScore } from '../engine/scoring.js';
 import { clearRewards, heroLimit } from './heroes.js';
+import { buildDaily, challengeById, dayNumber } from './daily.js';
+import { snapshotRescue } from './heroes.js';
+import { finishDaily } from '../ui/daily.js';
+import { celebrate, countStat } from '../ui/achievements.js';
 import { canPaidRevive, freeRetry, hasRevive, payRevive, useFreeRetry, useRevive } from './shop.js';
 import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
 import { boardEl, buildPieces, cellPx, fitBoard, layout, recLine, syncRouteStyle, updateHud } from '../ui/board.js';
@@ -31,6 +35,7 @@ import { heroArt, storyFor } from '../ui/story.js';
 import { numLocale } from '../i18n.js';
 import { boardSwapDone, boardSwapOut, levelBanner, wipeIn, wipeOut } from '../ui/transitions.js';
 export function saveRun(){
+ if(S.run?.daily)return;                               // un reto diario no se guarda: no debe pisar la partida de la aventura
  if(S.run&&S.G&&!S.G.done&&S.G.n===S.run.level&&!S.run.pendingClear&&!S.run.rescue&&!S.run.pendingRevive){
   S.run.board={level:S.G.n,rate:S.G.rate,pieces:S.G.pieces.map(p=>({...p})),walls:(S.G.walls||[]).map(w=>w.slice()),doors:(S.G.doors||[]).map(d=>d.slice()),pos:S.G.pos.slice(),start:S.G.start.slice(),opt:S.G.opt,limit:S.G.limit,bought:S.G.bought||0,timeLimit:S.G.timeLimit||0,timeLeft:Math.ceil(S.G.timeLeft||0),tutorial:S.G.tutorial||null,moves:S.G.moves,hist:S.G.hist.map(p=>p.slice()),colors:S.G.colors?.slice(),family:S.G.family,seal:S.G.seal?{...S.G.seal,cell:S.G.seal.cell.slice()}:null};
  }
@@ -50,21 +55,22 @@ export async function startRun(start,mode){
 async function startLevel(){
   S.busy=true;
   const {levelBank,specialBank}=await loadBanks();
-  const G=buildAdventureLevel(S.run,{levels:levelBank.ratings,special:specialBank,tips:store.tips||{}});
+  const G=S.run.daily?buildDaily(challengeById(S.run.daily.id),S.run.daily.day,{levels:levelBank.ratings,special:specialBank}):buildAdventureLevel(S.run,{levels:levelBank.ratings,special:specialBank,tips:store.tips||{}});
+  document.body.classList.toggle('daily-run',!!S.run.daily);
   // ¿este tablero abre con la presentación del jefe? Entonces entra el telón de alarma roja; si no, las piezas se disuelven en su sitio
   const bossIntro=!!(G.plan?.boss&&!G.tutorial&&G.moves===0&&S.run.bossSeen!==G.n&&!S.run.rescue&&!S.run.pendingRevive);
   if(bossIntro)await wipeIn('boss','¡Jefe!');else await boardSwapOut();
   if(!S.run){wipeOut();boardSwapDone();return}
   S.G=G;
   S.G.colors ||= [0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5);
-  $('lvl').textContent=S.G.tutorial?`${S.G.n} · TUTORIAL`:S.G.n;$('mn').textContent=S.G.opt;$('base').textContent=S.run.mode==='p'?'—':baseScore(S.G.rate);
+  $('lvl').textContent=S.run.daily?challengeById(S.run.daily.id).name:S.G.tutorial?`${S.G.n} · TUTORIAL`:S.G.n;$('mn').textContent=S.G.opt;$('base').textContent=S.run.mode==='p'?'—':baseScore(S.G.rate);
   applyZone(zoneIdx(S.G.n));renderStage();syncBossPhase();
   if(S.G.n%10>=7)preloadBossArt(Math.ceil(S.G.n/10)*10);                  // la ilustración del próximo jefe ya está lista cuando llegas
   const prac=S.run.mode==='p';
   $('score').textContent=prac?'—':S.run.score.toLocaleString(numLocale());recLine();
   $('lim').textContent=prac?'∞':S.G.limit;
   $('bUndo').disabled=!S.G.hist.length;
-  $('msg').textContent=S.G.n===1?'Desliza los bloques y saca la llave roja ➜ Cada movimiento cuenta.':tipFor(S.G);
+  $('msg').textContent=S.run.daily?'Reto diario: saca la llave roja con los menos movimientos posibles.':S.G.n===1?'Desliza los bloques y saca la llave roja ➜ Cada movimiento cuenta.':tipFor(S.G);
   buildPieces();boardSwapDone();updateHud();S.busy=true;
   fitBoard();Music.setLevel(S.G.n,S.G.rate);setTensionFx(0,false);Music.duck(1);Music.muffle(false);Music.start();
   if(S.run.rescue){wipeOut();showRescue();return}
@@ -77,10 +83,27 @@ async function startLevel(){
    if(!S.run||S.G?.done)return;
   }else{
    wipeOut();sfx.levelIn();
-   if(!S.G.moves)levelBanner(S.G.tutorial?'Tutorial':`${S.G.plan?.boss?'Jefe · ':''}Nivel ${S.G.n}`,ZONES[zoneIdx(S.G.n)].n,!!S.G.plan?.boss);
+   if(!S.G.moves)levelBanner(S.run.daily?'Reto diario':S.G.tutorial?'Tutorial':`${S.G.plan?.boss?'Jefe · ':''}Nivel ${S.G.n}`,S.run.daily?challengeById(S.run.daily.id).name:ZONES[zoneIdx(S.G.n)].n,!!S.G.plan?.boss);
   }
   S.busy=false;boardEl.classList.remove('board-lock');updateHud();saveRun();syncBossTimer();
   startCoach();                                        // avisos y guía de los primeros niveles / mecánicas nuevas
+}
+/** Empieza el reto diario `id` de hoy. Si había una aventura en curso, queda guardada para continuarla después. */
+export async function startDaily(id){
+  const c=challengeById(id),day=dayNumber();
+  if(S.run&&!S.run.daily&&S.G&&!S.G.done)saveRun();
+  if(S.G)S.G.done=true;
+  S.G=null;
+  S.run={daily:{id:c.id,day},seed:day,level:c.level,start:1,mode:'c',hero:'none',score:0,hints:0,adj:0,streak:0,lifeUsed:true,revive:0,revivesBought:0,undoUsedAt:0,undoUsedLevel:0,undoUsedCount:0,vanAwardedAt:0,recBroken:false,route:'normal',routeZone:zoneIdx(c.level)};
+  syncHero();syncRouteStyle();applyZone(zoneIdx(c.level));
+  await startLevel();
+}
+/** Sale del reto diario sin tocar la partida guardada de la aventura. */
+export function leaveDaily(){
+  if(!S.run?.daily)return;
+  if(S.G)S.G.done=true;
+  S.run=null;S.busy=false;document.body.classList.remove('daily-run');
+  Music.stop(.2);setTensionFx(0,false);
 }
 function tipFor(g){
   if(heroOf().id==='jean')return 'Rebobinar devuelve varios movimientos. Un uso por tablero.';
@@ -157,13 +180,20 @@ export function win(){                                  // la voz del héroe NO 
   $('msg').textContent='¡Tutorial superado! Ahora, el nivel de verdad.';
   setTimeout(()=>{S.busy=false;startLevel()},1400);return;
  }
+ if(S.run.daily){                                     // reto diario: sin puntos ni avance; medalla, racha y logros
+  boardEl.classList.add('board-lock');setTensionFx(0,false);Music.duck(.55);sfx.success();
+  S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';boardEl.classList.add('board-win');celebrate(S.G.els[0]);
+  const d=S.run.daily,moves=S.G.moves,opt=S.G.opt;
+  setTimeout(()=>finishDaily(d,moves,opt),matchMedia('(prefers-reduced-motion: reduce)').matches?150:750);return;
+ }
+ if(S.G.moves<=S.G.opt)countStat('perfects');
  const gain=gainNow(),previous=S.run.score;
  S.run.score+=gain.total;S.run.cleared=(S.run.cleared||0)+1;S.run.streak=gain.eff>=.9?(S.run.streak||0)+1:0;
  S.run.adj=Math.max(-2,Math.min(S.run.level<10?1:2,S.run.adj+(gain.eff>=.9?1:gain.eff<.4?-1:0)));
  clearRewards(S.run,S.G.n);
  S.run.pendingClear={level:S.G.n,gain:gain.total,moves:S.G.moves,opt:S.G.opt,routeChosen:false};recordBest();saveRun();
  setTensionFx(0,false);Music.duck(.55);if(S.G.moves>S.G.opt)sfx.success();   // si es perfecto suena la fanfarria especial al mostrar el resultado
- S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';boardEl.classList.add('board-win');   // las piezas celebran con una ola de saltos
+ S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';boardEl.classList.add('board-win');celebrate(S.G.els[0]);   // las piezas celebran con una ola de saltos
  $('msg').textContent=`${S.G.moves<=S.G.opt?'Perfecto · ':''}+${gain.total} puntos · ${HERO_TALK[heroOf().id].win[S.G.n%3]}`;
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,done=S.G;
  setTimeout(async()=>{                                   // la llave sale → puntaje rápido → siguiente nivel
@@ -210,6 +240,7 @@ async function offerPaidRevive(why){
 }
 function finalFail(why){
   if(S.G.done)return;
+  if(S.run.daily){S.run.rescue={...snapshotRescue(S.G),kind:'daily'};showRescue('daily');return}             // reto diario: se repite cuantas veces se quiera
   if(freeRetry(S.run,S.G.n,!!S.G.plan?.boss)){useFreeRetry(S.run,S.G);saveRun();showRescue('learn');return}   // primera ciudad: se repite el tablero
   if(hasRevive(S.run)){useRevive(S.run,S.G);saveRun();showRescue('revive');return}                           // compatibilidad con cargas antiguas
   if(canPaidRevive(S.run,S.run.mode)){S.run.pendingRevive=why||'limit';saveRun();offerPaidRevive(why);return}
@@ -217,6 +248,7 @@ function finalFail(why){
 }
 
 export function recordBest(final){
+  if(!S.run||S.run.daily)return;
   const k=rkey(), r=store.paths[k]||(store.paths[k]={score:0,level:0,runs:0});
   if(S.run.mode==='c'&&S.run.score>r.score){r.score=S.run.score;S.run.recBroken=true}
   if(S.run.level>r.level) r.level=S.run.level;

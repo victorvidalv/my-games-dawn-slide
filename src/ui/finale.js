@@ -6,6 +6,7 @@ import { S, heroOf, pathOf, persist, rkey, store } from '../state.js';
 import { icon } from './icons.js';
 import { countUp } from './fx.js';
 import { openMenu } from './menu.js';
+import { countStat } from './achievements.js';
 import { endingStory } from './story.js';
 import { CHAPTERS } from '../data/story.js';
 import { WORLD } from '../data/lore.js';
@@ -43,7 +44,7 @@ export function endRun(victory,why){
   S.lastCfg={start:S.run.start,mode:S.run.mode};
   recordBest(true);
   const rec=store.paths[rkey()];
-  if(victory){const sc=S.run.score,br=S.run.recBroken;store.run=null;persist();S.run=null;showFinale(prac,p,sc,br,endingHero);return}
+  if(victory){countStat('completed');const sc=S.run.score,br=S.run.recBroken;store.run=null;persist();S.run=null;showFinale(prac,p,sc,br,endingHero);return}
   endingStory(false,endingHero,S.run.level);
   $('overTag').textContent='LA NOCHE SE CIERRA · '+p.n.toUpperCase();
   const timeUp=why==='time';

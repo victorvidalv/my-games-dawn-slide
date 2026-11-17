@@ -242,7 +242,14 @@
     <h1 class="logo">DAWN<i>SLIDE</i></h1>
     <p class="title-sub">Puzle de bloques · tres héroes · cien niveles</p>
   </div>
-  <div class="card">
+  <div class="card" id="menuCard" data-tab="adv">
+    <div class="menu-tabs" id="menuTabs" role="tablist" aria-label="Modos de juego">
+      <button type="button" class="menu-tab" id="tabAdv" role="tab" data-tab="adv" aria-selected="true"><i class="bi" data-icon="flag" aria-hidden="true"></i><span>Aventura</span></button>
+      <button type="button" class="menu-tab" id="tabDaily" role="tab" data-tab="daily" aria-selected="false" tabindex="-1"><i class="bi" data-icon="flame" aria-hidden="true"></i><span>Retos diarios</span></button>
+      <button type="button" class="menu-tab" id="tabAch" role="tab" data-tab="ach" aria-selected="false" tabindex="-1"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Logros</span></button>
+    </div>
+    <div class="menu-panel" id="panelDaily" role="tabpanel" aria-labelledby="tabDaily" hidden></div>
+    <div class="menu-panel" id="panelAch" role="tabpanel" aria-labelledby="tabAch" hidden></div>
     <p class="menu-pick">Escoge el nivel</p>
     <button class="primary cont" id="bContinue" style="display:none"></button>
     <p class="modeinfo" id="modeInfo" hidden></p>
@@ -357,6 +364,24 @@
    <p class="mini-status" id="miniStatus" role="status" aria-live="polite"></p>
   </div>
   <button type="button" class="mini-skip" id="miniSkip">Saltar reto (sin premio)</button>
+ </div>
+</div>
+
+<!-- Resultado de un reto diario -->
+<div class="modal" id="dailyEnd" role="dialog" aria-modal="true" aria-labelledby="dailyEndTitle">
+ <div class="card daily-end">
+  <div class="tag" id="dailyEndTag"></div>
+  <i class="daily-medal" id="dailyEndMedal" aria-hidden="true"></i>
+  <h2 id="dailyEndTitle"></h2>
+  <div class="daily-moves"><b id="dailyEndMoves"></b><span>movimientos / mínimo</span></div>
+  <p class="daily-best" id="dailyEndBest"></p>
+  <div class="daily-streak-box" id="dailyEndStreakBox"><i class="bi" data-icon="flame" aria-hidden="true"></i><b id="dailyEndStreak">0</b><span id="dailyEndStreakLabel"></span></div>
+  <p class="daily-next">Nuevos retos en <b id="dailyEndReset"></b></p>
+  <div class="daily-actions">
+   <button type="button" id="dailyShare"><i class="bi" data-icon="medal" aria-hidden="true"></i><span>Compartir</span></button>
+   <button type="button" id="dailyRetry">Mejorar mi marca</button>
+   <button type="button" class="primary" id="dailyBack">Volver a los retos</button>
+  </div>
  </div>
 </div>
 
