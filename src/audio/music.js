@@ -1,6 +1,6 @@
 import { AC, audioPageHidden, clearAudioRecoveryHint, ctx, muted, setSfxKey } from './sound.js';
 import { zoneIdx } from '../data/zones.js';
-import { ALT_VOICE, FORM, HEROES_THEME, LAYERS_PER_CITY, MENU_THEME, SCALES, ZONE_THEMES, bossThemeFor, chordMidi, entryAt, layerOfLevel, layersFor, sectionAt, shiftEntry } from './themes.js';
+import { ALT_VOICE, FORM, HEROES_THEME, LAYERS_PER_CITY, MENU_THEME, SCALES, ZONE_THEMES, bossThemeFor, cityThemeFor, chordMidi, entryAt, layerOfLevel, layersFor, sectionAt, shiftEntry } from './themes.js';
 import { isBossLevel } from '../game/mechanics.js';
 
 /* ============================ Música procedural ============================
@@ -12,11 +12,10 @@ import { isBossLevel } from '../game/mechanics.js';
    «modo pánico» en el último movimiento. */
 export const Music=(()=>{
   const SC=SCALES;
-  const THEMES=ZONE_THEMES;
 
   let bus=null,flt=null,noiseBuf=null,timer=0,playing=false,step=0,next=0,duckLv=1,audioOwner=null,muffled=false;
   let menuTheme=MENU_THEME;                                   // tema del menú principal: el de serie u otro que el jugador haya ganado (logros)
-  let theme=THEMES[0],baseBpm=96,tempoNow=96,layerNow=LAYERS_PER_CITY,layerNext=LAYERS_PER_CITY;     // capa que suena / capa que entra en el próximo compás
+  let theme=ZONE_THEMES[0],baseBpm=96,tempoNow=96,layerNow=LAYERS_PER_CITY,layerNext=LAYERS_PER_CITY;     // capa que suena / capa que entra en el próximo compás
   const hz=m=>440*Math.pow(2,(m-69)/12);
   function init(){
     ctx();if(bus&&audioOwner===AC)return;
@@ -364,7 +363,7 @@ export const Music=(()=>{
     /** Fija la capa (1-10) a mano; entra en el próximo compás (lo usa melodies.html). */
     setLayer(n){layerNext=Math.max(1,Math.min(LAYERS_PER_CITY,n))},
     /** Tema de la ciudad del nivel `n` y la capa que le toca (1 = solo lo básico … 10 = todo). */
-    setLevel(n){useTheme(isBossLevel(n)?bossThemeFor(zoneIdx(n)):THEMES[zoneIdx(n)]);layerNext=layerOfLevel(n);if(!playing)layerNow=layerNext},
+    setLevel(n,hero){const city=zoneIdx(n);useTheme(isBossLevel(n)?bossThemeFor(city):cityThemeFor(city,hero));layerNext=layerOfLevel(n);if(!playing)layerNow=layerNext},
     /** Toca un tema concreto desde el principio (lo usa melodies.html). */
     playTheme(th,layer=LAYERS_PER_CITY){duckLv=1;muffled=false;theme=th;setSfxKey(th);baseBpm=th.bpm;tempoNow=th.bpm;step=0;layerNow=layerNext=layer;if(playing){playing=false;clearInterval(timer);timer=0}this.start()},
     /** Música fuera de partida: 'menu' (menú principal) o 'heroes' (elección de héroe). Arranca si hace falta. */

@@ -1,33 +1,25 @@
-/**
- * Retos diarios: tableros sueltos, los mismos para todos los jugadores, que cambian a la medianoche local.
- *
- *   Clásico        siempre abierto      sin piezas especiales, mínimo de 15 movimientos o más (es el que cuenta para la racha)
- *   Rocas y hielo  nivel 25 en Aventura un día rocas, al siguiente hielo
- *   Mecanismos     nivel 50             candados y piezas pesadas
- *   Todo junto     nivel 75             todas las piezas especiales
- *   Maestro        nivel 100            todas las piezas y el límite ajustado de un jefe
- *
- * El tablero sale de la fecha (no hay servidor): mismo día + mismo reto = mismo tablero en cualquier dispositivo.
- * Sin héroe, sin tienda y sin pistas: solo el tablero. Se puede repetir cuantas veces se quiera; la medalla es la mejor del día.
- * Lógica pura (sin DOM): la interfaz está en src/ui/daily.js.
- */
-import { moveLimit } from '../engine/difficulty.js';
-import { buildLevel, pickBoard, varyBoard } from '../engine/levels.js';
+/** Retos diarios de tres tableros, determinados por la fecha local y el tipo de reto. */
+import { minReach, moveLimit } from '../engine/difficulty.js';
+import { buildLevel, pickBoard } from '../engine/levels.js';
 import { hash32, mulberry32 } from '../engine/rng.js';
 import { levelPlan } from './mechanics.js';
 
-export const DAILY_MIN_MOVES = 15;
+export const DAILY_TARGETS = [5, 8, 12];
+export const STREAK_HINT_REWARDS = [
+  { days: 3, hints: 5 },
+  { days: 5, hints: 10 },
+  { days: 7, hints: 15 },
+];
+export const streakHintBonus = (days) => STREAK_HINT_REWARDS.reduce((bonus, reward) => days >= reward.days ? reward.hints : bonus, 0);
 /** `level` solo decide la ciudad de fondo y su música; `ratings` es el tramo de dificultad del banco del que sale el tablero. */
 export const CHALLENGES = [
-  { id: 'classic', unlock: 0, icon: 'flag', name: 'Clásico', desc: 'Sin piezas especiales', families: ['plain'], ratings: [40, 54], level: 4 },
-  { id: 'frost', unlock: 25, icon: 'ice', name: 'Rocas y hielo', desc: 'Un día rocas, otro hielo', families: ['walls', 'ice'], ratings: [42, 58], level: 54 },
-  { id: 'gears', unlock: 50, icon: 'lock', name: 'Mecanismos', desc: 'Candados y piezas pesadas', families: ['combo_hg'], ratings: [52, 68], level: 44 },
-  { id: 'all', unlock: 75, icon: 'crystal', name: 'Todo junto', desc: 'Todas las piezas especiales', families: ['combo_whgid'], ratings: [88, 90], level: 84 },
+  { id: 'classic', unlock: 0, icon: 'flag', name: 'Clásico', desc: 'Sin piezas especiales', families: ['plain'], level: 4 },
+  { id: 'frost', unlock: 20, icon: 'ice', name: 'Rocas y hielo', desc: 'Un día rocas, otro hielo', families: ['walls', 'ice'], level: 54 },
+  { id: 'gears', unlock: 30, icon: 'lock', name: 'Mecanismos', desc: 'Candados y piezas pesadas', families: ['combo_hg'], level: 44 },
+  { id: 'all', unlock: 50, icon: 'crystal', name: 'Todo junto', desc: 'Todas las piezas especiales', families: ['combo_whgid'], ratings: [88, 90], level: 84 },
   { id: 'master', unlock: 100, icon: 'crown', name: 'Maestro', desc: 'Todas las piezas, sin margen', families: ['combo_whgid'], ratings: [98, 100], level: 94, tight: true },
 ];
 export const challengeById = (id) => CHALLENGES.find((c) => c.id === id) || CHALLENGES[0];
-/** El reto que mantiene la racha de días. */
-export const STREAK_CHALLENGE = 'classic';
 
 /* ───────────── fechas (hora local del jugador) ───────────── */
 
@@ -49,23 +41,21 @@ export const isUnlocked = (challenge, maxLevel) => maxLevel >= challenge.unlock;
 
 /* ───────────── el tablero del día ───────────── */
 
-const seedOf = (challenge, day) => hash32(day, CHALLENGES.indexOf(challenge) + 1, 9001);
-/**
- * Tablero del reto `challenge` para el día `day`: determinista, con solución y con el mínimo exigido.
- * Devuelve el mismo objeto de tablero que usa la aventura (pieces, pos, opt, limit…).
- */
-export function buildDaily(challenge, day, { levels, special }) {
-  const seed = seedOf(challenge, day), [lo, hi] = challenge.ratings;
+/** Genera la etapa indicada con el mínimo exacto y la mecánica propia del reto. */
+export function buildDaily(challenge, day, { levels, special }, index = 0) {
+  const target = DAILY_TARGETS[index];
+  const seed = hash32(day, CHALLENGES.indexOf(challenge) + 1, 9001 + index);
   const family = challenge.families[day % challenge.families.length];
-  let built = null, rating = lo + (hash32(seed, 3) % (hi - lo + 1)), base = null;
-  for (let tries = 0; tries < 8; tries++) {
-    base = pickBoard(levels, rating, seed, tries + 1, family, special);
-    const board = varyBoard(base, rating, hash32(seed, tries, 7));
-    built = buildLevel(board, { rating, adj: 0, rng: mulberry32(hash32(seed, tries, 31)) });
-    if (built.opt >= DAILY_MIN_MOVES) break;
-    rating = Math.min(100, rating + 3);                        // raro: el tablero quedó corto; se prueba uno algo más difícil
-  }
-  const limit = moveLimit(built.opt, 1, challenge.level, false, !!challenge.tight);
+  const bank = family === 'plain' ? levels : special[family];
+  const [lo, hi] = challenge.ratings || [1, 100];
+  const ratings = Object.keys(bank).map((i) => Number(i) + 1)
+    .filter((r) => r >= lo && r <= hi && bank[r - 1]?.length && minReach(r) >= target)
+    .slice(0, 8);
+  const rating = ratings[seed % ratings.length];
+  const base = pickBoard(levels, rating, seed, index + 1, family, special);
+  const built = buildLevel(base, { rating, target, rng: mulberry32(seed) });
+  if (built.opt !== target) throw new Error(`Daily ${challenge.id}: expected ${target} moves, got ${built.opt}`);
+  const limit = moveLimit(built.opt, 1, challenge.level, false, challenge.tight ? 1.15 : false);
   return {
     n: challenge.level, rate: rating, pieces: built.pieces, pos: built.pos.slice(), start: built.pos.slice(), walls: built.walls || [], doors: built.doors || [],
     opt: built.opt, limit, moves: 0, hist: [], bought: 0, family: base.family, tutorial: null, seal: null, timeLimit: 0, timeLeft: 0,
@@ -84,26 +74,27 @@ export function medalFor(moves, opt) {
 const rank = (medal) => MEDALS.indexOf(medal);
 
 export const emptyDaily = () => ({ streak: 0, best: 0, last: -1, solved: 0, gold: 0, by: {}, days: {} });
-/** Racha vigente hoy: sigue viva si el Clásico se resolvió hoy o ayer. */
+/** Racha vigente si se completó algún reto hoy o ayer. */
 export const currentStreak = (state, day) => (state && state.last >= day - 1 ? state.streak : 0);
 /** Resultado de hoy en un reto ({moves, opt, medal}) o null. */
+export const streakEarned = (state, day) => state?.last === day;
 export const todayResult = (state, id, day) => state?.days?.[day]?.[id] || null;
 /**
  * Anota un reto resuelto. Devuelve { medal, first (primera vez hoy), improved (mejor medalla o menos movimientos), streak, streakUp }.
- * La racha solo crece con el Clásico y una vez por día.
+ * Cualquier reto completo cuenta para la racha, una sola vez por día.
  */
-export function recordDaily(state, id, day, moves, opt) {
+export function recordDaily(state, id, day, moves, opt, boards) {
   const medal = medalFor(moves, opt);
   const today = (state.days[day] ||= {}), prev = today[id] || null;
-  const first = !prev, improved = !prev || rank(medal) > rank(prev.medal) || moves < prev.moves;
+  const first = !prev, improved = first || (boards && !prev.boards) || rank(medal) > rank(prev.medal) || moves < prev.moves;
   if (first) {
     state.solved++;
     state.by[id] = (state.by[id] || 0) + 1;
   }
   if (medal === 'gold' && (!prev || prev.medal !== 'gold')) state.gold++;
-  if (improved) today[id] = { moves, opt, medal };
+  if (improved || (boards && moves === prev?.moves)) today[id] = { moves, opt, medal, ...(boards ? { boards } : {}) };
   let streakUp = false;
-  if (id === STREAK_CHALLENGE && first) {
+  if (day > state.last) {
     state.streak = state.last === day - 1 ? state.streak + 1 : 1;
     state.last = day;
     state.best = Math.max(state.best, state.streak);
@@ -112,5 +103,15 @@ export function recordDaily(state, id, day, moves, opt) {
   for (const d of Object.keys(state.days)) if (Number(d) < day - 6) delete state.days[d];      // solo se guarda la última semana
   return { medal: today[id].medal, first, improved, streak: currentStreak(state, day), streakUp };
 }
+export const dailyProgress = (store, id, day) => store.dailyPlay?.day === day ? store.dailyPlay.challenges[id] : undefined;
+
+/** Conserva la partida y las marcas por tablero separadas de la aventura. */
+export function writeDailyProgress(store, daily, progress) {
+  if (store.dailyPlay?.day > daily.day) return;
+  if (store.dailyPlay?.day !== daily.day) store.dailyPlay = { day: daily.day, challenges: {} };
+  const previous = store.dailyPlay.challenges[daily.id];
+  store.dailyPlay.challenges[daily.id] = { ...progress, updatedAt: Math.max(Date.now(), (previous?.updatedAt || 0) + 1) };
+}
+
 /** Texto para compartir, sin desvelar la solución. */
 export const shareText = (challenge, day, result, streak) => `DAWNSLIDE · ${challenge.name} #${day} · ${result.moves}/${result.opt}${streak > 1 ? ` · ${streak}` : ''}`;

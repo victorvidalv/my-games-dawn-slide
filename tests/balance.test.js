@@ -124,12 +124,12 @@ describe('camino heroico (simulación)', () => {
     for (const hero of HEROES) expect(avgOver(0.6, hero).levels, `${hero} jugador medio`).toBeGreaterThan(-12);
   });
 
-  it('el camino heroico cuesta algunos niveles por igual a los tres héroes (poderes a la mitad) y lo compensan los puntos', () => {
+  it('las variantes heroicas añaden riesgo y lo compensan con puntos', () => {
     const lia = avgOver(0.8, 'lia');
     const jean = avgOver(0.8, 'jean');
     const juth = avgOver(0.8, 'van');
     for (const g of [lia, jean, juth]) {
-      expect(g.levels).toBeLessThan(0);   // es un riesgo real: con los poderes a la mitad se llega algo menos lejos
+      expect(g.levels).toBeLessThan(0);   // cada variante añade dificultad
       expect(g.levels).toBeGreaterThan(-12);   // pero no es un castigo
     }
     expect(Math.max(lia.levels, jean.levels, juth.levels) - Math.min(lia.levels, jean.levels, juth.levels)).toBeLessThan(6);   // parecidos entre héroes

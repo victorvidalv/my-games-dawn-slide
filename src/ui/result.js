@@ -1,14 +1,12 @@
 import { sfx, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { countUp, motes, warmMotes } from './fx.js';
+import { resultRating } from '../engine/scoring.js';
 import { numLocale } from '../i18n.js';
 import { watchFrames } from './perf.js';
 
 const GOLD = ['#ffd76a', '#fff3cf', '#f1ce82', '#fff'];
 warmMotes(GOLD);                                  // halos dorados listos antes del primer «PERFECTO»
-/** Frase corta según la eficiencia (la racha, si la hay, manda). */
-const chipText = (gain) => (gain.mult > 1 ? `Racha ×${gain.mult.toLocaleString(numLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` : gain.eff >= 0.9 ? 'Muy bien' : gain.eff >= 0.6 ? 'Bien hecho' : 'Nivel superado');
-
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmt = (n) => n.toLocaleString(numLocale());
 
@@ -37,7 +35,7 @@ function perfectFx() {
 }
 
 /**
- * Aviso minimalista al terminar un nivel: solo muestra los puntos (y «PERFECTO» si fue mínimo).
+ * Aviso breve al ganar: resultado, diferencia en movimientos y puntos.
  * Se cierra solo (≈1,1 s; ≈1,65 s si fue perfecto) o al tocar. Los puntos vuelan al marcador.
  */
 export function showResult({ gain, moves, opt, previous, total }) {
@@ -55,20 +53,16 @@ export function showResult({ gain, moves, opt, previous, total }) {
     const perfect = moves <= opt;
     const ms = reduced() ? 450 : perfect ? 1650 : 1100;
     el.classList.toggle('perfect', perfect);
-    let chip = el.querySelector('.res-chip');
-    if (!chip) { chip = document.createElement('small'); chip.className = 'res-chip'; el.querySelector('.res-card').appendChild(chip); }
-    chip.textContent = chipText(gain);
     let ring = el.querySelector('.res-ring');                    // aro de luz que se abre detrás de la placa
     if (!ring) { ring = document.createElement('i'); ring.className = 'res-ring'; ring.setAttribute('aria-hidden', 'true'); el.insertBefore(ring, el.firstChild); }
-    $('resPts').classList.toggle('long', fmt(gain.total).length >= 6);   // cifras largas: letra algo menor, siempre cabe
-    $('resTitle').textContent = perfect ? 'PERFECTO' : '';
-    $('resLevel').textContent = '';
-    $('resLine').textContent = '';
-    $('resTotal').textContent = '';
+    const rating = resultRating(moves, opt);
+    $('resTitle').textContent = rating.title;
+    $('resLine').textContent = rating.delta;
     el.classList.remove('show');
     void el.offsetWidth;
     el.classList.add('show');
     const countMs = Math.min(460, ms - 200);
+    const hasScoreboard = total !== undefined;
     countUp($('resPts'), 0, gain.total, countMs, (v) => '+' + fmt(Math.round(v)));
     const timers = [];
     if (perfect) perfectFx();
@@ -79,15 +73,15 @@ export function showResult({ gain, moves, opt, previous, total }) {
       motes(cx, cy, perfect ? 60 : 26, GOLD, perfect ? 12 : 7);                                          // estallido de luz (sin papelitos)
       if (perfect) timers.push(setTimeout(() => motes(cx, cy, 44, GOLD, 16), 300), setTimeout(() => motes(0, 0, 40, GOLD, 3, r), 520));
       const card = el.querySelector('.res-card');
-      timers.push(setTimeout(() => { flyToScore(card.getBoundingClientRect()); countUp($('score'), previous, total, 420); }, countMs + 80));
-    } else countUp($('score'), previous, total, 340);
+      if (hasScoreboard) timers.push(setTimeout(() => { flyToScore(card.getBoundingClientRect()); countUp($('score'), previous, total, 420); }, countMs + 80));
+    } else if (hasScoreboard) countUp($('score'), previous, total, 340);
     let done = false;
     const finish = () => {
       if (done) return;
       done = true;
       clearTimeout(timer);
       timers.forEach(clearTimeout);
-      $('score').textContent = fmt(total);                       // si se cierra antes, el marcador queda ya en su valor final
+      if (hasScoreboard) $('score').textContent = fmt(total);                       // si se cierra antes, el marcador queda ya en su valor final
       el.removeEventListener('pointerdown', finish);
       el.classList.remove('show');
       resolve();

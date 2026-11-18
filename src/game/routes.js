@@ -1,33 +1,50 @@
 import { gainFor } from '../engine/scoring.js';
 
-/**
- * Camino heroico: tablero +10 %, límite más estricto y los poderes de los tres héroes valen la MITAD (`powerScale`).
- * A cambio, más puntos y una tienda más barata (o más cara) según lo fuerte que sea cada héroe en su camino: el más débil recibe más.
- * Los valores se calibraron con `npm run simulate` (sección «Camino heroico»).
- *   Lía  – una pista gratis cada `liaEvery` tableros
- */
+import { isBossLevel, lettersOfFamily, TUTORIALS } from './mechanics.js';
+
+/** Premios compartidos y margen de movimientos de la Brasa. */
 export const HEROIC_BENEFITS = {
   powerScale: .5,
+  liaMargin: .85,
   points: { lia: .45, jean: .4, van: .35 },        // fracción extra de puntos
   shop: { lia: .3, jean: .3, van: .2 },           // descuento de la tienda (negativo = más cara)
   liaHints: 1, liaEvery: 4,
 };
-const pct = (n) => `${Math.round(n * 100)} %`;
-const sign = (n) => (n < 0 ? `+${pct(-n)}` : `−${pct(n)}`);
-const heroicBenefit = (hero) => `+${pct(HEROIC_BENEFITS.points[hero])} de puntos · poderes a la mitad · tienda ${sign(HEROIC_BENEFITS.shop[hero])}`;
+const heroicCopy = (hero, challenge) => ({
+  summary: `Más puntos + ${challenge}`,
+  benefit: `+${Math.round(HEROIC_BENEFITS.points[hero] * 100)} % de puntos · ${challenge}`,
+});
 
-// The saved value 'brave' is retained for existing adventures. All heroic paths share its difficulty.
+// Las partidas guardadas conservan 'brave'. El héroe determina la variante.
 export const HEROIC_PATHS = {
-  lia: { name: 'Camino de la Brasa', icon: 'flame', benefit: `+${pct(HEROIC_BENEFITS.points.lia)} de puntos · poderes a la mitad · tienda ${sign(HEROIC_BENEFITS.shop.lia)} · pista gratis cada ${HEROIC_BENEFITS.liaEvery} tableros`, guide: 'guia-brasa.webp', guideAlt: 'La forjadora, acompañante de Lía' },
-  jean: { name: 'Camino del Péndulo', icon: 'clock', benefit: heroicBenefit('jean'), guide: 'guia-elfa.webp', guideAlt: 'La elfa, acompañante de Jean' },
-  van: { name: 'Camino de las Runas', icon: 'stars', benefit: heroicBenefit('van'), guide: 'guia-runas.webp', guideAlt: 'El erudito, acompañante de Juth' },
+  lia: { name: 'Camino de la Brasa', icon: 'flame', ...heroicCopy('lia', 'menos turnos'), guide: 'guia-brasa.webp', guideAlt: 'La forjadora, acompañante de Lía' },
+  jean: { name: 'Camino del Péndulo', icon: 'clock', ...heroicCopy('jean', 'solución más larga'), guide: 'guia-elfa.webp', guideAlt: 'La elfa, acompañante de Jean' },
+  van: { name: 'Camino de las Runas', icon: 'stars', ...heroicCopy('van', 'más mecanismos'), guide: 'guia-runas.webp', guideAlt: 'El erudito, acompañante de Juth' },
 };
+
+const MECHANIC_LESSONS = { w: 'wall', h: 'heavy', g: 'gate', i: 'ice', d: 'door' };
+
+/** Juth combina las mecánicas previstas con otras ya enseñadas si hay tableros de esa dificultad. */
+export function juthHeroicFamily(plan, level, rating, special) {
+  if (plan.boss || plan.intro) return plan.family;
+  const learned = [...'whgid'].filter((letter) => TUTORIALS[MECHANIC_LESSONS[letter]].level < level);
+  const candidates = Object.keys(special || {}).flatMap((family) => {
+    const letters = lettersOfFamily(family);
+    return letters && letters.length > plan.letters.length && special[family]?.[rating - 1]?.length
+      && [...plan.letters].every((letter) => letters.includes(letter))
+      && [...letters].every((letter) => learned.includes(letter))
+      ? [{ family, count: letters.length }] : [];
+  });
+  candidates.sort((a, b) => a.count - b.count || a.family.localeCompare(b.family, 'en'));
+  return candidates[0]?.family ?? plan.family;
+}
 export const heroicPath = hero => HEROIC_PATHS[hero] || HEROIC_PATHS.lia;
 export const isHeroic = run => !!run && run.mode !== 'p' && run.route === 'brave';
 /** Fracción extra de puntos del camino heroico (0 fuera de él). */
 export const heroicPoints = (run) => (isHeroic(run) ? HEROIC_BENEFITS.points[run.hero] ?? 0 : 0);
-/** Multiplicador de los poderes del héroe: 1, o la mitad en el camino heroico. */
-export const powerFactor = (run) => (isHeroic(run) ? HEROIC_BENEFITS.powerScale : 1);
+/** La Brasa reduce el límite base. Lía conserva toda su reserva. */
+export const heroicPowerFactor = (hero, heroic) => heroic && hero !== 'lia' ? HEROIC_BENEFITS.powerScale : 1;
+export const powerFactor = (run) => heroicPowerFactor(run?.hero, isHeroic(run));
 /** Descuento de la tienda en el camino heroico (puede ser negativo: más cara). */
 export const shopDiscount = run => (isHeroic(run) ? HEROIC_BENEFITS.shop[run.hero] ?? 0 : 0);
 
@@ -44,7 +61,6 @@ export function useHeroicHint(run, level) {
   return true;
 }
 
-import { isBossLevel } from './mechanics.js';
 
 export const BOSS_POINTS_BONUS = 0.3;
 

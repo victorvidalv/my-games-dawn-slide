@@ -49,16 +49,17 @@ describe('secuenciador (con audio simulado)', () => {
     }
   };
 
-  it('toca el menú, héroes y las 10 ciudades sin errores, con notas en cada compás y en un registro audible', () => {
-    const scenes = [() => Music.scene('menu'), () => Music.scene('heroes'), ...Array.from({ length: 10 }, (_, z) => () => Music.setLevel(z * 10 + 1))];
-    expect(scenes).toHaveLength(12);
+  it('toca el menú, héroes y los tres repertorios sin errores, con notas en cada compás y en un registro audible', () => {
+    const scenes = [() => Music.scene('menu'), () => Music.scene('heroes'),
+      ...['jean', 'lia', 'van'].flatMap((hero) => Array.from({ length: 10 }, (_, z) => () => Music.setLevel(z * 10 + 1, hero)))];
+    expect(scenes).toHaveLength(32);
     for (const go of scenes) {
       go();
       Music.start();
       stats.osc = 0;
       stats.maxFreq = 0;
       stats.minFreq = Infinity;
-      play(9000); // ~16 compases a ritmo normal: más que una vuelta entera de algunos compases
+      play(9000); // Intro y los primeros compases de la estrofa
       expect(Music.playing).toBe(true);
       expect(stats.osc, Music.themeName).toBeGreaterThan(100);
       expect(stats.minFreq, Music.themeName).toBeGreaterThan(25);   // el bajo no cae a infrasonidos
@@ -67,7 +68,11 @@ describe('secuenciador (con audio simulado)', () => {
   });
 
   it('cada canción completa (intro, estrofas, coros, puente, coro final modulado y cierre) pasa por todas sus secciones sin notas chillonas ni infrasonidos', () => {
-    const scenes = [() => Music.scene('menu'), () => Music.scene('heroes'), ...Array.from({ length: 10 }, (_, z) => () => { Music.setLevel(z * 10 + 9); Music.setLayer(10); }), () => Music.setLevel(10)];
+    const scenes = [() => Music.scene('menu'), () => Music.scene('heroes'), () => Music.setLevel(10),
+      ...['jean', 'lia', 'van'].flatMap((hero) => Array.from({ length: 10 }, (_, z) => () => {
+        Music.setLevel(z * 10 + 9, hero);
+        Music.setLayer(10);
+      }))];
     for (const go of scenes) {
       Music.stop(0);
       go();

@@ -1,19 +1,22 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import bank from '../src/data/levels.json';
 import special from '../src/data/special.json';
-import { CHALLENGES, DAILY_MIN_MOVES, STREAK_CHALLENGE, buildDaily, challengeById, currentStreak, dayNumber, emptyDaily, isUnlocked, maxLevelReached, medalFor, msToReset, recordDaily, resetText, shareText, todayResult } from '../src/game/daily.js';
+import { CHALLENGES, DAILY_TARGETS, buildDaily, challengeById, currentStreak, dailyProgress, dayNumber, emptyDaily, isUnlocked, maxLevelReached, medalFor, msToReset, recordDaily, resetText, shareText, streakHintBonus, todayResult, writeDailyProgress } from '../src/game/daily.js';
 import { ACHIEVEMENTS, DEFAULT_LOOK, REWARDS, REWARD_TYPES, claimAchievements, isDone, lookOf, progressOf, rewardUnlocked, setLook, sourceOf, statsOf } from '../src/game/achievements.js';
+import { mergeSaves } from '../src/game/save-merge.js';
+import { resultRating } from '../src/engine/scoring.js';
 import { isValidState, minMoves } from '../src/engine/index.js';
 
 const banks = { levels: bank.ratings, special };
 
 describe('retos diarios: calendario y desbloqueo', () => {
-  it('cinco retos: el Clásico siempre abierto y los demás al llegar al nivel 25, 50, 75 y 100 en Aventura', () => {
-    expect(CHALLENGES.map((c) => [c.id, c.unlock])).toEqual([['classic', 0], ['frost', 25], ['gears', 50], ['all', 75], ['master', 100]]);
-    expect(STREAK_CHALLENGE).toBe('classic');
+  it('cinco retos: el Clásico siempre abierto y los demás al llegar al nivel 20, 30, 50 y 100 en Aventura', () => {
+    expect(CHALLENGES.map((c) => [c.id, c.unlock])).toEqual([['classic', 0], ['frost', 20], ['gears', 30], ['all', 50], ['master', 100]]);
     expect(CHALLENGES.map((c) => isUnlocked(c, 0))).toEqual([true, false, false, false, false]);
-    expect(CHALLENGES.map((c) => isUnlocked(c, 50))).toEqual([true, true, true, false, false]);
-    expect(CHALLENGES.every((c) => isUnlocked(c, 100))).toBe(true);
+    for (const c of CHALLENGES.slice(1)) {
+      expect(isUnlocked(c, c.unlock - 1), c.id).toBe(false);
+      expect(isUnlocked(c, c.unlock), c.id).toBe(true);
+    }
     expect(maxLevelReached({ c1: { level: 34 }, c50: { level: 58 }, c75: {} })).toBe(58);    // cuenta cualquier camino
     expect(maxLevelReached({})).toBe(0);
     expect(challengeById('nope').id).toBe('classic');
@@ -35,18 +38,18 @@ describe('retos diarios: calendario y desbloqueo', () => {
 describe('retos diarios: el tablero del día', () => {
   const days = Array.from({ length: 6 }, (_, i) => 20770 + i * 7 + i);
   let built = [];
-  beforeAll(() => { built = CHALLENGES.flatMap((c) => days.map((d) => ({ c, d, G: buildDaily(c, d, banks) }))); }, 600000);
+  beforeAll(() => { built = CHALLENGES.flatMap((c) => days.flatMap((d) => DAILY_TARGETS.map((target, i) => ({ c, d, target, G: buildDaily(c, d, banks, i) })))); }, 600000);
 
   it('es el mismo para todos (determinista por fecha) y distinto de un día a otro', () => {
     const c = CHALLENGES[0];
     expect(JSON.stringify(buildDaily(c, days[0], banks))).toBe(JSON.stringify(built[0].G));
-    expect(new Set(built.filter((b) => b.c === c).map((b) => JSON.stringify([b.G.pieces, b.G.pos]))).size).toBe(days.length);
+    expect(new Set(built.filter((b) => b.c === c && b.target === 5).map((b) => JSON.stringify([b.G.pieces, b.G.pos]))).size).toBe(days.length);
   });
-  it('todos tienen solución, el mínimo anunciado es el real y nunca baja de 15 movimientos', () => {
-    for (const { c, d, G } of built) {
+  it('todos tienen solución, el mínimo anunciado es el real y es exactamente 5, 8 o 12 movimientos', () => {
+    for (const { c, d, target, G } of built) {
       expect(isValidState(G.pieces, G.pos, G.walls), `${c.id} día ${d}`).toBe(true);
       expect(minMoves(G.pieces, G.pos, G.walls, G.doors), `${c.id} día ${d}`).toBe(G.opt);
-      expect(G.opt, `${c.id} día ${d}`).toBeGreaterThanOrEqual(DAILY_MIN_MOVES);
+      expect(G.opt, `${c.id} día ${d}`).toBe(target);
       expect(G.limit, `${c.id} día ${d}`).toBeGreaterThanOrEqual(G.opt + 2);
       expect(G).toMatchObject({ moves: 0, bought: 0, seal: null, tutorial: null, timeLimit: 0, daily: c.id, n: c.level });
       expect(G.plan.boss).toBe(false);
@@ -73,6 +76,13 @@ describe('retos diarios: el tablero del día', () => {
 });
 
 describe('retos diarios: medallas y racha', () => {
+  it('el premio de pistas usa solo el tramo vigente al iniciar la aventura', () => {
+    expect([0, 2, 3, 4, 5, 6, 7, 10].map(streakHintBonus)).toEqual([0, 0, 5, 5, 10, 10, 15, 15]);
+    const daily = { last: 100, streak: 7 };
+    expect(streakHintBonus(currentStreak(daily, 101))).toBe(15);
+    expect(streakHintBonus(currentStreak(daily, 102))).toBe(0);
+  });
+
   it('oro en el mínimo, plata hasta un 15 % más (al menos 2) y bronce al resolver', () => {
     expect(medalFor(15, 15)).toBe('gold');
     expect(medalFor(14, 15)).toBe('gold');
@@ -82,23 +92,24 @@ describe('retos diarios: medallas y racha', () => {
     expect(medalFor(40, 34)).toBe('silver');
     expect(medalFor(41, 34)).toBe('bronze');
   });
-  it('la racha crece un día por Clásico resuelto, no dos veces el mismo día, y se rompe al saltarse un día', () => {
+  it('la racha crece con cualquier reto, una vez por día, y se rompe al saltarse un día', () => {
     const s = emptyDaily();
     expect(currentStreak(s, 100)).toBe(0);
     expect(recordDaily(s, 'classic', 100, 20, 15)).toMatchObject({ medal: 'bronze', first: true, streak: 1, streakUp: true });
     expect(recordDaily(s, 'classic', 100, 15, 15)).toMatchObject({ medal: 'gold', first: false, improved: true, streak: 1, streakUp: false });
-    expect(recordDaily(s, 'classic', 101, 16, 15).streak).toBe(2);
+    expect(recordDaily(s, 'frost', 100, 25, 25)).toMatchObject({ streak: 1, streakUp: false });
+    expect(recordDaily(s, 'gears', 101, 26, 25).streak).toBe(2);
     expect(recordDaily(s, 'classic', 102, 16, 15).streak).toBe(3);
     expect(currentStreak(s, 103)).toBe(3);         // hoy aún no jugó: la racha sigue viva
     expect(currentStreak(s, 104)).toBe(0);         // se saltó el 103
     expect(recordDaily(s, 'classic', 105, 16, 15).streak).toBe(1);
     expect(s.best).toBe(3);
-    expect(s.solved).toBe(4);
-    expect(s.gold).toBe(1);
+    expect(s.solved).toBe(5);
+    expect(s.gold).toBe(2);
   });
-  it('los demás retos dan medallas pero no racha; se guarda la mejor marca del día y solo la última semana', () => {
+  it('se guarda la mejor marca del día y solo la última semana', () => {
     const s = emptyDaily();
-    expect(recordDaily(s, 'frost', 200, 30, 20)).toMatchObject({ medal: 'bronze', streak: 0, streakUp: false });
+    expect(recordDaily(s, 'frost', 200, 30, 20)).toMatchObject({ medal: 'bronze', streak: 1, streakUp: true });
     expect(recordDaily(s, 'frost', 200, 35, 20)).toMatchObject({ medal: 'bronze', improved: false });       // peor: no pisa la marca
     expect(todayResult(s, 'frost', 200)).toEqual({ moves: 30, opt: 20, medal: 'bronze' });
     expect(recordDaily(s, 'frost', 200, 20, 20).medal).toBe('gold');
@@ -110,6 +121,30 @@ describe('retos diarios: medallas y racha', () => {
     expect(Object.keys(s.days)).toEqual(['210']);
     expect(shareText(challengeById('classic'), 210, { moves: 16, opt: 15 }, 4)).toBe('DAWNSLIDE · Clásico #210 · 16/15 · 4');
   });
+});
+
+it('guarda el tablero en curso por reto, preserva la aventura y separa cada día', () => {
+  const day = 21000;
+  const save = { run: { level: 23 } };
+  const boards = [{ moves: 6, opt: 5, points: 450 }, null, null];
+  const attempt = { index: 1, pos: [1, 2], moves: 3, hist: [[0, 1]] };
+  writeDailyProgress(save, { id: 'classic', day }, { boards, attempt });
+  const otherTab = {};
+  writeDailyProgress(otherTab, { id: 'gears', day }, { boards: [], attempt: null });
+  const reopened = JSON.parse(JSON.stringify(mergeSaves(save, otherTab)));
+  expect(reopened.run).toEqual({ level: 23 });
+  expect(dailyProgress(reopened, 'classic', day)).toMatchObject({ boards, attempt });
+  expect(dailyProgress(reopened, 'gears', day)).toMatchObject({ boards: [], attempt: null });
+  expect(dailyProgress(reopened, 'classic', day + 1)).toBeUndefined();
+});
+
+it('el mensaje y la diferencia dependen de los movimientos que se podrían ahorrar', () => {
+  expect([25, 26, 27, 28].map((moves) => resultRating(moves, 25))).toEqual([
+    { title: 'PERFECTO', delta: '0' },
+    { title: 'CASI', delta: '−1' },
+    { title: 'CASI', delta: '−2' },
+    { title: 'MEJORABLE', delta: '−3' },
+  ]);
 });
 
 describe('logros y recompensas', () => {

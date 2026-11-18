@@ -9,7 +9,7 @@
  * a lo largo de la aventura; cada vuelta sube un escalón de dificultad (`tier` 0-2).
  *
  * Todos los juegos se puntúan igual: una NOTA de 0 a 5 estrellas. 0 = sin premio; 5 = el premio máximo de esa parada, que crece
- * con el nivel (`maxPrize`: 3 pistas en el 15 → 10 en el 95, algo menos en los caminos difíciles).
+ * con el nivel (`maxPrize`: 5 pistas en el 15 → 10 en el 95, algo menos en los caminos difíciles).
  *
  * Este módulo es lógica pura (sin DOM): genera cada partida de forma determinista a partir de la semilla de la aventura y decide
  * la nota. La interfaz (src/ui/bonus.js y src/ui/minigames/) solo dibuja y llama a estas funciones.
@@ -48,9 +48,9 @@ export const gameFor = (hero, level) => {
 
 /* ───────────────────────────── Premios: nota 0-5 → pistas según el nivel ───────────────────────────── */
 
-/** El premio máximo crece con el nivel (3 pistas en el 15 → 10 en el 95) y es más escaso en los caminos difíciles. */
+/** El premio máximo crece con el nivel (5 pistas en el 15 → 10 en el 95) y es más escaso en los caminos difíciles. */
 const PRIZE_PATH_SCALE = { 1: 1, 50: 0.8, 75: 0.6 };
-export const maxPrize = (level = 15, start = 1) => Math.max(2, Math.min(10, Math.round((3 + (7 * (level - 15)) / 80) * byPath(PRIZE_PATH_SCALE, start))));
+export const maxPrize = (level = 15, start = 1) => Math.max(2, Math.min(10, Math.round((5 + (5 * (level - 15)) / 80) * byPath(PRIZE_PATH_SCALE, start))));
 const clampGrade = (g) => Math.max(0, Math.min(MAX_GRADE, Math.round(Number(g) || 0)));
 /**
  * Pistas que da una nota: 0 → nada; 5 → `maxPrize`; entre medias, la parte proporcional (cualquier nota ≥ 1 da al menos 1).

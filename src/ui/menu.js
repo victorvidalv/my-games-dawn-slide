@@ -3,7 +3,7 @@ import { soundLabel, toggleSound } from '../audio/sound.js';
 import { zoneIdx } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
 import { leaveDaily, recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
-import { challengeById, currentStreak, dayNumber, todayResult } from '../game/daily.js';
+import { challengeById, currentStreak, dayNumber, streakEarned } from '../game/daily.js';
 import { ACHIEVEMENTS } from '../game/achievements.js';
 import { renderAchievements } from './achievements.js';
 import { renderDaily } from './daily.js';
@@ -106,7 +106,7 @@ function paintHome(){
   const sr=store.run,active=S.run&&S.G&&!S.G.done;
   $('homeAdvSub').textContent=!active&&Number.isFinite(sr?.level)?`Partida guardada · nivel ${sr.level}`:'Tres caminos · cien niveles';
   const d=store.daily,day=dayNumber(),streak=d?currentStreak(d,day):0;
-  $('homeDailySub').textContent=d&&todayResult(d,'classic',day)?`Hecho hoy · racha de ${streak}`:'Reto de hoy pendiente';
+  $('homeDailySub').textContent=streakEarned(d,day)?`Hecho hoy · racha de ${streak}`:'Reto de hoy pendiente';
   $('homeAchSub').textContent=`${ACHIEVEMENTS.filter(a=>store.ach?.[a.id]).length} de ${ACHIEVEMENTS.length} conseguidos`;
 }
 function showView(view,{focus=false}={}){

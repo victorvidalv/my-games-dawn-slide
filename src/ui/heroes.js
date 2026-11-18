@@ -30,7 +30,7 @@ export function chooseHero(start,mode){
   $('heroPath').textContent=`${pathOf(start).n.toUpperCase()} · AVENTURA`;
   const render=()=>{const h=heroOf(selected);modal.style.setProperty('--chosen',h.color);modal.style.setProperty('--hero-scene',cssUrl(`heroes/${h.id}.webp`));
    cards.innerHTML=HEROES.map(v=>`<button class="hero-choice ${v.id===selected?'selected':''}" role="radio" aria-checked="${v.id===selected}" tabindex="${v.id===selected?0:-1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${v.short}"><img src="${heroArt(v.id,v.id===selected?'ready':'start')}" alt="${v.name}, ${v.role}" width="360" height="720"><span class="hero-choice-name">${v.name}</span><span class="hero-check" aria-hidden="true">✓</span></button>`).join('');
-   $('heroPowerIcon').innerHTML=icon(h.icon);$('heroPowerTitle').textContent=h.power;$('heroPowerShort').textContent=h.short;$('heroPowerDetail').textContent=h.detail;$('heroQuote').textContent=h.quote;const path=heroicPath(h.id);$('heroRouteIcon').innerHTML=icon(path.icon);$('heroRouteBenefit').textContent=path.benefit;$('heroRouteInfo').setAttribute('aria-label',`${path.name}: ${path.benefit}. Más difícil, desde el nivel 11.`);
+   $('heroPowerIcon').innerHTML=icon(h.icon);$('heroPowerTitle').textContent=h.power;$('heroPowerShort').textContent=h.short;$('heroPowerDetail').textContent=h.detail;$('heroQuote').textContent=h.quote;const path=heroicPath(h.id);$('heroRouteIcon').innerHTML=icon(path.icon);$('heroRouteBenefit').textContent=path.summary;
    $('heroConfirm').textContent=from===1?'Comenzar aventura ➜':`Comenzar desde el nivel ${from} ➜`;renderStarts();
    cards.querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.hero;render();cards.querySelector(`[data-hero="${selected}"]`).focus()});
   };
@@ -62,8 +62,8 @@ export function showRescue(kind=S.run?.rescue?.kind||'lia'){
  $('rescueIcon').innerHTML=icon(learn?'undo':revive?'flame':'heart');
  $('rescueTag').textContent=daily?'RETO DIARIO · SIN PENALIZACIÓN':learn?'PRIMEROS PASOS · SIN PENALIZACIÓN':revive?'REVIVIR · COMPRADO CON TUS PUNTOS':'PODER DE LÍA · UNA VEZ POR PARTIDA';
  $('rescueTitle').textContent=learn?'Te quedaste sin movimientos':revive?'¡Otra oportunidad!':'La aventura sigue';
- $('rescueText').textContent=daily?'Puedes repetir el reto de hoy las veces que quieras. Cuenta tu mejor resultado del día.':learn?'En tu primera ciudad puedes repetir el tablero sin perder nada. Fíjate en el Límite: a partir del nivel 10, quedarte sin movimientos termina la partida.':revive?`Pagaste por revivir. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.${S.run.revive>0?` Te queda ${S.run.revive} revivir guardado.`:''}`:'Lía te da una segunda oportunidad. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.';
- $('rescueContinue').textContent=daily?'Repetir reto':learn?'Repetir tablero':revive?'Revivir':'Activar poder';
+ $('rescueText').textContent=daily?'Puedes repetir este tablero. Se conservan los que ya resolviste.':learn?'En tu primera ciudad puedes repetir el tablero sin perder nada. Fíjate en el Límite: a partir del nivel 10, quedarte sin movimientos termina la partida.':revive?`Pagaste por revivir. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.${S.run.revive>0?` Te queda ${S.run.revive} revivir guardado.`:''}`:'Lía te da una segunda oportunidad. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.';
+ $('rescueContinue').textContent=learn?'Repetir tablero':revive?'Revivir':'Activar poder';
  $('rescue').classList.add('show');$('rescueContinue').focus();
  $('rescueContinue').onclick=()=>{
   if(!S.run?.rescue)return;S.G.pos=S.G.start.slice();S.G.moves=0;S.G.hist=[];S.G.done=false;S.G.limit-=(S.G.bought||0);S.G.bought=0;delete S.run.rescue;saveRun();

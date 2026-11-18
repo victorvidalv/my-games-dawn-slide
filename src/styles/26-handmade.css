@@ -114,17 +114,15 @@ button{text-shadow:0 2px 0 #150e0c88}
 #result.perfect .res-card::before{background:repeating-conic-gradient(from 0deg,#ffe6a03a 0 9deg,#f2c45c00 9deg 22deg);animation-duration:9s}
 .res-prize b{font-family:var(--font-title);font-weight:700;-webkit-text-stroke:2px #150e0c;filter:drop-shadow(0 4px 0 #150e0c) drop-shadow(0 0 14px #f2c45c66);animation:res-bump .5s cubic-bezier(.2,1.8,.4,1) .1s both}
 @keyframes res-bump{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
-.res-chip{display:block;margin-top:6px;padding:3px 14px;border-radius:var(--wob-d);border:2px solid #150e0c;background:linear-gradient(180deg,#2c7585,#215666);font:700 11px/1.3 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:#fff5e0;text-shadow:0 1px 0 #150e0c;box-shadow:2px 3px 0 #150e0c;animation:res-bump .4s ease-out .3s both}
 #resTitle{font-family:var(--font-title);font-size:15px;letter-spacing:.22em;padding:7px 20px 7px calc(20px + .22em);margin:2px 0 8px;color:#fff5e0;
   border:3px solid #150e0c;border-radius:var(--wob-d);background:var(--hatch),linear-gradient(175deg,#c2402a,#9e2b15);box-shadow:inset 0 0 0 1.5px #f2c45c,3px 5px 0 #150e0c;text-shadow:0 2px 0 #150e0c;
   transform:rotate(-3deg);animation:res-stamp .5s cubic-bezier(.2,1.8,.4,1) .12s both}
 @keyframes res-stamp{0%{transform:scale(2.8) rotate(10deg);opacity:0}60%{transform:scale(.92) rotate(-4deg);opacity:1}100%{transform:scale(1) rotate(-3deg)}}
-#result.perfect .res-chip{background:linear-gradient(180deg,#f2c45c,#c98a25);color:#3a2300;text-shadow:none}
 #result.perfect .res-card::after{content:'★ ★ ★';order:9;margin-top:6px;font-size:22px;letter-spacing:8px;color:#f2c45c;text-shadow:0 2px 0 #150e0c,0 0 12px #f2c45c;animation:res-stars .7s ease-out .35s both}
 @keyframes res-stars{from{opacity:0;letter-spacing:22px;transform:scale(.5)}to{opacity:1;letter-spacing:8px;transform:none}}
 #result.perfect .res-card{animation:res-pop .38s cubic-bezier(.2,1.5,.4,1) both,res-shake .35s ease-out .12s}
 @keyframes res-shake{20%{translate:calc(-50% - 5px) calc(-50% + 2px)}50%{translate:calc(-50% + 4px) calc(-50% - 2px)}80%{translate:calc(-50% - 2px) -50%}}
-@media(prefers-reduced-motion:reduce){.res-prize b,.res-chip,#resTitle,#result.perfect .res-card,#result.perfect .res-card::after{animation:none}}
+@media(prefers-reduced-motion:reduce){.res-prize b,#resTitle,#result.perfect .res-card,#result.perfect .res-card::after{animation:none}}
 
 /* ---------- Tienda de Don Dublón: etiquetas de precio de pergamino cosidas, rótulo de madera con clavos y todo legible ---------- */
 .shop-sign{border:3px solid #150e0c;border-radius:var(--wob-b);color:#fff0c8;text-shadow:0 2px 0 #150e0c;font-family:var(--font-title)!important;letter-spacing:.07em;text-transform:uppercase;

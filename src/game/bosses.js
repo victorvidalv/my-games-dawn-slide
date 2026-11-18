@@ -77,24 +77,21 @@ export const bossRating = (_level, rate) => rate;
 /**
  * Regla de presión de cada jefe (se alternan para que cada duelo se sienta distinto):
  *   turns – límite de turnos más ajustado: `cap` = tope del factor del límite (como mucho mínimo × cap; más bajo = menos margen)
- *   time  – contrarreloj: `mult` × el tiempo «razonable» del tablero (ver bossTimeFor); más alto = más holgado. Turnos algo más holgados
+ *   time  – contrarreloj de `seconds` segundos, con turnos algo más holgados
  *   both  – las dos a la vez (los jefes finales)
  * El tiempo solo corre mientras puedes mover: se detiene en pausa, tienda, poderes, avisos y ventanas.
- * Los valores se calibraron con el segundo simulador (`npm run simulate:bosses`, `calibrateBoss`) para que el jugador típico que
- * llega a cada jefe lo supere al primer intento en torno a un 80 % (66 % el último); en los jefes de contrarreloj se dejó un 5 % de
- * margen sobre lo calibrado, porque el reloj humano del modelo es optimista.
  */
 export const BOSS_RULES = {
   10: { kind: 'turns', cap: 1.25 },
-  20: { kind: 'time', cap: 1.6, mult: 1.2 },
+  20: { kind: 'time', cap: 1.6, seconds: 180 },
   30: { kind: 'turns', cap: 1.1 },
-  40: { kind: 'time', cap: 1.6, mult: 0.68 },
-  50: { kind: 'time', cap: 1.6, mult: 0.66 },
+  40: { kind: 'time', cap: 1.6, seconds: 120 },
+  50: { kind: 'time', cap: 1.6, seconds: 120 },
   60: { kind: 'turns', cap: 1.05 },
-  70: { kind: 'time', cap: 1.6, mult: 0.64 },
+  70: { kind: 'time', cap: 1.6, seconds: 120 },
   80: { kind: 'turns', cap: 1.05 },
-  90: { kind: 'both', cap: 1.1, mult: 0.6 },
-  100: { kind: 'both', cap: 1.17, mult: 0.5 },
+  90: { kind: 'both', cap: 1.1, seconds: 120 },
+  100: { kind: 'both', cap: 1.17, seconds: 120 },
 };
 
 export const bossFor = (level) => (isBossLevel(level) ? BOSSES[level] || null : null);
@@ -106,7 +103,8 @@ export const reasonableSeconds = (opt) => opt * (1.75 + 0.07 * opt);
 /** Segundos de la contrarreloj del jefe para un tablero de mínimo `opt` (0 = sin contrarreloj). */
 export function bossTimeFor(level, opt, rule = bossRule(level)) {
   if (!rule || rule.kind === 'turns') return 0;
-  return Math.max(60, Math.round((20 + rule.mult * reasonableSeconds(opt)) / 5) * 5);   // nunca menos de un minuto
+  // El simulador también puede probar un multiplicador para calibrar tiempos futuros.
+  return rule.seconds ?? Math.max(60, Math.round((20 + rule.mult * reasonableSeconds(opt)) / 5) * 5);
 }
 /** Cuántas piezas especiales lleva el tablero del jefe (según el calibrador), dicho en una frase. */
 export function bossMechLabel(level) {

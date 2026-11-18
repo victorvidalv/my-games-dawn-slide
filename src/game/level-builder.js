@@ -1,4 +1,5 @@
 import { loadBanks } from '../data/banks.js';
+import { buildDaily, challengeById } from './daily.js';
 import { buildAdventureLevel } from './build-adventure.js';
 
 /* Prepara el tablero de aventura en un Web Worker (level-worker.js) para no bloquear la animación en curso.
@@ -25,10 +26,12 @@ export const warmLevelWorker = () => { if (typeof Worker !== 'undefined') (self.
 
 async function buildHere(run, tips) {
   const { levelBank, specialBank } = await loadBanks();
-  return buildAdventureLevel(run, { levels: levelBank.ratings, special: specialBank, tips });
+  const banks = { levels: levelBank.ratings, special: specialBank, tips };
+  const d = run.daily;
+  return d ? buildDaily(challengeById(d.id), d.day, banks, d.index) : buildAdventureLevel(run, banks);
 }
 /** Igual que buildAdventureLevel, pero sin bloquear el hilo principal. */
-export async function buildAdventureLevelAsync(run, tips = {}) {
+export async function buildLevelAsync(run, tips = {}) {
   const w = typeof Worker !== 'undefined' && getWorker();
   if (w) {
     try {

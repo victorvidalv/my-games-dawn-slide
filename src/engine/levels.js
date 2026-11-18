@@ -86,12 +86,11 @@ export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) 
  * Entre los estados con ese mínimo NO elige al azar: toma uno de los más interesantes (pickInteresting), así ningún nivel es «despeja y sal».
  * Devuelve {pieces, pos, walls, doors, opt} donde opt = movimientos mínimos reales del estado elegido.
  */
-export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.random, boost = 0, withAnalysis = false }) {
+export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.random, boost = 0, withAnalysis = false, target = curve(rating).target }) {
   const walls = board.walls || [];
   const doors = board.doors || [];
   const an = analyze(board.pieces, board.pos, 600000, walls, doors);
   if (!an) throw new Error('Tablero sin solución');
-  const target = curve(rating).target;
   let maxd = 0;
   for (const d of an.dist.values()) if (d > maxd) maxd = d;
   const lo = Math.max(1, Math.min(target, maxd) - WINDOW);
@@ -113,6 +112,6 @@ export function buildLevel(board, { rating, adj = 0, brave = false, rng = Math.r
   const { key } = pickInteresting(board.pieces, byDist.get(opt), an, walls, doors, { rng });
   const pos = [];
   for (let i = 0, v = key; i < board.pieces.length; i++, v = Math.floor(v / 8)) pos.push(v % 8);
-  return { pieces: board.pieces, pos, walls, doors, opt, ...(withAnalysis ? { analysis: an } : {}) };
+  return { pieces: board.pieces, pos, walls, doors, opt, ...(brave ? { normalOpt: normal } : {}), ...(withAnalysis ? { analysis: an } : {}) };
 }
 

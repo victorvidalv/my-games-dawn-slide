@@ -228,13 +228,14 @@ function attach(el,i){
 }
 export function afterMove(){
   if(!S.run||!S.G||S.G.done)return;
-  processSealMove();updateHud();saveRun();coachOnMove();
+  processSealMove();updateHud();if(!S.run.daily)saveRun();coachOnMove();
   const prac=S.run.mode==='p';
   const status=prac?'ok':moveStatus(S.G.moves,S.G.limit);
   if(isWon(S.G.pos)){win();return}                         // ganar en el último turno vale
-  if(status==='over'){fail('limit');return}                // sin turnos: ya no se puede mover
+  if(status==='over'){fail('limit');return}
+  if(S.run.daily)saveRun();                // sin turnos: ya no se puede mover
   if(prac){if(S.G.moves===S.G.opt+1)$('msg').textContent='Vas por encima del mínimo. En práctica no pasa nada: ¡sigue!';return}
-  const retry=freeRetry(S.run,S.G.n,!!S.G.plan?.boss);
+  const retry=S.run.daily||freeRetry(S.run,S.G.n,!!S.G.plan?.boss);
   if(status==='last'){$('msg').textContent=retry?'ÚLTIMO MOVIMIENTO: si la llave no sale ahora, repites el tablero.':'ÚLTIMO TURNO: si no sacas la llave con este movimiento, la aventura termina.';sfx.warn();vib([30,40,30])}
   else if(status==='warn'){$('msg').textContent=`Te quedan ${movesLeft(S.G.moves,S.G.limit)} movimientos. Piensa bien cada paso.`;sfx.warn()}
 }

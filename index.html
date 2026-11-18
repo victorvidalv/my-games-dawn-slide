@@ -119,8 +119,8 @@
    <div class="travel-bottom">
     <p class="travel-ask">Próximos 10 niveles</p>
     <div class="route-options" id="routeOptions">
-     <button class="route-option" id="routeNormal"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21c0-5 6-5 6-9s-5-3-5-8"/><path d="M14 4h5v5"/><path d="M19 4l-6 6"/></svg></span><span class="choice-copy"><strong>Avanzar</strong><small>Dificultad habitual</small></span></button>
-     <button class="route-option brave" id="routeBrave"><span class="choice-icon" id="routeBraveIcon" aria-hidden="true"></span><span class="choice-copy"><strong>Tomar camino heroico</strong><small>Más difícil</small><span class="route-perk" id="routePerk"></span></span></button>
+     <button class="route-option" id="routeNormal"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21c0-5 6-5 6-9s-5-3-5-8"/><path d="M14 4h5v5"/><path d="M19 4l-6 6"/></svg></span><span class="choice-copy"><strong>Camino normal</strong><small>Dificultad habitual</small></span></button>
+     <button class="route-option brave" id="routeBrave"><span class="choice-icon" id="routeBraveIcon" aria-hidden="true"></span><span class="choice-copy"><strong id="routeBraveName"></strong><span class="route-perk" id="routePerk"></span></span></button>
     </div>
    </div>
   </div>
@@ -227,7 +227,7 @@
   <button class="primary" id="updYes">Actualizar</button>
   <button class="updx" id="updNo" aria-label="Más tarde">✕</button>
 </div>
-<div id="result" role="status"><div class="res-card"><i class="bi res-crown" data-icon="crown" aria-hidden="true"></i><strong id="resTitle"></strong><div class="res-prize"><i class="bi res-ico" data-icon="trophy" aria-hidden="true"></i><b id="resPts">+0</b></div><small id="resLevel" hidden></small><span id="resLine" hidden></span><em id="resTotal" hidden></em><u id="resBar" hidden></u></div></div>
+<div id="result" role="status"><div class="res-card"><i class="bi res-crown" data-icon="crown" aria-hidden="true"></i><strong id="resTitle"></strong><div class="res-prize"><span class="res-delta"><b id="resLine">0</b> mov.</span><span aria-hidden="true">·</span><span class="res-points"><b id="resPts">+0</b> pts</span></div></div></div>
 <div id="lowBanner" aria-live="assertive"><i data-icon="alert"></i><div><b id="lowTitle"></b><span id="lowSub"></span></div></div>
 <div id="heroPowerFx" aria-hidden="true"><div class="power-sigil"><img id="powerPortrait" alt=""><i id="powerSeal"></i><b id="powerFxName"></b><span id="powerStep"></span></div></div>
 <div id="rewindFx" aria-hidden="true"><span>↺</span><i></i></div>
@@ -379,13 +379,13 @@
   <div class="tag" id="dailyEndTag"></div>
   <i class="daily-medal" id="dailyEndMedal" aria-hidden="true"></i>
   <h2 id="dailyEndTitle"></h2>
-  <div class="daily-moves"><b id="dailyEndMoves"></b><span>movimientos / mínimo</span></div>
-  <p class="daily-best" id="dailyEndBest"></p>
+  <div class="daily-moves"><span><b id="dailyEndDelta"></b> mov.</span><span aria-hidden="true">·</span><span><b id="dailyEndPoints"></b> pts</span></div>
+  <div class="daily-boards" id="dailyBoards"></div>
   <div class="daily-streak-box" id="dailyEndStreakBox"><i class="bi" data-icon="flame" aria-hidden="true"></i><b id="dailyEndStreak">0</b><span id="dailyEndStreakLabel"></span></div>
+  <p class="daily-reward-earned" id="dailyEndReward" hidden></p>
   <p class="daily-next">Nuevos retos en <b id="dailyEndReset"></b></p>
   <div class="daily-actions">
    <button type="button" id="dailyShare"><i class="bi" data-icon="medal" aria-hidden="true"></i><span>Compartir</span></button>
-   <button type="button" id="dailyRetry">Mejorar mi marca</button>
    <button type="button" class="primary" id="dailyBack">Volver a los retos</button>
   </div>
  </div>

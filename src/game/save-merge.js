@@ -38,6 +38,7 @@ const MEDAL_RANK = { bronze: 1, silver: 2, gold: 3 };
 const better = (x, y) => {
   if (!x) return y;
   if (!y) return x;
+  if (Boolean(x.boards) !== Boolean(y.boards)) return x.boards ? x : y;
   const rx = MEDAL_RANK[x.medal] || 0, ry = MEDAL_RANK[y.medal] || 0;
   return ry > rx || (ry === rx && num(y.moves) < num(x.moves)) ? y : x;
 };
@@ -64,5 +65,15 @@ export function mergeSaves(mine = {}, disk = {}) {
   const out = { ...mine, paths: mergePaths(mine.paths, disk?.paths), ach: mergeAch(mine.ach, disk?.ach), stats: mergeStats(mine.stats, disk?.stats) };
   const daily = mergeDaily(mine.daily, disk?.daily);
   if (daily) out.daily = daily;
+  const a = mine.dailyPlay, b = disk?.dailyPlay;
+  if (!a || (b && b.day > a.day)) {
+    if (b) out.dailyPlay = b;
+  } else if (b?.day === a.day) {
+    const challenges = { ...obj(b.challenges) };
+    for (const [id, result] of Object.entries(obj(a.challenges))) {
+      if (!challenges[id] || result.updatedAt >= challenges[id].updatedAt) challenges[id] = result;
+    }
+    out.dailyPlay = { day: a.day, challenges };
+  }
   return out;
 }

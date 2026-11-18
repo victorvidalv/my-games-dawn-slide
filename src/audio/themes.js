@@ -15,6 +15,9 @@
  *           siguen sonando bien) y `end`/`endProg` aportan los 2 compases finales.
  *   epic  – capas orquestales extra (0-3): 1 cuerdas largas, 2 + timbal y trompas, 3 + caja y platillo.
  */
+import { JUTH_THEME_DATA } from './themes-juth.js';
+import { LIA_THEME_DATA } from './themes-lia.js';
+
 export const SCALES = {
   min: [0, 2, 3, 5, 7, 8, 10], dor: [0, 2, 3, 5, 7, 9, 10], maj: [0, 2, 4, 5, 7, 9, 11], phr: [0, 1, 3, 5, 7, 8, 10],
   lyd: [0, 2, 4, 6, 7, 9, 11], hmin: [0, 2, 3, 5, 7, 8, 11], mix: [0, 2, 4, 5, 7, 9, 10], phd: [0, 1, 4, 5, 7, 8, 10],
@@ -71,7 +74,7 @@ export const entryAt = (th, bar, st) => {
   return Array.isArray(e) ? (st < 8 ? e[0] : e[1]) : e;
 };
 
-const THEME_DATA = [
+const JEAN_THEME_DATA = [
   { // 0 Valle Esmeralda · Do mayor, pop-folk saltarín con guitarra y flauta
     name: 'Un corazón al sol', choir: { vowel: 'ah', chant: [0, 6], clap: [4, 12] }, hook: { s: [0, 3, 6, 10, 12], n: [0, 2, 1, 2, 3], voice: 'guitar' }, epic: 1, bpm: 124, sc: 'maj', root: 48, swing: 0.1, leadVoice: 'flute', compVoice: 'guitar', comp: 'chop16', bassPat: 'pop', groove: 'pop', echo: true,
     prog: [0, [5, 1], '4:7', [0, 5], 3, [2, 5], [1, '4:7'], 0, 5, '2:7', 1, '4:7', 3, 1, '4:7', [0, '4:7']],
@@ -275,11 +278,19 @@ const build = (raw) => {
   };
 };
 
-export const ZONE_THEMES = THEME_DATA.map(build);
+/** La instrumentación de fondo conserva el estilo de cada ciudad. Cada héroe tiene partitura propia. */
+const buildRepertoire = (songs) => songs.map((song, city) => build({ ...JEAN_THEME_DATA[city], ...song }));
+export const ZONE_THEMES = JEAN_THEME_DATA.map(build);
+export const CITY_REPERTOIRES = {
+  jean: ZONE_THEMES,
+  lia: buildRepertoire(LIA_THEME_DATA),
+  van: buildRepertoire(JUTH_THEME_DATA),
+};
+export const cityThemeFor = (city, hero) => (Object.hasOwn(CITY_REPERTOIRES, hero) ? CITY_REPERTOIRES[hero] : ZONE_THEMES)[city];
 export const MENU_THEME = build(MENU_DATA);
 export const HEROES_THEME = build(HEROES_DATA);
 export const BOSS_THEME = build(BOSS_DATA);
-export const ALL_THEMES = [...ZONE_THEMES, MENU_THEME, HEROES_THEME, BOSS_THEME];
+export const ALL_THEMES = [...Object.values(CITY_REPERTOIRES).flat(), MENU_THEME, HEROES_THEME, BOSS_THEME];
 
 const BOSS_ROOT_STEP = [0, 2, 3, 5, 7, -2, 1, 4, -1, 0];   // semitonos sobre la tónica base, por ciudad
 const bossCache = new Map();

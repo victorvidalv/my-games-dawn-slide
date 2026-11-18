@@ -56,21 +56,11 @@ describe('jefes: datos y reglas', () => {
     expect(bonusTurns('jean', 40, true)).toBe(0);
   });
 
-  it('la contrarreloj crece con el mínimo, se redondea a 5 s, nunca baja de 1:00 y no pasa de 6:00', () => {
-    expect(bossTimeFor(10, 30)).toBe(0);                  // jefe de turnos: sin reloj
-    expect(bossTimeFor(11, 30)).toBe(0);
-    expect(bossTimeFor(50, 40)).toBeGreaterThan(bossTimeFor(50, 20));
-    for (const l of LEVELS.filter((x) => bossRule(x).kind !== 'turns')) {
-      let prev = 0;
-      for (const opt of [8, 15, 25, 35, 39]) {
-        const t = bossTimeFor(l, opt);
-        expect(t % 5, `${l}/${opt}`).toBe(0);
-        expect(t, `${l}/${opt}`).toBeGreaterThanOrEqual(60);
-        expect(t, `${l}/${opt}`).toBeLessThanOrEqual(360);
-        expect(t, `${l}/${opt}`).toBeGreaterThanOrEqual(prev);
-        prev = t;
-      }
+  it('el primer jefe con reloj da 3:00 y todos los siguientes con reloj dan 2:00', () => {
+    for (const opt of [8, 15, 25, 35, 39]) {
+      expect(LEVELS.map((level) => bossTimeFor(level, opt))).toEqual([0, 180, 0, 120, 120, 0, 120, 0, 120, 120]);
     }
+    expect(bossTimeFor(11, 30)).toBe(0);
   });
 
   it('el tablero del jefe es 2 movimientos más duro que sus vecinos (turnos mínimos calibrados, sin suelo aparte)', () => {
@@ -112,6 +102,11 @@ describe('jefes: niveles generados', () => {
     const R = buildAdventureLevel(run, { levels: levelBank.ratings, special: specialBank, tips });
     expect(R.timeLeft).toBe(47);
     expect(R.timeLimit).toBe(G.timeLimit);
+
+    run.board.timeLimit = 60;  // partida guardada antes del cambio, con 13 segundos consumidos
+    const migrated = buildAdventureLevel(run, { levels: levelBank.ratings, special: specialBank, tips });
+    expect(migrated.timeLimit).toBe(180);
+    expect(migrated.timeLeft).toBe(167);
   }, 60000);
 });
 

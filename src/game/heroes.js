@@ -3,7 +3,7 @@
  * funciones puras sobre el objeto `run` (la aventura en curso), sin DOM, y están cubiertas por tests.
  */
 import { moveLimit, byPath } from '../engine/difficulty.js';
-import { HEROIC_BENEFITS, heroicHintsLeft, useHeroicHint } from './routes.js';
+import { HEROIC_BENEFITS, heroicHintsLeft, heroicPowerFactor, useHeroicHint } from './routes.js';
 
 /* Ojo: el identificador interno de Juth sigue siendo 'van' (imágenes heroes/van*.webp y partidas guardadas). Solo cambia el nombre que se ve. */
 export const HEROES = [
@@ -34,9 +34,16 @@ export const bonusTurns = (heroId, opt, boss = false, power = 1) => {
   return Math.max(LIA_MIN_TURNS, Math.round(opt * LIA_TURNS_SHARE * power * (boss ? BOSS_RESERVE : 1)));
 };
 
+/** Lía pierde parte del margen base en la Brasa y conserva su reserva personal. */
+export function heroBaseLimit(hero, opt, start, level, heroic, boss) {
+  const base = moveLimit(opt, start, level, false, boss);
+  if (!heroic || hero !== 'lia') return base;
+  return opt + Math.min(base - opt - 1, Math.round((base - opt) * HEROIC_BENEFITS.liaMargin));
+}
+
 /** Límite de movimientos de un tablero de mínimo `opt` para ese héroe, camino y jefe. */
 export const heroLimit = (heroId, opt, start = 1, level = 1, brave = false, boss = false) =>
-  moveLimit(opt, start, level, brave, boss) + bonusTurns(heroId, opt, boss, brave ? HEROIC_BENEFITS.powerScale : 1);
+  heroBaseLimit(heroId, opt, start, level, brave, boss) + bonusTurns(heroId, opt, boss, heroicPowerFactor(heroId, brave));
 
 /** Foto del tablero para repetirlo desde el principio con 0 movimientos (la usa el revivir). */
 export function snapshotRescue(G) {
@@ -48,6 +55,7 @@ export function snapshotRescue(G) {
     doors: (G.doors || []).map((d) => d.slice()),
     start: G.start.slice(),
     opt: G.opt,
+    limit: G.limit - (G.bought || 0),
     seal: G.seal ? { ...G.seal, cell: G.seal.cell.slice() } : null,
     family: G.family,
   };

@@ -1,14 +1,28 @@
+import specialBank from '../data/special.json' with { type: 'json' };
 import { mulberry32, hash32 } from '../engine/rng.js';
-import { curve, rateAt, moveLimit, braveExtra, startHintsFor, MAX_LEVEL } from '../engine/difficulty.js';
+import { curve, rateAt, braveExtra, startHintsFor, MAX_LEVEL } from '../engine/difficulty.js';
 import { calcGain } from '../engine/scoring.js';
-import { hintEvery, CITY_EVERY, bonusTurns } from './heroes.js';
+import { hintEvery, CITY_EVERY, bonusTurns, heroBaseLimit } from './heroes.js';
 import { MAX_REVIVES, REVIVE_SHARE, priceOf, extraTurns } from './shop.js';
 import { rewindCount, DESTINY_SHARE, JUTH_MIN_REMAINING, destinyCount, powerReady } from './powers.js';
-import { BOSS_POINTS_BONUS, HEROIC_BENEFITS } from './routes.js';
+import { BOSS_POINTS_BONUS, HEROIC_BENEFITS, heroicPowerFactor, juthHeroicFamily } from './routes.js';
 import { bossCapFor, bossRating } from './bosses.js';
-import { isBossLevel } from './mechanics.js';
+import { isBossLevel, levelPlan, lettersOfFamily } from './mechanics.js';
 import { SEAL_LEVELS, maxSealDetour, requestedSealTier, sealPoints } from './seals.js';
 import { bonusPrize, isBonusLevel } from './minigames.js';
+
+const juthPressure = new Map();
+/** El simulador aproxima los errores extra por cada mecanismo añadido. */
+function juthMechanicPressure(level, rating) {
+  const key = level * 100 + rating;
+  if (!juthPressure.has(key)) {
+    const plan = levelPlan(level);
+    const family = juthHeroicFamily(plan, level, rating, specialBank);
+    const extra = lettersOfFamily(family).length - plan.letters.length;
+    juthPressure.set(key, 1 + 0.1 * extra);
+  }
+  return juthPressure.get(key);
+}
 
 /**
  * Modelo de equilibrio: simula miles de partidas de jugadores de distinta habilidad para medir cómo se comportan la dificultad
@@ -20,7 +34,7 @@ import { bonusPrize, isBonusLevel } from './minigames.js';
  * movimientos (el movimiento y deshacerlo). Solo te das cuenta a tiempo con probabilidad MODEL.notice; si no, cuesta
  * MODEL.unnoticedCost. Una pista evita el error entero (y se gasta); se guardan para tableros duros (d ≥ MODEL.hintMinD).
  * Se pierde al agotar los turnos sin llegar a la salida. Poderes (una vez por tablero, como en el juego):
- *   Lía  – turnos de reserva (más límite) y, en su camino heroico, 1 pista gratis cada dos tableros;
+ *   Lía  – turnos de reserva (más límite) y, en su camino heroico, 1 pista gratis cada cuatro tableros;
  *   Jean – Rebobinar: devuelve ~33 % de los movimientos hechos, mínimo 3 (borra el primer error del tablero);
  *   Juth – Trazar destino: ~25 % de los pasos que faltan (si quedan al menos 3): sin error en esos pasos.
  * Sellos (cada 3-4 niveles desde el 5): el jugador hábil rodea un poco para recogerlos y cobra puntos extra.
@@ -59,9 +73,9 @@ const minigameGrade = (skill, u) => Math.max(0, Math.min(5, Math.round(2.8 + 1.4
  */
 export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, shop = null, brave = false, boss = false, seal = false, powers = {}, hard = 1 }) {
   const heroic = brave;
-  const power = heroic ? HEROIC_BENEFITS.powerScale : 1;   // camino heroico: los poderes valen la mitad
+  const power = heroicPowerFactor(hero, heroic);
   const destinyShare = DESTINY_SHARE * power;
-  const baseLimit = moveLimit(d, start, level, brave, boss);
+  const baseLimit = heroBaseLimit(hero, d, start, level, brave, boss);
   let limit = baseLimit + (powers.liaTurns && hero === 'lia' ? Math.max(1, Math.round(d * powers.liaTurns)) : bonusTurns(hero, d, boss, power));
   let extra = 0;
   if (seal) {                                                  // rodeo para recoger el sello: más movimientos y, si hace falta, más límite
@@ -151,12 +165,13 @@ export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = 
     const rating = bossRating(level, rateAt(start, level));            // los jefes tienen un suelo de dificultad (tableros no diminutos)
     const bossBoost = boss ? (level >= 50 ? 2 : 1) : 0;
     const d0 = Math.max(1, curve(rating).target + adj + bossBoost);
-    const d = heroic ? d0 + braveExtra(d0) : d0;
+    const d = heroic && hero === 'jean' ? d0 + braveExtra(d0) : d0;
+    const hard = heroic && hero === 'van' ? juthMechanicPressure(level, rating) : 1;
     const seal = seals && SEAL_LEVELS.includes(level) ? sealPlan(level, d, seed) : null;
     const goForSeal = seal && (powers.sealOnly ? seal.tier === powers.sealOnly : skill >= MODEL.sealSkill[seal.tier - 1]);
     let res;
     for (;;) {
-      res = playBoard(rng, { hero, skill, d, start, level, brave: heroic, boss: boss ? bossCapFor(level) : false, hints, shop: shop ? { score, rating } : null, seal: goForSeal ? seal : null, powers });
+      res = playBoard(rng, { hero, skill, d, start, level, brave: heroic, boss: boss ? bossCapFor(level) : false, hints, shop: shop ? { score, rating } : null, seal: goForSeal ? seal : null, powers, hard });
       hints = res.hints;
       score -= res.spent;
       spentTotal += res.spent;

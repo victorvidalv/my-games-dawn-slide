@@ -43,8 +43,8 @@ describe('tres juegos por héroe, nueve mecánicas distintas, ciclo fijo', () =>
 });
 
 describe('premios: nota 0-5 proporcional y equitativa en cualquier nivel', () => {
-  it('0 estrellas no da nada, 5 estrellas da el máximo de la parada y el máximo crece de 3 a 10', () => {
-    expect(maxPrize(15)).toBe(3);
+  it('0 estrellas no da nada, 5 estrellas da el máximo de la parada y el máximo crece de 5 a 10', () => {
+    expect([1, 50, 75].map((start) => maxPrize(15, start))).toEqual([5, 4, 3]);
     expect(maxPrize(95)).toBe(10);
     for (const l of STOPS) for (const start of [1, 50, 75]) {
       const table = prizeTable(l, start);
@@ -64,7 +64,7 @@ describe('premios: nota 0-5 proporcional y equitativa en cualquier nivel', () =>
       expect(bonusPrize(g, 95)).toBeGreaterThan(bonusPrize(g, 15) - (g === 1 ? 1 : 0));
     }
     expect(prizeTable(95)).toEqual([0, 2, 4, 6, 8, 10]);
-    expect(prizeTable(15)).toEqual([0, 1, 1, 2, 2, 3]);
+    expect(prizeTable(15)).toEqual([0, 1, 2, 3, 4, 5]);
     expect(maxPrize(95, 75)).toBeLessThan(maxPrize(95, 50));
     expect(maxPrize(95, 50)).toBeLessThan(maxPrize(95, 1));
   });
@@ -78,19 +78,19 @@ describe('premios: nota 0-5 proporcional y equitativa en cualquier nivel', () =>
     const run = { hero: 'lia', level: 16, seed: 7, bonus: 1, hints: 3, start: 1 };
     const p = ensureBonusPlan(run);
     expect(p.version).toBe(3);
-    expect(finishBonus(p, 5)).toBe(3);
-    expect(finishBonus(p, 0)).toBe(3);                     // ya decidido
+    expect(finishBonus(p, 5)).toBe(5);
+    expect(finishBonus(p, 0)).toBe(5);                     // ya decidido
     expect(p.grade).toBe(5);
     const stale = JSON.parse(JSON.stringify(p));
     expect(ensureBonusPlan(JSON.parse(JSON.stringify(run)))).toEqual(p);   // guardar y cargar conserva la nota
-    expect(claimBonus(run)).toBe(3);
-    expect(run.hints).toBe(6);
+    expect(claimBonus(run)).toBe(5);
+    expect(run.hints).toBe(8);
     expect(run.bonus).toBe(0);
     expect(run.bonusPlan).toBeUndefined();
     expect(claimBonus(run)).toBe(0);
     run.bonusPlan = stale;
     expect(claimBonus(run)).toBe(0);
-    expect(run.hints).toBe(6);
+    expect(run.hints).toBe(8);
   });
   it('0 estrellas cierra la parada sin premio', () => {
     const run = { hero: 'jean', level: 26, seed: 3, bonus: 1, hints: 2, start: 1 };

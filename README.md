@@ -165,7 +165,7 @@ falta una familia usa otra), `varyBoard()` crea una variante propia de cada part
 - **Normal:** distancia = objetivo de la curva + ajuste adaptativo.
 - **Adaptativo:** si juegas con ≥ 90 % de eficiencia el ajuste sube (máx. +1 hasta el nivel 10, +2 después);
   si < 40 %, baja (mín. −2).
-- **Camino heroico** (al terminar una ciudad): tablero más duro, límite más estricto y los poderes de los tres héroes valen **la mitad**. A cambio da más puntos (Lía +45 %, Jean +40 %, Juth +35 %) y una tienda más barata (−30 %, −30 %, −20 %); Lía además recibe una pista gratis cada 4 tableros (`HEROIC_BENEFITS`, calibrado con `npm run simulate`).
+- **Camino heroico** (al terminar una ciudad): cada héroe afronta una dificultad distinta y gana más puntos (Lía +45 %, Jean +40 %, Juth +35 %) y una tienda más barata (−30 %, −30 %, −20 %); Lía además recibe una pista gratis cada 4 tableros (`HEROIC_BENEFITS`, calibrado con `npm run simulate`).
 - Siempre dentro de ±3 del objetivo, y el límite de movimientos baja de ×2 a ×1,3 del mínimo entre el nivel 1 y el 100 (`limitFactor`).
 
 > Si cambias `curve()` o las reglas de generación, ejecuta `npm run levels:all` y `npm test`
@@ -234,21 +234,21 @@ El menú principal tiene tres pestañas.
 
 **Aventura** es la historia de 100 niveles de siempre (Normal, Difícil, Experto).
 
-**Retos diarios** ([`src/game/daily.js`](src/game/daily.js), [`src/ui/daily.js`](src/ui/daily.js)): tableros sueltos, los mismos para todos, que cambian a la medianoche local del jugador (el panel muestra cuánto falta). El tablero sale de la fecha con el mismo banco y generador que la aventura, sin servidor.
+**Retos diarios** ([`src/game/daily.js`](src/game/daily.js), [`src/ui/daily.js`](src/ui/daily.js)): series de tres tableros, iguales para todos, que cambian a la medianoche local del jugador (el panel muestra cuánto falta). El tablero sale de la fecha con el mismo banco y generador que la aventura, sin servidor.
 
 | Reto | Se abre | Tablero |
 |---|---|---|
-| Clásico | Desde el principio | Sin piezas especiales, mínimo de 15 movimientos o más |
-| Rocas y hielo | Nivel 25 en Aventura | Un día rocas, al siguiente hielo |
-| Mecanismos | Nivel 50 | Candados y piezas pesadas |
-| Todo junto | Nivel 75 | Todas las piezas especiales |
+| Clásico | Desde el principio | Sin piezas especiales |
+| Rocas y hielo | Nivel 20 en Aventura | Un día rocas, al siguiente hielo |
+| Mecanismos | Nivel 30 | Candados y piezas pesadas |
+| Todo junto | Nivel 50 | Todas las piezas especiales |
 | Maestro | Nivel 100 | Todas las piezas, con el límite ajustado de un jefe |
 
 - El nivel que cuenta es el más alto alcanzado en cualquier camino y no se pierde al terminar una partida.
-- Sin héroe, sin tienda y sin pistas. Se puede repetir cuantas veces se quiera; queda la mejor marca del día.
+- Cada reto tiene tres tableros con mínimos de 5, 8 y 12 movimientos. Se puede retomar la partida y repetir cada tablero para mejorar su marca.
 - **Medallas**: oro en el mínimo exacto, plata hasta un 15 % más (al menos 2 movimientos), bronce al resolver.
-- **Racha**: un día por cada Clásico resuelto; se rompe al saltarse un día. Los demás retos dan medallas, no racha.
-- Un reto no toca la partida guardada de la Aventura (`saveRun` no guarda retos) y se puede compartir el resultado.
+- **Racha**: un día al resolver los tres tableros de cualquier reto. A los 3, 5 o 7 días seguidos, una aventura nueva empieza con 5, 10 o 15 pistas extra, según el tramo más alto. Si se rompe la racha, caduca el premio para futuras aventuras. Las pistas ya entregadas quedan en la partida.
+- Los retos guardan su partida por separado de la Aventura y se puede compartir el resultado.
 
 **Logros** ([`src/game/achievements.js`](src/game/achievements.js), [`src/ui/achievements.js`](src/ui/achievements.js)): 18 logros de Aventura y de retos diarios, con progreso visible. Cada uno desbloquea una recompensa cosmética que se activa con un toque en la misma pestaña: música del menú (temas de las ciudades y del jefe; al tocarla suena al instante), aspecto de la llave, diseño de las piezas y celebración al resolver. Las bloqueadas se ven con candado y dicen con qué logro se consiguen. Nada cambia las reglas ni la dificultad. Para añadir una recompensa: una entrada en `REWARDS`, un logro que la dé y su estilo en `33-daily.css`.
 
@@ -310,7 +310,7 @@ Nueve paradas, en los niveles 15, 25…95. Cada héroe tiene **tres juegos propi
 
 **Cada parada tiene cuatro pasos**: *cómo se juega* (una demostración animada, una sola frase, qué suma y qué resta, y el premio en juego) → cuenta atrás 3·2·1 → el juego → resultado. Todos se juegan con un dedo y también con teclado (flechas, espacio o números).
 
-**Premio: de 0 a 5 estrellas.** Todos los juegos se puntúan con la misma nota: 0 = sin premio, 5 = el premio máximo de la parada. El máximo crece con el nivel (`maxPrize`: 3 pistas en el 15 → 10 en el 95; ×0,8 en Difícil y ×0,6 en Experto) y cada estrella vale su parte proporcional (`bonusPrize`; cualquier nota ≥ 1 da al menos una pista). En el nivel 15 la tabla es 0·1·1·2·2·3 y en el 95 es 0·2·4·6·8·10. No hacer nada da 0 en todos los juegos.
+**Premio: de 0 a 5 estrellas.** Todos los juegos se puntúan con la misma nota: 0 = sin premio, 5 = el premio máximo de la parada. El máximo crece con el nivel (`maxPrize`: 5 pistas en el 15 → 10 en el 95; ×0,8 en Difícil y ×0,6 en Experto) y cada estrella vale su parte proporcional (`bonusPrize`; cualquier nota ≥ 1 da al menos una pista). En el nivel 15 la tabla es 0·1·2·3·4·5 y en el 95 es 0·2·4·6·8·10. No hacer nada da 0 en todos los juegos.
 
 **Código.** Las reglas, la generación determinista de cada partida (por la semilla de la aventura) y la nota son funciones puras en [`src/game/minigames.js`](src/game/minigames.js) (`TUNING` reúne los ajustes por juego y escalón); [`src/ui/bonus.js`](src/ui/bonus.js) es el marco común y cada juego se dibuja en `src/ui/minigames/` (`lia.js`, `jean.js`, `juth.js`; `kit.js` aporta el reloj pausable, los efectos y los sonidos). Si la pestaña se oculta el juego se congela; si se cierra la app la parada vuelve a empezar, y una vez decidida la nota el premio se cobra una sola vez. `tests/minigames.test.js` comprueba que todas las partidas generadas son justas (alcanzables, sin solapes, con margen humano) y que la nota es monótona de 0 a 5.
 
@@ -333,17 +333,15 @@ Los récords de cada camino se fusionan tomando el máximo, y la partida en curs
 
 ## Caminos heroicos
 
-Tras los niveles 10, 20…90 solo se elige **Avanzar** (dificultad habitual) o **Tomar camino heroico** (más difícil durante los próximos diez niveles). Los tres caminos heroicos usan la misma progresión de dificultad; solo cambia el beneficio:
+Tras los niveles 10, 20…90 se elige entre el **Camino normal** y el camino heroico del héroe para los próximos diez niveles.
 
-Todos los caminos heroicos dan **+15 % de puntos** (también en los sellos) como premio base al riesgo, y además:
+| Camino | Reto | Puntos extra |
+| --- | --- | --- |
+| Brasa (Lía) | Menos turnos en el límite base; Lía conserva su reserva. | +45 % |
+| Péndulo (Jean) | Una solución más larga cuando hay un tablero compatible en el banco. | +40 % |
+| Runas (Juth) | Más mecanismos ya aprendidos si hay una combinación compatible; los jefes y las lecciones conservan su plan. | +35 % |
 
-- Lía: una pista gratis cada 6 tableros, antes de gastar la reserva. No se acumula ni se recarga al rehacer o revivir. Símbolo de brasa y acompañante forjadora.
-- Jean: +10 % adicional de puntos (+25 % en total) y Rebobinar devuelve el 50 % (en vez del 33 %). Símbolo de reloj y la acompañante elfa original.
-- Juth: Trazar destino llega al 40 % de los pasos que faltan (en vez del 25 %) y 40 % de descuento en la tienda, redondeado al punto. No afecta a revivir fuera de la tienda. Símbolo de runas y acompañante erudito.
-
-Valores en `HEROIC_BENEFITS` (`src/game/routes.js`), calibrados con `npm run simulate`: en jugadores hábiles el riesgo cuesta de 0 a 2 niveles y da ≈ +10 % de puntos con cualquiera de los tres héroes.
-
-Los poderes de botón y la reserva de turnos de Lía se conservan. La selección de héroe muestra por separado Poder y Camino heroico. El identificador guardado del camino heroico sigue siendo `brave` para conservar las aventuras existentes. Reglas y textos comunes en `src/game/routes.js`.
+Se mantienen los descuentos de la tienda y la pista gratis de Lía cada cuatro tableros. Los poderes de Jean y Juth tienen la mitad de potencia en sus caminos heroicos. Las partidas guardadas conservan el tablero y el límite de turnos con los que empezaron.
 
 ## Sellos opcionales
 

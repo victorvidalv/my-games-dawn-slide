@@ -3,7 +3,7 @@
  * y la reproduce con el mismo secuenciador del juego. No forma parte del juego.
  */
 import { Music } from '../audio/music.js';
-import { ALL_THEMES, ZONE_THEMES, SCALES, LAYERS_PER_CITY, chordMidi, entryAt } from '../audio/themes.js';
+import { ALL_THEMES, CITY_REPERTOIRES, MENU_THEME, HEROES_THEME, SCALES, LAYERS_PER_CITY, chordMidi, entryAt } from '../audio/themes.js';
 import { ZONES } from '../data/zones.js';
 
 const NAMES = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
@@ -77,9 +77,12 @@ function stopAll() {
 
 /** Secciones de la forma de canción (ver FORM en themes.js) con su nombre para los botones. */
 const SECTIONS = [['intro', 'Intro'], ['verse', 'Estrofa'], ['verse2', 'Estrofa 2'], ['pre', 'Pre-coro'], ['chorus', 'Coro'], ['break', 'Corte'], ['verse3', 'Estrofa 3'], ['chorus2', 'Coro 2'], ['bridge', 'Puente'], ['rise', 'Subida'], ['final', 'Coro final'], ['outro', 'Cierre']];
+const heroNames = { jean: 'Jean', lia: 'Lía', van: 'Juth' };
+const cityTitles = new Map(Object.entries(CITY_REPERTOIRES).flatMap(([hero, songs]) =>
+  songs.map((song, city) => [song, `${ZONES[city].e} ${ZONES[city].n} · ${heroNames[hero]}`])));
+const sharedTitles = new Map([[MENU_THEME, '🏠 Menú principal'], [HEROES_THEME, '🛡️ Elección de héroe']]);
 ALL_THEMES.forEach((th, i) => {
-  const zone = i < ZONE_THEMES.length ? ZONES[i] : null;
-  const title = zone ? `${zone.e} ${zone.n}` : i === ZONE_THEMES.length ? '🏠 Menú principal' : '🛡️ Elección de héroe';
+  const title = cityTitles.get(th) || sharedTitles.get(th) || '⚔️ Jefes';
   const card = document.createElement('section');
   card.className = 'card';
   const chords = Array.from({ length: 16 }, (_, b) => {
