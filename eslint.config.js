@@ -16,4 +16,9 @@ export default [
     languageOptions: { ecmaVersion: 2022, sourceType: 'module', globals: { ...globals.node } },
     rules: { 'no-undef': 'error', 'no-unused-vars': ['warn', { args: 'none', caughtErrors: 'none' }] },
   },
+  {
+    // Tests de interfaz: corren en happy-dom, con los globales del navegador.
+    files: ['tests/ui/**/*.js'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
 ];
