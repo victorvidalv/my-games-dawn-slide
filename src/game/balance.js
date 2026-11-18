@@ -68,7 +68,7 @@ function sealPlan(level, d, seed = 0) {
 const minigameGrade = (skill, u) => Math.max(0, Math.min(5, Math.round(2.8 + 1.4 * skill + (u - 0.5) * 3)));
 
 /**
- * Jugador que usa la tienda (`shop = {score, rating}`): al quedarse sin turnos compra los turnos más baratos que le alcancen,
+ * Jugador que usa la tienda (`shop = {score, rating}`): cerca del límite compra el paquete más barato que le permita seguir,
  * y si no le quedan pistas en un tablero duro compra una, pero solo si le sobran puntos (MODEL.shopReserve veces el precio).
  */
 export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, shop = null, brave = false, boss = false, seal = false, powers = {}, hard = 1 }) {
@@ -100,7 +100,7 @@ export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, sh
   for (let step = 0; step < need; step++) {
     if (safe > 0) safe--;
     else if (rng() < err) {
-      if (h === 0 && f === 0 && need >= MODEL.hintMinD && afford('hint', MODEL.shopReserve)) { pay('hint'); h++; boughtHints++; }
+      if (boughtHints < 1 && h === 0 && f === 0 && need >= MODEL.hintMinD && afford('hint', MODEL.shopReserve)) { pay('hint'); h++; boughtHints++; }
       if (f > 0 && rng() < MODEL.hintAware) {
         f--;                                                   // pista gratis del tablero: evita el error
       } else if (h > 0 && need >= MODEL.hintMinD && rng() < MODEL.hintAware) {
@@ -117,15 +117,16 @@ export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, sh
       }
     }
     moves += 1;
-    const dead = () => moves > limit || (moves >= limit && step < need - 1);
-    while (dead()) {
-      const id = ['moves3', 'moves'].find((x) => afford(x));      // lo más barato que alcance
-      if (!id) break;
-      pay(id);
-      limit += extraTurns(id, limit);
-      boughtTurns++;
+    const minimumToContinue = moves + (step < need - 1 ? 1 : 0);
+    if (minimumToContinue > limit && !boughtTurns) {
+      const id = ['moves3', 'moves'].find((x) => limit + extraTurns(x, limit) >= minimumToContinue && afford(x));
+      if (id) {
+        pay(id);
+        limit += extraTurns(id, limit);
+        boughtTurns++;
+      }
     }
-    if (dead()) return { ok: false, moves, hints: h, spent, boughtTurns, boughtHints, extra };
+    if (minimumToContinue > limit) return { ok: false, moves, hints: h, spent, boughtTurns, boughtHints, extra };
   }
   return { ok: true, moves, hints: h, spent, boughtTurns, boughtHints, extra };
 }

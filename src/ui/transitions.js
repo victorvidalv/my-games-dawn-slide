@@ -52,6 +52,15 @@ export async function boardSwapOut() {
 }
 export const boardSwapDone = () => document.getElementById('board')?.classList.remove('board-out');
 
+/** Deslizamiento breve del paisaje al descubrir el tablero. */
+export function playLevelScenery() {
+  if (reduced() || document.documentElement.classList.contains('lite')) return;
+  const body = document.body;
+  body.classList.remove('level-scenery-in');
+  void getComputedStyle(body, '::before').animationName;
+  body.classList.add('level-scenery-in');
+}
+
 /** Rótulo breve al empezar un tablero: «NIVEL 12 · Valle Esmeralda». No bloquea el juego. */
 let banner = null;
 let bannerTimer = 0;

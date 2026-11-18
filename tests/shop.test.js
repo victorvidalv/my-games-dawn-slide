@@ -10,22 +10,22 @@ const mk = (score, over = {}) => ({
 });
 
 describe('tienda: precios proporcionales', () => {
-  it('incluye pista, +10 %, +20 % de turnos, rehacer y saltar (sin revivir)', () => {
+  it('incluye pista, +5 %, +10 % de turnos, rehacer y saltar (sin revivir)', () => {
     expect(SHOP_ITEMS.map((i) => i.id)).toEqual(['hint', 'moves3', 'moves', 'redo', 'skip']);
   });
   it('el precio es N niveles de esa dificultad: sube con el nivel y es proporcional a lo que se gana', () => {
-    const levels = { hint: 5, redo: 4, moves3: 9, moves: 15, skip: 16 };
+    const levels = { hint: 0.6, redo: 0.8, moves3: 1.2, moves: 2, skip: 4 };
     for (const rating of [1, 25, 50, 100]) {
       for (const [id, n] of Object.entries(levels)) expect(priceOf(id, rating)).toBe(Math.round((n * baseScore(rating) * pathPrice(1)) / 10) * 10);
     }
     for (const id of Object.keys(levels)) expect(priceOf(id, 80)).toBeGreaterThan(priceOf(id, 10));
-    expect(priceOf('redo', 20)).toBeLessThan(priceOf('hint', 20));
+    expect(priceOf('hint', 20)).toBeLessThan(priceOf('redo', 20));
     expect(priceOf('hint', 20)).toBeLessThan(priceOf('moves3', 20));
     expect(priceOf('moves3', 20)).toBeLessThan(priceOf('moves', 20));
     expect(priceOf('moves', 20)).toBeLessThan(priceOf('skip', 20));
   });
-  it('cuesta más cuanto más difícil es el camino: Normal ×1,7, Difícil ×2,6, Experto ×3,6', () => {
-    expect([1, 50, 75].map(pathPrice)).toEqual([1.7, 2.6, 3.6]);
+  it('cuesta más cuanto más difícil es el camino: Normal ×1, Difícil ×1,15, Experto ×1,30', () => {
+    expect([1, 50, 75].map(pathPrice)).toEqual([1, 1.15, 1.3]);
     for (const id of ['hint', 'moves', 'skip']) {
       expect(priceOf(id, 40, 50)).toBeGreaterThan(priceOf(id, 40, 1));
       expect(priceOf(id, 40, 75)).toBeGreaterThan(priceOf(id, 40, 50));
@@ -60,7 +60,7 @@ describe('tienda: compras', () => {
     expect(run.spent).toBe(priceOf('moves3', 10));
     expect(moveStatus(G.moves, G.limit)).not.toBe('over');
   });
-  it('turnos extra grandes (+20 %, mín. 3): sube el límite, descuenta el precio y el jugador deja de estar eliminado', () => {
+  it('turnos extra grandes (+10 %, mín. 2): sube el límite, descuenta el precio y el jugador deja de estar eliminado', () => {
     const { run, G } = mk(100000, { moves: 11, limit: 10 });
     expect(moveStatus(G.moves, G.limit)).toBe('over');
     const r = buy('moves', { run, G });
@@ -75,16 +75,16 @@ describe('tienda: compras', () => {
     expect(buy('hint', { run, G }).ok).toBe(true);
     expect(run.hints).toBe(4);
   });
-  it('cada pista descuenta su precio y exige saldo suficiente', () => {
+  it('permite comprar una pista por tablero y sigue exigiendo saldo suficiente', () => {
     const price = priceOf('hint', 10);
     const { run, G } = mk(price * 2);
-    for (let purchase = 1; purchase <= 2; purchase++) {
-      expect(buy('hint', { run, G })).toEqual({ ok: true, price });
-      expect(run.score).toBe(price * (2 - purchase));
-      expect(run.spent).toBe(price * purchase);
-      expect(run.hints).toBe(3 + purchase);
-    }
-    expect(buy('hint', { run, G }).ok).toBe(false);
+    expect(buy('hint', { run, G })).toEqual({ ok: true, price });
+    const reloaded = JSON.parse(JSON.stringify(run));
+    expect(buy('hint', { run: reloaded, G }).ok).toBe(false);
+    expect(reloaded.score).toBe(price);
+    expect(buy('hint', { run, G: { ...G, n: G.n + 1 } })).toEqual({ ok: true, price });
+    expect(run.score).toBe(0);
+    expect(run.spent).toBe(price * 2);
     expect(run.hints).toBe(5);
     const poor = mk(price - 1);
     expect(buy('hint', poor).ok).toBe(false);
@@ -112,11 +112,30 @@ describe('tienda: compras', () => {
     const { run, G } = mk(100000, { moves: 0 });
     expect(availability('redo', { run, G }).ok).toBe(false);
   });
-  it('saltar nivel cobra el precio (la interfaz avanza)', () => {
-    const { run, G } = mk(100000);
-    const r = buy('skip', { run, G });
+  it('solo permite un paquete por tablero aunque se recargue o se reintente', () => {
+    const session = mk(100000, { n: 11 });
+    const first = buy('moves3', session);
+    expect(first.ok).toBe(true);
+    expect(buy('moves', session).ok).toBe(false);
+    const reloaded = JSON.parse(JSON.stringify(session));
+    reloaded.G.bought = 0;
+    expect(buy('moves3', reloaded).ok).toBe(false);
+    expect(reloaded.run.score).toBe(100000 - first.price);
+    expect(buy('moves', { ...reloaded, G: { ...reloaded.G, n: 12 } }).ok).toBe(true);
+  });
+  it('un tablero de una versión anterior conserva su compra de turnos', () => {
+    expect(buy('moves', mk(100000, { bought: 1 })).ok).toBe(false);
+  });
+  it('cobra un solo salto por ciudad y no deja saltar jefes', () => {
+    const session = mk(100000, { n: 9 });
+    const r = buy('skip', session);
     expect(r.ok).toBe(true);
-    expect(run.score).toBe(100000 - priceOf('skip', 10));
+    expect(session.run.score).toBe(100000 - priceOf('skip', 10));
+    const { run } = JSON.parse(JSON.stringify(session));
+    expect(buy('skip', { run, G: { ...session.G, n: 8 } }).ok).toBe(false);
+    expect(buy('skip', { run, G: { ...session.G, n: 10 } }).ok).toBe(false);
+    expect(buy('skip', { run, G: { ...session.G, n: 11 } }).ok).toBe(true);
+    expect(buy('skip', { run, G: { ...session.G, n: 20 } }).ok).toBe(false);
   });
   it('en Práctica o sin tablero activo la tienda no vende', () => {
     expect(availability('hint', { ...mk(1e6), run: { ...mk(1e6).run, mode: 'p' } }).ok).toBe(false);

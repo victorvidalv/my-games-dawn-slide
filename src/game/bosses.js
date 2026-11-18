@@ -13,61 +13,61 @@ export const BOSSES = {
     city: 0, art: 'sentinel', color: ['#7fc9a4', '#d9f2c7'],
     name: 'El Vigía de la Bruma',
     title: 'Guardián del Primer Umbral',
-    lore: '«Nadie cruza la niebla mientras mis piedras sigan en pie.»',
+    lore: '«¿Listo? Mi farol apuesta por ti.»',
   },
   20: {
     city: 1, art: 'keeper', color: ['#5fb4d8', '#cdeeff'],
     name: 'El Farero Ciego',
     title: 'Guardián del Puerto Oscuro',
-    lore: '«Cada bloque pesa como una nave anclada sin marea.»',
+    lore: '«¡A toda vela, que corre el reloj!»',
   },
   30: {
     city: 2, art: 'jailer', color: ['#e0a548', '#ffe2a8'],
     name: 'El Carcelero de Duna',
     title: 'Guardián de las Arenas',
-    lore: '«Bajo la sal ningún cerrojo cede sin su tributo.»',
+    lore: '«Tengo mil llaves. ¿Probamos la tuya?»',
   },
   40: {
     city: 3, art: 'dusk', color: ['#e07a3c', '#ffd0a0'],
     name: 'La Dama del Ocaso',
     title: 'Guardián del Bosque Caído',
-    lore: '«Un paso en falso y el hielo te lleva hasta el borde.»',
+    lore: '«¡Desliza con estilo! Yo pongo las hojas.»',
   },
   50: {
     city: 4, art: 'warden', color: ['#d8b24a', '#fff0b0'],
     name: 'El Maestro Relojero',
     title: 'Guardián de la Torre Parada',
-    lore: '«Solo la gema exacta cruza el portón de su propia hora.»',
+    lore: '«¡Mis relojes siempre se adelantan!»',
   },
   60: {
     city: 5, art: 'judge', color: ['#7ad6ff', '#e4f8ff'],
     name: 'El Juez de Escarcha',
     title: 'Guardián del Paso Helado',
-    lore: '«Aquí los portones y la escarcha dictan un solo camino.»',
+    lore: '«¡Que el hielo no te quite la sonrisa!»',
   },
   70: {
     city: 6, art: 'weaver', color: ['#e08aa8', '#ffd9e6'],
     name: 'El Tejedor de Cerezos',
     title: 'Guardián del Jardín Mudo',
-    lore: '«Cada pétalo suspendido esconde dos mecanismos a la vez.»',
+    lore: '«¡Con un tironcito se desenreda todo!»',
   },
   80: {
     city: 7, art: 'forger', color: ['#ff7a2f', '#ffd27a'],
     name: 'El Forjador de Ceniza',
     title: 'Guardián de la Fragua Fría',
-    lore: '«Ni el hierro ni el color te abrirán paso si dudas.»',
+    lore: '«¡Este puzle está recién salido del horno!»',
   },
   90: {
     city: 8, art: 'scribe', color: ['#8a8cff', '#dcdcff'],
     name: 'El Escriba del Olvido',
     title: 'Guardián del Archivo Borrado',
-    lore: '«Cuatro pruebas guardan el nombre que el mundo olvidó.»',
+    lore: '«¿Dónde dejé la salida? Ah, ya sé.»',
   },
   100: {
     city: 9, art: 'sovereign', color: ['#b06cff', '#f2d8ff'],
     name: 'Vhorn, la Sombra del Faro',
     title: 'Guardián del Último Umbral',
-    lore: '«Si pronuncias mi nombre con tu último turno, el alba volverá.»',
+    lore: '«¡Que suene la campana del último reto!»',
   },
 };
 
@@ -93,6 +93,9 @@ export const BOSS_RULES = {
   90: { kind: 'both', cap: 1.1, seconds: 120 },
   100: { kind: 'both', cap: 1.17, seconds: 120 },
 };
+
+/** Retrato recortado que se usa sobre el paisaje animado de la ciudad. */
+export const bossPortraitPath = (boss) => `jefes/${boss.art}-sonrisa.webp`;
 
 export const bossFor = (level) => (isBossLevel(level) ? BOSSES[level] || null : null);
 export const bossRule = (level) => (isBossLevel(level) ? BOSS_RULES[level] || { kind: 'turns', cap: 1.3 } : null);

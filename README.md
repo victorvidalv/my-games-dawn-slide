@@ -276,16 +276,16 @@ Para escucharlas: `npm run melodies:html` genera `output/melodias.html` (un solo
 ## Tienda
 
 El botón **🛒 Tienda** (junto a Poder y Pista) vende ayudas que se pagan con los **puntos de la aventura**: lo que gastas
-se resta de tu puntaje, así que cada compra duele. Los precios son **proporcionales**: se miden en «niveles» (los puntos base de un nivel a la dificultad actual), así que suben a medida que avanzas, y además el camino los encarece (Normal ×1, Difícil ×1,25, Experto ×1,5). No suben al comprar ni dependen de cómo juegues. Están calibrados con el simulador (`npm run simulate`, sección Tienda): un jugador que compra a fondo gana unos 20 niveles en Normal y unos 8 en Experto, pero su puntaje se hunde: ayuda y duele.
+se resta de tu puntaje. Los precios se calculan sobre los puntos base del tablero. El recargo depende del camino: Normal ×1, Difícil ×1,15, Experto ×1,30. Se puede comprar una pista y un paquete de turnos por tablero, además de un salto por ciudad fuera de los jefes.
 Los turnos comprados aparecen como cristales de hielo bajo el medidor, y se «derriten» uno a uno al usarlos. Rehacer rebobina el tablero y saltar nivel lo lanza fuera de la pantalla, ambos con efecto:
 
 | Objeto | Precio | Efecto |
 |---|---|---|
-| 💡 Pista | 3 niveles | Una pista extra |
-| ↺ Rehacer tablero | 4 niveles | Reinicia el tablero con 0 movimientos (conserva los turnos comprados) |
-| ⏳ Turnos extra | 6 niveles | Unos turnos más para este tablero (la tienda muestra cuántos) |
-| ⏳ Muchos turnos extra | 10 niveles | Bastantes turnos más para este tablero |
-| ⏭ Saltar nivel | 16 niveles | Pasa al siguiente sin puntos y sin racha |
+| 💡 Pista | 0,6 niveles | Una pista extra |
+| ↺ Rehacer tablero | 0,8 niveles | Reinicia el tablero con 0 movimientos (conserva los turnos comprados) |
+| ⏳ Turnos extra | 1,2 niveles | Unos turnos más para este tablero (la tienda muestra cuántos) |
+| ⏳ Muchos turnos extra | 2 niveles | Bastantes turnos más para este tablero |
+| ⏭ Saltar nivel | 4 niveles | Pasa al siguiente sin puntos y sin racha |
 
 Si te pasas del límite de movimientos la aventura termina: **no se ofrece comprar turnos al perder**, hay que comprarlos antes.
 Toda compra pide confirmación y la lógica está en [`src/game/shop.js`](src/game/shop.js), con pruebas.

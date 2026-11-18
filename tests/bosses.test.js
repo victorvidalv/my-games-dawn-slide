@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import levelBank from '../src/data/levels.json';
 import specialBank from '../src/data/special.json';
-import { BOSSES, BOSS_RULES, bossCapFor, bossMechLabel, bossRating, bossRule, bossRuleLabel, bossTimeFor } from '../src/game/bosses.js';
+import { BOSSES, BOSS_RULES, bossCapFor, bossMechLabel, bossPortraitPath, bossRating, bossRule, bossRuleLabel, bossTimeFor } from '../src/game/bosses.js';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { moveLimit } from '../src/engine/difficulty.js';
 import { minFor } from '../src/engine/calibration.js';
@@ -30,6 +30,15 @@ describe('jefes: datos y reglas', () => {
     const missing = LEVELS.filter((l) => !fs.existsSync(`public/jefes/${BOSSES[l].art}.jpg`)).map((l) => `${l}:${BOSSES[l].art}`);
     expect(missing).toEqual([]);
     expect(fs.existsSync('public/jefes/sentinel.jpg')).toBe(true);   // la imagen de reserva (si falta alguna, el juego usa esta)
+  });
+
+  it('cada jefe tiene un retrato WebP recortado y una frase corta propia', () => {
+    const bosses = Object.values(BOSSES);
+    expect(new Set(bosses.map((boss) => boss.lore)).size).toBe(bosses.length);
+    for (const boss of bosses) {
+      expect(boss.lore.length).toBeLessThanOrEqual(62);
+      expect(fs.existsSync(`public/${bossPortraitPath(boss)}`), boss.name).toBe(true);
+    }
   });
 
   it('las reglas se alternan: hay jefes de turnos, de contrarreloj y de las dos cosas, y los finales usan ambas', () => {

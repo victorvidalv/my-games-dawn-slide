@@ -1,5 +1,12 @@
 /* Diccionario español → chino simplificado (shop). Mismas claves y mismo orden que en-shop.js. */
 export const ZH_SHOP = {
+  "Ya compraste una pista para este tablero.": "你已经为这块棋盘购买过提示。",
+  "Una compra por tablero": "每块棋盘限购一次",
+  "Ya compraste turnos para este tablero.": "你已经为这块棋盘购买了额外步数。",
+  "Los jefes no se pueden saltar.": "无法跳过首领关卡。",
+  "Ya usaste el salto de esta ciudad.": "你已经用过这座城市的跳过机会。",
+  "Un paquete por tablero": "每块棋盘限购一份",
+  "Un salto por ciudad · fuera de jefes": "每座城市可跳过一关 · 首领除外",
   'Maela': 'Maela',
   'El Mercader': '商人',
   'El Tasador de Runas': '符文鉴定师',

@@ -137,7 +137,6 @@ export const sfx={
   powerStep:(n,up)=>{const j=up?n:Math.max(0,6-n);tone(keyHz(j,1),.3,'sine',.07,0,0,3600);tone(keyHz(j+3,1),.18,'triangle',.03,.03,0,4200);noise(.07,.03,5200,'highpass')},
   /* Jefe: el golpe de la presentación y el salto al tablero */
   thunder:()=>{noise(.9,.16,180,'lowpass',0);tone(48,1,'sawtooth',.1,.02,-18);tone(36,1.3,'triangle',.12,.08,-10);noise(.4,.08,900,'bandpass',.3)},
-  bossGo:()=>{noise(.55,.13,500,'bandpass',0,3600);tone(keyHz(0,0),.7,'sawtooth',.07,0,-20,520);tone(keyHz(2,1),.45,'triangle',.05,.06,0,2400);noise(.25,.1,300,'lowpass',.32)},
   powerEnd:(up)=>{[0,1,2,3].forEach((k,i)=>tone(keyHz(up?i:3-i,2),.5,'sine',.045,i*.06,0,4200));tone(keyHz(0,1),.8,'triangle',.05,0,0,1500)},
   win:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.28,'sine',.13,i*.08)),
   // Nivel superado (no perfecto): arpegio suave y agradable.
@@ -154,7 +153,21 @@ export const sfx={
   doorOpen:()=>{[659,988,1319].forEach((f,i)=>tone(f,.18,'sine',.085,i*.04));tone(1976,.22,'triangle',.04,.12)},
   doorDeny:()=>{tone(180,.14,'sawtooth',.06);tone(135,.18,'triangle',.07,.07,-35)},
   bump:()=>{noise(.04,.07,420,'lowpass');tone(130,.08,'sine',.07,0,-20)},
-  bossIntro:()=>{tone(82,.9,'triangle',.14,0,-10);tone(123,.8,'sawtooth',.045,.04,-8);[246,329,493].forEach((f,i)=>tone(f,.5,'sine',.06,.08+i*.09))},
+  bossEntrance:(city=0)=>{
+    const motifs=[[2,0],[0,2,0],[0,1,2],[2,1,0],[0,0,2],[2,3,0],[2,0,2],[0,2,3],[1,2,0],[2,1,3]];
+    const wind=[510,650,720,570,430,910,670,380,830,540];
+    noise(.7,.045,wind[city],'bandpass',0,400);
+    tone(keyHz(0,0),.8,'sine',.065,.07,0,380);
+    motifs[city].forEach((note,i)=>{
+      tone(keyHz(note,2),.49,'sine',.052,.21+i*.16,0,2000);
+      tone(keyHz(note,3),.22,'sine',.017,.21+i*.16,0,3100);
+    });
+  },
+  bossStart:()=>{
+    noise(.35,.055,780,'bandpass',0,-420);
+    tone(keyHz(0,1),.32,'triangle',.058,.10,0,950);
+    tone(keyHz(0,0),.38,'sine',.08,.12,0,450);
+  },
   plate:()=>{tone(330,.1,'triangle',.08);tone(494,.14,'triangle',.07,.07)},
   start:()=>{tone(330,.12,'triangle',.08);tone(494,.18,'triangle',.08,.08)},
   revive:()=>{

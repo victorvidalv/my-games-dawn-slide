@@ -4,7 +4,7 @@ import { CHALLENGES } from '../src/game/daily.js';
 import { BONUS_KINDS } from '../src/game/minigames.js';
 import { HEROES } from '../src/game/heroes.js';
 import { DICTS } from '../src/i18n.js';
-import { mergeSaves } from '../src/game/save-merge.js';
+import { bestAdventureRecord, mergePaths, mergeSaves } from '../src/game/save-merge.js';
 
 describe('registro de logros', () => {
   it('treinta logros, cada uno con estadística conocida, grupo y una recompensa propia', () => {
@@ -98,4 +98,16 @@ describe('guardado compatible con actualizaciones', () => {
     expect(mergeSaves(disk, {})).toMatchObject({ paths: disk.paths, ach: disk.ach, stats: disk.stats, daily: disk.daily });
     expect(mergeSaves({}, null).paths).toEqual({});
   });
+});
+
+
+it('el récord de Aventura mantiene su fecha al combinar guardados y caminos', () => {
+  const first = { c1: { score: 2400, level: 10, recordAt: 1000 } };
+  const second = { c1: { score: 3500, level: 8, recordAt: 2000 }, c50: { score: 3400, level: 11, recordAt: 700 } };
+  const merged = mergePaths(first, second);
+  expect(merged.c1).toMatchObject({ score: 3500, level: 10, recordAt: 2000 });
+  expect(bestAdventureRecord(merged)).toEqual({ score: 3500, recordAt: 2000 });
+  expect(bestAdventureRecord(mergePaths(merged, { c1: { score: 3600 } }))).toEqual({ score: 3600, recordAt: null });
+  expect(bestAdventureRecord({ c1: { score: 3500, recordAt: 2000 }, c75: { score: 3500, recordAt: 1500 } })).toEqual({ score: 3500, recordAt: 1500 });
+  expect(bestAdventureRecord({ p1: { score: 4000 }, c1: { score: 0 } })).toBeNull();
 });

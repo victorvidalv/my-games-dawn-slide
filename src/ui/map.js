@@ -9,7 +9,9 @@ import { motes } from './fx.js';
 let curZone=-1;
 
 function paintScenery(i){
- document.documentElement.style.setProperty('--scene',cssUrl(`backgrounds/zone-${i+1}.webp`));
+ const style=document.documentElement.style;
+ style.setProperty('--scene',cssUrl(`backgrounds/zone-${i+1}.webp`));
+ style.setProperty('--scene-shade',ZONES[i].shade||'transparent');
 }
 export function applyZone(i){
   paintScenery(i);

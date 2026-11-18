@@ -2,7 +2,7 @@
  * Unión de dos guardados sin perder avances. Antes de escribir, `persist()` (src/state.js) une lo que hay en memoria con lo que
  * ya está en localStorage: así, si hay dos pestañas abiertas (por ejemplo, una con la versión vieja y otra recién actualizada de
  * la PWA), la última en guardar no borra lo que consiguió la otra. Regla: cada dato de progreso solo puede crecer.
- *   paths  – récord, nivel máximo y partidas de cada camino: el mayor de cada uno.
+ *   paths  – mejor puntaje con su fecha, nivel máximo y partidas de cada camino.
  *   ach    – logros ganados: todos los de ambos (con la fecha más antigua).
  *   stats  – contadores: el mayor; colecciones (listas): la unión.
  *   daily  – retos resueltos, oros, mejor racha y cuenta por reto: el mayor; la racha vigente: la del último día jugado;
@@ -12,11 +12,34 @@
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 const obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
 
+const recordTime = (record) => Number.isFinite(record.recordAt) && record.recordAt > 0 && record.recordAt <= 8.64e15
+  ? record.recordAt : Infinity;
+
+function betterRecord(a, b) {
+  const diff = num(a.score) - num(b.score);
+  if (diff) return diff > 0 ? a : b;
+  return recordTime(a) <= recordTime(b) ? a : b;
+}
+
+/** El mejor puntaje de Aventura conserva la fecha del mismo récord. */
+export function bestAdventureRecord(paths) {
+  let best = {};
+  for (const [key, entry] of Object.entries(obj(paths))) {
+    if (/^c[0-9]+$/.test(key)) best = betterRecord(best, obj(entry));
+  }
+  if (num(best.score) <= 0) return null;
+  return { score: num(best.score), recordAt: recordTime(best) === Infinity ? null : best.recordAt };
+}
+
 export function mergePaths(a = {}, b = {}) {
   const out = { ...obj(a) };
   for (const [k, y] of Object.entries(obj(b))) {
     const x = obj(out[k]), yy = obj(y);
-    out[k] = { ...yy, ...x, score: Math.max(num(x.score), num(yy.score)), level: Math.max(num(x.level), num(yy.level)), runs: Math.max(num(x.runs), num(yy.runs)) };
+    const best = betterRecord(x, yy);
+    const merged = { ...yy, ...x, score: num(best.score), level: Math.max(num(x.level), num(yy.level)), runs: Math.max(num(x.runs), num(yy.runs)) };
+    if (recordTime(best) === Infinity) delete merged.recordAt;
+    else merged.recordAt = best.recordAt;
+    out[k] = merged;
   }
   return out;
 }

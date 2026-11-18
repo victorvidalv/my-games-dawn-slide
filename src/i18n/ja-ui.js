@@ -1,5 +1,6 @@
 /* Diccionario español → japonés (ui). Mismas claves y mismo orden que en-ui.js. */
 export const JA_UI = {
+  "Récord": "最高記録",
   'Menú': 'メニュー',
   'Escoge el nivel': '難易度を選ぶ',
   'Puzle de bloques · tres héroes · cien niveles': 'ブロックパズル · 3人のヒーロー · 100レベル',

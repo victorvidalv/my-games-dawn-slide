@@ -1,5 +1,12 @@
 /* Diccionario español → japonés (shop). Mismas claves y mismo orden que en-shop.js. */
 export const JA_SHOP = {
+  "Ya compraste una pista para este tablero.": "このボードのヒントは購入済みです。",
+  "Una compra por tablero": "1ボードにつき1回",
+  "Ya compraste turnos para este tablero.": "このボードの追加手数は購入済みです。",
+  "Los jefes no se pueden saltar.": "ボスはスキップできません。",
+  "Ya usaste el salto de esta ciudad.": "この街のスキップは使用済みです。",
+  "Un paquete por tablero": "1ボードにつき1パック",
+  "Un salto por ciudad · fuera de jefes": "1つの街で1回まで · ボスを除く",
   'Maela': 'Maela',
   'El Mercader': '商人',
   'El Tasador de Runas': 'ルーン鑑定士',

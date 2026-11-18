@@ -1,19 +1,18 @@
 import { sfx } from '../audio/sound.js';
-import { cssUrl, $ } from '../dom.js';
-import { bossFor } from '../game/bosses.js';
+import { $ } from '../dom.js';
+import { bossFor, bossPortraitPath } from '../game/bosses.js';
 import { S } from '../state.js';
 import { burst } from './fx.js';
 
 /**
  * Fase de jefe: mientras dura un nivel de jefe, la pantalla cambia de ambiente.
- *   · fondo propio del jefe (su ilustración, oscurecida) en lugar del paisaje de la ciudad
+ *   · paisaje de la ciudad con el color ambiental de su jefe
  *   · estilo oscuro (clase `boss-fight` en <body>) con el color del jefe: aura, viñeta y resplandor del tablero que «respiran»
  *   · chispas de poder que salen del tablero y, de vez en cuando, una oleada de intensidad
  *   · la intensidad sube con la tensión (pocos turnos o poco tiempo): `data-tension` 0 · 1 · 2
  *   · contrarreloj (si el jefe la tiene): barra de tiempo en el marcador, que solo corre cuando puedes mover
  */
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-const root = document.documentElement;
 const body = document.body;
 let active = null;
 let ambient = 0;
@@ -27,7 +26,7 @@ export function preloadBossArt(level) {
   if (!boss) return;
   const img = new Image();
   img.decoding = 'async';
-  img.src = artUrl(boss.art);
+  img.src = bossPortraitPath(boss);
 }
 /** ¿Existe la imagen? Si falta (por ejemplo, el jefe aún no tiene su ilustración), se usa la del Vigía. */
 export function loadBossArt(boss) {
@@ -71,11 +70,6 @@ function ambientStep() {
     const y = board.top + (side === 0 ? 0 : side === 2 ? board.height : Math.random() * board.height);
     burst(x, y, 5 + t * 4, [active.color[0], active.color[1], '#fff'], 3 + t);
   }
-  if (tick % 9 === 4 && t >= 1) {   // relámpago: un destello blanco-violeta y un trueno lejano cuando la tensión sube
-    body.classList.add('boss-lightning');
-    sfx.thunder();
-    setTimeout(() => body.classList.remove('boss-lightning'), 340);
-  }
   if (tick % 14 === 0) {  // oleada de intensidad: el color se enciende un instante
     body.classList.add('boss-surge');
     setTimeout(() => body.classList.remove('boss-surge'), 1100);
@@ -100,7 +94,6 @@ export function syncBossPhase() {
   body.style.setProperty('--boss-c2', boss.color[1]);
   body.dataset.tension = '0';
   body.classList.add('boss-fight');
-  loadBossArt(boss).then((src) => { if (active === boss) root.style.setProperty('--scene', cssUrl(src)); });
   ambient = setInterval(ambientStep, 700);
 }
 
@@ -115,11 +108,8 @@ export function bossArrive(boss) {
     ring.style.cssText = `left:${board.left + board.width / 2}px;top:${board.top + board.height / 2}px;--sz:${Math.max(board.width, board.height)}px`;
     document.body.appendChild(ring);
     setTimeout(() => ring.remove(), 1100);
-    burst(board.left + board.width / 2, board.top + board.height / 2, 36, [boss.color[0], boss.color[1], '#fff'], 10);
+    burst(board.left + board.width / 2, board.top + board.height / 2, 16, [boss.color[0], boss.color[1], '#fff'], 10);
   }
-  const frame = document.querySelector('.frame');
-  frame?.classList.remove('board-shake'); void frame?.offsetWidth; frame?.classList.add('board-shake');
-  setTimeout(() => frame?.classList.remove('board-shake'), 320);
   setTimeout(() => body.classList.remove('boss-arrive', 'boss-surge'), 1500);
 }
 

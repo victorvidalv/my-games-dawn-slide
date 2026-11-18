@@ -18,7 +18,7 @@ import { snapshotRescue } from './heroes.js';
 import { showDailyResult } from '../ui/daily.js';
 import { celebrate, countStat, markStat } from '../ui/achievements.js';
 import { boardStats } from './achievements.js';
-import { canPaidRevive, freeRetry, hasRevive, payRevive, useFreeRetry, useRevive } from './shop.js';
+import { canPaidRevive, freeRetry, hasRevive, payRevive, shopBoardKey, useFreeRetry, useRevive } from './shop.js';
 import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
 import { boardEl, buildPieces, fitBoard, layout, place, recLine, syncRouteStyle, updateHud } from '../ui/board.js';
 import { isBonusLevel, showBonus } from '../ui/bonus.js';
@@ -31,7 +31,7 @@ import { applyZone, renderStage, showMap } from '../ui/map.js';
 import { openMenu } from '../ui/menu.js';
 import { heroArt, storyFor } from '../ui/story.js';
 import { numLocale } from '../i18n.js';
-import { boardSwapDone, boardSwapOut, levelBanner, wipeIn, wipeOut } from '../ui/transitions.js';
+import { boardSwapDone, boardSwapOut, levelBanner, playLevelScenery, wipeIn, wipeOut } from '../ui/transitions.js';
 export function saveRun(){
  if(S.run?.daily){
   const d=S.run.daily,G=S.G;
@@ -42,6 +42,7 @@ export function saveRun(){
   return;
  }
  if(S.run&&S.G&&!S.G.done&&S.G.n===S.run.level&&!S.run.pendingClear&&!S.run.rescue&&!S.run.pendingRevive){
+  if(S.G.bought>0)S.run.turnPackBoard=shopBoardKey(S.G);
   S.run.board={level:S.G.n,rate:S.G.rate,pieces:S.G.pieces.map(p=>({...p})),walls:(S.G.walls||[]).map(w=>w.slice()),doors:(S.G.doors||[]).map(d=>d.slice()),pos:S.G.pos.slice(),start:S.G.start.slice(),opt:S.G.opt,limit:S.G.limit,bought:S.G.bought||0,timeLimit:S.G.timeLimit||0,timeLeft:Math.ceil(S.G.timeLeft||0),tutorial:S.G.tutorial||null,moves:S.G.moves,hist:S.G.hist.map(p=>p.slice()),colors:S.G.colors?.slice(),family:S.G.family,seal:S.G.seal?{...S.G.seal,cell:S.G.seal.cell.slice()}:null};
  }
  store.run=S.run&&{...S.run};persist();
@@ -69,9 +70,9 @@ async function startLevel(){
    Object.assign(G,{pos:saved.pos.slice(),moves:saved.moves,hist:saved.hist.map(p=>p.slice())});
   }
   document.body.classList.toggle('daily-run',!!S.run.daily);
-  // ¿este tablero abre con la presentación del jefe? Entonces entra el telón de alarma roja; si no, las piezas se disuelven en su sitio
+  // El telón dorado abre la presentación; entre tableros las piezas se disuelven en su sitio.
   const bossIntro=!!(G.plan?.boss&&!G.tutorial&&G.moves===0&&S.run.bossSeen!==G.n&&!S.run.rescue&&!S.run.pendingRevive);
-  if(bossIntro)await wipeIn('boss','¡Jefe!');else await boardSwapOut();
+  if(bossIntro)await wipeIn('gold');else await boardSwapOut();
   if(S.run!==run){wipeOut();boardSwapDone();return}
   S.G=G;
   S.G.colors ||= [0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5);
@@ -97,6 +98,7 @@ async function startLevel(){
    wipeOut();sfx.levelIn();
    if(!S.G.moves)levelBanner(S.run.daily?'Reto diario':S.G.tutorial?'Tutorial':`${S.G.plan?.boss?'Jefe · ':''}Nivel ${S.G.n}`,S.run.daily?challengeById(S.run.daily.id).name:ZONES[zoneIdx(S.G.n)].n,!!S.G.plan?.boss);
   }
+  playLevelScenery();
   S.busy=false;boardEl.classList.remove('board-lock');updateHud();saveRun();syncBossTimer();
   startCoach();                                        // avisos y guía de los primeros niveles / mecánicas nuevas
 }
@@ -292,7 +294,7 @@ function finalFail(why){
 export function recordBest(final){
   if(!S.run||S.run.daily)return;
   const k=rkey(), r=store.paths[k]||(store.paths[k]={score:0,level:0,runs:0});
-  if(S.run.mode==='c'&&S.run.score>r.score){r.score=S.run.score;S.run.recBroken=true}
+  if(S.run.mode==='c'&&S.run.score>r.score){r.score=S.run.score;r.recordAt=Date.now();S.run.recBroken=true}
   if(S.run.level>r.level) r.level=S.run.level;
   if(final) r.runs++;
   persist();

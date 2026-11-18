@@ -1,3 +1,5 @@
+import { zoneIdx } from '../data/zones.js';
+import { isBossLevel } from './mechanics.js';
 import { snapshotRescue } from './heroes.js';
 import { byPath } from '../engine/difficulty.js';
 
@@ -5,30 +7,19 @@ import { shopDiscount } from './routes.js';
 
 import { baseScore } from '../engine/scoring.js';
 
-/**
- * Tienda: se paga con los puntos de la aventura (restan de tu puntaje, así que cuestan de verdad).
- * Los precios son proporcionales: un objeto vale N «niveles» (lo que da un nivel de esa dificultad, `baseScore`) y el camino
- * encarece todo (Normal ×1, Difícil ×1,25, Experto ×1,5). Los turnos comprados también son un % del límite del tablero.
- *   Pista              3 niveles
- *   Rehacer tablero    4 niveles
- *   +turnos pequeño    6 niveles → +10 % del límite (mín. 2)
- *   +turnos grande    10 niveles → +20 % del límite (mín. 3)
- *   Saltar nivel      16 niveles
- * Calibrado con `npm run simulate` (sección Tienda): un jugador que compra a fondo gana ~20 niveles en Normal, ~17 en Difícil
- * y ~8 en Experto (similar a un poder de héroe) pero su puntaje se desploma: ayuda, pero duele.
- */
-const PATH_PRICE = { 1: 1.7, 50: 2.6, 75: 3.6 };
+/** Los precios se descuentan del puntaje y escalan con los puntos base del tablero. */
+const PATH_PRICE = { 1: 1, 50: 1.15, 75: 1.3 };
 export const pathPrice = (start = 1) => byPath(PATH_PRICE, start);
 /** Revivir al caer (fuera de tienda): cuesta 33 % de tus puntos actuales y solo 1 vez por partida. */
 export const REVIVE_SHARE = 0.33;
 export const MAX_REVIVES = 1;
 
 export const SHOP_ITEMS = [
-  { id: 'hint', icon: 'hint', name: 'Pista', levels: 5, detail: 'Una pista que te enseña el mejor movimiento.' },
-  { id: 'moves3', icon: 'hourglass', name: 'Turnos extra', levels: 9, share: 0.05, min: 1, detail: 'Más turnos para este tablero.' },
-  { id: 'moves', icon: 'hourglass', name: 'Muchos turnos extra', levels: 15, share: 0.1, min: 2, detail: 'Bastantes más turnos para este tablero.' },
-  { id: 'redo', icon: 'rewind', name: 'Rehacer tablero', levels: 4, detail: 'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados).' },
-  { id: 'skip', icon: 'skip', name: 'Saltar nivel', levels: 16, detail: 'Pasa al siguiente nivel sin puntos y sin racha.' },
+  { id: 'hint', icon: 'hint', name: 'Pista', levels: 0.6, detail: 'Una pista que te enseña el mejor movimiento.' },
+  { id: 'moves3', icon: 'hourglass', name: 'Turnos extra', levels: 1.2, share: 0.05, min: 1, detail: 'Más turnos para este tablero.' },
+  { id: 'moves', icon: 'hourglass', name: 'Muchos turnos extra', levels: 2, share: 0.1, min: 2, detail: 'Bastantes más turnos para este tablero.' },
+  { id: 'redo', icon: 'rewind', name: 'Rehacer tablero', levels: 0.8, detail: 'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados).' },
+  { id: 'skip', icon: 'skip', name: 'Saltar nivel', levels: 4, detail: 'Pasa al siguiente nivel sin puntos y sin racha.' },
 ];
 
 export const itemById = (id) => SHOP_ITEMS.find((i) => i.id === id);
@@ -45,10 +36,23 @@ export const extraTurns = (id, limit) => {
   return item?.share ? Math.max(item.min, Math.round(limit * item.share)) : 0;
 };
 
+/** Una lección y el tablero que le sigue pueden compartir el número de nivel. */
+export const shopBoardKey = (G) => G.tutorial ? `${G.n}:${G.tutorial}` : G.n;
+
 /** ¿Se puede usar el objeto ahora mismo? (reason = por qué no) */
 export function availability(id, { run, G }) {
   if (!run || !G || G.done) return { ok: false, reason: 'No hay un tablero en juego.' };
   if (run.mode === 'p') return { ok: false, reason: 'En Práctica todo es gratis.' };
+  if (id === 'hint' && run.hintPurchaseBoard === shopBoardKey(G)) {
+    return { ok: false, reason: 'Ya compraste una pista para este tablero.' };
+  }
+  if (itemById(id).share && (run.turnPackBoard === shopBoardKey(G) || G.bought > 0)) {
+    return { ok: false, reason: 'Ya compraste turnos para este tablero.' };
+  }
+  if (id === 'skip') {
+    if (isBossLevel(G.n)) return { ok: false, reason: 'Los jefes no se pueden saltar.' };
+    if (run.lastSkipZone === zoneIdx(G.n)) return { ok: false, reason: 'Ya usaste el salto de esta ciudad.' };
+  }
   if (id === 'redo' && !G.moves) return { ok: false, reason: 'Aún no has movido nada.' };
   const price = priceOf(id, G.rate, run.start, run);
   if ((run.score || 0) < price) return { ok: false, reason: 'No te alcanzan los puntos.', price };
@@ -65,11 +69,16 @@ export function buy(id, { run, G }) {
   run.score -= a.price;
   run.spent = (run.spent || 0) + a.price;
   const item = itemById(id);
-  if (id === 'hint') run.hints = (run.hints || 0) + 1;
+  if (id === 'hint') {
+    run.hints = (run.hints || 0) + 1;
+    run.hintPurchaseBoard = shopBoardKey(G);
+  }
+  else if (id === 'skip') run.lastSkipZone = zoneIdx(G.n);
   else if (item?.share) {
     const moves = extraTurns(id, G.limit);
     G.limit += moves;
-    G.bought = (G.bought || 0) + moves; // turnos comprados: se muestran congelados y se «derriten» al usarse
+    run.turnPackBoard = shopBoardKey(G);
+    G.bought = moves; // turnos comprados: se muestran congelados y se «derriten» al usarse
   }
   else if (id === 'redo') {
     G.pos = G.start.slice();

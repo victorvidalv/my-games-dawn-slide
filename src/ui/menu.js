@@ -8,6 +8,7 @@ import { ACHIEVEMENTS } from '../game/achievements.js';
 import { renderAchievements } from './achievements.js';
 import { renderDaily } from './daily.js';
 import { PATHS, S, heroOf, pathOf, persist, store } from '../state.js';
+import { bestAdventureRecord } from '../game/save-merge.js';
 import { startOptions } from '../game/starts.js';
 import { syncRouteStyle } from './board.js';
 import { syncHero } from './heroes.js';
@@ -102,9 +103,40 @@ const continueLabel=(sr)=>`▶ Continuar<small>${pathOf(sr.start||1).n} · Nivel
 /* Menú de inicio: primero las tres entradas (Aventura · Retos diarios · Logros); al tocar una se abre su sección con «Volver» */
 const VIEWS={adv:{title:'Aventura',panel:'panelAdv'},daily:{title:'Retos diarios',panel:'panelDaily'},ach:{title:'Logros',panel:'panelAch'}};
 let viewNow='home';
+const coverScene = $('menu').querySelector('.cover-scene');
+const [coverDawn, coverDay, coverEvening, coverHeroes] = coverScene.querySelectorAll('img');
+const decodeCover = (img) => img.decode().then(() => true, () => false);
+const coverFirst = Promise.all([decodeCover(coverDawn), decodeCover(coverHeroes)]).then(([dawn, heroes]) => {
+  if (dawn && heroes) coverScene.classList.add('cover-ready');
+  return dawn && heroes;
+});
+Promise.all([coverFirst, decodeCover(coverDay), decodeCover(coverEvening)]).then((ready) => {
+  if (ready.every(Boolean)) coverScene.classList.add('cover-cycle');
+});
+
+function paintHomeRecord(){
+  const record=bestAdventureRecord(store.paths);
+  $('homeRecord').hidden=!record;
+  if(!record)return false;
+  $('homeRecordScore').textContent=record.score.toLocaleString(numLocale());
+  const age=$('homeRecordAge');
+  age.hidden=record.recordAt===null;
+  if(record.recordAt!==null){
+    const seconds=Math.max(0,Math.floor((Date.now()-record.recordAt)/1000));
+    const units=[['year',31536000],['month',2592000],['day',86400],['hour',3600],['minute',60]];
+    const [unit,size]=units.find(([,span])=>seconds>=span)||['second',1];
+    age.dateTime=new Date(record.recordAt).toISOString();
+    age.textContent=new Intl.RelativeTimeFormat(lang,{numeric:'auto'}).format(-Math.floor(seconds/size),unit);
+  }
+  return true;
+}
+
 function paintHome(){
   const sr=store.run,active=S.run&&S.G&&!S.G.done;
-  $('homeAdvSub').textContent=!active&&Number.isFinite(sr?.level)?`Partida guardada · nivel ${sr.level}`:'Tres caminos · cien niveles';
+  const hasSaved=!active&&Number.isFinite(sr?.level);
+  const hasRecord=paintHomeRecord();
+  $('homeAdvSub').hidden=hasRecord&&!hasSaved;
+  $('homeAdvSub').textContent=hasSaved?`Partida guardada · nivel ${sr.level}`:'Tres caminos · cien niveles';
   const d=store.daily,day=dayNumber(),streak=d?currentStreak(d,day):0;
   $('homeDailySub').textContent=streakEarned(d,day)?`Hecho hoy · racha de ${streak}`:'Reto de hoy pendiente';
   $('homeAchSub').textContent=`${ACHIEVEMENTS.filter(a=>store.ach?.[a.id]).length} de ${ACHIEVEMENTS.length} conseguidos`;
@@ -123,6 +155,10 @@ function showView(view,{focus=false}={}){
   $('menuCard').scrollTop=0;Object.values(VIEWS).forEach(v=>{$(v.panel).scrollTop=0});
   if(focus)(home?document.querySelector('.home-btn'):$('menuBack')).focus();
 }
+setInterval(()=>{
+  if(viewNow==='home'&&!document.hidden&&$('menu').classList.contains('show'))paintHomeRecord();
+},30000);
+
 document.querySelectorAll('.home-btn').forEach(b=>{b.onclick=()=>showView(b.dataset.view,{focus:true})});
 $('menuBack').onclick=()=>{const from=viewNow;showView('home');document.querySelector(`.home-btn[data-view="${from}"]`)?.focus()};
 $('menu').addEventListener('keydown',e=>{

@@ -1,5 +1,12 @@
 /* Inglés: los tres mercaderes (Don Dublón, La Candilera y el Tasador de Runas) y sus frases. */
 export const EN_SHOP = {
+  "Ya compraste una pista para este tablero.": "You already bought a hint for this board.",
+  "Una compra por tablero": "One purchase per board",
+  "Ya compraste turnos para este tablero.": "You already bought moves for this board.",
+  "Los jefes no se pueden saltar.": "Bosses cannot be skipped.",
+  "Ya usaste el salto de esta ciudad.": "You already used this city’s skip.",
+  "Un paquete por tablero": "One pack per board",
+  "Un salto por ciudad · fuera de jefes": "One skip per city · except bosses",
   /* La Candilera (Lía) */
   'Maela': 'Maela', 'El Mercader': 'The Merchant', 'El Tasador de Runas': 'The Rune Appraiser',
   'Soy Maela. Acércate: aquí hasta las brasas encuentran repuesto.': 'I am Maela. Come closer: here even embers find a replacement.',

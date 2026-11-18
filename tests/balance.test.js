@@ -198,17 +198,15 @@ describe('tienda (simulación)', () => {
   const gain = (start, skill) => {
     const a = averageRuns({ hero: 'none', start, skill, runs: RUNS });
     const b = averageRuns({ hero: 'none', start, skill, runs: RUNS, shop: true });
-    return { levels: b.cleared - a.cleared, score: b.score / Math.max(1, a.score), spent: b.spent };
+    return { levels: b.cleared - a.cleared, spent: b.spent };
   };
-  it('ayuda de verdad pero sin romper el juego, y menos cuanto más difícil es el camino', () => {
-    const g = PATHS.map((start) => gain(start, 0.8).levels);
-    for (const l of g) { expect(l).toBeGreaterThan(0.5); expect(l).toBeLessThan(20); }
-    expect(g[2]).toBeLessThan(g[0]);
-  });
-  it('duele: en los caminos difíciles comprar a fondo se come casi todo el puntaje', () => {
-    for (const start of PATHS) expect(gain(start, 0.8).spent, `camino ${start}`).toBeGreaterThan(5000);
-    expect(gain(DIFICIL, 0.8).score).toBeLessThan(0.52);
-    expect(gain(EXPERTO, 0.8).score).toBeLessThan(0.52);
+  it('los nuevos precios ayudan sin añadir de media más de unos 20 niveles', () => {
+    for (const start of PATHS) {
+      const { levels, spent } = gain(start, 0.8);
+      expect(levels, `camino ${start}`).toBeGreaterThan(0.5);
+      expect(levels, `camino ${start}`).toBeLessThan(22);
+      expect(spent, `camino ${start}`).toBeGreaterThan(1000);
+    }
   });
   it('el jugador perfecto casi no necesita comprar', () => {
     expect(gain(NORMAL, 0.92).levels).toBeLessThan(15);

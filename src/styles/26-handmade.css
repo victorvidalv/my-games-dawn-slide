@@ -69,7 +69,17 @@ button:active,button.primary:active{transform:translate(2px,3px);box-shadow:1px 
 
 /* Colores del resto de la interfaz con la misma paleta */
 body{background:#1a1528}
-body::before{background:radial-gradient(ellipse at 50% 52%,#1a12202e 0,#110c1ab0 100%),var(--scene) center/cover}
+body::before{
+  background:linear-gradient(var(--scene-shade,transparent),var(--scene-shade,transparent)),
+    radial-gradient(ellipse at 50% 52%,#1a12202e 0,#110c1ab0 100%),var(--scene) center/cover;
+}
+@media(prefers-reduced-motion:no-preference){
+  html:not(.lite) body.level-scenery-in::before{animation:level-scenery-in 2.2s cubic-bezier(.2,.65,.3,1)}
+}
+@keyframes level-scenery-in{
+  from{transform:translate(-1%,.55%) scale(1.045)}
+  to{transform:none}
+}
 button{background:var(--hatch),linear-gradient(180deg,#2c7585,#215666)}
 .meter,.path{background:var(--hatch),linear-gradient(170deg,#3e2539f0,#2a1c31f2)}
 .path{background:var(--hatch),#ffffff08}

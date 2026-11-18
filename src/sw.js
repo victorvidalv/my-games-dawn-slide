@@ -10,7 +10,7 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 
 /* Ilustraciones de jefe (≈ 130 KB cada una): no se descargan todas al instalar; se guardan la primera vez que se ven y después
    salen de la caché (también sin conexión). */
-registerRoute(({ url }) => /\/jefes\/[^/]+\.jpg$/.test(url.pathname), async ({ request }) => {
+registerRoute(({ url }) => /\/jefes\/[^/]+\.(jpg|webp)$/.test(url.pathname), async ({ request }) => {
   const cache = await caches.open('jefes-v1');
   const hit = await cache.match(request);
   if (hit) return hit;

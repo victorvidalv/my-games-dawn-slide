@@ -1,5 +1,6 @@
 /* Inglés: interfaz (menús, HUD, ventanas, avisos y accesibilidad). */
 export const EN_UI = {
+  "Récord": "Best score",
   /* menú principal */
   'Menú': 'Menu', 'Escoge el nivel': 'Choose your level',
   'Puzle de bloques · tres héroes · cien niveles': 'Block puzzle · three heroes · 100 levels',

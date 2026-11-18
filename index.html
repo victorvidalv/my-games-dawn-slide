@@ -52,7 +52,7 @@
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
-<link rel="preload" as="image" href="/backgrounds/cover.webp" fetchpriority="high">
+<link rel="preload" as="image" href="/backgrounds/cover-dawn.webp" fetchpriority="high">
 </head>
 <body>
 <div id="bossAmbient" aria-hidden="true"></div>
@@ -186,27 +186,17 @@
  <div class="boss-stage">
   <img class="boss-backdrop" id="bossArt" alt="" draggable="false">
   <div class="boss-vignette" aria-hidden="true"></div>
-  <div class="boss-fx boss-rays" aria-hidden="true"></div>
   <div class="boss-fx boss-embers" aria-hidden="true"></div>
-  <div class="boss-fx boss-bolt" aria-hidden="true"></div>
-  <div class="boss-fx boss-grain" aria-hidden="true"></div>
-  <div class="boss-fx boss-flash" aria-hidden="true"></div>
   <div class="boss-shell">
-   <header class="boss-head">
-    <span class="tag boss-tag" id="bossTag"></span>
-    <h2 class="boss-name" id="bossName"></h2>
-    <p class="boss-title" id="bossTitle"></p>
-   </header>
+   <h2 class="boss-name" id="bossName"></h2>
    <footer class="boss-bottom">
     <p class="boss-lore" id="bossLore"></p>
     <ul class="boss-goals" id="bossGoals" aria-label="Objetivo del duelo"></ul>
-    <div class="boss-mech" id="bossMech"></div>
-    <button class="primary boss-fight" id="bossFight">Enfrentar ➜</button>
+    <button class="primary boss-fight" id="bossFight">Iniciar</button>
    </footer>
   </div>
  </div>
 </div>
-
 
 <div class="modal" id="storyBook" role="dialog" aria-modal="true" aria-labelledby="storyTitle"><article class="storybook">
  <div class="book-illustration"><img class="book-scenery" id="storyScene" alt=""><div class="book-series"><small>LAS CRÓNICAS DE LA LLAVE ROJA</small>El Faro<br>del Alba<small style="margin-top:10px">LA SOMBRA DE VHORN · THYES, AÑO 4133</small></div><img class="book-portrait" id="storyPortrait" alt=""></div>
@@ -237,6 +227,15 @@
 
 <!-- Menú -->
 <div class="modal show" id="menu">
+  <div class="cover-scene" aria-hidden="true">
+    <div class="cover-landscapes">
+      <img class="cover-landscape" src="/backgrounds/cover-dawn.webp" alt="" decoding="async" fetchpriority="high">
+      <img class="cover-landscape cover-day" src="/backgrounds/cover-day.webp" alt="" decoding="async" fetchpriority="low">
+      <img class="cover-landscape cover-evening" src="/backgrounds/cover-evening.webp" alt="" decoding="async" fetchpriority="low">
+    </div>
+    <div class="cover-lights"></div>
+    <img class="cover-heroes" src="/backgrounds/cover-heroes.webp" alt="" decoding="async">
+  </div>
   <div class="title-lockup">
     <svg class="title-crest" viewBox="0 0 64 72" aria-hidden="true"><path class="crest-shield" d="M32 3 59 12v23c0 17-12 28-27 34C17 63 5 52 5 35V12Z"/><path class="crest-inner" d="M32 9 53 16v19c0 13-9 22-21 27C20 57 11 48 11 35V16Z"/><circle class="crest-key" cx="32" cy="27" r="7"/><path class="crest-key" d="M32 34v20m0-7h7m-7-7h5"/></svg>
     <h1 class="logo">DAWN<i>SLIDE</i></h1>
@@ -244,7 +243,7 @@
   </div>
   <div class="card" id="menuCard" data-view="home">
     <nav class="menu-home" id="menuHome" aria-label="Modos de juego">
-      <button type="button" class="home-btn hb-adv" id="tabAdv" data-view="adv"><i class="hb-ico bi" data-icon="flag" aria-hidden="true"></i><span class="hb-copy"><b>Aventura</b><small id="homeAdvSub">Tres caminos · cien niveles</small></span><i class="hb-go" aria-hidden="true">›</i></button>
+      <button type="button" class="home-btn hb-adv" id="tabAdv" data-view="adv"><i class="hb-ico bi" data-icon="flag" aria-hidden="true"></i><span class="hb-copy"><b>Aventura</b><small id="homeAdvSub">Tres caminos · cien niveles</small><span class="home-record" id="homeRecord" hidden><span class="record-pill"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Récord</span><strong id="homeRecordScore"></strong></span><time id="homeRecordAge" hidden></time></span></span><i class="hb-go" aria-hidden="true">›</i></button>
       <button type="button" class="home-btn hb-daily" id="tabDaily" data-view="daily"><i class="hb-ico bi" data-icon="flame" aria-hidden="true"></i><span class="hb-copy"><b>Retos diarios</b><small id="homeDailySub"></small></span><i class="hb-go" aria-hidden="true">›</i></button>
       <button type="button" class="home-btn hb-ach" id="tabAch" data-view="ach"><i class="hb-ico bi" data-icon="trophy" aria-hidden="true"></i><span class="hb-copy"><b>Logros</b><small id="homeAchSub"></small></span><i class="hb-go" aria-hidden="true">›</i></button>
     </nav>

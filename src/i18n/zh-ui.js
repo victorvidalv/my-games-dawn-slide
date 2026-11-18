@@ -1,5 +1,6 @@
 /* Diccionario español → chino simplificado (ui). Mismas claves y mismo orden que en-ui.js. */
 export const ZH_UI = {
+  "Récord": "最高纪录",
   'Menú': '菜单',
   'Escoge el nivel': '选择难度',
   'Puzle de bloques · tres héroes · cien niveles': '方块益智 · 三位英雄 · 一百关',

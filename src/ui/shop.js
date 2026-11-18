@@ -81,7 +81,7 @@ const SAY = {
   decline: ['Piénsalo, los precios no bajan. Spoiler.', 'Tú decides. El oro no huye de Thyes… ni yo de mi caja.', 'Vuelve cuando la tentación pese más que el bolsillo.'],
   nothing: ['Aún no has movido nada. ¿Qué voy a rebobinar? ¿Tu optimismo?'],
 };
-const SHORT = { hint: 'Te enseña el mejor movimiento', moves3: 'Más turnos en este tablero', moves: 'Muchos más turnos en este tablero', redo: 'Empieza de cero con 0 movimientos', skip: 'Pasa de nivel sin puntos ni racha' };
+const SHORT = { hint: 'Una compra por tablero', moves3: 'Un paquete por tablero', moves: 'Un paquete por tablero', redo: 'Empieza de cero con 0 movimientos', skip: 'Un salto por ciudad · fuera de jefes' };
 const shortOf = (id) => SHORT[id];
 const lastIdx = new Map();
 const merchantLine = key => pick(shopPersona(S.run?.hero).lines?.[key] || SAY[key]);
@@ -141,7 +141,11 @@ export function openShop() {
   $('shopClose').onclick = close;
   const list = $('shopList');
   const lineFor = (b) => {
-    if (b.classList.contains('off')) return b.dataset.id === 'redo' && S.G.moves === 0 ? merchantLine('nothing') : merchantLine('poor');
+    if (b.classList.contains('off')) {
+      if (b.dataset.id === 'redo' && S.G.moves === 0) return merchantLine('nothing');
+      const { reason } = availability(b.dataset.id, { run: S.run, G: S.G });
+      return reason === 'No te alcanzan los puntos.' ? merchantLine('poor') : reason;
+    }
     return merchantLine(b.dataset.id);
   };
   list.onpointerover = (e) => { const b = e.target.closest('.shop-item'); if (b && e.pointerType === 'mouse') say(lineFor(b)); };
