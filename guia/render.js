@@ -1,7 +1,12 @@
 import { BOSS_RULES } from '../src/game/bosses.js';
 import { DAILY_TARGETS } from '../src/game/daily.js';
+import { MAX_GRADE, maxPrize } from '../src/game/minigames.js';
+import { FIRST_ROTATED_LEVEL } from '../src/game/orientation.js';
+import { HEROIC_BENEFITS } from '../src/game/routes.js';
 import { BOSS_FREE_RETRIES } from '../src/game/shop.js';
 import { WORLD } from '../src/data/lore.js';
+import { HERO_LORE } from '../src/data/story.js';
+import { tr } from '../src/i18n.js';
 import { guides } from './content.js';
 import { extraChapters } from './chapters.js';
 
@@ -24,24 +29,29 @@ export function renderGuide(lang) {
     `<link rel="alternate" hreflang="${guides[code].htmlLang}" href="%SITE_URL%/${path}">`).join('\n');
   const chapters = [
     ['como-jugar', g.basics], ['retos-diarios', g.daily], ['pistas', g.hints],
-    ['mecanicas', g.mechanics], ['heroes', g.heroes], ['jefes', g.bosses],
-    ['historia', g.story], ['banda-sonora', g.sound],
+    ['tienda', g.shop], ['minijuegos', g.miniTitle], ['mecanicas', g.mechanics],
+    ['maleficios', g.curseTitle], ['heroes', g.heroes], ['caminos-heroicos', g.heroicTitle],
+    ['jefes', g.bosses], ['historia', g.story], ['banda-sonora', g.sound],
   ];
   const figure = (level, [caption, alt], eager = false) => `<figure class="capture">
     <a class="capture-link" href="${up}capturas/${lang}-${level}.webp" aria-label="${g.zoom} · ${caption}">
-      <img src="/guia/capturas/${lang}-${level}.webp" width="1000" height="462" alt="${alt}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">
+      <img src="/guia/capturas/${lang}-${level}.webp" width="${level === 'shop' ? 928 : 1000}" height="${level === 'shop' ? 780 : 462}" alt="${alt}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">
     </a>
     <figcaption>${caption}</figcaption>
   </figure>`;
   const feature = (key, symbol) => `<div class="mechanic mechanic-${key}"><dt><span aria-hidden="true">${symbol}</span>${g[key][0]}</dt><dd>${g[key][1]}</dd></div>`;
   const heroes = [['lia', 'lia'], ['jean', 'jean'], ['juth', 'van']];
-  const hero = ([key, file], index) => `<article class="hero hero-${key}">
+  const hero = ([key, file]) => `<article class="hero hero-${key}">
     <img src="/heroes/${file}-story.webp" alt="" width="320" height="224" loading="lazy" decoding="async">
     <div class="hero-copy">
       <h3>${g[key][0]}</h3><p>${g[key][1]}</p>
-      <p class="hero-path"><b>${g.path}</b> ${g.heroPaths[index]}</p>
+      <blockquote>${tr(HERO_LORE[file].quote, lang)}</blockquote>
     </div>
   </article>`;
+  const route = ([key, file], index) => `<div class="route-guide hero-${key}">
+    <dt><span>${g.routeNames[index]}</span><strong aria-label="${g.bonusPoints} +${Math.round(HEROIC_BENEFITS.points[file] * 100)}%">+${Math.round(HEROIC_BENEFITS.points[file] * 100)}%</strong></dt>
+    <dd>${g[key][0]} · ${g.heroPaths[index]}</dd>
+  </div>`;
   const track = ([key, file]) => `<button type="button" class="track hero-${key}" data-track="${file}" aria-pressed="false">
     <span class="track-icon" aria-hidden="true">♫</span><b>${g[key][0]}</b><span class="listen-action">${g.listen}</span>
   </button>`;
@@ -103,13 +113,28 @@ export function renderGuide(lang) {
         <div class="streak"><h3>${g.rewardTitle}</h3><p>${g.dailyStreak}</p></div>
       </section>
 
-      <section id="pistas" class="section hints">
+      <section id="pistas" class="section basic">
+        <h2>${g.hints}</h2>
+        <p>${g.hintTip}</p>
+        <p>${g.earnHints}</p>
+      </section>
+
+      <section id="tienda" class="section feature-section">
         <div>
-          <h2>${g.hints}</h2>
-          <p>${g.hintTip}</p>
-          <p>${g.earnHints}</p>
+          <h2>${g.shop}</h2>
+          <p>${g.shopIntro}</p>
+          <p>${g.shopLimit}</p>
         </div>
-        <aside><h3>${g.shop}</h3><p>${g.shopIntro}</p></aside>
+        ${figure('shop', g.shopShot)}
+      </section>
+
+      <section id="minijuegos" class="section feature-section">
+        <div>
+          <h2>${g.miniTitle}</h2>
+          <p>${g.miniIntro}</p>
+          <p>${g.miniPrize.replace('{stars}', MAX_GRADE).replace('{first}', maxPrize(15)).replace('{last}', maxPrize(95))}</p>
+        </div>
+        ${figure('mini', g.miniShot)}
       </section>
 
       <section id="mecanicas" class="section">
@@ -119,13 +144,31 @@ export function renderGuide(lang) {
           <div>${figure(28, g.rockShot)}<dl>${feature('rock', '▪')}${feature('heavy', '1')}</dl></div>
           <div>${figure(65, g.iceShot)}<dl>${feature('gate', '▣')}${feature('ice', '❄')}</dl></div>
         </div>
-        <dl class="more-mechanics">${feature('door', '◆')}${feature('curse', '↻')}</dl>
+        <dl class="more-mechanics">${feature('door', '◆')}</dl>
+      </section>
+
+      <section id="maleficios" class="section feature-section">
+        <div>
+          <h2>${g.curseTitle}</h2>
+          <p>${g.curseIntro.replace('{level}', FIRST_ROTATED_LEVEL)}</p>
+          <p>${g.curseTip}</p>
+        </div>
+        ${figure('curse', g.curseShot)}
       </section>
 
       <section id="heroes" class="section">
         <h2>${g.heroes}</h2>
         <p class="section-intro">${g.heroesIntro}</p>
         <div class="hero-grid">${heroes.map(hero).join('')}</div>
+      </section>
+
+      <section id="caminos-heroicos" class="section feature-section">
+        <div>
+          <h2>${g.heroicTitle}</h2>
+          <p>${g.heroicIntro}</p>
+          <dl class="route-guide-list">${heroes.map(route).join('')}</dl>
+        </div>
+        ${figure('route', g.routeShot)}
       </section>
 
       <section id="jefes" class="section bosses">
@@ -142,7 +185,7 @@ export function renderGuide(lang) {
         </table>
       </section>
 
-      <section id="historia" class="section story">
+      <section id="historia" class="section story feature-section">
         <div>
           <h2>${g.story}</h2>
           <p class="story-world">${WORLD.name} · ${WORLD.year}</p>
@@ -150,6 +193,7 @@ export function renderGuide(lang) {
           <p>${g.storyIntro}</p>
           <p>${g.storySeals}</p>
         </div>
+        <img class="story-art" src="/guia/arte/historias-de-thyes.webp" width="1220" height="687" alt="${g.storyArt}" loading="lazy" decoding="async">
       </section>
 
       <section id="banda-sonora" class="section soundtrack">
@@ -167,6 +211,7 @@ export function renderGuide(lang) {
   <footer class="site-foot"><a class="play" href="${play}">${g.play} <span aria-hidden="true">→</span></a></footer>
   <button id="audioRecover" hidden></button>
   <script type="module" src="/guia/audio.js"></script>
+  <script type="module" src="/guia/scroll.js"></script>
 </body>
 </html>`;
 }

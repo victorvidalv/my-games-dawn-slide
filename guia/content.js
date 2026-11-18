@@ -29,7 +29,7 @@ export const guides = {
     daily: 'Retos diarios', dailyIntro: 'Cada reto trae tres tableros con mínimos de {targets} movimientos. Resolver los tres de cualquiera de los retos cuenta como un día de racha. Los tableros cambian a medianoche, según tu hora local.',
     dailyUnlock: 'Clásico está disponible desde el inicio. Rocas y hielo, Mecanismos, Todo junto y Maestro se desbloquean al alcanzar los niveles 20, 30, 50 y 100.',
     dailyStreak: 'Una racha de 3, 5 o 7 días añade 5, 10 o 15 pistas al empezar una aventura nueva, según el tramo más alto que alcanzaste.',
-    shop: 'Pistas y tienda', shopIntro: 'Una pista señala un movimiento. La tienda permite gastar puntos de tu aventura en ayudas como pistas o turnos extra, así que piensa cuánto de tu marca quieres invertir.',
+    shop: 'Tienda', shopIntro: 'Usa los puntos de tu aventura para comprar una pista, añadir turnos o reiniciar el tablero. Lo que gastes se resta de tu puntaje.',
   },
   en: {
     htmlLang: 'en', language: 'English', title: 'Dawnslide Guide',
@@ -61,7 +61,7 @@ export const guides = {
     daily: 'Daily challenges', dailyIntro: 'Each challenge has three boards with minimums of {targets} moves. Solve all three boards in any one challenge to extend your streak by a day. Boards change at local midnight.',
     dailyUnlock: 'Classic is available from the start. Rocks and Ice, Mechanisms, All Together and Master unlock at levels 20, 30, 50 and 100.',
     dailyStreak: 'A 3-, 5- or 7-day streak adds 5, 10 or 15 hints when you start a new adventure, based on the highest milestone you reached.',
-    shop: 'Hints and shop', shopIntro: 'A hint points out one move. Spend adventure points in the shop for help like extra hints or turns, and decide how much of your score to trade for it.',
+    shop: 'Shop', shopIntro: 'Spend adventure points on a hint, extra turns or a board reset. Each purchase comes out of your score.',
   },
   ja: {
     htmlLang: 'ja', language: '日本語', title: 'Dawnslide 攻略ガイド',
@@ -93,7 +93,7 @@ export const guides = {
     daily: 'デイリーチャレンジ', dailyIntro: '各チャレンジには最短手数が{targets}手の3つの盤面があります。どれか1つのチャレンジで3つとも解くと、連続記録が1日伸びます。盤面は現地時刻の午前0時に更新されます。',
     dailyUnlock: 'クラシックは最初から遊べます。ほかの4種類はレベル20、30、50、100で順に解放されます。',
     dailyStreak: '3日、5日、7日と連続でクリアすると、新しい冒険を始めるときに到達した段階に応じて5、10、15個のヒントを追加できます。',
-    shop: 'ヒントとショップ', shopIntro: 'ヒントは次の1手を示します。ショップでは冒険の得点を使ってヒントや追加の手数を買えます。',
+    shop: 'ショップ', shopIntro: '冒険の得点を使って、ヒントや追加の手数を買ったり、盤面を最初からやり直したりできます。',
   },
   zh: {
     htmlLang: 'zh-Hans', language: '中文', title: 'Dawnslide 游戏指南',
@@ -125,6 +125,6 @@ export const guides = {
     daily: '每日挑战', dailyIntro: '每项挑战包含三个棋盘，最少步数分别为 {targets} 步。任选一项挑战，解完其中三个棋盘即可续上当天的连续记录。棋盘在当地午夜更新。',
     dailyUnlock: '经典挑战从一开始就可以玩。其余四项挑战分别在第 20、30、50 和 100 关解锁。',
     dailyStreak: '连续 3、5 或 7 天完成挑战后，开启新冒险可获得 5、10 或 15 个额外提示，按达到的最高档计算。',
-    shop: '提示与商店', shopIntro: '提示会给出一步走法。可以用冒险积分在商店购买提示或额外步数，自己决定要为帮助花掉多少分。',
+    shop: '商店', shopIntro: '可以用冒险积分购买提示、增加步数或重开棋盘。每次购买都会从当前得分中扣除相应积分。',
   },
 };
