@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  acceptRescue, applyMove, markHelped, restoreRun,
   advanceRun, applyAdventureWin, applyDailyWin, applySkip, canSaveBoard, chooseRoute, cityAfter, clearKind, dailyEntry,
   needsBossIntro, needsTravelChoice, newAdventureRun, newDailyRun, normalizeRoute, resetBoardForRevive, resolveFail,
   restoreDailyAttempt, snapshotBoard, storeBoard, updateBest,
@@ -204,5 +205,30 @@ describe('derrota', () => {
     const G = board({ bought: 3, limit: 15, timeLimit: 60, timeLeft: 2, done: true });
     resetBoardForRevive(G);
     expect(G).toMatchObject({ pos: [0, 0], moves: 0, hist: [], done: false, limit: 12, bought: 0, timeLeft: 60 });
+  });
+});
+
+describe('rescates, movimientos y partidas guardadas', () => {
+  it('aceptar un rescate reinicia el tablero y lo consume', () => {
+    const run = adventure({ rescue: { kind: 'lia' } }), G = board({ done: true, bought: 1, limit: 13 });
+    acceptRescue(run, G);
+    expect(run.rescue).toBeUndefined();
+    expect(G).toMatchObject({ pos: [0, 0], moves: 0, done: false, limit: 12 });
+  });
+
+  it('cada movimiento guarda la posición anterior para deshacer', () => {
+    const G = board({ pos: [1, 2], hist: [], moves: 0 });
+    applyMove(G, 1, 4);
+    expect(G).toMatchObject({ pos: [1, 4], hist: [[1, 2]], moves: 1 });
+  });
+
+  it('usar ayuda queda marcado en el nivel', () => {
+    const run = adventure();
+    markHelped(run, 8);
+    expect(run.helpAt).toBe(8);
+  });
+
+  it('una partida guardada antigua recibe los campos que le faltan', () => {
+    expect(restoreRun({ level: 30, seed: 1, hero: 'van', score: 70 })).toMatchObject({ level: 30, hero: 'van', score: 70, start: 1, mode: 'c', revive: 0, recBroken: false });
   });
 });

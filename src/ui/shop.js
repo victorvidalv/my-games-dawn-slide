@@ -3,7 +3,7 @@ import { $, cssUrl } from '../dom.js';
 import { shopPersona } from '../game/shop-personas.js';
 import { SHOP_ITEMS, availability, buy, extraTurns, itemById, priceOf } from '../game/shop.js';
 import { saveRun, skipLevel } from '../game/session.js';
-import { S } from '../state.js';
+import { S, holdBusy } from '../state.js';
 import { shopDiscount } from '../game/routes.js';
 import { layout, recLine, updateHud } from './board.js';
 import { updateHeroHud } from './heroes.js';
@@ -122,8 +122,7 @@ function render() {
 /** Abre la tienda (botón 🛒). Bloquea el tablero mientras está abierta. */
 export function openShop() {
   if (!S.G || S.G.done || S.busy || !S.run) return;
-  const wasBusy = S.busy;
-  S.busy = true;
+  const release = holdBusy();
   const modal = $('shop');
   const persona=shopPersona(S.run.hero);modal.dataset.hero=S.run.hero;
   $('shopBg').src=persona.background;$('shopMerchant').src=persona.portrait;
@@ -133,7 +132,7 @@ export function openShop() {
   const close = () => {
     modal.classList.remove('show');
     $('shopClose').onclick = null;
-    S.busy = wasBusy;
+    release();
   };
   render();
   modal.classList.add('show');

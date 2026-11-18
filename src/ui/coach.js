@@ -3,7 +3,7 @@ import { $ } from '../dom.js';
 import { hintMove } from '../engine/solver.js';
 import { MECHANICS, TUTORIALS } from '../game/mechanics.js';
 import { HERO_TUTORIAL_TALK } from '../data/story.js';
-import { S, heroOf, persist, store } from '../state.js';
+import { S, heroOf, holdBusy, persist, store } from '../state.js';
 import { icon } from './icons.js';
 
 /**
@@ -144,11 +144,10 @@ export function startCoach() {
   const todo = urgent.length ? urgent : pending.slice(0, 1);
   if (!todo.length) { guide(); return; }
   showing = true;
-  const wasBusy = S.busy;
-  S.busy = true;
+  const release = holdBusy();
   show(todo, () => {
     showing = false;
-    S.busy = wasBusy;
+    release();
     guide();
   });
 }

@@ -16,7 +16,7 @@ import {
   needsBossIntro, needsTravelChoice, newAdventureRun, newDailyRun, normalizeRoute, resetBoardForRevive, resolveFail,
   restoreDailyAttempt, storeBoard, updateBest,
 } from './run-logic.js';
-import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
+import { S, closeRun, gainNow, haltBoard, heroOf, persist, rkey, setBoard, setBusy, setRun, store } from '../state.js';
 import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { showDailyResult } from '../ui/daily.js';
@@ -63,8 +63,8 @@ export async function startRun(start,mode){
   const from=canStartAt(store.paths['c'+start]?.level||0,picked.from)?picked.from:1;
   if(S.run) recordBest(true);                         // si abandonas, lo logrado cuenta
   const hints=startHintsAt(start,from)+streakHintBonus(currentStreak(store.daily,dayNumber()));
-  S.G=null;
-  S.run=newAdventureRun({seed:Math.floor(Math.random()*2**31),start,mode,hero:picked.hero,from,hints});
+  setBoard(null);
+  setRun(newAdventureRun({seed:Math.floor(Math.random()*2**31),start,mode,hero:picked.hero,from,hints}));
   markStat('heroes',picked.hero);
   syncHero();syncRouteStyle();applyZone(zoneIdx(from));saveRun();
   Object.assign(S.run,{route:'normal',routeZone:zoneIdx(from),travelFrom:zoneIdx(from)});saveRun();
@@ -77,8 +77,8 @@ export async function startDaily(id, index){
   if(entry.index<0){showDailyResult({id:c.id,day});return}
   if(S.run&&!S.run.daily&&S.G&&!S.G.done)saveRun();
   if(S.G)S.G.done=true;
-  S.G=null;
-  S.run=newDailyRun({challenge:c,day,...entry});
+  setBoard(null);
+  setRun(newDailyRun({challenge:c,day,...entry}));
   syncHero();syncRouteStyle();applyZone(zoneIdx(c.level));
   await startLevel();
 }
@@ -86,14 +86,13 @@ export async function startDaily(id, index){
 export function leaveDaily(){
   if(!S.run?.daily)return;
   saveRun();
-  if(S.G)S.G.done=true;
-  S.run=null;S.busy=false;setDailyMode(false);
+  closeRun();setDailyMode(false);
   Music.stop(.2);setTensionFx(0,false);
 }
 
 /* ---------- Tablero ---------- */
 async function startLevel(){
-  S.busy=true;
+  setBusy(true);
   const run=S.run;
   const G=await buildLevelAsync(run,store.tips||{});
   if(S.run!==run)return;                                // se salió mientras se preparaba
@@ -102,12 +101,12 @@ async function startLevel(){
   // El telón dorado abre la presentación; entre tableros las piezas se disuelven en su sitio.
   if(needsBossIntro(run,G))await wipeIn('gold');else await boardSwapOut();
   if(S.run!==run){wipeOut();boardSwapDone();return}
-  S.G=G;
+  setBoard(G);
   G.colors ||= [0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5);
   renderLevelHud(run,G,heroOf().id);
   applyZone(zoneIdx(G.n));renderStage();syncBossPhase();
   if(G.n%10>=7)preloadBossArt(Math.ceil(G.n/10)*10);                  // la ilustración del próximo jefe ya está lista cuando llegas
-  buildPieces();boardSwapDone();updateHud();S.busy=true;
+  buildPieces();boardSwapDone();updateHud();setBusy(true);
   fitBoard();Music.setLevel(G.n,run.hero);setTensionFx(0,false);Music.duck(1);Music.muffle(false);Music.start();
   if(run.rescue){wipeOut();showRescue();return}
   if(run.pendingRevive&&canPaidRevive(run,run.mode)){wipeOut();offerPaidRevive(run.pendingRevive);return}
@@ -122,7 +121,7 @@ async function startLevel(){
     if(!G.moves)levelBanner(...levelBannerText(run,G),!!G.plan?.boss);
   }
   playLevelScenery();
-  S.busy=false;unlockBoard();updateHud();saveRun();syncBossTimer();
+  setBusy(false);unlockBoard();updateHud();saveRun();syncBossTimer();
   startCoach();                                        // avisos y guía de los primeros niveles / mecánicas nuevas
 }
 
@@ -138,7 +137,7 @@ function travelDialog(){
 }
 let advancingClear=false;
 export async function resumeAdventure(){
-  if(!S.run)return;S.busy=true;
+  if(!S.run)return;setBusy(true);
   if(normalizeRoute(S.run))saveRun();
   if(S.run.pendingClear){await advanceClear();return}
   if(S.run.bonus){await showBonus();saveRun()}
@@ -146,11 +145,11 @@ export async function resumeAdventure(){
   await startLevel();
 }
 async function advanceClear(){
-  if(advancingClear||!S.run?.pendingClear)return;advancingClear=true;S.busy=true;
+  if(advancingClear||!S.run?.pendingClear)return;advancingClear=true;setBusy(true);
   const done=S.run.pendingClear,n=done.level,kind=clearKind(n),crossing=kind==='crossing';
   if(crossing)pauseAchievementToasts(true);
   try{
-    if(kind==='final'){endRun(true);S.busy=false;return}
+    if(kind==='final'){endRun(true);setBusy(false);return}
     if(crossing&&!done.routeChosen)await travelDialog();
     advanceRun(S.run,n,{bonus:isBonusLevel(n)});
     saveRun();await resumeAdventure();
@@ -159,7 +158,7 @@ async function advanceClear(){
 
 /* ---------- Victoria ---------- */
 export function win(){                                  // la voz del héroe NO se corta al ganar: termina su frase aunque el nivel sea rápido
-  if(S.G.done)return;S.G.done=true;S.busy=true;lockBoard();
+  if(S.G.done)return;haltBoard();lockBoard();
   if(S.G.tutorial)return winTutorial();
   if(S.run.daily)return winDaily();
   const run=S.run,G=S.G;
@@ -182,7 +181,7 @@ function winTutorial(){
   setTensionFx(0,false);sfx.success();
   playKeyExit(S.G,{party:false});
   setMessage('¡Tutorial superado! Ahora, el nivel de verdad.');
-  setTimeout(()=>{S.busy=false;startLevel()},1400);
+  setTimeout(()=>{setBusy(false);startLevel()},1400);
 }
 function winDaily(){
   const run=S.run,G=S.G,d=run.daily;
@@ -218,15 +217,15 @@ export function fail(why){
 /** Saltar nivel (tienda): sin puntos, sin racha; avanza como si se hubiera superado. */
 export function skipLevel(){
   if(!S.G||S.G.done)return;
-  S.G.done=true;S.busy=true;lockBoard();
+  haltBoard();lockBoard();
   applySkip(S.run,S.G);
   recordBest();saveRun();setTensionFx(0,false);
   setMessage('Nivel saltado. Sin puntos.');
   playSkipEffect().then(()=>advanceClear());
 }
 function triggerGameOver(why){
-  S.G.done=true;S.busy=true;lockBoard();Music.stop(.25);setTensionFx(0,false);tone(220,.25,'sine',.045);dimBoard(S.G);
-  setTimeout(()=>{endRun(false,why);S.busy=false},400);
+  haltBoard();lockBoard();Music.stop(.25);setTensionFx(0,false);tone(220,.25,'sine',.045);dimBoard(S.G);
+  setTimeout(()=>{endRun(false,why);setBusy(false)},400);
 }
 async function offerPaidRevive(why){
   const accepted=await showReviveOffer();
@@ -237,7 +236,7 @@ async function offerPaidRevive(why){
     if(r.ok){
       resetBoardForRevive(S.G);
       showRevivedHud(S.run,S.G);
-      saveRun();unlockBoard();S.busy=false;layout();updateHud();
+      saveRun();unlockBoard();setBusy(false);layout();updateHud();
       syncBossTimer();Music.duck(1);playReviveEffect('¡RENACER!',false);
       setMessage(revivedMessage(r.cost));
       return;

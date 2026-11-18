@@ -5,6 +5,7 @@ import { isLow, isWon, moveStatus, movesLeft } from '../engine/rules.js';
 import { $ } from '../dom.js';
 import { fail, saveRun, win } from '../game/session.js';
 import { S, gainNow, pathOf, rkey, store } from '../state.js';
+import { applyMove } from '../game/run-logic.js';
 import { heroicPath, isHeroic } from '../game/routes.js';
 import { icon } from './icons.js';
 import { zoneIdx } from '../data/zones.js';
@@ -208,7 +209,7 @@ function attach(el,i){
       el.classList.remove('drag');
       const x=commit&&S.G&&!S.G.done?snapDrag(x0,lo,hi,delta,p.kind):x0;
       if(x!==x0){
-        S.G.hist.push(S.G.pos.slice());S.G.pos[i]=x;S.G.moves++;
+        applyMove(S.G,i,x);
         (p.kind==='heavy'?sfx.heavyMove:p.kind==='gate'?sfx.gateMove:p.kind==='ice'?sfx.iceMove:sfx.move)();
         landFx(el);
         const passDoor=crossedDoorIdx(p,x0,x);

@@ -23,6 +23,19 @@ export const rkey=()=>S.run.mode+S.run.start;
 
 /* Estado mutable compartido entre módulos: la aventura en curso, el tablero activo y si la UI está ocupada. */
 export const S={run:null,G:null,busy:false,lastCfg:{start:1,mode:'c'}};
+/* Toda escritura de S.run, S.G, S.busy y S.lastCfg pasa por estas funciones: así se puede rastrear quién cambia qué. */
+export const setRun=run=>{S.run=run};
+export const setBoard=G=>{S.G=G};
+export const setBusy=busy=>{S.busy=busy};
+export const rememberConfig=run=>{S.lastCfg={start:run.start,mode:run.mode}};
+/** Detiene el tablero activo (no acepta más movimientos) y bloquea la UI. */
+export function haltBoard(){S.G.done=true;S.busy=true}
+/** Cierra el tablero activo y suelta la partida en memoria; el guardado no cambia. */
+export function closeRun(){if(S.G)S.G.done=true;S.run=null;S.busy=false}
+/** Olvida la partida: la borra del guardado y de la memoria. */
+export function discardRun(){store.run=null;persist();S.run=null}
+/** Marca la UI como ocupada y devuelve la función que restaura el valor anterior. */
+export function holdBusy(){const was=S.busy;S.busy=true;return()=>{S.busy=was}}
 export const heroOf=(id=S.run?.hero)=>heroById(id);
 /** Puntos que dan `moves` movimientos en el tablero actual (incluye racha, bono de ruta heroica y bono de jefe). */
 export const gainNow=(moves=S.G.moves)=>routeGain(S.run,S.G.rate,moves,S.G.opt,S.run.streak||0,S.G.n);

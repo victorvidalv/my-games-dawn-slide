@@ -2,7 +2,7 @@ import { Music } from '../audio/music.js';
 import { tone } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { recordBest, startRun } from '../game/session.js';
-import { S, heroOf, pathOf, persist, rkey, store } from '../state.js';
+import { S, discardRun, heroOf, pathOf, persist, rememberConfig, rkey, store } from '../state.js';
 import { icon } from './icons.js';
 import { countUp } from './fx.js';
 import { openMenu } from './menu.js';
@@ -41,10 +41,10 @@ function showFinale(prac,p,score,broken,heroId='lia'){
 
 export function endRun(victory,why){
   const prac=S.run.mode==='p',p=pathOf(S.run.start),endingHero=heroOf().id;
-  S.lastCfg={start:S.run.start,mode:S.run.mode};
+  rememberConfig(S.run);
   recordBest(true);
   const rec=store.paths[rkey()];
-  if(victory){markStat('paths',S.run.start);countStat('completed');const sc=S.run.score,br=S.run.recBroken;store.run=null;persist();S.run=null;showFinale(prac,p,sc,br,endingHero);return}
+  if(victory){markStat('paths',S.run.start);countStat('completed');const sc=S.run.score,br=S.run.recBroken;discardRun();showFinale(prac,p,sc,br,endingHero);return}
   endingStory(false,endingHero,S.run.level);
   $('overTag').textContent='LA NOCHE SE CIERRA · '+p.n.toUpperCase();
   const timeUp=why==='time';
@@ -53,5 +53,5 @@ export function endRun(victory,why){
   $('overRec').innerHTML=(!prac&&S.run.recBroken)?'<span class="rec">★ NUEVO RÉCORD ★</span>':'';
   $('overLvl').textContent=S.run.level;$('overBest').textContent=rec.score.toLocaleString(numLocale());
   $('over').classList.add('show');countUp($('overScore'),0,S.run.score,1200);$('bToMenu').focus();
-  store.run=null;persist();S.run=null;
+  discardRun();
 }

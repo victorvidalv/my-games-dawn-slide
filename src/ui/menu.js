@@ -7,7 +7,8 @@ import { challengeById, currentStreak, dayNumber, streakEarned } from '../game/d
 import { ACHIEVEMENTS } from '../game/achievements.js';
 import { renderAchievements } from './achievements.js';
 import { renderDaily } from './daily.js';
-import { PATHS, S, heroOf, pathOf, persist, store } from '../state.js';
+import { PATHS, S, closeRun, discardRun, heroOf, holdBusy, pathOf, persist, setRun, store } from '../state.js';
+import { restoreRun } from '../game/run-logic.js';
 import { bestAdventureRecord } from '../game/save-merge.js';
 import { startOptions } from '../game/starts.js';
 import { syncRouteStyle } from './board.js';
@@ -84,18 +85,18 @@ $('pause').addEventListener('keydown',e=>{
  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
 });
 $('pProgress').onclick=async()=>{
- if(!S.run||!S.G||S.G.done)return;const session=S.run,wasBusy=S.busy;S.busy=true;$('pause').classList.remove('show');
- const zone=zoneIdx(S.run.level);await showMap(zone,zone,{overview:true});S.busy=wasBusy;
+ if(!S.run||!S.G||S.G.done)return;const session=S.run,release=holdBusy();$('pause').classList.remove('show');
+ const zone=zoneIdx(S.run.level);await showMap(zone,zone,{overview:true});release();
  if(S.run===session&&!S.G.done)openPause();
 };
 $('pSave').onclick=()=>{
  if(!S.run||!S.G||S.G.done)return;
- saveRun();S.G.done=true;S.run=null;S.busy=false;
+ saveRun();closeRun();
  $('pause').classList.remove('show');Music.stop(.2);setTensionFx(0,false);openMenu();
 };
 $('pQuit').onclick=()=>{
  if(!S.run)return;
- if(S.run.daily){leaveDaily();$('pause').classList.remove('show');openMenu('daily');return}recordBest(true);store.run=null;if(S.G)S.G.done=true;S.run=null;S.busy=false;persist();
+ if(S.run.daily){leaveDaily();$('pause').classList.remove('show');openMenu('daily');return}recordBest(true);closeRun();discardRun();
  $('pause').classList.remove('show');Music.stop(.2);setTensionFx(0,false);openMenu();
 };
 $('pSound').onclick=toggleSound;
@@ -185,7 +186,7 @@ $('bContinue').onclick=()=>{
   $('menu').classList.remove('show');Music.muffle(false);
   if(S.run&&S.G&&!S.G.done) return;
   if(!Number.isFinite(store.run?.level)||!Number.isFinite(store.run?.seed)){store.run=null;persist();openMenu();$('menu').classList.add('show');return}   // sin partida guardada válida no hay nada que continuar
-  S.run={start:1,mode:'c',hero:'lia',lifeUsed:false,revive:0,revivesBought:0,undoUsedAt:0,undoUsedLevel:0,undoUsedCount:0,vanAwardedAt:0,recBroken:false,...store.run};syncHero();
+  setRun(restoreRun(store.run));syncHero();
   resumeAdventure();
 };
 

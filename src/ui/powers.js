@@ -2,7 +2,7 @@ import { sfx, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { beginPower } from '../game/powers.js';
 import { saveRun } from '../game/session.js';
-import { S, heroOf } from '../state.js';
+import { S, heroOf, setBusy } from '../state.js';
 import { afterMove, cancelDrag, layout, updateHud } from './board.js';
 import { processSealMove } from './seals.js';
 import { motes, warmMotes } from './fx.js';
@@ -41,7 +41,7 @@ export async function activatePower() {
   // sin retrato: el poder estalla SOBRE el tablero (rayos, haces de luz y el rótulo «Poder de …») y luego actúa
   const stage=reduced?null:openPowerStage(h.id,action.kind,`Poder de ${h.name}`,name);
   if (!reduced) watchFrames(POWER_CHARGE_MS + 300 + action.steps.length * 360);   // ¿va justo el móvil? (modo ligero)
-  S.busy = true; saveRun(); updateHud();
+  setBusy(true); saveRun(); updateHud();
   $('bShop').disabled = true;
   $('powerFxName').textContent = `${h.name} · ${name}`;
   $('powerStep').textContent = 'Poder activado';
@@ -95,7 +95,7 @@ export async function activatePower() {
     stage?.close();
     board.classList.remove('hero-power', 'rewind', 'destiny');
     board.removeAttribute('aria-busy'); G.els.forEach(el => el.classList.remove('power-piece'));
-    if (S.G === G && S.run === run && !G.done) { S.busy = false; saveRun(); updateHud(); }
+    if (S.G === G && S.run === run && !G.done) { setBusy(false); saveRun(); updateHud(); }
     $('bShop').disabled = false;
   }
 }

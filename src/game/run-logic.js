@@ -19,6 +19,12 @@ export function newAdventureRun({ seed, start, mode = 'c', hero, from, hints }) 
   };
 }
 
+/** Partida guardada lista para continuar: rellena los campos que faltan en guardados antiguos. */
+export const restoreRun = (saved) => ({
+  start: 1, mode: 'c', hero: 'lia', lifeUsed: false, revive: 0, revivesBought: 0, undoUsedAt: 0, undoUsedLevel: 0,
+  undoUsedCount: 0, vanAwardedAt: 0, recBroken: false, ...saved,
+});
+
 /** Partida de reto diario: sin héroe, sin vidas y con la ruta normal. */
 export function newDailyRun({ challenge, day, index, boards, attempt }) {
   return {
@@ -146,6 +152,22 @@ export function resolveFail(run, G, why) {
 export function resetBoardForRevive(G) {
   Object.assign(G, { pos: G.start.slice(), moves: 0, hist: [], done: false, limit: G.limit - (G.bought || 0), bought: 0, timeLeft: G.timeLimit || 0 });
 }
+
+/** Acepta un rescate (reintento, vida o poder de Lía): el tablero vuelve a empezar y el rescate se consume. */
+export function acceptRescue(run, G) {
+  resetBoardForRevive(G);
+  delete run.rescue;
+}
+
+/** Desliza la pieza `i` a `x` y lo cuenta como un movimiento (guardando la posición anterior para deshacer). */
+export function applyMove(G, i, x) {
+  G.hist.push(G.pos.slice());
+  G.pos[i] = x;
+  G.moves++;
+}
+
+/** Marca que en este nivel se usó ayuda (cuenta para los logros «sin ayuda»). */
+export const markHelped = (run, level) => { run.helpAt = level; };
 
 /** Cómo sigue la aventura tras superar el nivel `n`: fin del juego, cruce de ciudad (cada 10) o nivel siguiente. */
 export const clearKind = (n) => (n >= MAX_LEVEL ? 'final' : n % 10 === 0 ? 'crossing' : 'next');

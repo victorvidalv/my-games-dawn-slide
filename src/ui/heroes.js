@@ -3,7 +3,8 @@ import { $, cssUrl } from '../dom.js';
 import { saveRun } from '../game/session.js';
 import { HEROES, canHint, bonusTurns } from '../game/heroes.js';
 import { bossRetriesLeft, reviveCost } from '../game/shop.js';
-import { S, heroOf, pathOf, persist, store } from '../state.js';
+import { S, haltBoard, heroOf, pathOf, persist, setBusy, store } from '../state.js';
+import { acceptRescue } from '../game/run-logic.js';
 import { boardEl, layout, updateHud } from './board.js';
 import { syncBossTimer } from './boss-phase.js';
 import { heroArt } from './story.js';
@@ -58,7 +59,7 @@ export function updateHeroHud(){
 /** Repite el tablero desde cero después de una derrota. */
 export function showRescue(kind=S.run?.rescue?.kind||'lia'){
  const revive=kind==='revive',daily=kind==='daily',boss=kind==='boss',learn=kind==='learn'||daily||boss,h=heroOf();
- S.G.done=true;S.busy=true;boardEl.classList.add('board-lock');setTensionFx(0,false);Music.duck(.3);
+ haltBoard();boardEl.classList.add('board-lock');setTensionFx(0,false);Music.duck(.3);
  $('rescueHero').src=heroArt(revive||learn?h.id:'lia',learn?'story':'defeat');$('rescueHero').hidden=daily;$('rescueHero').alt=learn?h.name:revive?`${h.name} te da otra oportunidad`:'Lía protege la aventura';
  $('rescueIcon').innerHTML=icon(learn?'undo':revive?'flame':'heart');
  if(boss){
@@ -74,8 +75,8 @@ export function showRescue(kind=S.run?.rescue?.kind||'lia'){
  $('rescueContinue').textContent=boss?'Reintentar gratis':learn?'Repetir tablero':revive?'Revivir':'Activar poder';
  $('rescue').classList.add('show');$('rescueContinue').focus();
  $('rescueContinue').onclick=()=>{
-  if(!S.run?.rescue)return;S.G.pos=S.G.start.slice();S.G.moves=0;S.G.hist=[];S.G.done=false;S.G.limit-=(S.G.bought||0);S.G.bought=0;S.G.timeLeft=S.G.timeLimit||0;delete S.run.rescue;saveRun();
-  $('rescue').classList.remove('show');boardEl.classList.remove('board-lock');S.busy=false;$('bUndo').disabled=true;layout();updateHud();syncBossTimer();Music.duck(1);
+  if(!S.run?.rescue)return;acceptRescue(S.run,S.G);saveRun();
+  $('rescue').classList.remove('show');boardEl.classList.remove('board-lock');setBusy(false);$('bUndo').disabled=true;layout();updateHud();syncBossTimer();Music.duck(1);
   playReviveEffect(learn?'¡OTRA VEZ!':revive?'¡RENACER!':'¡PODER DE LÍA!',!revive);
   $('msg').textContent=learn?'El tablero empieza de nuevo. Piensa cada movimiento.':revive?'Revivir usado. ¡Este tablero empieza de nuevo!':'Poder de Lía activado. ¡Este tablero empieza de nuevo!';
  };
@@ -84,7 +85,7 @@ export function showRescue(kind=S.run?.rescue?.kind||'lia'){
 /** Pantalla completa del dios nórdico tras perder: elegir Revivir (−33 % pts, solo 1 vez) o Finalizar. */
 export function showReviveOffer(){
  const modal=$('reviveOffer'),now=S.run?.score||0,cost=reviveCost(now),after=Math.max(0,now-cost),fmt=n=>n.toLocaleString(numLocale());
- S.G.done=true;S.busy=true;boardEl.classList.add('board-lock');setTensionFx(0,false);Music.duck(.3);
+ haltBoard();boardEl.classList.add('board-lock');setTensionFx(0,false);Music.duck(.3);
  $('reviveNow').textContent=fmt(now);
  $('reviveCost').textContent=`−${fmt(cost)}`;
  $('reviveAfter').textContent=fmt(after);
