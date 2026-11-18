@@ -28,7 +28,7 @@
 @keyframes frost{0%{opacity:0;transform:scale(.3)}25%{opacity:1}100%{opacity:0;transform:scale(1.5)}}
 
 /* Rehacer: rebobinado */
-#board.rewinding .piece{transition-duration:.7s,.7s;filter:hue-rotate(-30deg) brightness(1.25) saturate(.85)}
+#board.rewinding .piece{transition-duration:.7s;filter:hue-rotate(-30deg) brightness(1.25) saturate(.85)}
 #board.rewinding{animation:rewind-board .9s ease-in-out}
 @keyframes rewind-board{0%,100%{filter:none}35%{filter:sepia(.6) hue-rotate(150deg) brightness(1.2)}}
 #rewindFx{position:fixed;inset:0;z-index:57;display:none;align-items:center;justify-content:center;pointer-events:none}

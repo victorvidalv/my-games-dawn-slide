@@ -33,6 +33,8 @@
 .updico{width:42px;height:42px;flex:none;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;
   background:linear-gradient(150deg,#ffb35c,#f07a1c);box-shadow:inset 0 2px 0 #fff6,0 3px 8px #0006;animation:updbounce 1.4s ease-in-out infinite}
 @keyframes updbounce{50%{transform:translateY(-3px)}}
+/* oculto (fuera de pantalla y transparente) no anima: si no, el navegador recalcula estilos y repinta en cada frame */
+#upd:not(.show) .updico,#upd:not(.show) .primary::after{animation-play-state:paused}
 .updt{flex:1;min-width:0;display:flex;flex-direction:column}
 .updt b{font-size:14px}.updt span{font-size:11.5px;opacity:.75;line-height:1.25}
 #upd .primary{flex:none;padding:10px 14px;min-height:40px;font-size:14px}

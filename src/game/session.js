@@ -11,7 +11,7 @@ import { canStartAt, startHintsAt } from './starts.js';
 import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { loadBanks } from '../data/banks.js';
-import { buildAdventureLevel } from './build-adventure.js';
+import { buildAdventureLevelAsync } from './level-builder.js';
 import { bossCapFor } from './bosses.js';
 import { sealLimit } from './seals.js';
 import { baseScore } from '../engine/scoring.js';
@@ -23,7 +23,7 @@ import { celebrate, countStat, markStat } from '../ui/achievements.js';
 import { boardStats } from './achievements.js';
 import { canPaidRevive, freeRetry, hasRevive, payRevive, useFreeRetry, useRevive } from './shop.js';
 import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
-import { boardEl, buildPieces, cellPx, fitBoard, layout, recLine, syncRouteStyle, updateHud } from '../ui/board.js';
+import { boardEl, buildPieces, fitBoard, layout, place, recLine, syncRouteStyle, updateHud } from '../ui/board.js';
 import { isBonusLevel, showBonus } from '../ui/bonus.js';
 import { showBossIntro } from '../ui/boss.js';
 import { onBossTimeUp, preloadBossArt, syncBossPhase, syncBossTimer } from '../ui/boss-phase.js';
@@ -56,8 +56,10 @@ export async function startRun(start,mode){
 }
 async function startLevel(){
   S.busy=true;
-  const {levelBank,specialBank}=await loadBanks();
-  const G=S.run.daily?buildDaily(challengeById(S.run.daily.id),S.run.daily.day,{levels:levelBank.ratings,special:specialBank}):buildAdventureLevel(S.run,{levels:levelBank.ratings,special:specialBank,tips:store.tips||{}});
+  const run=S.run,{levelBank,specialBank}=await loadBanks();
+  // el tablero de aventura se prepara en otro hilo: el solver no congela las animaciones de pasar de nivel
+  const G=run.daily?buildDaily(challengeById(run.daily.id),run.daily.day,{levels:levelBank.ratings,special:specialBank}):await buildAdventureLevelAsync(run,store.tips||{});
+  if(S.run!==run)return;                                // se salió (o empezó otra partida) mientras se preparaba
   document.body.classList.toggle('daily-run',!!S.run.daily);
   // ¿este tablero abre con la presentación del jefe? Entonces entra el telón de alarma roja; si no, las piezas se disuelven en su sitio
   const bossIntro=!!(G.plan?.boss&&!G.tutorial&&G.moves===0&&S.run.bossSeen!==G.n&&!S.run.rescue&&!S.run.pendingRevive);
@@ -178,13 +180,13 @@ export function win(){                                  // la voz del héroe NO 
  if(S.G.tutorial){                                      // nivel extra de tutorial: sin puntos ni avance; después empieza el nivel real
   store.tips=store.tips||{};store.tips['tut_'+S.G.tutorial]=true;delete S.run.board;persist();
   setTensionFx(0,false);sfx.success();
-  S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';
+  S.G.els[0].classList.add('exit');place(0,7);
   $('msg').textContent='¡Tutorial superado! Ahora, el nivel de verdad.';
   setTimeout(()=>{S.busy=false;startLevel()},1400);return;
  }
  if(S.run.daily){                                     // reto diario: sin puntos ni avance; medalla, racha y logros
   boardEl.classList.add('board-lock');setTensionFx(0,false);Music.duck(.55);sfx.success();
-  S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';boardEl.classList.add('board-win');celebrate(S.G.els[0]);
+  S.G.els[0].classList.add('exit');place(0,7);boardEl.classList.add('board-win');celebrate(S.G.els[0]);
   const d=S.run.daily,moves=S.G.moves,opt=S.G.opt;
   setTimeout(()=>finishDaily(d,moves,opt),matchMedia('(prefers-reduced-motion: reduce)').matches?150:750);return;
  }
@@ -195,7 +197,7 @@ export function win(){                                  // la voz del héroe NO 
  clearRewards(S.run,S.G.n);
  S.run.pendingClear={level:S.G.n,gain:gain.total,moves:S.G.moves,opt:S.G.opt,routeChosen:false};recordBest();saveRun();
  setTensionFx(0,false);Music.duck(.55);if(S.G.moves>S.G.opt)sfx.success();   // si es perfecto suena la fanfarria especial al mostrar el resultado
- S.G.els[0].classList.add('exit');S.G.els[0].style.left=7*cellPx()+'px';boardEl.classList.add('board-win');celebrate(S.G.els[0]);   // las piezas celebran con una ola de saltos
+ S.G.els[0].classList.add('exit');place(0,7);boardEl.classList.add('board-win');celebrate(S.G.els[0]);   // las piezas celebran con una ola de saltos
  $('msg').textContent=`${S.G.moves<=S.G.opt?'Perfecto · ':''}+${gain.total} puntos · ${HERO_TALK[heroOf().id].win[S.G.n%3]}`;
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,done=S.G;
  setTimeout(async()=>{                                   // la llave sale → puntaje rápido → siguiente nivel

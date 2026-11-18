@@ -88,8 +88,10 @@ export function buildPieces(){
 export function place(i,x=S.G.pos[i]){
   const p=S.G.pieces[i],el=S.G.els[i],s=cellPx();
   el.style.width=(p.o==='h'?p.len:1)*s+'px';el.style.height=(p.o==='v'?p.len:1)*s+'px';
-  el.style.left=(p.o==='h'?x:p.fix)*s+'px';el.style.top=(p.o==='v'?x:p.fix)*s+'px';
+  setXY(el,p,x,s);
 }
+/** Posición de la pieza con `translate` (compuesta en la GPU; left/top se quedan en 0). */
+const setXY=(el,p,x,s)=>{el.style.translate=p.o==='h'?`${x*s}px ${p.fix*s}px`:`${p.fix*s}px ${x*s}px`};
 function placeStatic(){
   const s=cellPx();
   (S.G.walls||[]).forEach(([r,c],k)=>{const el=S.G.wallEls?.[k];if(!el)return;el.style.left=c*s+'px';el.style.top=r*s+'px';el.style.width=el.style.height=s+'px'});
@@ -181,7 +183,7 @@ function attach(el,i){
       if(ev.pointerId!==e.pointerId) return;
       delta=(localDelta(ev.clientX,ev.clientY,rot,p.o)-start)/s;
       const raw=x0+delta;cur=Math.max(lo,Math.min(hi,raw));
-      el.style[p.o==='h'?'left':'top']=cur*s+'px';trail?.aim(delta);
+      setXY(el,p,cur,s);trail?.aim(delta);
       const c=Math.round(cur);if(c!==lastCell){lastCell=c;sfx.tick(c);vib(4)}
       const hitDir=raw<lo-0.14?-1:raw>hi+0.14?1:0;
       if(hitDir&&hitDir!==bumped){

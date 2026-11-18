@@ -38,11 +38,13 @@ import './styles/31-polish.css';
 import './styles/32-menus.css';
 import './styles/33-daily.css';
 import './styles/34-menu-home.css';
+import './styles/35-lite.css';                 // modo ligero automático (src/ui/perf.js): siempre la última
 import './ui/transitions.js';
 import './ui/achievements.js';
 import { hooks } from './audio/sound.js';
 import './ui/sound-button.js';
 import { warmBanks } from './data/banks.js';
+import { warmLevelWorker } from './game/level-builder.js';
 import './ui/share.js';
 import { saveRun } from './game/session.js';
 import { S, persist, store } from './state.js';
@@ -72,4 +74,4 @@ syncHero(store.run?.hero || store.heroChoice || 'lia');
 fitBoard();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBoard);
 openMenu();
-warmBanks();   // los tableros se descargan en un momento libre, mientras ves el menú
+warmBanks();warmLevelWorker();   // los tableros se descargan en un momento libre, mientras ves el menú

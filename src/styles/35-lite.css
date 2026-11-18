@@ -1,0 +1,49 @@
+/* ============================ Modo ligero (html.lite) ============================
+   Se activa solo en móviles que van justos (src/ui/perf.js). Mismas animaciones, mismos tiempos; solo se quitan los filtros
+   (brillo, desenfoque, sombra difusa) y las sombras animadas, que obligan a repintar en cada frame. Lo demás se mueve con
+   transform/opacity, que la GPU compone sin repintar. */
+
+/* ---------- Poderes: círculo mágico sin halo difuso ni fusión de color ---------- */
+html.lite .ps-sigil svg{filter:none;mix-blend-mode:normal}
+html.lite .ps-glow{mix-blend-mode:normal}
+html.lite #powerStage[data-kind=rewind].unleash .ps-sigil svg{animation-name:sigil-collapse-lite}
+html.lite #powerStage[data-kind=destiny].unleash .ps-sigil svg{animation-name:sigil-bloom-lite}
+html.lite #powerStage.unleash .ps-glow{animation-name:sigil-flash-lite}
+@keyframes sigil-collapse-lite{to{transform:scale(0) rotate(-540deg);opacity:0}}
+@keyframes sigil-bloom-lite{100%{transform:scale(1.9) rotate(40deg);opacity:0}}
+@keyframes sigil-flash-lite{30%{opacity:1;transform:scale(1.25)}100%{opacity:0;transform:scale(1.7)}}
+/* el rótulo entra con un leve zoom en vez de desenfoque y letras que se separan (eso recalculaba la maquetación) */
+html.lite .ps-title b,html.lite .ps-title span{animation-name:ps-title-in-lite}
+html.lite #powerStage.unleash .ps-title{animation-name:ps-title-out-lite}
+@keyframes ps-title-in-lite{from{opacity:0;transform:scale(1.12)}}
+@keyframes ps-title-out-lite{to{opacity:0;transform:translateY(-14px)}}
+/* el tablero se retuerce igual pero sin el filtro de color y desenfoque; la purificación ya la dibuja la ola de luz */
+html.lite .frame.fx-twist #board{animation-name:board-twist-lite}
+html.lite .frame.fx-purify #board{animation:none}
+@keyframes board-twist-lite{0%,100%{transform:none}35%{transform:rotate(-5deg) scale(.93) skew(3deg,-2deg)}70%{transform:rotate(1.5deg) scale(1.015)}}
+/* la pieza que mueve el hechizo se marca con su contorno de color (sin sombra doble); el resto no se tiñe */
+html.lite .hero-power .piece.power-piece,html.lite .hero-power.rewind .piece:not(.power-piece){filter:none}
+
+/* ---------- Rehacer / revivir ---------- */
+html.lite #board.rewinding{animation:none}
+html.lite #board.rewinding .piece,html.lite #board.reviving .piece{filter:none}
+
+/* ---------- Ganar un tablero ---------- */
+html.lite #board.board-win,html.lite body.perfect .frame{animation:none}
+html.lite #board.board-win .piece:not(.red) .face{animation-name:win-hop-lite}
+@keyframes win-hop-lite{0%{transform:none}40%{transform:translateY(-9px) scale(1.05)}100%{transform:none}}
+html.lite .piece.exit{filter:none}
+html.lite .piece.exit .face{animation:none}
+html.lite .res-prize b{animation-name:res-bump}
+html.lite #score.score-bump{animation-name:score-bump-lite}
+@keyframes score-bump-lite{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+
+/* ---------- Piezas ---------- */
+html.lite .piece.enter .face{animation-name:enter-lite}
+@keyframes enter-lite{0%{opacity:0;transform:translateY(-14px) scale(.7)}100%{opacity:1;transform:none}}
+html.lite .piece.landed .face{animation-name:piece-land-lite}
+@keyframes piece-land-lite{0%{transform:scale(1.05,.95)}55%{transform:scale(.985,1.02)}100%{transform:none}}
+html.lite #board.board-out .piece .face{filter:none}
+/* la llave deja de latir y de destellar en bucle (se repintaba siempre); la pista del tutorial se mantiene */
+html.lite .piece.red:not(.hint){animation:none!important}
+html.lite .piece.red .face::before{animation:none}

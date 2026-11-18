@@ -5,8 +5,9 @@ import { saveRun } from '../game/session.js';
 import { S, heroOf } from '../state.js';
 import { afterMove, cancelDrag, layout, updateHud } from './board.js';
 import { processSealMove } from './seals.js';
-import { motes } from './fx.js';
+import { motes, warmMotes } from './fx.js';
 import { openPowerStage } from './power-stage.js';
+import { watchFrames } from './perf.js';
 
 /** Chispas del color del hechizo sobre la pieza que el poder mueve, y una onda que cruza el tablero. */
 function pulse(piece, colors) {
@@ -16,6 +17,10 @@ function pulse(piece, colors) {
   const board = $('board');
   board.classList.remove('wave'); void board.offsetWidth; board.classList.add('wave');
 }
+
+/** Colores del hechizo; sus halos se preparan en un momento libre para que la descarga (160 chispas) no se trabe. */
+const SPELL = { van: ['#d1b2ec', '#ecd7ff', '#fff'], jean: ['#a5c8ed', '#d8eaff', '#fff'] };
+warmMotes([...new Set([...SPELL.van, ...SPELL.jean])]);
 
 /** Carga del poder antes de la descarga (rótulo y rayos sobre el tablero). */
 const POWER_CHARGE_MS = 850;
@@ -29,22 +34,25 @@ export async function activatePower() {
   const G = S.G, run = S.run, h = heroOf();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const board = $('board');
-  S.busy = true; saveRun(); updateHud();
-  $('bShop').disabled = true;
+  // Primero se leen las medidas (tablero) y se abre el escenario, y DESPUÉS se toca el HUD: al revés, cada lectura
+  // obligaba a recalcular la maquetación de toda la página en mitad del frame (≈50 ms de tirón en un móvil lento).
+  const br = board.getBoundingClientRect();
   const name = action.kind === 'rewind' ? 'Rebobinar' : 'Trazar destino';
   // sin retrato: el poder estalla SOBRE el tablero (rayos, haces de luz y el rótulo «Poder de …») y luego actúa
   const stage=reduced?null:openPowerStage(h.id,action.kind,`Poder de ${h.name}`,name);
+  if (!reduced) watchFrames(POWER_CHARGE_MS + 300 + action.steps.length * 360);   // ¿va justo el móvil? (modo ligero)
+  S.busy = true; saveRun(); updateHud();
+  $('bShop').disabled = true;
   $('powerFxName').textContent = `${h.name} · ${name}`;
   $('powerStep').textContent = 'Poder activado';
   board.classList.add('hero-power', action.kind);
   board.setAttribute('aria-busy', 'true');
   // Sonido de poder: barrido grave + acorde brillante (hacia abajo al rebobinar, hacia arriba al trazar el destino).
   const up = action.kind !== 'rewind';
-  const spell = h.id === 'van' ? ['#d1b2ec', '#ecd7ff', '#fff'] : ['#a5c8ed', '#d8eaff', '#fff'], spellColors = spell;
+  const spell = SPELL[h.id === 'van' ? 'van' : 'jean'], spellColors = spell;
   sfx.heroSig(h.id);sfx.powerCharge(up);          // la firma sonora del héroe + la carga
   vib([20, 30, 35]);
   try {
-    const br = board.getBoundingClientRect();
     if (!reduced) {
       await wait(POWER_CHARGE_MS);
       stage.unleash();sfx.powerUnleash(up);vib([40, 20, 70]);

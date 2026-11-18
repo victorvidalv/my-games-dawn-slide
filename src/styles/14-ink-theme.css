@@ -35,7 +35,7 @@ button:active,button.primary:active{transform:translateY(2px);box-shadow:0 1px 0
 #board.deal{animation:dealboard .26s ease-out}
 @keyframes dealboard{from{opacity:.35;transform:scale(.97);filter:brightness(1.5) saturate(1.2)}to{opacity:1;transform:none;filter:none}}
 @media(prefers-reduced-motion:reduce){.piece.enter .face,#board.deal{animation-duration:.01s}}
-.piece.exit{transition:left .42s cubic-bezier(.4,0,.7,.4),opacity .42s;filter:drop-shadow(0 0 16px #ffd87a)}
+.piece.exit{transition:translate .42s cubic-bezier(.4,0,.7,.4),opacity .42s;filter:drop-shadow(0 0 16px #ffd87a)}
 .piece.hint{animation:hint .55s ease-in-out 3}
 @keyframes hint{50%{filter:drop-shadow(0 0 12px #ffd87a) brightness(1.22);transform:scale(1.04)}}
 .adventure-route #board .face{box-shadow:0 4px 0 #091118,0 7px 11px #0005,inset 0 -4px 0 var(--d),inset 0 0 0 1.5px #f2cd7a66,inset 0 2px 0 #fff4d648}
@@ -250,7 +250,7 @@ body.perfect .frame{animation:inkFrameGold 1.1s ease-out}
 #rescueContinue{border:2.5px solid #091118;background:linear-gradient(160deg,#4ed4b5,#268f78);color:#08161a;font:800 15px/1.2 var(--font-book);box-shadow:0 4px 0 #091118,0 10px 24px #0007,inset 0 1px 0 #ffffff66}
 #rescueContinue:hover,#rescueContinue:focus-visible{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 6px 0 #091118,0 14px 28px #0009}
 #rescueContinue:active{transform:translateY(2px);box-shadow:0 2px 0 #091118}
-#board.reviving .piece{transition-duration:.55s,.55s;filter:brightness(1.22) drop-shadow(0 0 10px #68d8bd88)}
+#board.reviving .piece{transition-duration:.55s;filter:brightness(1.22) drop-shadow(0 0 10px #68d8bd88)}
 #reviveFx{--fx:#68d8bd;position:fixed;inset:0;z-index:66;display:none;align-items:center;justify-content:center;pointer-events:none;background:radial-gradient(circle at center,#68d8bd33 0%,#08141a88 55%,transparent 85%)}
 #reviveFx:not(.is-hero){--fx:#ffd074;background:radial-gradient(circle at center,#ffbe5c38 0%,#180e0888 55%,transparent 85%)}
 #reviveFx.go{display:flex;animation:reviveOverlay 1.1s ease-out forwards}

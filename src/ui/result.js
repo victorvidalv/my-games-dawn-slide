@@ -1,9 +1,11 @@
 import { sfx, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
-import { countUp, motes } from './fx.js';
+import { countUp, motes, warmMotes } from './fx.js';
 import { numLocale } from '../i18n.js';
+import { watchFrames } from './perf.js';
 
 const GOLD = ['#ffd76a', '#fff3cf', '#f1ce82', '#fff'];
+warmMotes(GOLD);                                  // halos dorados listos antes del primer «PERFECTO»
 /** Frase corta según la eficiencia (la racha, si la hay, manda). */
 const chipText = (gain) => (gain.mult > 1 ? `Racha ×${gain.mult.toLocaleString(numLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` : gain.eff >= 0.9 ? 'Muy bien' : gain.eff >= 0.6 ? 'Bien hecho' : 'Nivel superado');
 
@@ -70,6 +72,7 @@ export function showResult({ gain, moves, opt, previous, total }) {
     countUp($('resPts'), 0, gain.total, countMs, (v) => '+' + fmt(Math.round(v)));
     const timers = [];
     if (perfect) perfectFx();
+    if (!reduced()) watchFrames(ms);                            // ¿va justo el móvil? (modo ligero)
     if (!reduced() && r && r.width > 0) {
       const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
       for (let i = 0; i < 6; i++) timers.push(setTimeout(() => sfx.tick(i), 40 + (i * countMs) / 6));      // la cuenta «tintinea» subiendo

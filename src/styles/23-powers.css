@@ -21,7 +21,7 @@
 .power-sigil img{display:block;width:100%;height:100%;object-fit:cover}
 .power-sigil>b{position:absolute;left:0;right:0;bottom:0;padding:18px 6px 10px;background:linear-gradient(transparent,#10202bf5);font-family:var(--font-book);font-size:14px;line-height:1.2;color:#f0e5ce;text-align:center}
 .power-sigil>span,.power-sigil>i{display:none}
-.hero-power .piece{transition:left .29s ease-in-out,top .29s ease-in-out}
+.hero-power .piece{transition:translate .29s ease-in-out}
 .hero-power .piece.power-piece{z-index:12;filter:drop-shadow(0 0 9px #a5c8ed);outline:2px solid #d8eaff;outline-offset:-3px;border-radius:9px}
 .hero-power.destiny .piece.power-piece{filter:drop-shadow(0 0 10px #d1b2ec);outline-color:#ecd7ff}
 .hero-power::after{content:'';position:absolute;inset:-4px;z-index:15;border:2px solid #a5c8ed88;border-radius:12px;box-shadow:0 0 22px #a5c8ed44;pointer-events:none;animation:spell-border 1.2s ease-in-out infinite alternate}
