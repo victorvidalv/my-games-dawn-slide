@@ -31,7 +31,7 @@ describe('mundo e historia: Thyes, año 4133', () => {
   it('el mundo se llama Thyes, es el año 4133 y aparece en el menú, el viaje y el final', () => {
     expect(WORLD).toMatchObject({ name: 'Thyes', year: 4133, nextYear: 4134, villain: 'Vhorn', guardian: 'Tri' });
     expect(read('index.html')).toContain('AÑO 4133');
-    expect(read('src/game/session.js')).toContain('WORLD.year');
+    expect(read('src/ui/session-view.js')).toContain('WORLD.year');
     expect(read('src/ui/finale.js')).toMatch(/año 4134/);
     expect(storyText).toContain('4133');
   });
