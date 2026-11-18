@@ -65,9 +65,9 @@ describe('jefes: datos y reglas', () => {
     expect(bonusTurns('jean', 40, true)).toBe(0);
   });
 
-  it('el primer jefe con reloj da 3:00 y todos los siguientes con reloj dan 2:00', () => {
+  it('la contrarreloj sube de 3 a 10 minutos conforme avanza la aventura', () => {
     for (const opt of [8, 15, 25, 35, 39]) {
-      expect(LEVELS.map((level) => bossTimeFor(level, opt))).toEqual([0, 180, 0, 120, 120, 0, 120, 0, 120, 120]);
+      expect(LEVELS.map((level) => bossTimeFor(level, opt))).toEqual([0, 180, 0, 300, 360, 0, 480, 0, 600, 600]);
     }
     expect(bossTimeFor(11, 30)).toBe(0);
   });
@@ -104,18 +104,18 @@ describe('jefes: niveles generados', () => {
   }, 120000);
 
   it('al reanudar una partida guardada se conserva el tiempo que quedaba', () => {
-    const G = build(20);
+    const G = build(100);
     expect(G.timeLimit).toBeGreaterThan(0);
-    const run = { seed: 46, hero: 'lia', start: 1, level: 20, route: 'normal', mode: 'c', adj: 0, hints: 3, score: 0,
-      board: { level: 20, rate: G.rate, pieces: G.pieces, walls: G.walls, doors: G.doors, pos: G.pos, start: G.start, opt: G.opt, limit: G.limit, moves: 0, hist: [], timeLimit: G.timeLimit, timeLeft: 47 } };
+    const run = { seed: 46, hero: 'lia', start: 1, level: 100, route: 'normal', mode: 'c', adj: 0, hints: 3, score: 0,
+      board: { level: 100, rate: G.rate, pieces: G.pieces, walls: G.walls, doors: G.doors, pos: G.pos, start: G.start, opt: G.opt, limit: G.limit, moves: 0, hist: [], timeLimit: G.timeLimit, timeLeft: 47 } };
     const R = buildAdventureLevel(run, { levels: levelBank.ratings, special: specialBank, tips });
     expect(R.timeLeft).toBe(47);
     expect(R.timeLimit).toBe(G.timeLimit);
 
-    run.board.timeLimit = 60;  // partida guardada antes del cambio, con 13 segundos consumidos
+    run.board.timeLimit = 120;  // partida guardada antes del cambio, con 73 segundos consumidos
     const migrated = buildAdventureLevel(run, { levels: levelBank.ratings, special: specialBank, tips });
-    expect(migrated.timeLimit).toBe(180);
-    expect(migrated.timeLeft).toBe(167);
+    expect(migrated.timeLimit).toBe(600);
+    expect(migrated.timeLeft).toBe(527);
   }, 60000);
 });
 

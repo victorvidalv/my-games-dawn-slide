@@ -85,13 +85,13 @@ export const BOSS_RULES = {
   10: { kind: 'turns', cap: 1.25 },
   20: { kind: 'time', cap: 1.6, seconds: 180 },
   30: { kind: 'turns', cap: 1.1 },
-  40: { kind: 'time', cap: 1.6, seconds: 120 },
-  50: { kind: 'time', cap: 1.6, seconds: 120 },
+  40: { kind: 'time', cap: 1.6, seconds: 300 },
+  50: { kind: 'time', cap: 1.6, seconds: 360 },
   60: { kind: 'turns', cap: 1.05 },
-  70: { kind: 'time', cap: 1.6, seconds: 120 },
+  70: { kind: 'time', cap: 1.6, seconds: 480 },
   80: { kind: 'turns', cap: 1.05 },
-  90: { kind: 'both', cap: 1.1, seconds: 120 },
-  100: { kind: 'both', cap: 1.17, seconds: 120 },
+  90: { kind: 'both', cap: 1.1, seconds: 600 },
+  100: { kind: 'both', cap: 1.17, seconds: 600 },
 };
 
 /** Retrato recortado que se usa sobre el paisaje animado de la ciudad. */

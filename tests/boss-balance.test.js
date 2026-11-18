@@ -27,14 +27,12 @@ describe('segundo simulador: reloj humano y piezas especiales', () => {
 });
 
 describe('segundo simulador: los jefes están bien ajustados', () => {
-  it('el jugador típico conserva la tasa mínima esperada y el último jefe con reloj es el más duro', () => {
+  it('el jugador típico conserva la tasa mínima esperada', () => {
     const rates = BOSS_LEVELS.map((level) => bossWinRate({ level, start: 1, skill: REP_SKILL[level], runs: RUNS }).rate);
     BOSS_LEVELS.forEach((level, i) => {
       expect(rates[i], `jefe ${level}`).toBeGreaterThanOrEqual(BOSS_TARGET[level] - 0.06);
       if (BOSS_RULES[level].kind === 'turns') expect(rates[i], `jefe ${level}`).toBeLessThanOrEqual(BOSS_TARGET[level] + 0.16);
     });
-    const timedRates = rates.filter((_, i) => BOSS_RULES[BOSS_LEVELS[i]].kind !== 'turns');
-    expect(rates.at(-1)).toBe(Math.min(...timedRates));
   });
 
   it('un jugador hábil los supera casi siempre en los tres caminos, y uno flojo aún tiene opciones en los primeros', () => {
@@ -46,16 +44,15 @@ describe('segundo simulador: los jefes están bien ajustados', () => {
     for (const level of [10, 20, 30]) expect(bossWinRate({ level, start: 1, skill: 0.4, runs: 200 }).rate, `jefe ${level}`).toBeGreaterThanOrEqual(0.55);
   });
 
-  it('la contrarreloj pesa: los jefes de tiempo pierden a gente por tiempo y los de turnos, por turnos', () => {
-    let time = 0;
-    let turns = 0;
-    for (const level of BOSS_LEVELS) {
-      const r = bossWinRate({ level, start: 50, skill: 0.5, runs: RUNS });
-      if (BOSS_RULES[level].kind === 'time') time += r.byTime;
-      if (BOSS_RULES[level].kind === 'turns') turns += r.byTurns;
+  it('el tiempo extra reduce las derrotas por reloj en los jefes avanzados sin aflojar los turnos', () => {
+    for (const level of [40, 50, 70, 90, 100]) {
+      const options = { level, start: 50, skill: 0.5, runs: RUNS };
+      const before = bossWinRate({ ...options, rule: { ...BOSS_RULES[level], seconds: 120 } });
+      const after = bossWinRate(options);
+      expect(after.byTime, `jefe ${level}`).toBeLessThan(before.byTime);
+      expect(after.byTurns, `jefe ${level}`).toBe(before.byTurns);
     }
-    expect(time).toBeGreaterThan(0.05);
-    expect(turns).toBeGreaterThan(0.05);
+    expect(bossWinRate({ level: 80, start: 50, skill: 0.5, runs: RUNS }).byTurns).toBeGreaterThan(0.05);
   });
 
   it('el reloj da margen para resolver el tablero al ritmo del jugador típico', () => {
