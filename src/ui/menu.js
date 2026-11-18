@@ -192,7 +192,10 @@ $('bContinue').onclick=()=>{
 
 
 /* Selector de idioma (bajo el menú): inglés por defecto; el cambio es instantáneo y la música sigue sonando */
-const paintLang=()=>document.querySelectorAll('.lang-btn').forEach((b)=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
+const paintLang=()=>{
+  document.querySelectorAll('.lang-btn').forEach((b)=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
+  $('homeGuide').href=lang==='es'?'./guia/':`./guia/${lang}/`;
+};
 document.querySelectorAll('.lang-btn').forEach((b)=>{b.onclick=()=>setLang(b.dataset.lang)});
 paintLang();
 document.addEventListener('langchange',()=>{

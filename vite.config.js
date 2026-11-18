@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { readFileSync } from 'node:fs';
+import { guideEntries, guidePaths, renderGuide } from './guia/render.js';
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
@@ -12,10 +13,17 @@ const base = process.env.BASE_PATH || './';
 const SITE_URL = (process.env.SITE_URL || 'https://dawnslide.com').replace(/\/$/, '');
 const seo = () => ({
   name: 'seo',
-  transformIndexHtml: { order: 'pre', handler: (html) => html.replaceAll('%SITE_URL%', SITE_URL) },
+  transformIndexHtml: {
+    order: 'pre',
+    handler(html, { filename }) {
+      const guide = Object.entries(guideEntries).find(([, entry]) => filename?.endsWith('/' + entry));
+      return (guide ? renderGuide(guide[0]) : html).replaceAll('%SITE_URL%', SITE_URL);
+    },
+  },
   generateBundle() {
+    const urls = ['', ...Object.values(guidePaths)].map(path => `  <url><loc>${SITE_URL}/${path}</loc><changefreq>monthly</changefreq></url>`).join('\n');
     this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `User-agent: *\nAllow: /\nDisallow: /melodies.html\n\nSitemap: ${SITE_URL}/sitemap.xml\n` });
-    this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${SITE_URL}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>\n</urlset>\n` });
+    this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n` });
   },
 });
 
@@ -25,7 +33,7 @@ export default defineConfig({
   build: {
     target: 'es2022',
     chunkSizeWarningLimit: 600,
-    rollupOptions: { input: { main: 'index.html', melodies: 'melodies.html' } }, // melodies.html: visor de las melodías
+    rollupOptions: { input: ['index.html', 'melodies.html', ...Object.values(guideEntries)] },
   },
   plugins: [
     seo(),

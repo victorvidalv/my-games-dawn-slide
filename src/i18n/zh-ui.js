@@ -427,6 +427,7 @@ export const ZH_UI = {
   'En los primeros niveles puedes repetir el tablero sin gastar puntos ni pistas. Fíjate en el límite antes de mover.': '在前几关，重玩棋盘无需花费积分或提示。移动前请留意步数上限。',
   'Desafío: máximo {n} turnos': '挑战：最多 {n} 步',
   'Intentos: {n}': '尝试次数：{n}',
+  'Guía del juego': '游戏指南',
   'JEFE · REINTENTO GRATIS': '首领 · 免费重试',
   'Se acabó el tiempo': '时间到了',
   'Después de este reintento te quedará uno gratis.': '这次重试后，你还有一次免费机会。',

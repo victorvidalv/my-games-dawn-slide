@@ -223,6 +223,7 @@ export const EN_UI = {
   'En los primeros niveles puedes repetir el tablero sin gastar puntos ni pistas. Fíjate en el límite antes de mover.': 'In the early levels, you can retry the board without spending points or hints. Check the limit before you move.',
   'Desafío: máximo {n} turnos': 'Challenge: at most {n} turns',
   'Intentos: {n}': 'Attempts: {n}',
+  'Guía del juego': 'Game guide',
   'JEFE · REINTENTO GRATIS': 'BOSS · FREE RETRY',
   'Se acabó el tiempo': 'Time ran out',
   'Después de este reintento te quedará uno gratis.': 'You’ll have one free retry left after this attempt.',
