@@ -428,6 +428,7 @@ export const ZH_UI = {
   'Desafío: máximo {n} turnos': '挑战：最多 {n} 步',
   'Intentos: {n}': '尝试次数：{n}',
   'Guía del juego': '游戏指南',
+  'Desarrollador': '开发者',
   'JEFE · REINTENTO GRATIS': '首领 · 免费重试',
   'Se acabó el tiempo': '时间到了',
   'Después de este reintento te quedará uno gratis.': '这次重试后，你还有一次免费机会。',

@@ -224,6 +224,7 @@ export const EN_UI = {
   'Desafío: máximo {n} turnos': 'Challenge: at most {n} turns',
   'Intentos: {n}': 'Attempts: {n}',
   'Guía del juego': 'Game guide',
+  'Desarrollador': 'Developer',
   'JEFE · REINTENTO GRATIS': 'BOSS · FREE RETRY',
   'Se acabó el tiempo': 'Time ran out',
   'Después de este reintento te quedará uno gratis.': 'You’ll have one free retry left after this attempt.',

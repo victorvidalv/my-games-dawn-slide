@@ -428,6 +428,7 @@ export const JA_UI = {
   'Desafío: máximo {n} turnos': 'チャレンジ：最大 {n} 手',
   'Intentos: {n}': '挑戦回数：{n}',
   'Guía del juego': '攻略ガイド',
+  'Desarrollador': '開発者',
   'JEFE · REINTENTO GRATIS': 'ボス · 無料で再挑戦',
   'Se acabó el tiempo': '時間切れです',
   'Después de este reintento te quedará uno gratis.': '今回の再挑戦のあと、無料であと1回挑戦できます。',

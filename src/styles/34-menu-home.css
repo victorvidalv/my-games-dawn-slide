@@ -116,7 +116,11 @@
 #menu .home-guide{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:4px 12px;border:2px solid #cfa66088;border-radius:11px;background:#191b25ee;color:#ffe7b5;font:750 12px/1.2 var(--font-ui);text-align:center;text-decoration:none}
 #menu .home-guide:hover{background:#39303b}
 #menu .home-guide:focus-visible{outline:3px solid #ffdb8f;outline-offset:3px}
-#menu[data-view]:not([data-view="home"]) .home-guide{display:none}
+#menu[data-view]:not([data-view="home"]) :is(.home-guide,.home-credit){display:none}
+#menu .home-credit{display:flex;justify-content:center;flex-basis:100%;grid-column:1/-1}
+#menu .home-credit a{display:inline-flex;align-items:center;gap:5px;min-height:28px;padding:3px 10px;border-radius:99px;background:#111722e8;color:#f4e6cb;font:650 11px/1.2 var(--font-ui);text-decoration:none}
+#menu .home-credit a:hover{text-decoration:underline}
+#menu .home-credit a:focus-visible{outline:3px solid #ffdb8f;outline-offset:2px}
 
 @media(max-width:430px){
   #menu[data-view="home"] .lang-switch{
