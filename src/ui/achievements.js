@@ -35,11 +35,11 @@ export function celebrate(el) {
 
 /* ---------- aviso «logro conseguido» (de uno en uno) ---------- */
 const queue = [];
-let toasting = false;
+let activeToast = null;
+let toastsPaused = false;
 function nextToast() {
+  if (toastsPaused || activeToast || !queue.length) return;
   const a = queue.shift();
-  if (!a) { toasting = false; return; }
-  toasting = true;
   const t = document.createElement('div');
   t.className = 'ach-toast'; t.setAttribute('role', 'status');
   t.innerHTML = `<i aria-hidden="true">${icon('trophy')}</i><div><small>Logro conseguido</small><b></b><span></span></div>`;
@@ -47,14 +47,27 @@ function nextToast() {
   t.querySelector('span').textContent = a.reward ? `Nuevo: ${rewardName(a.reward[0], a.reward[1])}` : '';
   document.body.appendChild(t);
   sfx.unlock();
-  setTimeout(() => { t.remove(); nextToast(); }, 3200);
+  const timer = setTimeout(() => { t.remove(); activeToast = null; nextToast(); }, 3200);
+  activeToast = { achievement: a, element: t, timer };
+}
+
+/** Guarda los avisos mientras el jugador elige el camino y viaja a la próxima ciudad. */
+export function pauseAchievementToasts(paused) {
+  toastsPaused = paused;
+  if (paused && activeToast) {
+    clearTimeout(activeToast.timer);
+    activeToast.element.remove();
+    queue.unshift(activeToast.achievement);
+    activeToast = null;
+  }
+  if (!paused) nextToast();
 }
 /** Comprueba si se ha ganado algún logro, lo guarda y lo anuncia. Se puede llamar tantas veces como se quiera. */
 export function checkAchievements({ silent = false } = {}) {
   const fresh = claimAchievements(store);
   if (!fresh.length) return fresh;
   persist();
-  if (!silent) { queue.push(...fresh.slice(0, 3)); if (!toasting) nextToast(); }
+  if (!silent) { queue.push(...fresh.slice(0, 3)); nextToast(); }
   $('tabAch')?.classList.add('has-news');
   return fresh;
 }

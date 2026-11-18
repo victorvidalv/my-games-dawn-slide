@@ -39,7 +39,7 @@ export function fitBoard(){
     cell=Math.floor(Math.max(30,Math.min(cell,wide?150:120)));
     root.style.setProperty('--cell',cell+'px');
   }
-  layout();if(S.G&&S.run)fitScores();
+  layout();fitScore();
   app.style.overflowY=app.scrollHeight>app.clientHeight+2?'auto':'hidden';   // sin scroll accidental si todo cabe
 }
 addEventListener('resize',fitBoard);addEventListener('orientationchange',()=>setTimeout(fitBoard,200));
@@ -239,10 +239,15 @@ export function afterMove(){
   if(status==='last'){$('msg').textContent=retry?'ÚLTIMO MOVIMIENTO: si la llave no sale ahora, repites el tablero.':'ÚLTIMO TURNO: si no sacas la llave con este movimiento, la aventura termina.';sfx.warn();vib([30,40,30])}
   else if(status==='warn'){$('msg').textContent=`Te quedan ${movesLeft(S.G.moves,S.G.limit)} movimientos. Piensa bien cada paso.`;sfx.warn()}
 }
-function fitScores(){                 // reduce la cifra si no cabe en su cuadro (p. ej. 123.456 en móviles estrechos)
-  ['score','scoreMax'].forEach(id=>{const el=$(id);el.style.fontSize='';let fs=parseFloat(getComputedStyle(el).fontSize);
-    while(el.scrollWidth>el.clientWidth+0.5&&fs>11){fs-=1;el.style.fontSize=fs+'px'}});
+function fitScore() {
+  const score = $('score');
+  score.style.removeProperty('--score-size');
+  if (!score.clientWidth || score.scrollWidth <= score.clientWidth) return;
+  const style = getComputedStyle(score);
+  const size = Math.floor(parseFloat(style.fontSize) * score.clientWidth / score.scrollWidth);
+  score.style.setProperty('--score-size', Math.max(10, size) + 'px');
 }
+new MutationObserver(fitScore).observe($('score'), { childList: true, characterData: true, subtree: true });
 export function recLine(){            // refresca camino, puntaje actual y máximo del camino en juego
   const prac=S.run.mode==='p',rec=store.paths[rkey()]||{score:0,level:0},p=pathOf(S.run.start);
   $('pchip').textContent=p.n.toUpperCase();$('pchip').style.color=p.c;
@@ -255,7 +260,6 @@ export function recLine(){            // refresca camino, puntaje actual y máxi
   $('maxLbl').textContent=S.run.recBroken?'NUEVO RÉCORD':'RÉCORD';
   $('scoreMax').textContent=Math.max(rec.score,S.run.score).toLocaleString(numLocale());
   $('scMax').classList.toggle('broken',!!S.run.recBroken);
-  fitScores();
 }
 export function syncRouteStyle(){
  const brave=isHeroic(S.run),path=heroicPath(S.run?.hero);document.body.classList.toggle('adventure-route',brave);

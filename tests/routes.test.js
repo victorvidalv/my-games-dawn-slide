@@ -5,6 +5,7 @@ import { SHOP_ITEMS, availability, buy, priceOf, reviveCost } from '../src/game/
 import { calcGain } from '../src/engine/scoring.js';
 import { minMoves } from '../src/engine/solver.js';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
+import { bossTimeFor } from '../src/game/bosses.js';
 import { TUTORIALS, levelPlan } from '../src/game/mechanics.js';
 import levelBank from '../src/data/levels.json';
 import special from '../src/data/special.json';
@@ -109,7 +110,7 @@ describe('tableros de los caminos heroicos', () => {
   expect(buildAdventureLevel(tutorialRun, { ...banks, tips: {} }).tutorial).toBe('wall');
   const boss = board('van', 1, 40, 'brave');
   expect(boss.family).toBe(levelPlan(40).family);
-  expect(boss.timeLimit).toBe(120);
+  expect(boss.timeLimit).toBe(bossTimeFor(40, boss.opt));
  });
 
  it('retomar y reintentar conservan el tablero y el límite que ya tenía la partida', () => {

@@ -41,7 +41,11 @@ export function renderDaily() {
     const side = !open ? `<span class="dc-side lock">${icon('lock')}<small>Nivel ${c.unlock}</small></span>`
       : res?.boards ? `<span class="dc-side done ${res.medal}">${icon(MEDAL_ICON[res.medal])}<small>${res.moves}/${res.opt}</small></span>`
         : `<span class="dc-side go"><b>${done || progress?.attempt ? 'Continuar' : 'Jugar'}</b><small>${done}/${DAILY_TARGETS.length}</small></span>`;
-    return `<button type="button" class="daily-card${open ? '' : ' locked'}${res?.boards ? ' done' : ''}" data-id="${c.id}" ${open ? '' : 'aria-disabled="true"'}><i class="dc-ico" aria-hidden="true">${icon(c.icon)}</i><span class="dc-copy"><b>${c.name}</b><small>${c.desc}</small></span>${side}</button>`;
+    const noticeId = `dailyUnlock-${c.id}`;
+    return `<div class="daily-entry">
+      <button type="button" class="daily-card${open ? '' : ' locked'}${res?.boards ? ' done' : ''}" data-id="${c.id}" ${open ? '' : `aria-disabled="true" aria-describedby="${noticeId}"`}><i class="dc-ico" aria-hidden="true">${icon(c.icon)}</i><span class="dc-copy"><b>${c.name}</b><small>${c.desc}</small></span>${side}</button>
+      ${open ? '' : `<p class="daily-unlock" id="${noticeId}" role="status" hidden>Llega al nivel ${c.unlock} en Aventura para abrir este reto.</p>`}
+    </div>`;
   }).join('');
   box.innerHTML = `<div class="daily-head"><div class="daily-streak${streak ? ' on' : ''}"><i aria-hidden="true">${icon('flame')}</i><b>${streak}</b><span>${streak === 1 ? 'día de racha' : 'días de racha'}</span></div><div class="daily-reset"><small>Nuevos retos en</small><b id="dailyReset">${resetText(msToReset())}</b></div></div>
     <p class="daily-note" id="dailyNote" role="status">${streakEarned(d, day) ? 'Racha asegurada por hoy. ¡Vuelve mañana!' : 'Completa cualquier reto para sumar un día de racha.'}</p>
@@ -51,12 +55,16 @@ export function renderDaily() {
       <small>Si se rompe la racha, las próximas aventuras empiezan sin el premio.</small>
     </div>
     <div class="daily-list">${cards}</div>`;
+  let shownNotice;
   box.querySelectorAll('.daily-card').forEach((b) => {
     b.onclick = () => {
       if (day !== dayNumber()) { renderDaily(); return; }
-    const c = challengeById(b.dataset.id);
+      const c = challengeById(b.dataset.id);
       if (!isUnlocked(c, maxLevelReached(store.paths))) {
-        $('dailyNote').textContent = `Llega al nivel ${c.unlock} en Aventura para abrir este reto.`;
+        if (shownNotice) shownNotice.hidden = true;
+        shownNotice = $(`dailyUnlock-${c.id}`);
+        shownNotice.hidden = false;
+        shownNotice.scrollIntoView({ block: 'nearest' });
         b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
         return;
       }

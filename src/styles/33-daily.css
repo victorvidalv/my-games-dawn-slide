@@ -29,7 +29,8 @@
 .daily-list{display:grid;gap:8px}
 #menu .daily-card{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:11px;width:100%;min-height:60px;padding:8px 12px 8px 9px;text-align:left;border:2.5px solid #150e0c;border-radius:var(--wob-b);
   background:var(--hatch),linear-gradient(180deg,#2c7585,#215666);color:#fff5e0;box-shadow:inset 0 0 0 1.5px #ffffff1c,inset 0 -3px 0 #0005,3px 5px 0 #150e0c;text-shadow:none}
-#menu .daily-card:nth-child(2n){border-radius:var(--wob-d)}
+#menu .daily-entry:nth-child(2n) .daily-card{border-radius:var(--wob-d)}
+#menu .daily-unlock{margin:8px 2px 0;scroll-margin-block:3px;padding:6px 9px;border-radius:8px;background:#150e0c66;color:#ffe7b5;font:700 12px/1.35 var(--font-ui)}
 #menu .daily-card:active{transform:translate(2px,3px);box-shadow:1px 2px 0 #150e0c}
 .dc-ico{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#150e0c55;border:2px solid #150e0c}
 .dc-ico .ic{width:28px;height:28px}

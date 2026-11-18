@@ -16,7 +16,7 @@ import { clearRewards } from './heroes.js';
 import { DAILY_TARGETS, challengeById, currentStreak, dailyProgress, dayNumber, emptyDaily, recordDaily, streakHintBonus, writeDailyProgress } from './daily.js';
 import { snapshotRescue } from './heroes.js';
 import { showDailyResult } from '../ui/daily.js';
-import { celebrate, countStat, markStat } from '../ui/achievements.js';
+import { celebrate, countStat, markStat, pauseAchievementToasts } from '../ui/achievements.js';
 import { boardStats } from './achievements.js';
 import { canPaidRevive, hasRevive, payRevive, shopBoardKey, useFreeRetry, useRevive } from './shop.js';
 import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
@@ -181,14 +181,14 @@ export async function resumeAdventure(){
 }
 async function advanceClear(){
  if(advancingClear||!S.run?.pendingClear)return;advancingClear=true;S.busy=true;
+ const done=S.run.pendingClear,n=done.level,crossing=n<MAX_LEVEL&&n%10===0;
+ if(crossing)pauseAchievementToasts(true);
  try{
-  const done=S.run.pendingClear,n=done.level;
   if(n>=MAX_LEVEL){endRun(true);S.busy=false;return}
-  const crossing=n%10===0;
   if(crossing&&!done.routeChosen)await travelDialog();
   S.run.level=n+1;if(crossing)S.run.travelFrom=zoneIdx(n);if(isBonusLevel(n))S.run.bonus=1;
   delete S.run.pendingClear;saveRun();await resumeAdventure();
- }finally{advancingClear=false}
+ }finally{if(crossing)pauseAchievementToasts(false);advancingClear=false}
 }
 export function win(){                                  // la voz del héroe NO se corta al ganar: termina su frase aunque el nivel sea rápido
  if(S.G.done)return;S.G.done=true;S.busy=true;boardEl.classList.add('board-lock');
@@ -225,6 +225,7 @@ export function win(){                                  // la voz del héroe NO 
   },matchMedia('(prefers-reduced-motion: reduce)').matches?100:450);
   return;
  }
+ if(S.G.n<MAX_LEVEL&&S.G.n%10===0)pauseAchievementToasts(true);
  countStat(...boardStats(S.G,S.run));                // logros: perfectos, mecánicas, jefes, ciudad sin ayuda
  const gain=gainNow(),previous=S.run.score;
  S.run.score+=gain.total;S.run.cleared=(S.run.cleared||0)+1;S.run.streak=gain.eff>=.9?(S.run.streak||0)+1:0;
