@@ -437,4 +437,21 @@ export const ZH_UI = {
   'Repetir tablero': '重玩棋盘',
   '¡OTRA VEZ!': '再来一次！',
   'El tablero empieza de nuevo. Piensa cada movimiento.': '棋盘重新开始。每一步都想清楚。',
+
+  /* Transferir partidas */
+  'Pasar partida': '存档传输',
+  'Escanea el QR en el otro dispositivo o copia el enlace.': '用另一台设备扫描二维码，或复制链接。',
+  'Enlace de partida': '存档链接',
+  'Importar': '导入',
+  'Exportar': '导出',
+  'Reemplazar': '替换',
+  'La aventura se retoma desde el inicio del tablero actual.': '冒险会从当前棋盘的起始状态继续。',
+  'Los récords y logros se combinan. Si el enlace trae una aventura, puede reemplazar la que tienes guardada aquí.': '纪录和成就会合并。如果链接包含冒险进度，它可以替换此设备上的冒险存档。',
+  'Ya tienes una aventura guardada aquí. Si importas esta partida, perderás esa aventura. Tus récords y logros se conservarán.': '此设备已有冒险存档。导入会替换这份冒险存档。你的纪录和成就会保留。',
+  'No se pudo crear un enlace para esta partida.': '无法生成存档链接。',
+  'Guarda y sal de la partida antes de importar.': '请保存并退出当前游戏后再导入。',
+  'No se pudo guardar el progreso en este dispositivo.': '无法在此设备上保存进度。',
+  'Progreso importado.': '进度已导入。',
+  'El enlace de partida no es válido o pertenece a otra versión.': '此存档链接无效，或来自其他版本。',
+  'Copia el enlace seleccionado.': '请复制选中的链接。',
 };

@@ -46,6 +46,7 @@ import './ui/sound-button.js';
 import { warmBanks } from './data/banks.js';
 import { warmLevelWorker } from './game/level-builder.js';
 import './ui/share.js';
+import { initSaveTransfer } from './ui/save-transfer.js';
 import { saveRun } from './game/session.js';
 import { S, persist, store } from './state.js';
 import { fitBoard } from './ui/board.js';
@@ -74,4 +75,5 @@ syncHero(store.run?.hero || store.heroChoice || 'lia');
 fitBoard();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBoard);
 openMenu();
+initSaveTransfer();
 warmBanks();warmLevelWorker();   // los tableros se descargan en un momento libre, mientras ves el menú

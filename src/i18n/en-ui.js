@@ -233,4 +233,21 @@ export const EN_UI = {
   'Repetir tablero': 'Replay board',
   '¡OTRA VEZ!': 'ONE MORE TRY!',
   'El tablero empieza de nuevo. Piensa cada movimiento.': 'The board starts over. Think about every move.',
+
+  /* Transferir partidas */
+  'Pasar partida': 'Transfer save',
+  'Escanea el QR en el otro dispositivo o copia el enlace.': 'Scan the QR code on your other device or copy the link.',
+  'Enlace de partida': 'Save link',
+  'Importar': 'Import',
+  'Exportar': 'Export',
+  'Reemplazar': 'Replace',
+  'La aventura se retoma desde el inicio del tablero actual.': 'The adventure resumes at the start of the current board.',
+  'Los récords y logros se combinan. Si el enlace trae una aventura, puede reemplazar la que tienes guardada aquí.': 'Records and achievements are merged. If the link includes an adventure, it can replace the one saved here.',
+  'Ya tienes una aventura guardada aquí. Si importas esta partida, perderás esa aventura. Tus récords y logros se conservarán.': 'An adventure is already saved on this device. Importing this save will replace that adventure. Your records and achievements will be kept.',
+  'No se pudo crear un enlace para esta partida.': 'Could not create a link for this save.',
+  'Guarda y sal de la partida antes de importar.': 'Save and exit your game before importing.',
+  'No se pudo guardar el progreso en este dispositivo.': 'Could not save your progress on this device.',
+  'Progreso importado.': 'Progress imported.',
+  'El enlace de partida no es válido o pertenece a otra versión.': 'This save link is invalid or from another version.',
+  'Copia el enlace seleccionado.': 'Copy the selected link.',
 };

@@ -26,9 +26,27 @@ export const S={run:null,G:null,busy:false,lastCfg:{start:1,mode:'c'}};
 export const heroOf=(id=S.run?.hero)=>heroById(id);
 /** Puntos que dan `moves` movimientos en el tablero actual (incluye racha, bono de ruta heroica y bono de jefe). */
 export const gainNow=(moves=S.G.moves)=>routeGain(S.run,S.G.rate,moves,S.G.opt,S.run.streak||0,S.G.n);
-export function persist(){
-  try{
-    Object.assign(store,mergeSaves(store,readStore()));   // otra pestaña (o la versión anterior de la PWA) pudo guardar avances: se suman, nunca se pisan
-    const s=JSON.stringify(store);localStorage.setItem(SAVE,s);localStorage.setItem(BAK,s);
-  }catch(e){}                                            // modo privado o almacenamiento lleno: el juego sigue funcionando
+export function persist(next = store) {
+  try {
+    const merged = mergeSaves(next, readStore()); // recoge avances de otras pestañas
+    const text = JSON.stringify(merged);
+    localStorage.setItem(SAVE, text);
+    Object.assign(store, merged);
+    try { localStorage.setItem(BAK, text); } catch { /* se guardó la copia principal */ }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Combina el progreso y solo sustituye la aventura local cuando el jugador lo confirma. */
+export function importProgress(incoming, { replaceRun = false } = {}) {
+  const disk = readStore();
+  const localRun = disk.run || store.run;
+  if (incoming.run && localRun && !replaceRun) return 'confirm';
+  const updated = mergeSaves(mergeSaves(store, disk), incoming);
+  updated.run = incoming.run || localRun || null;
+  updated.look = incoming.look;
+  updated.tips = { ...disk.tips, ...store.tips, ...incoming.tips };
+  return persist(updated) ? 'done' : 'error';
 }

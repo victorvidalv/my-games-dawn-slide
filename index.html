@@ -287,6 +287,7 @@
     </button>
     <button class="snd-btn snd-menu" type="button"></button>
     <button class="share-btn" id="bShare" type="button" aria-label="Compartir y jugar en el móvil" title="Compartir y jugar en el móvil"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="21" cy="6" r="3.2"/><circle cx="7" cy="14" r="3.2"/><circle cx="21" cy="22" r="3.2"/><path d="m9.8 12.4 8.4-4.8m-8.4 8 8.4 4.8"/></svg></button>
+    <button class="home-guide" id="bTransfer" type="button">Pasar partida</button>
     <a class="home-guide" id="homeGuide" href="./guia/">Guía del juego</a>
     <footer class="home-credit">
       <a href="https://x.com/shsh23xd" target="_blank" rel="noopener noreferrer"><span>Desarrollador</span><span aria-hidden="true">·</span> @shsh23xd</a>
@@ -308,6 +309,40 @@
     <button id="shareClose" type="button">Cerrar</button>
   </div>
 </div>
+
+<dialog class="modal" id="saveTransfer" aria-labelledby="transferTitle">
+  <div class="card share-card transfer-card">
+    <h2 id="transferTitle">Pasar partida</h2>
+    <div id="transferExport">
+      <p>Escanea el QR en el otro dispositivo o copia el enlace.</p>
+      <div class="share-qr" id="transferQr"></div>
+      <input id="transferLink" aria-label="Enlace de partida" type="text" readonly hidden>
+      <div class="share-actions">
+        <button class="primary" id="transferCopy" type="button">Copiar enlace</button>
+        <button id="transferOpenImport" type="button">Importar</button>
+      </div>
+      <small>La aventura se retoma desde el inicio del tablero actual.</small>
+    </div>
+    <form id="transferImport" hidden>
+      <p>Los récords y logros se combinan. Si el enlace trae una aventura, puede reemplazar la que tienes guardada aquí.</p>
+      <label for="transferPaste">Enlace de partida</label>
+      <input id="transferPaste" type="text" inputmode="url" enterkeyhint="go" spellcheck="false" autocapitalize="off" autocomplete="off" maxlength="256" required>
+      <div class="share-actions">
+        <button class="primary" type="submit">Importar</button>
+        <button id="transferBack" type="button">Exportar</button>
+      </div>
+    </form>
+    <div id="transferConfirm" hidden>
+      <p>Ya tienes una aventura guardada aquí. Si importas esta partida, perderás esa aventura. Tus récords y logros se conservarán.</p>
+      <div class="share-actions">
+        <button class="danger" id="transferReplace" type="button">Reemplazar</button>
+        <button id="transferKeep" type="button">Cancelar</button>
+      </div>
+    </div>
+    <p id="transferStatus" role="status"></p>
+    <button id="transferClose" type="button">Cerrar</button>
+  </div>
+</dialog>
 
 <!-- Menú de pausa -->
 <div class="modal" id="pause" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">

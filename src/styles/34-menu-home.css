@@ -132,7 +132,30 @@
   #menu[data-view="home"] .lang-btn .flag{width:20px;height:14px}
   #menu[data-view="home"] .snd-menu{grid-column:1;justify-self:end}
   #menu[data-view="home"] #bShare{grid-column:2;justify-self:center}
-  #menu[data-view="home"] .home-guide{grid-column:3/5;justify-self:start;min-height:40px}
+  #menu[data-view="home"] #bTransfer{grid-column:3;min-height:40px}
+  #menu[data-view="home"] #homeGuide{grid-column:4;min-height:40px;padding-inline:4px}
   #menu[data-view="home"] :is(.snd-menu,#bShare){width:40px;height:40px}
   #menu[data-view="home"] .title-sub{padding:4px 9px;font-size:9px;letter-spacing:.055em}
+}
+
+/* Transferencia de partida */
+#menu .lang-switch #bTransfer{min-height:40px;min-width:0;padding:4px 8px;white-space:normal}
+#saveTransfer{margin:0;max-width:none;max-height:none;width:100%;height:100%;height:100dvh;border:0;color:inherit}
+#saveTransfer[open]{display:flex}
+#saveTransfer::backdrop{background:transparent}
+#saveTransfer .transfer-card{max-width:410px;max-height:100%;overflow:auto;overscroll-behavior:contain}
+.transfer-card .share-qr{width:min(58vw,225px);margin-bottom:14px;padding:0}
+.transfer-card input{width:100%;min-height:44px;margin:6px 0 12px;padding:6px 10px;border-radius:9px;border:2px solid #cfab716e;background:#161523;color:#fff5e0;font:inherit;user-select:text;-webkit-user-select:text}
+.transfer-card label{display:block;text-align:left;color:#ffe7b5;font-weight:750}
+.transfer-card .share-actions button{padding-inline:8px}
+.transfer-card small{display:block;margin:0 0 10px;color:#e9dfef}
+.transfer-card #transferStatus:empty{padding:0;margin:0}
+.transfer-card #transferStatus:not(:empty){padding:7px 9px;border-radius:8px;background:#1c1524;color:#ffe7b5}
+#saveTransfer:has(#transferConfirm:not([hidden])) #transferClose{display:none}
+@media(min-aspect-ratio:13/10) and (max-height:520px){
+  #saveTransfer .transfer-card{max-width:540px;padding:16px 20px}
+  #transferExport:not([hidden]){display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 14px;align-items:center;text-align:left}
+  #transferExport .share-qr{grid-area:1/1/span 4/2;width:min(49vh,210px);margin:0 0 12px}
+  #transferExport>:not(.share-qr){grid-column:2}
+  #transferExport .share-actions{flex-wrap:wrap}
 }

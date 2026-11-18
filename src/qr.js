@@ -11,7 +11,9 @@ const BLOCKS = [
 ];
 const ALIGN = [null, [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34], [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50]];
 const dataWords = (v) => { const [a, na, b, nb] = BLOCKS[v]; return a * na + b * nb; };
-export const QR_MAX_BYTES = dataWords(10) - 2;
+const countBits = (v) => v < 10 ? 8 : 16;
+const byteCapacity = (v) => dataWords(v) - Math.ceil((4 + countBits(v)) / 8);
+export const QR_MAX_BYTES = byteCapacity(10);
 
 /* Cuerpo de Galois GF(256) con el polinomio 0x11D */
 const EXP = new Array(512);
@@ -47,7 +49,7 @@ function encodeData(bytes, v) {
   const bits = [];
   const put = (value, len) => { for (let i = len - 1; i >= 0; i--) bits.push((value >> i) & 1); };
   put(0b0100, 4);
-  put(bytes.length, 8);
+  put(bytes.length, countBits(v));
   bytes.forEach((b) => put(b, 8));
   const cap = dataWords(v) * 8;
   put(0, Math.min(4, cap - bits.length));
@@ -103,7 +105,7 @@ function penalty(m) {
 export function qrMatrix(text) {
   const bytes = [...new TextEncoder().encode(text)];
   let v = 1;
-  while (v <= 10 && bytes.length > dataWords(v) - 2) v++;
+  while (v <= 10 && bytes.length > byteCapacity(v)) v++;
   if (v > 10) throw new Error('Texto demasiado largo para el QR');
   const n = 17 + 4 * v;
   const mod = Array.from({ length: n }, () => new Array(n).fill(false));
@@ -125,7 +127,7 @@ export function qrMatrix(text) {
     for (let dr = -2; dr <= 2; dr++) for (let dc = -2; dc <= 2; dc++) set(r + dr, c + dc, Math.max(Math.abs(dr), Math.abs(dc)) !== 1);
   }
   set(n - 8, 8, true);   // módulo oscuro fijo
-  for (let i = 0; i < 9; i++) { set(8, i, false); set(i, 8, false); }   // reserva del formato
+  for (let i = 0; i < 9; i++) if (i !== 6) { set(8, i, false); set(i, 8, false); }   // reserva del formato
   for (let i = 0; i < 8; i++) { set(8, n - 1 - i, false); set(n - 1 - i, 8, false); }
   set(n - 8, 8, true);
   if (v >= 7) for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) { set(i, n - 11 + j, false); set(n - 11 + j, i, false); }

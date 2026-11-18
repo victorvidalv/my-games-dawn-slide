@@ -437,4 +437,21 @@ export const JA_UI = {
   'Repetir tablero': 'ボードをやり直す',
   '¡OTRA VEZ!': 'もう一度！',
   'El tablero empieza de nuevo. Piensa cada movimiento.': 'ボードを最初からやり直します。一手ずつ考えよう。',
+
+  /* Transferir partidas */
+  'Pasar partida': 'セーブデータの移行',
+  'Escanea el QR en el otro dispositivo o copia el enlace.': '別の端末でコードを読み取るか、リンクをコピーしてください。',
+  'Enlace de partida': 'セーブデータのリンク',
+  'Importar': 'インポート',
+  'Exportar': 'エクスポート',
+  'Reemplazar': '置き換える',
+  'La aventura se retoma desde el inicio del tablero actual.': '冒険は現在の盤面の最初から再開します。',
+  'Los récords y logros se combinan. Si el enlace trae una aventura, puede reemplazar la que tienes guardada aquí.': '記録と実績は統合されます。リンクに冒険データが含まれていれば、この端末に保存した冒険を置き換えられます。',
+  'Ya tienes una aventura guardada aquí. Si importas esta partida, perderás esa aventura. Tus récords y logros se conservarán.': 'この端末には冒険が保存されています。インポートすると、その冒険は置き換わります。記録と実績は引き継がれます。',
+  'No se pudo crear un enlace para esta partida.': 'セーブデータのリンクを作成できませんでした。',
+  'Guarda y sal de la partida antes de importar.': 'ゲームを保存して終了してから、インポートしてください。',
+  'No se pudo guardar el progreso en este dispositivo.': 'この端末に進行状況を保存できませんでした。',
+  'Progreso importado.': '進行状況をインポートしました。',
+  'El enlace de partida no es válido o pertenece a otra versión.': 'セーブデータのリンクが無効か、別のバージョンのものです。',
+  'Copia el enlace seleccionado.': '選択したリンクをコピーしてください。',
 };
