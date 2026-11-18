@@ -327,7 +327,7 @@ export const ZH_GAME = {
   'Puedes repetir el reto de hoy las veces que quieras. Cuenta tu mejor resultado del día.': '今天的挑战可以反复重玩。只记录你当天的最佳成绩。',
   'Repetir reto': '重玩挑战',
   'Salir del reto': '离开挑战',
-  'Tres caminos · cien niveles': '三条道路 · 一百关',
+  'Puzles con elementos roguelite': '带有轻度肉鸽元素的解谜',
   'Partida guardada · nivel {n}': '已保存的游戏 · 第 {n} 关',
   'Hecho hoy · racha de {n}': '今日已完成 · 连续 {n} 天',
   'Reto de hoy pendiente': '今日挑战待完成',

@@ -106,7 +106,7 @@
 
 /* El récord vive en la tarjeta de Aventura para dejar sitio a la ilustración. */
 #menu .home-record{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;line-height:1.15}
-#menu .home-record[hidden],#menu .home-record time[hidden],#menu #homeAdvSub[hidden]{display:none}
+#menu .home-record[hidden],#menu .home-record time[hidden],#menu #homeAdvSaved[hidden]{display:none}
 #menu .record-pill{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:3px 8px 3px 5px;border:1px solid #ffdb82;border-radius:8px;background:#351d19;color:#fff2c5;font:700 11px/1.2 var(--font-ui)}
 #menu .record-pill .bi{display:grid;place-items:center}
 #menu .record-pill .ic{display:block;width:15px;height:15px}

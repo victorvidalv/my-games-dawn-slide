@@ -327,7 +327,7 @@ export const JA_GAME = {
   'Puedes repetir el reto de hoy las veces que quieras. Cuenta tu mejor resultado del día.': '今日のチャレンジは何度でもやり直せます。その日のベストが記録されます。',
   'Repetir reto': 'チャレンジをやり直す',
   'Salir del reto': 'チャレンジをやめる',
-  'Tres caminos · cien niveles': '三つの道 · 百のステージ',
+  'Puzles con elementos roguelite': 'ローグライト要素のあるパズル',
   'Partida guardada · nivel {n}': 'セーブデータ · レベル {n}',
   'Hecho hoy · racha de {n}': '今日はクリア · {n} 日連続',
   'Reto de hoy pendiente': '今日のチャレンジが待っています',

@@ -117,7 +117,7 @@ Promise.all([coverFirst, decodeCover(coverDay), decodeCover(coverEvening)]).then
 function paintHomeRecord(){
   const record=bestAdventureRecord(store.paths);
   $('homeRecord').hidden=!record;
-  if(!record)return false;
+  if(!record)return;
   $('homeRecordScore').textContent=record.score.toLocaleString(numLocale());
   const age=$('homeRecordAge');
   age.hidden=record.recordAt===null;
@@ -128,15 +128,14 @@ function paintHomeRecord(){
     age.dateTime=new Date(record.recordAt).toISOString();
     age.textContent=new Intl.RelativeTimeFormat(lang,{numeric:'auto'}).format(-Math.floor(seconds/size),unit);
   }
-  return true;
 }
 
 function paintHome(){
   const sr=store.run,active=S.run&&S.G&&!S.G.done;
   const hasSaved=!active&&Number.isFinite(sr?.level);
-  const hasRecord=paintHomeRecord();
-  $('homeAdvSub').hidden=hasRecord&&!hasSaved;
-  $('homeAdvSub').textContent=hasSaved?`Partida guardada · nivel ${sr.level}`:'Tres caminos · cien niveles';
+  paintHomeRecord();
+  $('homeAdvSaved').hidden=!hasSaved;
+  $('homeAdvSaved').textContent=hasSaved?`Partida guardada · nivel ${sr.level}`:'';
   const d=store.daily,day=dayNumber(),streak=d?currentStreak(d,day):0;
   $('homeDailySub').textContent=streakEarned(d,day)?`Hecho hoy · racha de ${streak}`:'Reto de hoy pendiente';
   $('homeAchSub').textContent=`${ACHIEVEMENTS.filter(a=>store.ach?.[a.id]).length} de ${ACHIEVEMENTS.length} conseguidos`;
