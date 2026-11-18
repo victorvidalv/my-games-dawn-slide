@@ -25,13 +25,13 @@
 #menu[data-view]:not([data-view="home"]) .cover-lights{background:linear-gradient(#0d172ab0,#090d17e0)}
 #menu[data-view]:not([data-view="home"]) .cover-lights::after{display:none}
 
-#menu[data-view="home"] .cover-ready .cover-landscapes{animation:cover-drift 28s ease-in-out infinite alternate}
-#menu[data-view="home"] .cover-cycle .cover-day{animation:cover-day 39s linear infinite}
-#menu[data-view="home"] .cover-cycle .cover-evening{animation:cover-evening 39s linear infinite}
-#menu[data-view="home"] .cover-ready .cover-lights::after{animation:cover-motes 19s ease-in-out infinite alternate}
-@keyframes cover-drift{from{transform:translate(-1.5%,.5%) scale(1.045)}to{transform:translate(2%,-1.4%) scale(1.09)}}
-@keyframes cover-day{0%,29%,74%,100%{opacity:0}35%,70%{opacity:1}}
-@keyframes cover-evening{0%,62%,100%{opacity:0}69%,93%{opacity:1}}
+#menu[data-view="home"] .cover-ready .cover-landscapes{animation:cover-drift 11s ease-in-out -3s infinite alternate}
+#menu[data-view="home"] .cover-cycle .cover-day{animation:cover-day 24s linear infinite}
+#menu[data-view="home"] .cover-cycle .cover-evening{animation:cover-evening 24s linear infinite}
+#menu[data-view="home"] .cover-ready .cover-lights::after{animation:cover-motes 14s ease-in-out infinite alternate}
+@keyframes cover-drift{from{transform:translate(-3.5%,1.2%) scale(1.035)}to{transform:translate(4.2%,-1.8%) scale(1.095)}}
+@keyframes cover-day{0%,12%,69%,100%{opacity:0}23%,61%{opacity:1}}
+@keyframes cover-evening{0%,49%,100%{opacity:0}61%,90%{opacity:1}}
 @keyframes cover-motes{to{transform:translate(4%,-6%);opacity:.66}}
 @media(max-height:760px) and (max-aspect-ratio:13/10){.cover-heroes{inset:clamp(56px,13dvh,96px) 0 auto;height:40dvh}}
 @media(min-aspect-ratio:13/10){
@@ -42,4 +42,4 @@
 @media(prefers-reduced-motion:reduce){
   #menu[data-view="home"] :is(.cover-landscapes,.cover-day,.cover-evening),#menu[data-view="home"] .cover-lights::after{animation:none}
 }
-.lite #menu[data-view="home"] :is(.cover-landscapes,.cover-day,.cover-evening),.lite #menu[data-view="home"] .cover-lights::after{animation:none}
+.lite #menu[data-view="home"] .cover-lights::after{animation:none}
