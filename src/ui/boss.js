@@ -2,6 +2,7 @@ import { Music } from '../audio/music.js';
 import { sfx } from '../audio/sound.js';
 import { $, cssUrl } from '../dom.js';
 import { bossFor, bossPortraitPath } from '../game/bosses.js';
+import { bossRetriesLeft } from '../game/shop.js';
 import { S } from '../state.js';
 import { bossArrive, loadBossArt } from './boss-phase.js';
 
@@ -24,7 +25,7 @@ export function showBossIntro(level) {
   art.src = bossPortraitPath(boss);
   $('bossName').textContent = boss.name;
   $('bossLore').textContent = boss.lore;
-  const goals = [`Máximo ${S.G?.limit ?? '?'} turnos`];
+  const goals = [`Desafío: máximo ${S.G?.limit ?? '?'} turnos`];
   const secs = S.G?.timeLimit || 0;
   if (secs) goals.push(`Antes de ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`);
   $('bossGoals').replaceChildren(...goals.map((text) => {
@@ -32,6 +33,8 @@ export function showBossIntro(level) {
     item.textContent = text;
     return item;
   }));
+
+  $('bossAttempts').textContent = `Intentos: ${1 + bossRetriesLeft(S.run, level)}`;
 
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fight = $('bossFight');

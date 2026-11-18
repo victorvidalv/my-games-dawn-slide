@@ -235,7 +235,7 @@ export function afterMove(){
   if(status==='over'){fail('limit');return}
   if(S.run.daily)saveRun();                // sin turnos: ya no se puede mover
   if(prac){if(S.G.moves===S.G.opt+1)$('msg').textContent='Vas por encima del mínimo. En práctica no pasa nada: ¡sigue!';return}
-  const retry=S.run.daily||freeRetry(S.run,S.G.n,!!S.G.plan?.boss);
+  const retry=S.run.daily||freeRetry(S.run,S.G.n,!!S.G.plan?.boss&&!S.G.tutorial);
   if(status==='last'){$('msg').textContent=retry?'ÚLTIMO MOVIMIENTO: si la llave no sale ahora, repites el tablero.':'ÚLTIMO TURNO: si no sacas la llave con este movimiento, la aventura termina.';sfx.warn();vib([30,40,30])}
   else if(status==='warn'){$('msg').textContent=`Te quedan ${movesLeft(S.G.moves,S.G.limit)} movimientos. Piensa bien cada paso.`;sfx.warn()}
 }

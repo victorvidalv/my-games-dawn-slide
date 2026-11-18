@@ -105,16 +105,33 @@ export function payRevive(run) {
   return { ok: true, cost };
 }
 
-/**
- * Primeros pasos: en la primera ciudad del camino Normal (niveles 1-9; el jefe del 10 ya va en serio) quedarse sin movimientos
- * no termina la partida: se repite el tablero. Así nadie abandona por perderlo todo antes de entender el juego.
- */
 export const FREE_RETRY_UNTIL = 9;
-export const freeRetry = (run, level, boss = false) => !!run && run.mode !== 'p' && (run.start || 1) === 1 && level <= FREE_RETRY_UNTIL && !boss;
-/** Prepara el tablero para repetirlo desde el principio sin coste (la racha se pierde). */
-export function useFreeRetry(run, G) {
+export const BOSS_FREE_RETRIES = 2;
+
+/** Cada jefe tiene su propio cupo de reintentos en esta aventura. */
+export function bossRetriesLeft(run, level) {
+  if (!run || run.daily || run.mode === 'p' || !isBossLevel(level)) return 0;
+  const used = run.bossRetry?.level === level ? (run.bossRetry.used || 0) : 0;
+  return Math.max(0, BOSS_FREE_RETRIES - used);
+}
+
+export function freeRetry(run, level, boss = false) {
+  if (boss) return bossRetriesLeft(run, level) > 0;
+  return !!run && !run.daily && run.mode !== 'p' && (run.start || 1) === 1 && level <= FREE_RETRY_UNTIL;
+}
+
+/** Prepara el mismo tablero para repetirlo sin coste. La derrota corta la racha de la aventura. */
+export function useFreeRetry(run, G, why) {
+  const boss = !!G.plan?.boss && !G.tutorial;
+  if (!freeRetry(run, G.n, boss)) return false;
+  const snapshot = snapshotRescue(G);
+  if (boss) {
+    const used = BOSS_FREE_RETRIES - bossRetriesLeft(run, G.n);
+    run.bossRetry = { level: G.n, used: used + 1 };
+  }
   run.streak = 0;
-  run.rescue = { ...snapshotRescue(G), kind: 'learn' };
+  run.rescue = boss ? { ...snapshot, kind: 'boss', why } : { ...snapshot, kind: 'learn' };
+  return true;
 }
 
 /** ¿Tienes un revivir guardado? (compatibilidad con partidas guardadas antiguas). */

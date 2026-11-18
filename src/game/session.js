@@ -18,7 +18,7 @@ import { snapshotRescue } from './heroes.js';
 import { showDailyResult } from '../ui/daily.js';
 import { celebrate, countStat, markStat } from '../ui/achievements.js';
 import { boardStats } from './achievements.js';
-import { canPaidRevive, freeRetry, hasRevive, payRevive, shopBoardKey, useFreeRetry, useRevive } from './shop.js';
+import { canPaidRevive, hasRevive, payRevive, shopBoardKey, useFreeRetry, useRevive } from './shop.js';
 import { S, gainNow, heroOf, persist, rkey, store } from '../state.js';
 import { boardEl, buildPieces, fitBoard, layout, place, recLine, syncRouteStyle, updateHud } from '../ui/board.js';
 import { isBonusLevel, showBonus } from '../ui/bonus.js';
@@ -242,7 +242,7 @@ export function win(){                                  // la voz del héroe NO 
  },reduce?100:450);
 }
 /* ---------- Derrota ---------- */
-/** Al pasarte del límite la aventura termina (la tienda se usa antes, no al perder). */
+/** Los jefes comparten el flujo de derrota para tiempo y turnos. */
 onBossTimeUp(()=>fail('time'));
 export function fail(why){
   if(S.G.done)return;
@@ -271,7 +271,7 @@ async function offerPaidRevive(why){
       S.G.pos=S.G.start.slice();S.G.moves=0;S.G.hist=[];S.G.done=false;S.G.limit-=S.G.bought||0;S.G.bought=0;S.G.timeLeft=S.G.timeLimit||0;
       $('score').textContent=S.run.score.toLocaleString(numLocale());$('lim').textContent=S.G.limit;recLine();
       saveRun();boardEl.classList.remove('board-lock');S.busy=false;$('bUndo').disabled=true;layout();updateHud();
-      Music.duck(1);playReviveEffect('¡RENACER!',false);$('msg').textContent=`Renaciste (−${r.cost.toLocaleString(numLocale())} pts). ¡Este tablero empieza de nuevo!`;
+      syncBossTimer();Music.duck(1);playReviveEffect('¡RENACER!',false);$('msg').textContent=`Renaciste (−${r.cost.toLocaleString(numLocale())} pts). ¡Este tablero empieza de nuevo!`;
       return;
     }
   }
@@ -285,7 +285,7 @@ function finalFail(why){
    writeDailyProgress(store,d,{boards:d.boards,attempt:d.attempt});persist();
    S.run.rescue={...snapshotRescue(S.G),kind:'daily'};showRescue('daily');return
   }             // reto diario: se repite cuantas veces se quiera
-  if(freeRetry(S.run,S.G.n,!!S.G.plan?.boss)){useFreeRetry(S.run,S.G);saveRun();showRescue('learn');return}   // primera ciudad: se repite el tablero
+  if(useFreeRetry(S.run,S.G,why)){saveRun();showRescue();return}
   if(hasRevive(S.run)){useRevive(S.run,S.G);saveRun();showRescue('revive');return}                           // compatibilidad con cargas antiguas
   if(canPaidRevive(S.run,S.run.mode)){S.run.pendingRevive=why||'limit';saveRun();offerPaidRevive(why);return}
   triggerGameOver(why);

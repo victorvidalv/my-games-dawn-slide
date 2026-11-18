@@ -24,7 +24,7 @@ export function lowState() {
 function announceLow(last) {
   const G = S.G;
   const left = movesLeft(G.moves, G.limit);
-  const retry = freeRetry(S.run, G.n, !!G.plan?.boss);        // en la primera ciudad perder solo repite el tablero
+  const retry = S.run.daily || freeRetry(S.run, G.n, !!G.plan?.boss && !G.tutorial);
   $('lowTitle').textContent = last ? '¡Último movimiento!' : `Te quedan ${left} movimientos`;
   $('lowSub').textContent = last
     ? (retry ? 'Si la llave no sale ahora, repites el tablero.' : 'Si la llave no sale ahora, la partida termina.')

@@ -180,7 +180,8 @@ traen su aviso. No hay pantalla de «Cómo se juega» en el menú principal.
 ### Primeros niveles y aviso de pocos movimientos
 
 - **Aviso claro**: cuando quedan 3 movimientos (o el 20 % del límite si es más; en tableros muy cortos, nunca antes de gastar el 60 %: `warnAt` en `src/engine/rules.js`) sale un cartel «Te quedan N movimientos · Piensa bien cada paso: si se acaban, …» y el medidor muestra un contador fijo «Quedan N» hasta que se sale del riesgo. Si se entró en la zona antes, el cartel se repite al llegar a 3 y en el último movimiento.
-- **Primera ciudad sin castigo**: en los niveles 1-9 del camino Normal (`FREE_RETRY_UNTIL` en `src/game/shop.js`; el jefe del 10 ya no) quedarse sin movimientos repite el tablero en vez de terminar la partida. No cuesta puntos ni pistas; solo corta la racha. El cartel lo dice («repites el tablero» en vez de «la partida termina»).
+- **Primera ciudad sin castigo**: en los niveles 1-9 del camino Normal (`FREE_RETRY_UNTIL` en `src/game/shop.js`) quedarse sin movimientos repite el tablero en vez de terminar la partida. No cuesta puntos ni pistas; solo corta la racha. El cartel lo dice («repites el tablero» en vez de «la partida termina»).
+- **Dos reintentos gratis por jefe**: puedes repetir el mismo tablero si se acaban los turnos o el tiempo. Vuelves al inicio con el reloj completo y conservas tus puntos y pistas. Se corta la racha de la aventura y el cupo queda guardado al salir.
 - **Una explicación por nivel**: lo imprescindible para jugar el tablero (arrastrar, piezas nuevas, jefe, maleficio) se enseña siempre; las explicaciones generales (puntos, ayudas, héroe, sellos) salen de una en una y esperan a otro nivel si ya hay otra ventana.
 
 ### Puntos

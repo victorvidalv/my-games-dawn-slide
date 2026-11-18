@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { SHOP_ITEMS, extraTurns, pathPrice, REVIVE_SHARE, MAX_REVIVES, reviveCost, canPaidRevive, payRevive, hasRevive, useRevive, freeRetry, useFreeRetry, FREE_RETRY_UNTIL, priceOf, availability, buy } from '../src/game/shop.js';
+import { SHOP_ITEMS, extraTurns, pathPrice, REVIVE_SHARE, MAX_REVIVES, reviveCost, canPaidRevive, payRevive, hasRevive, useRevive, bossRetriesLeft, freeRetry, useFreeRetry, FREE_RETRY_UNTIL, priceOf, availability, buy } from '../src/game/shop.js';
 import { moveStatus } from '../src/engine/rules.js';
 import { baseScore } from '../src/engine/scoring.js';
 
@@ -218,7 +218,7 @@ describe('Don Dublón: vendedor sarcástico con frases variadas', () => {
 });
 
 describe('primeros pasos: en la primera ciudad del camino Normal se repite el tablero en vez de perder la partida', () => {
-  it('solo niveles 1-9 de Normal, nunca el jefe ni los caminos difíciles ni la práctica', () => {
+  it('los reintentos de aprendizaje solo se aplican a los niveles 1-9 de Normal', () => {
     const run = { start: 1, mode: 'c' };
     expect(FREE_RETRY_UNTIL).toBe(9);
     for (let l = 1; l <= 9; l++) expect(freeRetry(run, l)).toBe(true);
@@ -238,3 +238,30 @@ describe('primeros pasos: en la primera ciudad del camino Normal se repite el ta
   });
 });
 
+
+
+describe('reintentos gratis de jefe', () => {
+  const boss = { n: 20, plan: { boss: true }, rate: 15, pieces: [{ o: 'h', len: 2, fix: 2 }],
+    start: [0], pos: [3], opt: 6, moves: 12, limit: 12, bought: 2, timeLimit: 180, timeLeft: 0 };
+  it('comparte el cupo entre derrotas por tiempo y por turnos, conserva puntos y pistas, y cuenta por jefe', () => {
+    const initial = { start: 50, mode: 'c', score: 900, hints: 2, streak: 4, revive: 1 };
+    expect(bossRetriesLeft(initial, 20)).toBe(2);
+    expect(useFreeRetry(initial, boss, 'time')).toBe(true);
+    expect(initial).toMatchObject({ score: 900, hints: 2, streak: 0, revive: 1,
+      rescue: { level: 20, kind: 'boss', why: 'time', start: [0], limit: 10 } });
+    const resumed = JSON.parse(JSON.stringify(initial));
+    delete resumed.rescue;
+    expect(bossRetriesLeft(resumed, 20)).toBe(1);
+    expect(useFreeRetry(resumed, boss, 'limit')).toBe(true);
+    expect(resumed.rescue.why).toBe('limit');
+    expect(freeRetry(resumed, 20, true)).toBe(false);
+    expect(useFreeRetry(resumed, boss, 'time')).toBe(false);
+    expect(resumed.rescue.why).toBe('limit');
+    expect(bossRetriesLeft(resumed, 30)).toBe(2);
+  });
+  it('excluye práctica, retos diarios y tableros que no son jefes', () => {
+    expect(bossRetriesLeft({ mode: 'p' }, 20)).toBe(0);
+    expect(bossRetriesLeft({ mode: 'c', daily: {} }, 20)).toBe(0);
+    expect(bossRetriesLeft({ mode: 'c' }, 21)).toBe(0);
+  });
+});
