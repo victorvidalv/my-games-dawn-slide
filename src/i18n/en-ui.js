@@ -236,6 +236,8 @@ export const EN_UI = {
 
   /* Transferir partidas */
   'Pasar partida': 'Transfer save',
+  'Más opciones': 'More options',
+  'Más': 'More',
   'Escanea el QR en el otro dispositivo o copia el enlace.': 'Scan the QR code on your other device or copy the link.',
   'Enlace de partida': 'Save link',
   'Importar': 'Import',

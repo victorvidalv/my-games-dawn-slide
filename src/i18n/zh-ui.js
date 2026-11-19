@@ -440,6 +440,8 @@ export const ZH_UI = {
 
   /* Transferir partidas */
   'Pasar partida': '存档传输',
+  'Más opciones': '更多选项',
+  'Más': '更多',
   'Escanea el QR en el otro dispositivo o copia el enlace.': '用另一台设备扫描二维码，或复制链接。',
   'Enlace de partida': '存档链接',
   'Importar': '导入',

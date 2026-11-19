@@ -440,6 +440,8 @@ export const JA_UI = {
 
   /* Transferir partidas */
   'Pasar partida': 'セーブデータの移行',
+  'Más opciones': 'その他のオプション',
+  'Más': 'その他',
   'Escanea el QR en el otro dispositivo o copia el enlace.': '別の端末でコードを読み取るか、リンクをコピーしてください。',
   'Enlace de partida': 'セーブデータのリンク',
   'Importar': 'インポート',

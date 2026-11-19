@@ -204,3 +204,8 @@ document.addEventListener('langchange',()=>{
   showView(viewNow);
   const sr=store.run;if($('bContinue').style.display!=='none'&&sr)$('bContinue').innerHTML=continueLabel(sr);
 });
+
+/* «Más opciones» del inicio: se pliega al tocar fuera o con Escape. */
+const homeMore=$('homeMore');
+document.addEventListener('click',e=>{if(homeMore.open&&!homeMore.contains(e.target))homeMore.open=false});
+homeMore.addEventListener('keydown',e=>{if(e.key==='Escape'&&homeMore.open){homeMore.open=false;homeMore.querySelector('summary').focus()}});

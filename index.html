@@ -250,6 +250,15 @@
       <button type="button" class="home-btn hb-daily" id="tabDaily" data-view="daily"><i class="hb-ico bi" data-icon="flame" aria-hidden="true"></i><span class="hb-copy"><b>Retos diarios</b><small id="homeDailySub"></small></span><i class="hb-go" aria-hidden="true">›</i></button>
       <button type="button" class="home-btn hb-ach" id="tabAch" data-view="ach"><i class="hb-ico bi" data-icon="trophy" aria-hidden="true"></i><span class="hb-copy"><b>Logros</b><small id="homeAchSub"></small></span><i class="hb-go" aria-hidden="true">›</i></button>
     </nav>
+    <details class="home-more" id="homeMore">
+      <summary title="Más opciones">Más</summary>
+      <div class="home-tools" id="homeTools">
+        <button class="snd-btn snd-menu tool-btn" type="button"></button>
+        <button class="tool-btn" id="bTransfer" type="button" aria-label="Pasar partida" title="Pasar partida"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3.5 13.2 24.5 4.5l-6.6 19.8-4.4-8.4z"/><path d="m13.5 15.9 11-11.4"/></svg></button>
+        <a class="tool-btn" id="homeGuide" href="./guia/" aria-label="Guía del juego" title="Guía del juego"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 8c-3-2.2-6.8-2.8-10.5-2.2v15.6c3.7-.6 7.5 0 10.5 2.2 3-2.2 6.8-2.8 10.5-2.2V5.8C20.8 5.2 17 5.8 14 8z"/><path d="M14 8v15.6"/></svg></a>
+        <button class="share-btn tool-btn" id="bShare" type="button" aria-label="Compartir y jugar en el móvil" title="Compartir y jugar en el móvil"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="21" cy="6" r="3.2"/><circle cx="7" cy="14" r="3.2"/><circle cx="21" cy="22" r="3.2"/><path d="m9.8 12.4 8.4-4.8m-8.4 8 8.4 4.8"/></svg></button>
+      </div>
+    </details>
     <div class="menu-head" id="menuHead" hidden>
       <button type="button" class="menu-back" id="menuBack"><span aria-hidden="true">‹</span> Volver</button>
       <h2 class="menu-title" id="menuTitle"></h2>
@@ -285,14 +294,10 @@
       <svg class="flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#fff"/><circle cx="30" cy="20" r="12" fill="#bc002d"/></svg>
       <span>日本語</span>
     </button>
-    <button class="snd-btn snd-menu" type="button"></button>
-    <button class="share-btn" id="bShare" type="button" aria-label="Compartir y jugar en el móvil" title="Compartir y jugar en el móvil"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="21" cy="6" r="3.2"/><circle cx="7" cy="14" r="3.2"/><circle cx="21" cy="22" r="3.2"/><path d="m9.8 12.4 8.4-4.8m-8.4 8 8.4 4.8"/></svg></button>
-    <button class="home-guide" id="bTransfer" type="button">Pasar partida</button>
-    <a class="home-guide" id="homeGuide" href="./guia/">Guía del juego</a>
-    <footer class="home-credit">
-      <a href="https://x.com/shsh23xd" target="_blank" rel="noopener noreferrer"><span>Desarrollador</span><span aria-hidden="true">·</span> @shsh23xd</a>
-    </footer>
   </div>
+  <footer class="home-credit">
+    <a href="https://x.com/shsh23xd" target="_blank" rel="noopener noreferrer"><span>Desarrollador</span><span aria-hidden="true">·</span> @shsh23xd</a>
+  </footer>
 </div>
 
 <!-- Compartir / jugar en el móvil -->
