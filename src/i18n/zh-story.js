@@ -270,11 +270,6 @@ export const ZH_STORY = {
   'Un candado es solo una frase cerrada, Vhorn. Sé leerla.': '一把锁不过是一句合上的话，Vhorn。我读得懂。',
   'Hielo, Vhorn: tinta que corre. No me confundes; la leo hasta el final.':
     '冰，Vhorn：流动的墨水。你骗不了我；我会一直读到最后。',
-  '¿Portones de color, Vhorn? Cada gema hallará su umbral bajo mi llama.':
-    '彩色闸门吗，Vhorn？在我的火焰下，每颗宝石都会找到它的门。',
-  'Cada tinte abre un único portón, Vhorn. Ya marqué el orden.': '每种颜色只能打开一道闸门，Vhorn。顺序我已经标好了。',
-  'Un sello cromático, Vhorn. Solo el signo de su tinta cruza el arco.':
-    '一道彩色的封印，Vhorn。只有同色的符号才能穿过拱门。',
   '«Tres deslizamientos al rojo vivo. ¡Rápido!»': '「三次炽热的滑动。快！」',
   '«Veo la brecha. Un solo golpe limpio.»': '「我看见缺口了。干净利落的一击。」',
   '«Tres tableros antes de que caiga la aguja.»': '「指针落下之前，解开三块棋盘。」',
@@ -296,16 +291,13 @@ export const ZH_STORY = {
   'Piezas de hielo · Turnos ajustados': '冰块 · 步数紧张',
   'El Maestro Relojero': '钟表大师',
   'Guardián de la Torre Parada': '停摆钟塔的守卫',
-  'Portones de color · Turnos ajustados': '彩色闸门 · 步数紧张',
   'El Juez de Escarcha': '霜之法官',
   'Guardián del Paso Helado': '冰封隘口的守卫',
-  'Portones y trampa doble · Turnos ajustados': '闸门与双重陷阱 · 步数紧张',
   'El Tejedor de Cerezos': '樱花的编织者',
   'Guardián del Jardín Mudo': '沉默花园的守卫',
   'Mecanismo doble · Turnos ajustados': '双重机关 · 步数紧张',
   'El Forjador de Ceniza': '灰烬的锻造者',
   'Guardián de la Fragua Fría': '冰冷锻炉的守卫',
-  'Portones y forja doble · Turnos ajustados': '闸门与双重熔炉 · 步数紧张',
   'El Escriba del Olvido': '遗忘的书记',
   'Guardián del Archivo Borrado': '被抹去的档案的守卫',
   'Todas las trampas · Turnos ajustados': '所有陷阱 · 步数紧张',

@@ -112,7 +112,6 @@ export function snapshotBoard(G) {
     rate: G.rate,
     pieces: G.pieces.map((p) => ({ ...p })),
     walls: copyRows(G.walls || []),
-    doors: copyRows(G.doors || []),
     pos: G.pos.slice(),
     start: G.start.slice(),
     opt: G.opt,

@@ -47,8 +47,8 @@ export const ZH_GAME = {
   'El erudito, acompañante de Juth': '学者，Juth 的同伴',
   'Las rocas no se mueven ni se pueden empujar. Rodéalas para abrirle camino a la llave roja.':
     '岩石不会动，也推不动。绕开它们，为红钥匙开路。',
-  'Esta pieza está atrapada. Se libera mientras OTRA pieza cubra la placa ▣ del suelo. En cuanto la tapes, el candado se abre.':
-    '这个方块被锁住了。只要有另一个方块盖住地上的压板 ▣，它就能移动。压板一被盖住，锁就会打开。',
+  'Esta pieza está atrapada. Se libera mientras OTRA pieza cubra la placa 🔒 del suelo. En cuanto la tapes, el candado se abre.':
+    '这个方块被锁住了。只要有另一个方块盖住地上的压板 🔒，它就能移动。压板一被盖住，锁就会打开。',
   'Esta pieza pesa tanto que solo avanza UNA casilla por movimiento. Planifica cada paso.':
     '这个方块非常重，每一步只能前进一格。每一步都要计划好。',
   'Pieza de hielo': '冰块',
@@ -62,8 +62,8 @@ export const ZH_GAME = {
     '这个方块很重：每一步只能前进一格。把它往上移。',
   'Una casilla más…': '再走一格……',
   '¡Listo! Saca la llave roja.': '好了！取出红钥匙。',
-  'Este bloque tiene candado y está atrapado. Cubre la placa ▣ con el bloque que brilla.':
-    '这个方块带着锁，被困住了。用发光的方块盖住压板 ▣。',
+  'Este bloque tiene candado y está atrapado. Cubre la placa 🔒 con el bloque que brilla.':
+    '这个方块带着锁，被困住了。用发光的方块盖住压板 🔒。',
   '¡La placa brilla! El candado se abrió: ahora sí puedes moverlo.': '压板亮了！锁已打开，现在可以移动它了。',
   'Camino libre. Saca la llave roja.': '道路畅通。取出红钥匙。',
   'Esta pieza es de hielo y patina sin parar hasta un tope. Primero aparta el bloque que brilla.':
@@ -359,7 +359,7 @@ export const ZH_GAME = {
   Rompehielos: '破冰者',
   'Resuelve 25 tableros con rocas o hielo': '解开 25 个有岩石或冰块的棋盘',
   Cerrajero: '锁匠',
-  'Resuelve 25 tableros con candados o portones': '解开 25 个有锁或门的棋盘',
+  'Resuelve 25 tableros con candados': '解开 25 个有锁的棋盘',
   'Cazador de guardianes': '守护者猎人',
   'Vence a 5 jefes': '击败 5 个首领',
   'Sin ayuda': '无需帮助',

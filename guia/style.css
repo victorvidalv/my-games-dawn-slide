@@ -52,7 +52,7 @@ section{scroll-margin-block:1.25rem}
 .basic{max-width:85ch}
 .mechanics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,3vw,30px)}
 .mechanics-grid dl{margin-top:12px}
-.more-mechanics{margin-top:14px}
+
 .mechanic{display:grid;gap:3px;padding:10px 13px;background:#182d39;border-left:2px solid var(--accent,#ac9360)}
 .mechanic+.mechanic{margin-top:1px}
 .mechanic dt{display:flex;align-items:center;gap:9px;font-weight:750}

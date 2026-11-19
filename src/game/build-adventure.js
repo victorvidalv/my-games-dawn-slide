@@ -43,7 +43,6 @@ export function buildAdventureLevel(run, { levels, special, tips = {}, withProof
       rate: b.rate,
       pieces: b.pieces.map((p) => ({ ...p })),
       walls: (b.walls || []).map((w) => w.slice()),
-      doors: (b.doors || []).map((d) => d.slice()),
       pos: (rescue ? b.start : b.pos).slice(),
       start: b.start.slice(),
       opt,
@@ -66,7 +65,7 @@ export function buildAdventureLevel(run, { levels, special, tips = {}, withProof
     if (tutorial) {
       base = decodeBoard(tutorial.board);
       base.family = plan.family;
-      built = { ...base, opt: minMoves(base.pieces, base.pos, base.walls, base.doors) };
+      built = { ...base, opt: minMoves(base.pieces, base.pos, base.walls) };
     } else {
       const family = brave && run.hero === 'van' ? juthHeroicFamily(plan, level, rate, special) : plan.family;
       base = pickBoard(levels, rate, run.seed, level, family, special);
@@ -90,7 +89,6 @@ export function buildAdventureLevel(run, { levels, special, tips = {}, withProof
       pieces: built.pieces,
       pos: built.pos.slice(),
       walls: built.walls || [],
-      doors: built.doors || [],
       start: built.pos.slice(),
       opt: built.opt,
       limit: heroLimit(run.hero, built.opt, run.start, level, brave, bossCapFor(level)),

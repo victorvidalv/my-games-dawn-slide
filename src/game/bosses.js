@@ -138,7 +138,6 @@ export function bossMechLabel(level) {
       'Una pieza especial',
       'Dos piezas especiales',
       'Tres piezas especiales',
-      'Cuatro piezas especiales',
       'Todas las piezas juntas',
     ][n] ?? 'Todas las piezas juntas'
   );

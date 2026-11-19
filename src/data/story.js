@@ -257,20 +257,17 @@ export const HERO_TUTORIAL_TALK = {
     heavy: '¿Piezas pesadas? Qué poco imaginativo, Vhorn. Las moveré paso a paso.',
     gate: '¿Candados, Vhorn? Mi llama abre lo que tu sombra cierra.',
     ice: '¡Hielo! Tu frío no me detiene, Vhorn: mi brasa lo derrite.',
-    door: '¿Portones de color, Vhorn? Cada gema hallará su umbral bajo mi llama.',
   },
   jean: {
     wall: 'Otra roca, Vhorn. Qué predecible: ya conté el camino para rodearla.',
     heavy: 'Pesada, un paso por turno. Vhorn, yo sé esperar mejor que tú.',
     gate: 'Candados, Vhorn. Todo cerrojo tiene su hora, y la mía es esta.',
     ice: 'Hielo. Tu truco patina, Vhorn, pero yo calculé dónde se detiene.',
-    door: 'Cada tinte abre un único portón, Vhorn. Ya marqué el orden.',
   },
   van: {
     wall: 'Una roca. Vhorn, pones piedras porque ya no te quedan palabras.',
     heavy: 'Pesadas como tu olvido, Vhorn. Aun así leeré cada paso.',
     gate: 'Un candado es solo una frase cerrada, Vhorn. Sé leerla.',
     ice: 'Hielo, Vhorn: tinta que corre. No me confundes; la leo hasta el final.',
-    door: 'Un sello cromático, Vhorn. Solo el signo de su tinta cruza el arco.',
   },
 };

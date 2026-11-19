@@ -62,7 +62,7 @@ describe('banco de tableros especiales', () => {
       const have = RATINGS.filter((r) => special[f][r - 1].length > 0).length;
       if (!f.startsWith('combo_'))
         expect(have, `${f}: dificultades con tableros`).toBeGreaterThanOrEqual(
-          f === 'walls' || f === 'doors' ? 80 : f === 'ice' ? 0 : 95,
+          f === 'walls' ? 80 : f === 'ice' ? 0 : 95,
         ); // las combinaciones solo se generan a las dificultades que usa el calendario
       else expect(have, `${f}: dificultades con tableros`).toBeGreaterThanOrEqual(1);
     }
@@ -74,13 +74,11 @@ describe('banco de tableros especiales', () => {
     for (const r of of('gates')) expect(has(r, 'gate'), r.text).toBe(true);
     for (const r of of('heavy')) expect(has(r, 'heavy'), r.text).toBe(true);
     for (const r of of('ice')) expect(has(r, 'ice'), r.text).toBe(true);
-    for (const r of of('doors')) expect(r.doors, r.text).toBeGreaterThan(0);
     const KIND = { h: 'heavy', g: 'gate', i: 'ice' };
     for (const f of COMBOS) {
       const letters = f.slice(6);
       for (const r of of(f)) {
         if (letters.includes('w')) expect(r.walls, `${f} ${r.text}`).toBeGreaterThan(0);
-        if (letters.includes('d')) expect(r.doors, `${f} ${r.text}`).toBeGreaterThan(0);
         for (const [c, k] of Object.entries(KIND))
           if (letters.includes(c)) expect(has(r, k), `${f} ${r.text}`).toBe(true);
       }

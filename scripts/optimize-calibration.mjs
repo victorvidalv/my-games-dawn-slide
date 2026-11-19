@@ -17,8 +17,8 @@ const OUT = new URL('../src/data/calibration.json', import.meta.url);
 const SPECIAL = new URL('../src/data/special.json', import.meta.url);
 const { targetFor } = await import('../src/engine/targets.js');
 
-const ORDER = ['wall', 'heavy', 'gate', 'ice', 'door'];
-const LETTER = { wall: 'w', heavy: 'h', gate: 'g', ice: 'i', door: 'd' };
+const ORDER = ['wall', 'heavy', 'gate', 'ice'];
+const LETTER = { wall: 'w', heavy: 'h', gate: 'g', ice: 'i' };
 const isBoss = (l) => l % 10 === 0;
 const get = (l) => PREF[l];
 
@@ -28,7 +28,7 @@ for (const m of ORDER) {
   const star = Object.keys(PREF)
     .map(Number)
     .find((l) => get(l).mechanics[m] === 2);
-  intro[m] = star ?? { wall: 12, heavy: 22, gate: 32, ice: 41, door: 51 }[m];
+  intro[m] = star ?? { wall: 12, heavy: 22, gate: 32, ice: 41 }[m];
 }
 const rawCurse = Object.keys(PREF)
   .map(Number)
@@ -212,8 +212,7 @@ const ratingFor = (m) => {
   }
   return best;
 };
-const keyOf = (letters) =>
-  ({ w: 'walls', h: 'heavy', g: 'gates', i: 'ice', d: 'doors' })[letters] ?? `combo_${letters}`;
+const keyOf = (letters) => ({ w: 'walls', h: 'heavy', g: 'gates', i: 'ice' })[letters] ?? `combo_${letters}`;
 const problems = [];
 if (existsSync(SPECIAL) && !process.env.NO_FEAS) {
   const bank = JSON.parse(readFileSync(SPECIAL, 'utf8'));
@@ -272,7 +271,7 @@ writeFileSync(
   `// Generado por scripts/optimize-calibration.mjs (copia de calibration.json como módulo, para que lo importen el navegador y Node por igual).\nexport default ${calJson};\n`,
 );
 
-const names = { w: 'W', h: 'H', g: 'G', i: 'I', d: 'D' };
+const names = { w: 'W', h: 'H', g: 'G', i: 'I' };
 for (let b = 0; b < 100; b += 10) {
   console.log(
     Array.from({ length: 10 }, (_, k) => {

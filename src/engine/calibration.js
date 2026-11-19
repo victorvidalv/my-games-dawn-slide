@@ -2,7 +2,7 @@ import data from '../data/calibration.js';
 
 /**
  * Calendario calibrado de los 100 niveles (generado por `npm run calibrate` a partir de las preferencias del calibrador).
- * Por nivel: letras de las mecánicas (w roca, h pesada, g candado, i hielo, d portón), maleficio, tipo de sello, tutorial del sello y
+ * Por nivel: letras de las mecánicas (w roca, h pesada, g candado, i hielo), maleficio, tipo de sello, tutorial del sello y
  * turnos mínimos de cada camino (Normal, Difícil, Experto).
  */
 export const TUTORIAL_LEVELS = data.tutorials;

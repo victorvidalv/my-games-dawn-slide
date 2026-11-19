@@ -11,14 +11,11 @@
  *   pesada  – pieza {kind:'heavy'}: solo avanza una casilla por movimiento.
  *   hielo   – pieza {kind:'ice'}: al deslizarla en un sentido no frena hasta chocar con otro bloque, muro o borde.
  *             (Su grafo puede ser dirigido; el solver calcula distancias exactas por aristas invertidas.)
- *   portón  – casilla [fila, columna, tinte] en la lista `doors`: solo la cruza (o se para encima) una pieza
- *             con el mismo `tone` (0=◆ azul, 1=● ámbar, 2=▲ verde). Para las demás piezas actúa como un muro.
  */
 export const N = 6;
 const EXIT_ROW = 2;
 export const WIN_POS = N - 2; // posición de la llave roja cuando toca la salida
 export const WALL = 99; // marca de muro en la rejilla de ocupación
-export const TONES = [0, 1, 2]; // 0=◆ azul (Kogn), 1=● ámbar (Sahrim), 2=▲ verde (Ennari)
 
 const P8 = [];
 for (let i = 0, v = 1; i < 16; i++, v *= 8) P8.push(v);
@@ -36,26 +33,15 @@ function cellsOf(piece, x) {
   return out;
 }
 
-/** Mapa de portones (36 celdas): -1 si no hay portón, o el tinte (0|1|2) si hay uno. */
-export function doorGrid(doors = []) {
-  if (!doors?.length) return null;
-  const dm = new Int8Array(N * N).fill(-1);
-  for (const [r, c, tone] of doors) dm[r * N + c] = tone;
-  return dm;
-}
-
-/** true si el estado es válido: dentro del tablero, sin solapamientos y sin pisar muros ni portones de otro tinte. */
-export function isValidState(pieces, pos, walls = [], doors = []) {
+/** true si el estado es válido: dentro del tablero, sin solapamientos y sin pisar muros. */
+export function isValidState(pieces, pos, walls = []) {
   if (pieces.length !== pos.length) return false;
   const seen = new Set(walls.map(([r, c]) => r * N + c));
-  const dm = doorGrid(doors);
   for (let i = 0; i < pieces.length; i++) {
     if (pos[i] < 0 || pos[i] + pieces[i].len > N) return false;
-    const tone = pieces[i].tone;
     for (const [r, c] of cellsOf(pieces[i], pos[i])) {
       const k = r * N + c;
       if (seen.has(k)) return false;
-      if (dm && dm[k] >= 0 && dm[k] !== tone) return false;
       seen.add(k);
     }
   }
@@ -70,37 +56,31 @@ export const gateOpen = (pieces, i, g) => {
 };
 
 /**
- * Texto compacto de un tablero: "h2.2.0 v3.1.2g0.4 h2.5.1p v2.4.0i h2.0.0t0 #3.3 d2.3.0" =
+ * Texto compacto de un tablero: "h2.2.0 v3.1.2g0.4 h2.5.1p v2.4.0i #3.3" =
  *   pieza: orientación, largo, fila/columna fija, posición; «g<fila>.<col>» = candado con esa placa;
- *   «p» = pesada; «i» = hielo; «t<tinte>» = pieza con tinte; «#<fila>.<col>» = muro; «d<fila>.<col>.<tinte>» = portón.
+ *   «p» = pesada; «i» = hielo; «#<fila>.<col>» = muro.
+ * (Los textos antiguos con portones «d…» o tintes «t…» se siguen leyendo: esas marcas se ignoran.)
  */
-export function encodeBoard(pieces, pos, walls = [], doors = []) {
+export function encodeBoard(pieces, pos, walls = []) {
   const parts = pieces.map((p, i) => {
     const suffix =
       p.kind === 'gate' ? `g${p.plate[0]}.${p.plate[1]}` : p.kind === 'heavy' ? 'p' : p.kind === 'ice' ? 'i' : '';
-    const tone = p.tone !== undefined ? `t${p.tone}` : '';
-    return `${p.o}${p.len}.${p.fix}.${pos[i]}${suffix}${tone}`;
+    return `${p.o}${p.len}.${p.fix}.${pos[i]}${suffix}`;
   });
   for (const [r, c] of walls) parts.push(`#${r}.${c}`);
-  for (const [r, c, tone] of doors) parts.push(`d${r}.${c}.${tone}`);
   return parts.join(' ');
 }
 export function decodeBoard(text) {
   const pieces = [];
   const pos = [];
   const walls = [];
-  const doors = [];
   for (const tok of text.split(' ')) {
     if (tok[0] === '#') {
       const [r, c] = tok.slice(1).split('.').map(Number);
       walls.push([r, c]);
       continue;
     }
-    if (tok[0] === 'd') {
-      const [r, c, tone] = tok.slice(1).split('.').map(Number);
-      doors.push([r, c, tone]);
-      continue;
-    }
+    if (tok[0] === 'd') continue; // portón de versiones antiguas: ya no existe
     const m = /^([hv])(\d)\.(\d)\.(\d)(?:g(\d)\.(\d)|([pi]))?(?:t(\d))?$/.exec(tok);
     if (!m) throw new Error(`Pieza ilegible: ${tok}`);
     const piece = { o: m[1], len: Number(m[2]), fix: Number(m[3]) };
@@ -109,11 +89,10 @@ export function decodeBoard(text) {
       piece.plate = [Number(m[5]), Number(m[6])];
     } else if (m[7] === 'p') piece.kind = 'heavy';
     else if (m[7] === 'i') piece.kind = 'ice';
-    if (m[8] !== undefined) piece.tone = Number(m[8]);
     pieces.push(piece);
     pos.push(Number(m[4]));
   }
-  return doors.length ? { pieces, pos, walls, doors } : { pieces, pos, walls };
+  return { pieces, pos, walls };
 }
 
 /**
@@ -165,22 +144,20 @@ export function randomBoard(rng, others, pLong, wallCount = 0) {
 }
 
 /**
- * Cambia una pieza normal (no la roja, ni candados, pesadas, hielo o con tinte) por otra colocada al azar en un hueco libre,
- * respetando muros y portones. Devuelve null si no cabe.
+ * Cambia una pieza normal (no la roja, ni candados, pesadas o hielo) por otra colocada al azar en un hueco libre,
+ * respetando los muros. Devuelve null si no cabe.
  */
 export function mutate(b, rng, pLong) {
   const n = b.pieces.length;
   const walls = b.walls || [];
-  const doors = b.doors || [];
   const pieces = b.pieces.map((p) => ({ ...p }));
   const pos = b.pos.slice();
   const normal = [];
-  for (let k = 1; k < n; k++) if (!pieces[k].kind && pieces[k].tone === undefined) normal.push(k);
+  for (let k = 1; k < n; k++) if (!pieces[k].kind) normal.push(k);
   if (!normal.length) return null;
   const i = normal[Math.floor(rng() * normal.length)];
   const g = new Uint8Array(N * N);
   for (const [r, c] of walls) g[r * N + c] = 1;
-  for (const [r, c] of doors) g[r * N + c] = 1;
   const mark = (p, x) => {
     for (let k = 0; k < p.len; k++) g[p.o === 'h' ? p.fix * N + x + k : (x + k) * N + p.fix] = 1;
   };
@@ -202,7 +179,7 @@ export function mutate(b, rng, pLong) {
     if (ok) {
       pieces[i] = { o, len, fix: o === 'h' ? r : c };
       pos[i] = x;
-      return doors.length ? { pieces, pos, walls, doors } : { pieces, pos, walls };
+      return { pieces, pos, walls };
     }
   }
   return null;
@@ -220,20 +197,14 @@ export function occupancy(pieces, pos, walls = []) {
 
 /**
  * Posiciones [mín, máx] a las que puede ir la pieza i desde `pos`: lo que deja libre el tablero (sin salirse,
- * sin atravesar piezas, muros ni portones ajenos), una sola casilla si es pesada, y ninguna si es un candado cerrado.
+ * sin atravesar piezas ni muros), una sola casilla si es pesada, y ninguna si es un candado cerrado.
  */
-export function slideRange(pieces, pos, i, walls = [], doors = []) {
+export function slideRange(pieces, pos, i, walls = []) {
   const g = occupancy(pieces, pos, walls);
   const p = pieces[i];
   const x = pos[i];
   if (p.kind === 'gate' && !gateOpen(pieces, i, g)) return [x, x];
-  const dm = doorGrid(doors);
-  const tone = p.tone ?? -1;
-  const open = (k) => {
-    const cell = p.o === 'h' ? p.fix * N + k : k * N + p.fix;
-    if (g[cell] >= 0) return false;
-    return !dm || dm[cell] < 0 || dm[cell] === tone;
-  };
+  const open = (k) => g[p.o === 'h' ? p.fix * N + k : k * N + p.fix] < 0;
   let lo = x;
   let hi = x;
   while (lo > 0 && open(lo - 1)) lo--;

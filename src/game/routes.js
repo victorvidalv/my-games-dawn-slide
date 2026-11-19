@@ -41,12 +41,12 @@ export const HEROIC_PATHS = {
   },
 };
 
-const MECHANIC_LESSONS = { w: 'wall', h: 'heavy', g: 'gate', i: 'ice', d: 'door' };
+const MECHANIC_LESSONS = { w: 'wall', h: 'heavy', g: 'gate', i: 'ice' };
 
 /** Juth combina las mecánicas previstas con otras ya enseñadas si hay tableros de esa dificultad. */
 export function juthHeroicFamily(plan, level, rating, special) {
   if (plan.boss || plan.intro) return plan.family;
-  const learned = [...'whgid'].filter((letter) => TUTORIALS[MECHANIC_LESSONS[letter]].level < level);
+  const learned = [...'whgi'].filter((letter) => TUTORIALS[MECHANIC_LESSONS[letter]].level < level);
   const candidates = Object.keys(special || {}).flatMap((family) => {
     const letters = lettersOfFamily(family);
     return letters &&

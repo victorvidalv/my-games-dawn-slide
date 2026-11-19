@@ -15,8 +15,8 @@ export const MECHANICS = {
     id: 'gate',
     icon: 'lock',
     name: 'Candado',
-    chip: 'Candado: cubre ▣',
-    tip: 'Esta pieza está atrapada. Se libera mientras OTRA pieza cubra la placa ▣ del suelo. En cuanto la tapes, el candado se abre.',
+    chip: 'Candado: cubre 🔒',
+    tip: 'Esta pieza está atrapada. Se libera mientras OTRA pieza cubra la placa 🔒 del suelo. En cuanto la tapes, el candado se abre.',
   },
   heavy: {
     id: 'heavy',
@@ -39,13 +39,6 @@ export const MECHANICS = {
     chip: 'Maleficio: salida movida',
     tip: 'Un maleficio gira el tablero: la salida ➜ cambia de lado (abajo, a la izquierda o arriba). Las piezas se oscurecen y la llave roja brilla en violeta. Todo funciona igual: solo busca hacia dónde sale la llave.',
   },
-  door: {
-    id: 'door',
-    icon: 'door',
-    name: 'Portón de color',
-    chip: 'Portón: su tinte',
-    tip: 'Solo deja pasar piezas con la gema de su mismo color y símbolo (◆ ● ▲). Para las demás funciona como una pared.',
-  },
 };
 
 /** Nivel jefe al cierre de cada una de las 10 ciudades (10, 20, ..., 100). */
@@ -56,31 +49,31 @@ export const isBossLevel = (level) => level >= 10 && level % 10 === 0;
  * (src/data/calibration.json). Cada mecánica llega con su tutorial en un nivel propio, nunca dos novedades a la vez, y después vuelve
  * cada pocos niveles sin repetir la misma mezcla; las mezclas crecen con el nivel hasta usar todas juntas al final.
  */
-const LETTER_MECH = { w: 'wall', h: 'heavy', g: 'gate', i: 'ice', d: 'door' };
-const LETTER_FAMILY = { w: 'walls', h: 'heavy', g: 'gates', i: 'ice', d: 'doors' };
+const LETTER_MECH = { w: 'wall', h: 'heavy', g: 'gate', i: 'ice' };
+const LETTER_FAMILY = { w: 'walls', h: 'heavy', g: 'gates', i: 'ice' };
 /** Nombre de la familia de tableros para unas letras de mecánicas ('' = plain; una sola = su familia clásica; varias = `combo_<letras>`). */
 export const familyOfLetters = (letters) =>
   !letters ? 'plain' : letters.length === 1 ? LETTER_FAMILY[letters] : comboKey(letters);
-/** Letras (w h g i d) de una familia; null si no es una combinación conocida. */
+/** Letras (w h g i) de una familia; null si no es una combinación conocida. */
 export const lettersOfFamily = (family) => {
   if (family === 'plain') return '';
   const single = Object.entries(LETTER_FAMILY).find(([, f]) => f === family);
   if (single) return single[0];
-  return /^combo_([whgid]+)$/.exec(family)?.[1] ?? null;
+  return /^combo_([whgi]+)$/.exec(family)?.[1] ?? null;
 };
 
 /** Niveles donde llega una mecánica nueva (con tutorial aparte): no se les suma otra novedad. */
 export const INTRO_LEVEL_LIST = Object.values(TUTORIAL_LEVELS).sort((a, b) => a - b);
 const INTRO_LEVELS = new Set(INTRO_LEVEL_LIST);
 
-/** Qué mecánicas contiene una familia (en el orden roca, pesada, candado, hielo, portón). */
+/** Qué mecánicas contiene una familia (en el orden roca, pesada, candado, hielo). */
 export const mechanicsOfFamily = (family) => [...(lettersOfFamily(family) ?? '')].map((c) => LETTER_MECH[c]);
 
 /** Plan de un nivel (1..100): {family, city, step, intro, boss, mechanics}. */
 export function levelPlan(level) {
   const city = zoneIdx(level);
   const step = ((level - 1) % 10) + 1;
-  const letters = [...'whgid'].filter((c) => lettersAt(level).includes(c)).join('');
+  const letters = [...'whgi'].filter((c) => lettersAt(level).includes(c)).join('');
   const family = familyOfLetters(letters);
   return {
     family,
@@ -121,7 +114,7 @@ export const TUTORIALS = {
     level: TUTORIAL_LEVELS.gate,
     board: 'h2.2.0 v2.3.1g5.0 h2.5.3', // candado vertical con la placa en (5,0); solo el bloque de abajo llega a ella
     steps: [
-      'Este bloque tiene candado y está atrapado. Cubre la placa ▣ con el bloque que brilla.',
+      'Este bloque tiene candado y está atrapado. Cubre la placa 🔒 con el bloque que brilla.',
       '¡La placa brilla! El candado se abrió: ahora sí puedes moverlo.',
       'Camino libre. Saca la llave roja.',
     ],
@@ -143,15 +136,6 @@ export const TUTORIALS = {
       '¡Maleficio! El tablero giró: la salida ➜ está ahora a la IZQUIERDA. Mueve el bloque que brilla.',
       'Bien. Piensa en la llave roja: ella siempre sale hacia la flecha dorada.',
       '¡Camino libre! Saca la llave roja por la izquierda.',
-    ],
-  },
-  door: {
-    level: TUTORIAL_LEVELS.door,
-    board: 'h2.2.0 v2.2.2t0 h2.0.1 d1.2.0 d4.2.1', // portón ◆ en (1,2): deja pasar al bloque ◆; el portón ● en (4,2) lo frena abajo
-    steps: [
-      'Los portones solo dejan pasar gemas de su mismo color. Primero aparta el bloque de arriba.',
-      '¡Libre! Sube el bloque azul ◆ atravesando el portón ◆.',
-      '¡Cruzó el portón! Saca la llave roja.',
     ],
   },
 };

@@ -63,11 +63,8 @@ const HEAVY_MARK =
 const ICE_MARK =
   '<span class="mk ice" title="Hielo: patina hasta el tope"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14.5" fill="#133d54" stroke="#091118" stroke-width="1.6"/><circle cx="16" cy="16" r="12.2" fill="none" stroke="#baf1ff" stroke-width="1.4"/><path d="M16 7.5v17M8.6 11.7l14.8 8.6M23.4 11.7L8.6 20.3" stroke="#e9fcff" stroke-width="2" stroke-linecap="round"/><path d="M14 9.8l2 2 2-2M14 22.2l2-2 2 2" fill="none" stroke="#8de2fc" stroke-width="1.4" stroke-linecap="round"/><circle cx="16" cy="16" r="2.5" fill="#ffffff"/></svg></span>';
 const STRAPS = '<span class="strap h"></span><span class="strap v"></span>';
-const TONE_SYM = ['◆', '●', '▲'];
-const TONE_NAMES = ['azul ◆', 'ámbar ●', 'verde ▲'];
-const toneMark = (t) => `<span class="mk tone t${t}" title="Gema ${TONE_NAMES[t]}">${TONE_SYM[t]}</span>`;
 export function buildPieces() {
-  boardEl.querySelectorAll('.piece,.wall,.door,.plate,.links,.seal-floor').forEach((e) => e.remove());
+  boardEl.querySelectorAll('.piece,.wall,.plate,.links,.seal-floor').forEach((e) => e.remove());
   boardEl.dataset.city = zoneIdx(S.G.n);
   boardEl.classList.remove('board-win');
   S.G.rot = boardRotation(S.run?.seed, S.G.n, S.G.tutorial || false); // la salida cambia de lado (derecha, abajo, izquierda, arriba)
@@ -84,19 +81,11 @@ export function buildPieces() {
     boardEl.appendChild(el);
     return el;
   });
-  S.G.doorEls = (S.G.doors || []).map(([, , tone]) => {
-    const el = document.createElement('div');
-    el.className = `door tone-${tone}`;
-    el.setAttribute('aria-label', `Portón ${TONE_NAMES[tone]}`);
-    el.innerHTML = `<i>${TONE_SYM[tone]}</i><b></b>`;
-    boardEl.appendChild(el);
-    return el;
-  });
   S.G.plateEls = S.G.pieces.map((p) => {
     if (p.kind !== 'gate') return null;
     const el = document.createElement('div');
     el.className = 'plate';
-    el.innerHTML = '<i></i>';
+    el.innerHTML = `<i><span class="plate-lk">${LOCK_SVG}</span></i>`; // el mismo candado que la pieza: se ve qué abre qué
     boardEl.appendChild(el);
     return el;
   });
@@ -117,9 +106,8 @@ export function buildPieces() {
   }
   S.G.els = S.G.pieces.map((p, i) => {
     const el = document.createElement('div');
-    const toneCls = p.tone !== undefined ? ` toned tone-${p.tone}` : '';
     el.className =
-      'piece enter ' + p.o + ' ' + (i === 0 ? 'red' : 'c' + S.G.colors[i % 8]) + (p.kind ? ' ' + p.kind : '') + toneCls;
+      'piece enter ' + p.o + ' ' + (i === 0 ? 'red' : 'c' + S.G.colors[i % 8]) + (p.kind ? ' ' + p.kind : '');
     el.style.setProperty('--dl', Math.min(i * 9, 110) + 'ms');
     const badge =
       p.kind === 'gate'
@@ -129,7 +117,7 @@ export function buildPieces() {
           : p.kind === 'ice'
             ? ICE_MARK
             : '';
-    el.innerHTML = '<div class="face"></div>' + badge + (p.tone !== undefined ? toneMark(p.tone) : '');
+    el.innerHTML = '<div class="face"></div>' + badge;
     el.addEventListener('animationend', (e) => {
       if (e.animationName === 'enter') el.classList.remove('enter');
     });
@@ -160,13 +148,6 @@ function placeStatic() {
   const s = cellPx();
   (S.G.walls || []).forEach(([r, c], k) => {
     const el = S.G.wallEls?.[k];
-    if (!el) return;
-    el.style.left = c * s + 'px';
-    el.style.top = r * s + 'px';
-    el.style.width = el.style.height = s + 'px';
-  });
-  (S.G.doors || []).forEach(([r, c], k) => {
-    const el = S.G.doorEls?.[k];
     if (!el) return;
     el.style.left = c * s + 'px';
     el.style.top = r * s + 'px';
@@ -287,23 +268,6 @@ function iceTrail(p, x0, lo, hi, s, before) {
   };
 }
 
-function blockReasonDoor(p, posVal) {
-  const doors = S.G?.doors;
-  if (!doors?.length) return -1;
-  const r = p.o === 'h' ? p.fix : posVal,
-    c = p.o === 'h' ? posVal : p.fix;
-  const k = doors.findIndex(([dr, dc, t]) => dr === r && dc === c && t !== p.tone);
-  return k;
-}
-function crossedDoorIdx(p, x0, x) {
-  const doors = S.G?.doors;
-  if (!doors?.length) return -1;
-  const a = Math.min(x0, x),
-    b = Math.max(x0, x) + p.len - 1;
-  return doors.findIndex(
-    ([r, c, t]) => t === p.tone && (p.o === 'h' ? r === p.fix && c >= a && c <= b : c === p.fix && r >= a && r <= b),
-  );
-}
 export function cancelDrag() {
   activeDrag?.cancel();
 }
@@ -318,7 +282,7 @@ function attach(el, i) {
     } catch (_) {}
     const p = S.G.pieces[i],
       s = cellPx(),
-      [lo, hi] = slideRange(S.G.pieces, S.G.pos, i, S.G.walls, S.G.doors),
+      [lo, hi] = slideRange(S.G.pieces, S.G.pos, i, S.G.walls),
       x0 = S.G.pos[i],
       rot = S.G.rot || 0,
       start = localDelta(e.clientX, e.clientY, rot, p.o);
@@ -329,7 +293,7 @@ function attach(el, i) {
       flashEl(S.G.plateEls[i], 'hint', 1500);
       sfx.locked();
       vib([30, 30, 30]);
-      $('msg').textContent = 'Está atrapada. Cubre la placa ▣ con otra pieza para abrirla.';
+      $('msg').textContent = 'Está atrapada. Cubre la placa 🔒 con otra pieza para abrirla.';
       return;
     }
     el.classList.remove('hint');
@@ -355,21 +319,9 @@ function attach(el, i) {
       const hitDir = raw < lo - 0.14 ? -1 : raw > hi + 0.14 ? 1 : 0;
       if (hitDir && hitDir !== bumped) {
         bumped = hitDir;
-        const stopPos = hitDir < 0 ? lo - 1 : hi + p.len;
-        const dk = stopPos >= 0 && stopPos < 6 ? blockReasonDoor(p, stopPos) : -1;
-        if (dk >= 0) {
-          const dt = S.G.doors[dk][2];
-          flashEl(el, 'deny', 320);
-          flashEl(S.G.doorEls[dk], 'deny-door', 450);
-          flashEl(boardEl.parentElement, 'board-shake', 200);
-          sfx.doorDeny();
-          vib([24, 30, 24]);
-          $('msg').textContent = `Portón cerrado: solo pasa la gema ${TONE_NAMES[dt]}.`;
-        } else {
-          flashEl(el, 'bump-hit', 180);
-          sfx.bump();
-          vib(10);
-        }
+        flashEl(el, 'bump-hit', 180);
+        sfx.bump();
+        vib(10);
       } else if (!hitDir) {
         bumped = 0;
       }
@@ -396,12 +348,7 @@ function attach(el, i) {
               ? sfx.iceMove
               : sfx.move)();
         landFx(el);
-        const passDoor = crossedDoorIdx(p, x0, x);
-        if (passDoor >= 0) {
-          sfx.doorOpen();
-          flashEl(S.G.doorEls[passDoor], 'door-pass', 550);
-          vib([14, 18, 22]);
-        } else if (p.kind === 'heavy') {
+        if (p.kind === 'heavy') {
           flashEl(boardEl.parentElement, 'board-thud', 180);
           vib([24, 18]);
         } else if (p.kind === 'ice') {

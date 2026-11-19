@@ -26,7 +26,7 @@ export function destinyPlan(G, share = DESTINY_SHARE) {
   const key = `${encode(G.pos)}/${share}`,
     cached = plans.get(G);
   if (cached?.key === key) return cached.plan;
-  const an = analyze(G.pieces, G.pos, 600000, G.walls || [], G.doors || []);
+  const an = analyze(G.pieces, G.pos, 600000, G.walls || []);
   let plan = null;
   const left = an?.dist.get(encode(G.pos));
   if (left > JUTH_MIN_REMAINING) {
@@ -47,7 +47,6 @@ export function destinyPlan(G, share = DESTINY_SHARE) {
           if (!next && an.dist.get(k) === distance - 1) next = { i, to, key: k };
         },
         G.walls || [],
-        G.doors || [],
       );
       if (!next) break;
       steps.push({ i: next.i, to: next.to });

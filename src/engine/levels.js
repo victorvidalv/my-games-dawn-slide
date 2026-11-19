@@ -12,9 +12,9 @@ import { boardInterest, pickInteresting, INTEREST_MAX_TARGET } from './interest.
  * `special[familia][rating-1]` trae los mismos tableros decorados con muros, candados o piezas pesadas
  * (`npm run levels:decorate`); si falta una familia se usa el tablero normal.
  */
-/** Letras (w h g i d) de una familia de tableros especiales, o null. */
-const LETTERS = { walls: 'w', heavy: 'h', gates: 'g', ice: 'i', doors: 'd' };
-const lettersOf = (f) => LETTERS[f] ?? /^combo_([whgid]+)$/.exec(f)?.[1] ?? null;
+/** Letras (w h g i) de una familia de tableros especiales, o null. */
+const LETTERS = { walls: 'w', heavy: 'h', gates: 'g', ice: 'i' };
+const lettersOf = (f) => LETTERS[f] ?? /^combo_([whgi]+)$/.exec(f)?.[1] ?? null;
 const keyOf = (l) => (l.length === 1 ? Object.keys(LETTERS).find((k) => LETTERS[k] === l) : `combo_${l}`);
 /**
  * Si una familia no tiene tableros a esa dificultad se prueba con la más parecida: primero la misma, luego las combinaciones que contienen
@@ -63,22 +63,21 @@ export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) 
   const rng = mulberry32(seed);
   const { target, pLong } = curve(rating);
   const walls = board.walls || [];
-  const doors = board.doors || [];
-  let cur = { pieces: board.pieces, pos: board.pos, walls, doors };
+  let cur = { pieces: board.pieces, pos: board.pos, walls };
   let accepted = 0;
   const hasIce = board.pieces.some((p) => p.kind === 'ice');
   let quality = null; // interés del tablero actual (solo se calcula en dificultades bajas)
   if (target <= INTEREST_MAX_TARGET) {
-    const an0 = analyze(cur.pieces, cur.pos, 600000, walls, doors);
-    if (an0) quality = boardInterest(cur.pieces, an0, target, walls, doors);
+    const an0 = analyze(cur.pieces, cur.pos, 600000, walls);
+    if (an0) quality = boardInterest(cur.pieces, an0, target, walls);
   }
   for (let t = 0; t < tries && accepted < changes; t++) {
     const cand = mutate(cur, rng, pLong);
     if (!cand) continue;
-    const an = analyze(cand.pieces, cand.pos, 600000, walls, doors);
+    const an = analyze(cand.pieces, cand.pos, 600000, walls);
     if (an && (!hasIce || an.dist.size === an.list.length) && maxDistance(an) >= target) {
       if (quality !== null) {
-        const q = boardInterest(cand.pieces, an, target, walls, doors);
+        const q = boardInterest(cand.pieces, an, target, walls);
         if (q < quality - 0.05) continue;
         quality = Math.max(quality, q);
       }
@@ -94,15 +93,14 @@ export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) 
  *  - adj: ajuste adaptativo (-2..+2) según la eficiencia del jugador en niveles anteriores.
  *  - brave: ruta aventurera → usa la siguiente distancia mayor disponible.
  * Entre los estados con ese mínimo NO elige al azar: toma uno de los más interesantes (pickInteresting), así ningún nivel es «despeja y sal».
- * Devuelve {pieces, pos, walls, doors, opt} donde opt = movimientos mínimos reales del estado elegido.
+ * Devuelve {pieces, pos, walls, opt} donde opt = movimientos mínimos reales del estado elegido.
  */
 export function buildLevel(
   board,
   { rating, adj = 0, brave = false, rng = Math.random, boost = 0, withAnalysis = false, target = curve(rating).target },
 ) {
   const walls = board.walls || [];
-  const doors = board.doors || [];
-  const an = analyze(board.pieces, board.pos, 600000, walls, doors);
+  const an = analyze(board.pieces, board.pos, 600000, walls);
   if (!an) throw new Error('Tablero sin solución');
   let maxd = 0;
   for (const d of an.dist.values()) if (d > maxd) maxd = d;
@@ -125,14 +123,13 @@ export function buildLevel(
       ? higher.reduce((a, b) => (Math.abs(b - wantBrave) < Math.abs(a - wantBrave) ? b : a))
       : normal;
   // entre los estados a esa distancia se queda con uno de los que más hacen pensar (dependencias, sentidos variados, trampas)
-  const { key } = pickInteresting(board.pieces, byDist.get(opt), an, walls, doors, { rng });
+  const { key } = pickInteresting(board.pieces, byDist.get(opt), an, walls, { rng });
   const pos = [];
   for (let i = 0, v = key; i < board.pieces.length; i++, v = Math.floor(v / 8)) pos.push(v % 8);
   return {
     pieces: board.pieces,
     pos,
     walls,
-    doors,
     opt,
     ...(brave ? { normalOpt: normal } : {}),
     ...(withAnalysis ? { analysis: an } : {}),

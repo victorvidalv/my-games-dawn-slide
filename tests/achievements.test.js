@@ -70,12 +70,12 @@ describe('estadísticas', () => {
     expect(COUNTERS.some((c) => COLLECTIONS.includes(c))).toBe(false);
   });
   it('un tablero resuelto suma perfectos, mecánicas, jefes y ciudad sin ayuda', () => {
-    const plain = { n: 3, moves: 9, opt: 8, pieces: [{}], walls: [], doors: [] };
+    const plain = { n: 3, moves: 9, opt: 8, pieces: [{}], walls: [] };
     expect(boardStats(plain)).toEqual([]);
     expect(boardStats({ ...plain, moves: 8 })).toEqual(['perfects']);
     expect(boardStats({ ...plain, walls: [[1, 1]] })).toEqual(['iceRock']);
     expect(boardStats({ ...plain, pieces: [{}, { kind: 'ice' }, { kind: 'gate' }] })).toEqual(['iceRock', 'locks']);
-    expect(boardStats({ ...plain, doors: [[0, 2, 1]] })).toEqual(['locks']);
+    expect(boardStats({ ...plain, pieces: [{}, { kind: 'gate' }] })).toEqual(['locks']);
     const boss = { ...plain, n: 20, plan: { boss: true } };
     expect(boardStats(boss, { firstLevel: 1, helpAt: 0 })).toEqual(['bosses', 'cleanCity']);
     expect(boardStats(boss, { firstLevel: 1, helpAt: 14 })).toEqual(['bosses']); // pista en esta ciudad

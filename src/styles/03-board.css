@@ -260,9 +260,8 @@
   rotate: var(--rot, 0deg);
   --unrot: calc(var(--rot, 0deg) * -1);
 }
-.frame .door i,
 .frame .seal-floor .seal-glyph,
-.frame .plate i::after {
+.frame .plate .plate-lk {
   rotate: var(--unrot, 0deg);
 }
 .frame .piece span.mk {

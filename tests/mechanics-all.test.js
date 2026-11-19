@@ -16,14 +16,14 @@ const run = (level, start = 1) => ({
   hints: 3,
   score: 0,
 });
-const allTips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_door'].map((k) => [k, true]));
+const allTips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice'].map((k) => [k, true]));
 const build = (level, start = 1) =>
   buildAdventureLevel(run(level, start), { levels: levelBank.ratings, special: specialBank, tips: allTips });
 
 /** Cada movimiento del solver coincide con lo que el jugador puede arrastrar (slideRange) en una muestra de estados alcanzables. */
 function parity(G, label, sample = 120) {
-  const { pieces, walls = [], doors = [] } = G;
-  const an = analyze(pieces, G.pos, 600000, walls, doors);
+  const { pieces, walls = [] } = G;
+  const an = analyze(pieces, G.pos, 600000, walls);
   expect(an, `${label}: con solución`).not.toBeNull();
   const g = new Int8Array(N * N);
   const tmp = new Array(pieces.length).fill(0);
@@ -32,9 +32,9 @@ function parity(G, label, sample = 120) {
     const k = an.list[q];
     const here = decode(k, pieces.length);
     const targets = pieces.map(() => new Set());
-    expand(pieces, k, tmp, g, (i, to) => targets[i].add(to), walls, doors);
+    expand(pieces, k, tmp, g, (i, to) => targets[i].add(to), walls);
     pieces.forEach((p, i) => {
-      const [lo, hi] = slideRange(pieces, here, i, walls, doors);
+      const [lo, hi] = slideRange(pieces, here, i, walls);
       for (const t of targets[i])
         expect(t >= lo && t <= hi && t !== here[i], `${label}: pieza ${i} a ${t} fuera de [${lo},${hi}]`).toBe(true);
       if (!p.kind && lo < hi) {
@@ -47,32 +47,25 @@ function parity(G, label, sample = 120) {
 }
 
 describe('mecánicas: los 100 niveles', () => {
-  it('todos los niveles se generan válidos, resolubles, con el mínimo correcto y con portones coherentes', () => {
+  it('todos los niveles se generan válidos, resolubles, con el mínimo correcto y siempre con pista', () => {
     for (const start of [1, 75]) {
       for (let level = 1; level <= 100; level++) {
         if (start !== 1 && level % 10 !== 0) continue; // el camino Experto: solo los jefes (ya se prueban todos los niveles en Normal)
         const label = `camino ${start} nivel ${level}`;
         const G = build(level, start);
-        const doors = G.doors || [];
-        expect(isValidState(G.pieces, G.pos, G.walls, doors), `${label}: estado válido`).toBe(true);
-        expect(minMoves(G.pieces, G.pos, G.walls, doors), `${label}: mínimo`).toBe(G.opt);
+        expect(isValidState(G.pieces, G.pos, G.walls), `${label}: estado válido`).toBe(true);
+        expect(minMoves(G.pieces, G.pos, G.walls), `${label}: mínimo`).toBe(G.opt);
         expect(G.limit, `${label}: límite`).toBeGreaterThan(G.opt);
         const plan = levelPlan(level);
         expect(G.plan?.boss ?? plan.boss, label).toBe(isBossLevel(level));
-        // un portón solo tiene sentido si hay una pieza de su tinte que pueda cruzarlo
-        for (const [, , tone] of doors)
-          expect(
-            G.pieces.some((p) => p.tone === tone),
-            `${label}: portón sin pieza de su tinte`,
-          ).toBe(true);
-        // las piezas con tinte no empiezan sobre portones ajenos (ya lo comprueba isValidState) y la salida no está cerrada
-        const hint = hintMove(G.pieces, G.pos, G.walls, doors);
+        // la salida no está cerrada: siempre hay una pista que acerca a la meta
+        const hint = hintMove(G.pieces, G.pos, G.walls);
         if (G.opt > 0) expect(hint, `${label}: pista`).not.toBeNull();
       }
     }
   }, 600000);
 
-  it('los movimientos del solver y los del arrastre coinciden en los niveles con portones, hielo, candados y pesadas', () => {
+  it('los movimientos del solver y los del arrastre coinciden en los niveles con hielo, candados y pesadas', () => {
     for (const level of [8, 18, 28, 38, 48, 50, 58, 64, 70, 78, 88, 100]) {
       parity(build(level), `nivel ${level}`);
     }

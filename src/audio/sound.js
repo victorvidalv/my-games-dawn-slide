@@ -324,14 +324,6 @@ export const sfx = {
     tone(150, 0.18, 'square', 0.06);
     tone(120, 0.22, 'square', 0.05, 0.1);
   },
-  doorOpen: () => {
-    [659, 988, 1319].forEach((f, i) => tone(f, 0.18, 'sine', 0.085, i * 0.04));
-    tone(1976, 0.22, 'triangle', 0.04, 0.12);
-  },
-  doorDeny: () => {
-    tone(180, 0.14, 'sawtooth', 0.06);
-    tone(135, 0.18, 'triangle', 0.07, 0.07, -35);
-  },
   bump: () => {
     noise(0.04, 0.07, 420, 'lowpass');
     tone(130, 0.08, 'sine', 0.07, 0, -20);

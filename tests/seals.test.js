@@ -28,12 +28,10 @@ const tips = {
   gate: true,
   heavy: true,
   ice: true,
-  door: true,
   tut_wall: true,
   tut_gate: true,
   tut_heavy: true,
   tut_ice: true,
-  tut_door: true,
 };
 const run = (extra = {}) => ({
   seed: 46,
@@ -51,8 +49,7 @@ const run = (extra = {}) => ({
 it('los sellos y su tipo los decide el calibrador: nunca en jefes ni en niveles de tutorial de una pieza', () => {
   expect(SEAL_LEVELS.length).toBeGreaterThanOrEqual(20);
   expect(SEAL_LEVELS.some((l) => l % 10 === 0)).toBe(false);
-  for (const mech of ['wall', 'heavy', 'gate', 'ice', 'door'])
-    expect(isSealLevel(TUTORIAL_LEVELS[mech]), mech).toBe(false);
+  for (const mech of ['wall', 'heavy', 'gate', 'ice']) expect(isSealLevel(TUTORIAL_LEVELS[mech]), mech).toBe(false);
   for (const level of SEAL_LEVELS) expect([1, 2, 3]).toContain(requestedSealTier(level));
   for (const level of [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100]) expect(isSealLevel(level)).toBe(false);
 });
@@ -79,7 +76,7 @@ for (const start of [1, 50, 75])
       expect(G.limit).toBeLessThanOrEqual(
         heroLimit(r.hero, G.opt, start, r.level, route === 'brave') + maxSealAdjustment(G.opt),
       );
-      expect(minMoves(G.pieces, G.pos, G.walls, G.doors)).toBe(G.opt);
+      expect(minMoves(G.pieces, G.pos, G.walls)).toBe(G.opt);
       expect(G.seal.requiredMoves).toBeLessThan(G.limit);
       const [row, col] = G.seal.cell;
       expect(occupancy(G.pieces, G.pos, G.walls)[row * 6 + col]).not.toBe(99);
@@ -190,7 +187,7 @@ const anyBoard = (family, from = 40) => {
   const r = special[family].findIndex((l, k) => k >= from && l.length);
   return r < 0 ? null : { raw: special[family][r][0], rating: r + 1 };
 };
-for (const family of ['plain', 'walls', 'gates', 'heavy', 'ice', 'doors', 'combo_hg', 'combo_gid'])
+for (const family of ['plain', 'walls', 'gates', 'heavy', 'ice', 'combo_hg', 'combo_gi'])
   it(`certifica el sello con reglas ${family} incluso con límite experto`, () => {
     const { raw, rating } = anyBoard(family);
     const built = buildLevel(decodeBoard(raw), { rating, brave: true, rng: mulberry32(46), withAnalysis: true });

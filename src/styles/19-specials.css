@@ -121,15 +121,53 @@
     inset 0 2px 6px #000a;
   transition: 0.25s;
 }
-.plate i::after {
-  content: '▣';
+/* Candado de la placa: el mismo candado que lleva la pieza, para que se vea que están unidos */
+.plate .plate-lk {
   position: absolute;
   inset: 0;
+  margin: auto;
   display: grid;
   place-items: center;
-  font-size: calc(var(--cell) * 0.42);
-  color: #e6c378aa;
+  width: calc(var(--cell) * 0.46);
+  height: calc(var(--cell) * 0.46);
+  border-radius: 50%;
+  background: #13212be8;
+  border: 2px solid #091118;
+  box-shadow:
+    0 0 0 1.5px #e6c378,
+    0 3px 5px #0009;
   transition: 0.25s;
+}
+.plate .lk {
+  width: 64%;
+  height: 64%;
+  fill: #f3cf7c;
+  stroke: #f3cf7c;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.plate .lk path {
+  fill: none;
+  stroke-width: 2.4;
+}
+.plate .lk .hole {
+  fill: #13212b;
+  stroke: none;
+}
+.plate:not(.on) .lk.free,
+.plate.on .lk.shut {
+  display: none;
+}
+.plate.on .plate-lk {
+  background: #123428eb;
+  box-shadow:
+    0 0 0 1.5px #7ce8ad,
+    0 0 12px #7ce8ad88;
+}
+.plate.on .lk {
+  fill: #7ce8ad;
+  stroke: #7ce8ad;
 }
 .plate.on i {
   border-style: solid;
@@ -139,10 +177,6 @@
     0 0 0 1.5px #091118,
     0 0 16px #ffd24a88,
     inset 0 0 10px #ffd24a66;
-}
-.plate.on i::after {
-  color: #fff3c0;
-  text-shadow: 0 0 10px #ffd24a;
 }
 .plate.hint i {
   animation: plate-hint 0.5s ease-in-out 3;
@@ -531,11 +565,16 @@
   font-size: 22px;
   animation: demo-gate 4s ease-in-out infinite;
 }
-.gate-demo .gate-p .lock-shut {
+.gate-demo .plate i {
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+.gate-demo :is(.gate-p, .plate i) .lock-shut {
   grid-area: 1/1;
   animation: demo-shut 4s infinite;
 }
-.gate-demo .gate-p .lock-free {
+.gate-demo :is(.gate-p, .plate i) .lock-free {
   grid-area: 1/1;
   opacity: 0;
   animation: demo-free 4s infinite;

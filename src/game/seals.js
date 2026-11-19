@@ -67,7 +67,7 @@ const searches = new WeakMap();
  * Ice may be directed: no reversibility assumptions are made. Every emitted candidate has a complete witness.
  * The deterministic state budget limits work on phones; a truncated search still only emits certified routes.
  */
-function candidatesFor(pieces, start, walls, doors, opt, an, stateCap) {
+function candidatesFor(pieces, start, walls, opt, an, stateCap) {
   const root = encode(start),
     bound = opt + maxSealDetour(opt);
   let cache = searches.get(an);
@@ -79,7 +79,6 @@ function candidatesFor(pieces, start, walls, doors, opt, an, stateCap) {
   if (cache.has(cacheKey)) return cache.get(cacheKey);
   const occupied = occupancy(pieces, start, walls),
     plates = new Set(pieces.filter((p) => p.kind === 'gate').map((p) => p.plate[0] * N + p.plate[1]));
-  const doorCells = new Set((doors || []).map(([r, c]) => r * N + c));
   const nodes = new Map([[root, { g: 0, parent: null }]]),
     queue = [root],
     candidates = new Map();
@@ -103,12 +102,11 @@ function candidatesFor(pieces, start, walls, doors, opt, an, stateCap) {
           required = g + 1 + d;
         if (i > 0)
           for (let x = Math.min(from, to); x < Math.max(from, to) + p.len; x++) {
-            // The seal starts outside its own piece and never covers a wall, pressure plate or color door.
+            // The seal starts outside its own piece and never covers a wall or pressure plate.
             if (x >= start[i] && x < start[i] + p.len) continue;
             const cell = p.o === 'h' ? [p.fix, x] : [x, p.fix],
               index = cell[0] * N + cell[1];
-            if (plates.has(index) || doorCells.has(index) || walls.some(([r, c]) => r === cell[0] && c === cell[1]))
-              continue;
+            if (plates.has(index) || walls.some(([r, c]) => r === cell[0] && c === cell[1])) continue;
             const id = `${i}:${index}`,
               previous = candidates.get(id);
             if (!previous || required < previous.required || (required === previous.required && g < previous.g)) {
@@ -133,7 +131,6 @@ function candidatesFor(pieces, start, walls, doors, opt, an, stateCap) {
         }
       },
       walls,
-      doors,
     );
   }
   const result = { candidates: [...candidates.values()], nodes, truncated };
@@ -141,7 +138,7 @@ function candidatesFor(pieces, start, walls, doors, opt, an, stateCap) {
   return result;
 }
 
-function witnessFor(candidate, nodes, pieces, walls, doors, an) {
+function witnessFor(candidate, nodes, pieces, walls, an) {
   const prefix = [];
   let key = candidate.key;
   while (nodes.get(key).parent !== null) {
@@ -166,7 +163,6 @@ function witnessFor(candidate, nodes, pieces, walls, doors, an) {
         if (!step && an.dist.get(next) === distance - 1) step = { i, to, next };
       },
       walls,
-      doors,
     );
     if (!step) throw new Error('Invalid seal winning suffix');
     prefix.push({ i: step.i, to: step.to });
@@ -179,7 +175,6 @@ export function planSeal({
   pieces,
   pos,
   walls = [],
-  doors = [],
   opt,
   limit,
   rate,
@@ -190,9 +185,9 @@ export function planSeal({
   stateCap = 20000,
 }) {
   if (!isSealLevel(level) || pos[0] === WIN_POS) return null;
-  const an = analysis || analyze(pieces, pos, 600000, walls, doors);
+  const an = analysis || analyze(pieces, pos, 600000, walls);
   if (!an) return null;
-  const search = candidatesFor(pieces, pos, walls, doors, opt, an, stateCap),
+  const search = candidatesFor(pieces, pos, walls, opt, an, stateCap),
     cap = limit + maxSealAdjustment(opt);
   const usable = search.candidates.filter((c) => c.required + 1 <= cap);
   const want = requestedSealTier(level, seed),
@@ -220,8 +215,8 @@ export function planSeal({
     collected: false,
   };
   const adjustedLimit = sealLimit(seal, limit),
-    proof = witnessFor(chosen, search.nodes, pieces, walls, doors, an);
-  if (!verifySealProof({ pieces, pos, walls, doors }, seal, proof, adjustedLimit)) return null;
+    proof = witnessFor(chosen, search.nodes, pieces, walls, an);
+  if (!verifySealProof({ pieces, pos, walls }, seal, proof, adjustedLimit)) return null;
   return {
     seal,
     limit: adjustedLimit,
@@ -249,7 +244,6 @@ export function verifySealProof(G, seal, proof, limit) {
         if (i === step.i && to === step.to) legal = true;
       },
       G.walls || [],
-      G.doors || [],
     );
     if (!legal) return false;
     const after = pos.slice();

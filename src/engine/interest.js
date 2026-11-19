@@ -18,13 +18,13 @@ import { expand } from './solver.js';
  * @param {number} key        estado inicial (clave base 8)
  * @param {{dist: Map<number, number>}} an   análisis del solver de la componente
  */
-export function interestOf(pieces, key, an, walls = [], doors = []) {
+export function interestOf(pieces, key, an, walls = []) {
   const total = an.dist.get(key);
   if (!total) return { score: 0, trivial: true, locked: 0, dirs: 0, run: 0, mix: 0, choice: 0, revisit: 0, moves: 0 };
   const pos = new Array(pieces.length).fill(0);
   const g = new Int8Array(N * N);
   const initial = new Set();
-  expand(pieces, key, pos, g, (i, y) => initial.add(i * 8 + y), walls, doors);
+  expand(pieces, key, pos, g, (i, y) => initial.add(i * 8 + y), walls);
 
   const path = [];
   let cur = key;
@@ -47,7 +47,6 @@ export function interestOf(pieces, key, an, walls = [], doors = []) {
           pick = { i, from: pos[i], to: y, nk };
       },
       walls,
-      doors,
     );
     if (!pick) break;
     choiceSum += legal ? 1 - good / legal : 0;
@@ -105,20 +104,13 @@ export const INTEREST_MAX_TARGET = 16;
  * La más interesante de una lista de claves de estado (se puntúan como mucho `sample`, repartidas por toda la lista).
  * Entre las casi empatadas con la mejor (a menos de `slack`) elige con `rng`, para que las partidas no se repitan.
  */
-export function pickInteresting(
-  pieces,
-  keys,
-  an,
-  walls = [],
-  doors = [],
-  { sample = 40, rng = null, slack = 0.04 } = {},
-) {
+export function pickInteresting(pieces, keys, an, walls = [], { sample = 40, rng = null, slack = 0.04 } = {}) {
   const step = Math.max(1, keys.length / sample);
   const offset = rng ? Math.floor(rng() * step) : 0;
   const scored = [];
   for (let x = offset; x < keys.length; x += step) {
     const key = keys[Math.floor(x)];
-    scored.push({ key, f: interestOf(pieces, key, an, walls, doors) });
+    scored.push({ key, f: interestOf(pieces, key, an, walls) });
   }
   scored.sort((a, b) => b.f.score - a.f.score || a.key - b.key);
   const top = scored.filter((s) => s.f.score >= scored[0].f.score - slack && s.f.trivial === scored[0].f.trivial);
@@ -129,7 +121,7 @@ export function pickInteresting(
  * Interés de un TABLERO para un mínimo objetivo: media, sobre las distancias que el juego puede pedir (objetivo ± 1),
  * del mejor estado inicial de cada una. 0..1; una distancia sin estados o solo con estados triviales cuenta 0.
  */
-export function boardInterest(pieces, an, target, walls = [], doors = [], per = 14) {
+export function boardInterest(pieces, an, target, walls = [], per = 14) {
   const lo = Math.max(2, target - 1);
   const hi = Math.max(lo, target + 1);
   const by = [];
@@ -138,7 +130,7 @@ export function boardInterest(pieces, an, target, walls = [], doors = [], per = 
   let sum = 0;
   for (const keys of by) {
     if (!keys.length) continue;
-    const best = pickInteresting(pieces, keys, an, walls, doors, { sample: per });
+    const best = pickInteresting(pieces, keys, an, walls, { sample: per });
     if (!best.f.trivial) sum += best.f.score;
   }
   return sum / by.length;

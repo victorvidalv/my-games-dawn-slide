@@ -46,7 +46,6 @@ const board = (over = {}) => ({
     [1, 0],
   ],
   walls: [[1, 1]],
-  doors: [],
   plan: {},
   tutorial: null,
   family: 'base',

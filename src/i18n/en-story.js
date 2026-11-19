@@ -316,12 +316,6 @@ export const EN_STORY = {
     'A padlock is just a closed sentence, Vhorn. I can read it.',
   'Hielo, Vhorn: tinta que corre. No me confundes; la leo hasta el final.':
     'Ice, Vhorn: ink that runs. You do not confuse me; I read it to the end.',
-  '¿Portones de color, Vhorn? Cada gema hallará su umbral bajo mi llama.':
-    'Color gates, Vhorn? Every gem will find its threshold beneath my flame.',
-  'Cada tinte abre un único portón, Vhorn. Ya marqué el orden.':
-    'Each hue opens a single gate, Vhorn. I have already marked the order.',
-  'Un sello cromático, Vhorn. Solo el signo de su tinta cruza el arco.':
-    'A chromatic seal, Vhorn. Only the mark of its ink crosses the arch.',
 
   /* charlas extra en minijuegos nuevos (sprint / bestmove) */
   '«Tres deslizamientos al rojo vivo. ¡Rápido!»': '“Three red-hot slides. Quick!”',
@@ -348,16 +342,13 @@ export const EN_STORY = {
   'Piezas de hielo · Turnos ajustados': 'Ice pieces · Tight turns',
   'El Maestro Relojero': 'The Master Clockmaker',
   'Guardián de la Torre Parada': 'Guardian of the Halted Tower',
-  'Portones de color · Turnos ajustados': 'Color gates · Tight turns',
   'El Juez de Escarcha': 'The Frost Judge',
   'Guardián del Paso Helado': 'Guardian of the Frozen Pass',
-  'Portones y trampa doble · Turnos ajustados': 'Gates & dual trap · Tight turns',
   'El Tejedor de Cerezos': 'The Cherry-Blossom Weaver',
   'Guardián del Jardín Mudo': 'Guardian of the Silent Garden',
   'Mecanismo doble · Turnos ajustados': 'Dual mechanism · Tight turns',
   'El Forjador de Ceniza': 'The Ash Forger',
   'Guardián de la Fragua Fría': 'Guardian of the Cold Forge',
-  'Portones y forja doble · Turnos ajustados': 'Gates & dual forge · Tight turns',
   'El Escriba del Olvido': 'The Scribe of Oblivion',
   'Guardián del Archivo Borrado': 'Guardian of the Erased Archive',
   'Todas las trampas · Turnos ajustados': 'All traps · Tight turns',

@@ -10,7 +10,7 @@ import { levelPlan } from './mechanics.js';
  *
  *  1. Reloj humano. Convierte los movimientos que da el jugador simulado en SEGUNDOS: cada movimiento cuesta ejecutarlo (arrastrar)
  *     y pensarlo; pensar cuesta más cuanto más largo es el tablero y menos habilidad se tiene. Así se puede medir la contrarreloj.
- *  2. Piezas especiales. Rocas, pesadas, candados, hielo y portones hacen que un tablero del mismo largo sea más propenso a errores
+ *  2. Piezas especiales. Rocas, pesadas, candados e hielo hacen que un tablero del mismo largo sea más propenso a errores
  *     (`FAMILY_HARD`): se aplica sobre la habilidad efectiva en los tableros de jefe.
  *  3. Duelo de jefe. Se gana si se llega a la salida DENTRO del límite de turnos y, si el jefe tiene contrarreloj, del tiempo.
  *
@@ -19,7 +19,7 @@ import { levelPlan } from './mechanics.js';
  */
 
 /** Cuánto más se equivoca el jugador en cada familia de tableros (multiplica su «1 − habilidad»). */
-const MECH_HARD = { wall: 0.05, heavy: 0.1, gate: 0.15, ice: 0.15, door: 0.18 };
+const MECH_HARD = { wall: 0.05, heavy: 0.1, gate: 0.15, ice: 0.15 };
 /** Cuánto multiplica los errores un tablero con esas mecánicas: la suma de lo que añade cada una y un 10 % más por cada pieza extra mezclada. */
 export const hardOfMechanics = (mechs) =>
   Math.round(
@@ -31,8 +31,7 @@ export const FAMILY_HARD = {
   heavy: hardOfMechanics(['heavy']),
   gates: hardOfMechanics(['gate']),
   ice: hardOfMechanics(['ice']),
-  doors: hardOfMechanics(['door']),
-  all: hardOfMechanics(['wall', 'heavy', 'gate', 'ice', 'door']),
+  all: hardOfMechanics(['wall', 'heavy', 'gate', 'ice']),
 };
 
 /** Reloj humano: segundos por movimiento = ejecutar + pensar; con una dispersión natural entre partidas. */

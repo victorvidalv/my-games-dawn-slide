@@ -54,8 +54,8 @@ export const EN_GAME = {
   /* mecánicas y tutoriales */
   'Las rocas no se mueven ni se pueden empujar. Rodéalas para abrirle camino a la llave roja.':
     "Rocks don't move and can't be pushed. Go around them to clear the red key's path.",
-  'Esta pieza está atrapada. Se libera mientras OTRA pieza cubra la placa ▣ del suelo. En cuanto la tapes, el candado se abre.':
-    'This piece is trapped. It is freed while ANOTHER piece covers the ▣ plate on the floor. As soon as you cover it, the padlock opens.',
+  'Esta pieza está atrapada. Se libera mientras OTRA pieza cubra la placa 🔒 del suelo. En cuanto la tapes, el candado se abre.':
+    'This piece is trapped. It is freed while ANOTHER piece covers the 🔒 plate on the floor. As soon as you cover it, the padlock opens.',
   'Esta pieza pesa tanto que solo avanza UNA casilla por movimiento. Planifica cada paso.':
     'This piece is so heavy it only moves ONE square per move. Plan every step.',
   'Pieza de hielo': 'Ice piece',
@@ -70,8 +70,8 @@ export const EN_GAME = {
     'This piece is heavy: it only moves ONE square per move. Move it up.',
   'Una casilla más…': 'One more square…',
   '¡Listo! Saca la llave roja.': 'Done! Get the red key out.',
-  'Este bloque tiene candado y está atrapado. Cubre la placa ▣ con el bloque que brilla.':
-    'This block is padlocked and trapped. Cover the ▣ plate with the glowing block.',
+  'Este bloque tiene candado y está atrapado. Cubre la placa 🔒 con el bloque que brilla.':
+    'This block is padlocked and trapped. Cover the 🔒 plate with the glowing block.',
   '¡La placa brilla! El candado se abrió: ahora sí puedes moverlo.':
     'The plate glows! The padlock opened: now you can move it.',
   'Camino libre. Saca la llave roja.': 'Clear path. Get the red key out.',
@@ -380,7 +380,7 @@ export const EN_GAME = {
   Rompehielos: 'Icebreaker',
   'Resuelve 25 tableros con rocas o hielo': 'Solve 25 boards with rocks or ice',
   Cerrajero: 'Locksmith',
-  'Resuelve 25 tableros con candados o portones': 'Solve 25 boards with locks or gates',
+  'Resuelve 25 tableros con candados': 'Solve 25 boards with padlocks',
   'Cazador de guardianes': 'Guardian hunter',
   'Vence a 5 jefes': 'Defeat 5 bosses',
   'Sin ayuda': 'No help needed',

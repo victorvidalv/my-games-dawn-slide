@@ -20,6 +20,7 @@ const HEROES = ['lia', 'jean', 'van'];
 const MINI_GAMES = ['catch', 'whack', 'stack', 'clock', 'rhythm', 'order', 'pairs', 'simon', 'shell'];
 const CHALLENGES = ['classic', 'frost', 'gears', 'all', 'master'];
 const COUNTERS = ['completed', 'perfects', 'mini5', 'iceRock', 'locks', 'bosses', 'cleanCity'];
+// 'tut_door' ya no existe (se quitó el portón), pero se conserva su bit para que los enlaces antiguos sigan leyéndose igual.
 const LESSONS = ['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_curse', 'tut_door'];
 const ACHIEVEMENTS = [
   'city1',

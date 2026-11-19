@@ -86,8 +86,8 @@ export const EN_UI = {
   '¡Candado abierto! Ya puedes moverla mientras la placa siga cubierta.':
     'Padlock open! You can move it as long as the plate stays covered.',
   'Sin nadie sobre la placa, el candado se cierra otra vez.': 'With nothing on the plate, the padlock closes again.',
-  'Está atrapada. Cubre la placa ▣ con otra pieza para abrirla.':
-    'It is trapped. Cover the ▣ plate with another piece to open it.',
+  'Está atrapada. Cubre la placa 🔒 con otra pieza para abrirla.':
+    'It is trapped. Cover the 🔒 plate with another piece to open it.',
   'Pesada: 1 casilla': 'Heavy: 1 square',
   'Hielo: patina hasta el tope': 'Ice: slides all the way',
   'No encuentro pista desde aquí.': "I can't find a hint from here.",
@@ -188,7 +188,6 @@ export const EN_UI = {
   'Una pieza especial': 'One special piece',
   'Dos piezas especiales': 'Two special pieces',
   'Tres piezas especiales': 'Three special pieces',
-  'Cuatro piezas especiales': 'Four special pieces',
   'Puntos de reinicio: {n}': 'Restart points: {n}',
   ninguno: 'none',
   'Empezar desde el nivel': 'Start from level',
@@ -345,7 +344,7 @@ export const EN_UI = {
   'Cada movimiento cuenta': 'Every move counts',
   'Roca fija': 'Fixed rock',
   Candado: 'Padlock',
-  'Candado: cubre ▣': 'Padlock: cover ▣',
+  'Candado: cubre 🔒': 'Padlock: cover 🔒',
   'Pieza pesada': 'Heavy piece',
   'Pesada: 1 paso': 'Heavy: 1 step',
   'Lía: Turnos de reserva': 'Lía: Reserve turns',
@@ -411,21 +410,7 @@ export const EN_UI = {
   'Lía, Portadora de la Brasa': 'Lía, Ember Bearer',
   'Jean, Vigía del Péndulo': 'Jean, Pendulum Watcher',
   'Juth, Escriba de las Runas': 'Juth, Rune Scribe',
-  /* portones de color y jefes */
-  'Portón de color': 'Color gate',
-  'Portón: su tinte': 'Gate: its hue',
-  'Solo deja pasar piezas con la gema de su mismo color y símbolo (◆ ● ▲). Para las demás funciona como una pared.':
-    'Only lets pieces with a matching color and symbol gem (◆ ● ▲) pass through. Acts like a wall for all others.',
-  'Los portones solo dejan pasar gemas de su mismo color. Primero aparta el bloque de arriba.':
-    'Color gates only let matching gems pass through. Move the top block aside first.',
-  '¡Libre! Sube el bloque azul ◆ atravesando el portón ◆.': 'Clear! Slide the blue ◆ block up through the ◆ gate.',
-  '¡Cruzó el portón! Saca la llave roja.': 'Crossed the gate! Slide out the red key.',
-  'azul ◆': 'blue ◆',
-  'ámbar ●': 'amber ●',
-  'verde ▲': 'green ▲',
-  'Gema {t}': 'Gem {t}',
-  'Portón {t}': 'Gate {t}',
-  'Portón cerrado: solo pasa la gema {t}.': 'Locked gate: only the {t} gem passes through.',
+  /* jefes */
   'JEFE DE {z} · NIVEL {l}': 'BOSS OF {z} · LEVEL {l}',
   '{t} · +30 % pts': '{t} · +30 % pts',
   'Enfrentar ➜': 'Face Boss ➜',
@@ -434,10 +419,7 @@ export const EN_UI = {
   'Piezas pesadas': 'Heavy pieces',
   'Candados y placas': 'Padlocks & plates',
   'Piezas de hielo': 'Ice pieces',
-  'Portones de color': 'Color gates',
-  'Portones y trampa doble': 'Gates & dual trap',
   'Mecanismo doble': 'Dual mechanism',
-  'Portones y forja doble': 'Gates & dual forge',
   'Todas las trampas': 'All traps',
   'Duelo final con todas las piezas': 'Final duel with all the pieces',
   'Turnos ajustados': 'Tight turns',

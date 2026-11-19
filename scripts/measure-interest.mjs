@@ -29,7 +29,7 @@ for (const start of paths) {
       for (let s = 1; s <= seeds; s++) {
         const run = { level, start, seed: s * 7919 + 13, adj: 0, route: 'safe', hero: 'lia', mode: 'p' };
         const G = buildAdventureLevel(run, { levels, special, withProof: true });
-        const f = interestOf(G.pieces, encode(G.pos), G.analysis, G.walls, G.doors);
+        const f = interestOf(G.pieces, encode(G.pos), G.analysis, G.walls);
         acc.n++;
         acc.score += f.score;
         acc.trivial += f.trivial ? 1 : 0;

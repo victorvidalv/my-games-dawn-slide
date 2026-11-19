@@ -25,13 +25,12 @@ run(['scripts/optimize-calibration.mjs']);
 console.log('\n4/4 limpiando familias sin uso…');
 const SPECIAL = new URL('../src/data/special.json', import.meta.url);
 const cal = JSON.parse(readFileSync(new URL('../src/data/calibration.json', import.meta.url), 'utf8'));
-const keyOf = (l) => ({ w: 'walls', h: 'heavy', g: 'gates', i: 'ice', d: 'doors' })[l] ?? `combo_${l}`;
+const keyOf = (l) => ({ w: 'walls', h: 'heavy', g: 'gates', i: 'ice' })[l] ?? `combo_${l}`;
 const keep = new Set([
   'walls',
   'heavy',
   'gates',
   'ice',
-  'doors',
   ...cal.levels
     .map((r) => r[0])
     .filter(Boolean)

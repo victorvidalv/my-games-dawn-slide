@@ -291,12 +291,6 @@ export const JA_STORY = {
     '錠は閉じられた一文にすぎないよ、Vhorn。わたしには読める。',
   'Hielo, Vhorn: tinta que corre. No me confundes; la leo hasta el final.':
     '氷ね、Vhorn。流れるインクだ。惑わされないよ、最後まで読むから。',
-  '¿Portones de color, Vhorn? Cada gema hallará su umbral bajo mi llama.':
-    '色の門なの、Vhorn？わたしの炎の下で、宝石はそれぞれの門を見つけるよ。',
-  'Cada tinte abre un único portón, Vhorn. Ya marqué el orden.':
-    'ひとつの色が開く門はひとつだけだ、Vhorn。順番はもう決めてある。',
-  'Un sello cromático, Vhorn. Solo el signo de su tinta cruza el arco.':
-    '色の封印ね、Vhorn。同じインクのしるしだけがアーチをくぐれる。',
   '«Tres deslizamientos al rojo vivo. ¡Rápido!»': '「真っ赤に燃える3回のスライド。急いで！」',
   '«Veo la brecha. Un solo golpe limpio.»': '「すき間が見えた。きれいな一撃で。」',
   '«Tres tableros antes de que caiga la aguja.»': '「針が落ちる前にボードを3つ。」',
@@ -319,16 +313,13 @@ export const JA_STORY = {
   'Piezas de hielo · Turnos ajustados': '氷のブロック · 手数きびしめ',
   'El Maestro Relojero': '時計職人の親方',
   'Guardián de la Torre Parada': '止まった塔の守護者',
-  'Portones de color · Turnos ajustados': '色の門 · 手数きびしめ',
   'El Juez de Escarcha': '霜の裁き手',
   'Guardián del Paso Helado': '凍った峠の守護者',
-  'Portones y trampa doble · Turnos ajustados': '門と二重の罠 · 手数きびしめ',
   'El Tejedor de Cerezos': '桜を編む者',
   'Guardián del Jardín Mudo': '物言わぬ庭の守護者',
   'Mecanismo doble · Turnos ajustados': '二重の仕掛け · 手数きびしめ',
   'El Forjador de Ceniza': '灰の鍛冶師',
   'Guardián de la Fragua Fría': '冷えた鍛冶場の守護者',
-  'Portones y forja doble · Turnos ajustados': '門と二重の炉 · 手数きびしめ',
   'El Escriba del Olvido': '忘却の書記',
   'Guardián del Archivo Borrado': '消された書庫の守護者',
   'Todas las trampas · Turnos ajustados': 'すべての罠 · 手数きびしめ',

@@ -96,7 +96,7 @@ describe('retos diarios: el tablero del día', () => {
   it('todos tienen solución, el mínimo anunciado es el real y es exactamente 5, 8 o 12 movimientos', () => {
     for (const { c, d, target, G } of built) {
       expect(isValidState(G.pieces, G.pos, G.walls), `${c.id} día ${d}`).toBe(true);
-      expect(minMoves(G.pieces, G.pos, G.walls, G.doors), `${c.id} día ${d}`).toBe(G.opt);
+      expect(minMoves(G.pieces, G.pos, G.walls), `${c.id} día ${d}`).toBe(G.opt);
       expect(G.opt, `${c.id} día ${d}`).toBe(target);
       expect(G.limit, `${c.id} día ${d}`).toBeGreaterThanOrEqual(G.opt + 2);
       expect(G).toMatchObject({
@@ -115,16 +115,15 @@ describe('retos diarios: el tablero del día', () => {
     const kinds = (G) => new Set(G.pieces.map((p) => p.kind).filter(Boolean));
     for (const { c, d, G } of built) {
       const k = kinds(G),
-        walls = G.walls.length > 0,
-        doors = G.doors.length > 0;
+        walls = G.walls.length > 0;
       if (c.id === 'classic') {
         expect(k.size, `clásico día ${d}`).toBe(0);
-        expect(walls || doors).toBe(false);
+        expect(walls).toBe(false);
       }
       if (c.id === 'frost') expect(walls || k.has('ice'), `rocas/hielo día ${d}`).toBe(true);
       if (c.id === 'gears') expect(k.has('heavy') || k.has('lock') || k.has('gate'), `mecanismos día ${d}`).toBe(true);
       if (c.id === 'all' || c.id === 'master')
-        expect(k.size + (walls ? 1 : 0) + (doors ? 1 : 0), `${c.id} día ${d}`).toBeGreaterThanOrEqual(3);
+        expect(k.size + (walls ? 1 : 0), `${c.id} día ${d}`).toBeGreaterThanOrEqual(3);
     }
     // el Maestro deja menos margen que «Todo junto» para un mínimo parecido
     const ratio = (id) => built.filter((b) => b.c.id === id).reduce((a, b) => a + b.G.limit / b.G.opt, 0) / days.length;

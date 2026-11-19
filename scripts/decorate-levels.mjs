@@ -39,7 +39,7 @@ if (!isMainThread) {
     const board = decodeBoard(text);
     const minOpt = base && !bases[base]?.[rating - 1]?.[slot] ? minReach(rating) - 2 : 0;
     const d = decorateBoard(board, family, hash32(rating, slot, family.length, 0xdec0), { minOpt });
-    parentPort.postMessage({ rating, slot, family, text: d ? encodeBoard(d.pieces, d.pos, d.walls, d.doors) : null });
+    parentPort.postMessage({ rating, slot, family, text: d ? encodeBoard(d.pieces, d.pos, d.walls) : null });
   }
   process.exit(0);
 }

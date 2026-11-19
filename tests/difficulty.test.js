@@ -90,7 +90,7 @@ describe('dificultad: la curva calibrada se siente apropiada', () => {
 });
 
 describe('calendario de piezas especiales (calibrado)', () => {
-  const ORDER = ['wall', 'heavy', 'gate', 'ice', 'door'];
+  const ORDER = ['wall', 'heavy', 'gate', 'ice'];
   const plans = Array.from({ length: 100 }, (_, i) => levelPlan(i + 1));
   it('cada mecánica llega en su nivel de tutorial, solas, una tras otra y nunca antes', () => {
     const lv = ORDER.map((m) => TUTORIAL_LEVELS[m]);
@@ -144,16 +144,16 @@ describe('calendario de piezas especiales (calibrado)', () => {
       for (let l = TUTORIAL_LEVELS[m] + 1; l <= TUTORIAL_LEVELS[m] + 4; l++)
         expect(hasCurse(l), `nivel ${l}`).toBe(false);
   });
-  it('las mezclas crecen: pocas al principio y todas juntas al final (el jefe 100 lleva las cinco)', () => {
+  it('las mezclas crecen: pocas al principio y todas juntas al final (el jefe 100 lleva las cuatro)', () => {
     const avg = (a, b) => {
       const s = plans.slice(a - 1, b).filter((p) => p.mechanics.length);
       return s.reduce((x, p) => x + p.mechanics.length, 0) / s.length;
     };
     expect(avg(12, 40)).toBeLessThan(avg(41, 70));
     expect(avg(41, 70)).toBeLessThan(avg(71, 100));
-    expect(avg(80, 100)).toBeGreaterThanOrEqual(3);
+    expect(avg(80, 100)).toBeGreaterThanOrEqual(2.5);
     expect(plans[99].mechanics).toEqual(ORDER);
-    expect(Math.max(...plans.slice(80).map((p) => p.mechanics.length))).toBe(5);
+    expect(Math.max(...plans.slice(80).map((p) => p.mechanics.length))).toBe(4);
   });
   it('cada mecánica sigue apareciendo hasta el final (ninguna se pierde)', () => {
     for (const m of ORDER)
@@ -169,9 +169,9 @@ describe('calendario de piezas especiales (calibrado)', () => {
   it('cada familia declara qué mecánicas contiene', () => {
     expect(mechanicsOfFamily('plain')).toEqual([]);
     expect(mechanicsOfFamily('ice')).toEqual(['ice']);
-    expect(mechanicsOfFamily('doors')).toEqual(['door']);
+    expect(mechanicsOfFamily('gates')).toEqual(['gate']);
     expect(mechanicsOfFamily('combo_hgi')).toEqual(['heavy', 'gate', 'ice']);
-    expect(mechanicsOfFamily('combo_whgid')).toEqual(ORDER);
+    expect(mechanicsOfFamily('combo_whgi')).toEqual(ORDER);
   });
   it('calcGain y gainFor coinciden sin bonos extra', () => {
     const base = calcGain(40, 15, 15, 0).total;

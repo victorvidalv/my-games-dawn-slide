@@ -117,7 +117,7 @@ export function markStat(store, name, key) {
   return true;
 }
 /**
- * Contadores que suben al resolver un tablero de Aventura. `board`: el tablero (n, moves, opt, pieces, walls, doors, plan);
+ * Contadores que suben al resolver un tablero de Aventura. `board`: el tablero (n, moves, opt, pieces, walls, plan);
  * `run`: la partida (firstLevel, nivel en que empezó; helpAt, último nivel en que se usó una pista o se saltó un tablero).
  */
 export function boardStats(board, run = {}) {
@@ -125,7 +125,7 @@ export function boardStats(board, run = {}) {
     n = board.n;
   if (board.moves <= board.opt) out.push('perfects');
   if (board.walls?.length || board.pieces?.some((p) => p.kind === 'ice')) out.push('iceRock');
-  if (board.doors?.length || board.pieces?.some((p) => p.kind === 'gate')) out.push('locks');
+  if (board.pieces?.some((p) => p.kind === 'gate')) out.push('locks');
   if (board.plan?.boss) out.push('bosses');
   if (n % 10 === 0 && (run.firstLevel ?? Infinity) <= n - 9 && (run.helpAt || 0) < n - 9) out.push('cleanCity'); // sus 10 niveles, sin ayuda
   return out;
@@ -282,7 +282,7 @@ export const ACHIEVEMENTS = [
     id: 'locks',
     group: 'mastery',
     name: 'Cerrajero',
-    desc: 'Resuelve 25 tableros con candados o portones',
+    desc: 'Resuelve 25 tableros con candados',
     stat: 'locks',
     goal: 25,
     reward: ['key', 'iron'],

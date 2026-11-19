@@ -86,7 +86,6 @@ export function snapshotRescue(G) {
     rate: G.rate,
     pieces: G.pieces.map((p) => ({ ...p })),
     walls: (G.walls || []).map((w) => w.slice()),
-    doors: (G.doors || []).map((d) => d.slice()),
     start: G.start.slice(),
     opt: G.opt,
     limit: G.limit - (G.bought || 0),

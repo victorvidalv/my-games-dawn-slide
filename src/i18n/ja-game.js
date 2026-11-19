@@ -49,8 +49,8 @@ export const JA_GAME = {
   'El erudito, acompañante de Juth': '学者、Juth の相棒',
   'Las rocas no se mueven ni se pueden empujar. Rodéalas para abrirle camino a la llave roja.':
     '岩は動かず、押すこともできません。よけて赤い鍵の道を開きましょう。',
-  'Esta pieza está atrapada. Se libera mientras OTRA pieza cubra la placa ▣ del suelo. En cuanto la tapes, el candado se abre.':
-    'このブロックは閉じ込められています。別のブロックが床のプレート ▣ を覆っている間だけ動かせます。覆ったとたんに錠が開きます。',
+  'Esta pieza está atrapada. Se libera mientras OTRA pieza cubra la placa 🔒 del suelo. En cuanto la tapes, el candado se abre.':
+    'このブロックは閉じ込められています。別のブロックが床のプレート 🔒 を覆っている間だけ動かせます。覆ったとたんに錠が開きます。',
   'Esta pieza pesa tanto que solo avanza UNA casilla por movimiento. Planifica cada paso.':
     'このブロックはとても重く、1手で1マスしか進めません。一手ずつ計画しましょう。',
   'Pieza de hielo': '氷のブロック',
@@ -65,8 +65,8 @@ export const JA_GAME = {
     'このブロックは重い：1手で1マスだけ進みます。上へ動かそう。',
   'Una casilla más…': 'あと1マス…',
   '¡Listo! Saca la llave roja.': 'できた！赤い鍵を出そう。',
-  'Este bloque tiene candado y está atrapado. Cubre la placa ▣ con el bloque que brilla.':
-    'このブロックは錠がかかって動けません。光っているブロックでプレート ▣ を覆おう。',
+  'Este bloque tiene candado y está atrapado. Cubre la placa 🔒 con el bloque que brilla.':
+    'このブロックは錠がかかって動けません。光っているブロックでプレート 🔒 を覆おう。',
   '¡La placa brilla! El candado se abrió: ahora sí puedes moverlo.':
     'プレートが光った！錠が開いたので、もう動かせます。',
   'Camino libre. Saca la llave roja.': '道が開いた。赤い鍵を出そう。',
@@ -365,7 +365,7 @@ export const JA_GAME = {
   Rompehielos: '氷を砕く者',
   'Resuelve 25 tableros con rocas o hielo': '岩か氷のある盤面を 25 回解く',
   Cerrajero: '鍵師',
-  'Resuelve 25 tableros con candados o portones': '錠か門のある盤面を 25 回解く',
+  'Resuelve 25 tableros con candados': '錠のある盤面を 25 回解く',
   'Cazador de guardianes': '守護者狩り',
   'Vence a 5 jefes': 'ボスを 5 体倒す',
   'Sin ayuda': '助けはいらない',

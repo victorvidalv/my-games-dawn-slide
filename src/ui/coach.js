@@ -19,7 +19,6 @@ function mechanicsPresent(G) {
   if (G.pieces.some((p) => p.kind === 'gate')) out.push('gate');
   if (G.pieces.some((p) => p.kind === 'heavy')) out.push('heavy');
   if (G.pieces.some((p) => p.kind === 'ice')) out.push('ice');
-  if ((G.doors || []).length) out.push('door');
   return out;
 }
 
@@ -47,11 +46,10 @@ const DEMO = {
   bosstime: '<div class="mini boss-demo"><span>⏳</span><div class="bd-bar"><i></i></div><b>1:30</b></div>',
   seal: `<div class="mini tools-demo"><span>${icon('seal1')}</span><b>→</b><span>${icon('seal2')}</span><b>→</b><span>${icon('seal3')}</span></div>`,
   wall: '<div class="mini"><div class="wall demo"><i></i></div><div class="mp red bump"></div></div>',
-  gate: '<div class="mini gate-demo"><div class="plate demo"><i></i></div><div class="mp blk slide-onto"></div><div class="mp gate-p"><span class="lock-shut">🔒</span><span class="lock-free">🔓</span></div></div>',
+  gate: '<div class="mini gate-demo"><div class="plate demo"><i><span class="lock-shut">🔒</span><span class="lock-free">🔓</span></i></div><div class="mp blk slide-onto"></div><div class="mp gate-p"><span class="lock-shut">🔒</span><span class="lock-free">🔓</span></div></div>',
   heavy: '<div class="mini heavy-demo"><div class="mp heavy-p"><b>1</b></div><span class="steps">▸ ▹ ▹</span></div>',
   ice: '<div class="mini ice-demo"><div class="mp ice-p">❄</div><div class="wall demo"><i></i></div><span class="glide">» »</span></div>',
   curse: '<div class="mini curse-demo"><div class="mp curse-p"></div><span class="curse-spin">➜</span></div>',
-  door: '<div class="mini door-demo"><div class="door-arch"><i>◆</i></div><div class="mp door-p"><b>◆</b></div></div>',
 };
 
 function tipFor(id) {
@@ -153,7 +151,7 @@ function show(ids, done) {
 function pointAtNextMove(prefix = '', custom = null) {
   const G = S.G;
   if (!G || G.done) return;
-  const h = hintMove(G.pieces, G.pos, G.walls, G.doors);
+  const h = hintMove(G.pieces, G.pos, G.walls);
   if (!h) return;
   const p = G.pieces[h.i];
   const dir = p.o === 'h' ? (h.to > h.from ? 'derecha' : 'izquierda') : h.to > h.from ? 'abajo' : 'arriba';

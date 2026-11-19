@@ -73,7 +73,7 @@ async function exportJson() {
     saved_at: new Date().toISOString(),
     note: 'Salida del calibrador. 0 = no, 1 = aparece, 2 = aparece y con tutorial aparte. Los mínimos son turnos mínimos objetivo por camino.',
     levels: Object.fromEntries(rows.map((r) => [r.level, {
-      mechanics: Object.fromEntries(['wall', 'heavy', 'gate', 'ice', 'door'].map((k) => [k, r[k]])),
+      mechanics: Object.fromEntries(['wall', 'heavy', 'gate', 'ice'].map((k) => [k, r[k]])),
       curse: r.curse,
       seal: r.seal3 ? { tier: 3, tutorial: r.seal3 === 2 } : r.seal2 ? { tier: 2, tutorial: r.seal2 === 2 } : r.seal1 ? { tier: 1, tutorial: r.seal1 === 2 } : null,
       min: { normal: r.min_normal, hard: r.min_hard, expert: r.min_expert },

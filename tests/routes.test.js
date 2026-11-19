@@ -128,7 +128,7 @@ describe('tableros de los caminos heroicos', () => {
       const brave = board('jean', start, 11, 'brave');
       expect(brave.family).toBe(normal.family);
       expect(brave.opt).toBeGreaterThan(normal.opt);
-      expect(minMoves(brave.pieces, brave.pos, brave.walls, brave.doors)).toBe(brave.opt);
+      expect(minMoves(brave.pieces, brave.pos, brave.walls)).toBe(brave.opt);
     }
   });
 
@@ -138,7 +138,7 @@ describe('tableros de los caminos heroicos', () => {
       const brave = board('van', start, 24, 'brave');
       expect(normal.family).toBe('heavy');
       expect(brave.plan.mechanics).toEqual(['wall', 'heavy']);
-      expect(minMoves(brave.pieces, brave.pos, brave.walls, brave.doors)).toBe(brave.opt);
+      expect(minMoves(brave.pieces, brave.pos, brave.walls)).toBe(brave.opt);
     }
     const tutorialRun = { ...run('van'), seed: 46, level: TUTORIALS.wall.level, adj: 0 };
     expect(buildAdventureLevel(tutorialRun, { ...banks, tips: {} }).tutorial).toBe('wall');

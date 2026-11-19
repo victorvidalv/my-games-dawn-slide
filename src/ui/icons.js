@@ -100,11 +100,6 @@ const BODIES = {
     <path d="M16 9.5v13M10.4 12.7l11.2 6.6M21.6 12.7l-11.2 6.6" stroke="#185978" stroke-width="1.8"/>
     <circle cx="16" cy="16" r="2.2" fill="#e9fcff" stroke="#185978" stroke-width="1.2"/>`,
 
-  /** Portón de color: arco con gema central. */
-  door: `<path d="M7 27V14a9 9 0 0 1 18 0v13" fill="none" stroke="${BRASS}" stroke-width="3.2"/>
-    <path d="M11.5 14.5v12M16 14v12.5M20.5 14.5v12" stroke="#5ec7ff" stroke-width="1.8" opacity=".85"/>
-    <path d="M16 5l3.2 4-3.2 4-3.2-4z" fill="#5ec7ff"/>`,
-
   /** Corona: los jefes. */
   crown: `<path d="M4.6 24.2L3.2 10.6l6.6 5.6L16 6.4l6.2 9.8 6.6-5.6-1.4 13.6z" fill="#f3c75a"/>
     <rect x="4.6" y="24.2" width="22.8" height="3.6" rx="1.4" fill="${BRASS_DK}"/>

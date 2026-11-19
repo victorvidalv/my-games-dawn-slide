@@ -20,7 +20,7 @@ import { bonusTurns, heroLimit } from '../src/game/heroes.js';
 import { ZONE_THEMES } from '../src/audio/themes.js';
 
 const LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-const tips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_door'].map((k) => [k, true]));
+const tips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice'].map((k) => [k, true]));
 const build = (level, mode = 'c') =>
   buildAdventureLevel(
     { seed: 46, hero: 'lia', start: 1, level, route: 'normal', mode, adj: 0, hints: 3, score: 0 },
@@ -137,7 +137,6 @@ describe('jefes: niveles generados', () => {
         rate: G.rate,
         pieces: G.pieces,
         walls: G.walls,
-        doors: G.doors,
         pos: G.pos,
         start: G.start,
         opt: G.opt,

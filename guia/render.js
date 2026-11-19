@@ -142,9 +142,8 @@ export function renderGuide(lang) {
         <p class="section-intro">${g.mechanicsIntro}</p>
         <div class="mechanics-grid">
           <div>${figure(28, g.rockShot)}<dl>${feature('rock', '▪')}${feature('heavy', '1')}</dl></div>
-          <div>${figure(65, g.iceShot)}<dl>${feature('gate', '▣')}${feature('ice', '❄')}</dl></div>
+          <div>${figure(65, g.iceShot)}<dl>${feature('gate', '🔒')}${feature('ice', '❄')}</dl></div>
         </div>
-        <dl class="more-mechanics">${feature('door', '◆')}</dl>
       </section>
 
       <section id="maleficios" class="section feature-section">

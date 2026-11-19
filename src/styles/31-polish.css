@@ -207,7 +207,6 @@
 }
 #board.board-out .piece .mk,
 #board.board-out .wall,
-#board.board-out .door,
 #board.board-out .plate,
 #board.board-out .links,
 #board.board-out .seal-floor {
@@ -901,7 +900,7 @@ button.primary::after {
     radial-gradient(ellipse at 28% 18%, #fff3d43d, #fff3d400 58%),
     linear-gradient(160deg, color-mix(in oklab, var(--a) 74%, #d9b47c), color-mix(in oklab, var(--b) 78%, #3b2a20));
 }
-.piece:not(.toned) .face {
+.piece .face {
   box-shadow:
     0 4px 0 #091118,
     0 7px 11px #0006,
