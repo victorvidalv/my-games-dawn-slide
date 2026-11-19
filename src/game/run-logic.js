@@ -4,6 +4,8 @@
  * partida (`run`) y el tablero (`G`) y los modifica o devuelve el resultado. `session.js` las orquesta y la UI pinta.
  */
 import { MAX_LEVEL } from '../engine/difficulty.js';
+import { encodeBoard, isValidState } from '../engine/board.js';
+import { analyze } from '../engine/solver.js';
 import { zoneIdx } from '../data/zones.js';
 import { clearRewards, snapshotRescue } from './heroes.js';
 import { canPaidRevive, hasRevive, shopBoardKey, useFreeRetry, useRevive } from './shop.js';
@@ -84,19 +86,34 @@ export function dailyEntry(progress, targets, index) {
   return { boards, attempt, index };
 }
 
+/** Huella del tablero (piezas, inicio y rocas): distingue un tablero de otro aunque tengan las mismas piezas. */
+export const boardKey = (G) => encodeBoard(G.pieces, G.start, G.walls || []);
+
 /** Posición en curso del reto diario, para retomarla si se cierra el juego. */
 export const dailyAttempt = (daily, G) => ({
   index: daily.index,
+  key: boardKey(G),
   pos: G.pos.slice(),
   moves: G.moves,
   hist: copyRows(G.hist),
 });
 
+/**
+ * ¿Sirve este intento guardado para el tablero G? Con huella, solo si es el mismo tablero. Los intentos guardados antes de
+ * la huella se aceptan si todas sus posiciones (la actual y las de deshacer) son legales en G y desde ahí hay solución:
+ * así un intento de un tablero que ya no existe nunca deja piezas encima de una roca o de otra pieza.
+ */
+function attemptFits(G, saved) {
+  if (saved.key) return saved.key === boardKey(G);
+  const walls = G.walls || [];
+  const legal = (pos) => pos.length === G.pos.length && isValidState(G.pieces, pos, walls);
+  return legal(saved.pos) && (saved.hist || []).every(legal) && !!analyze(G.pieces, saved.pos, 600000, walls);
+}
+
 /** Un intento guardado del reto vale solo si es del mismo tablero y aún le quedan movimientos. */
 export function restoreDailyAttempt(G, daily) {
   const saved = daily?.attempt;
-  if (!saved || saved.index !== daily.index || saved.moves >= G.limit || saved.pos.length !== G.pos.length)
-    return false;
+  if (!saved || saved.index !== daily.index || saved.moves >= G.limit || !attemptFits(G, saved)) return false;
   Object.assign(G, { pos: saved.pos.slice(), moves: saved.moves, hist: copyRows(saved.hist) });
   return true;
 }
@@ -206,7 +223,7 @@ export function applySkip(run, G) {
  */
 export function resolveFail(run, G, why) {
   if (run.daily) {
-    run.daily.attempt = { index: run.daily.index, pos: G.start.slice(), moves: 0, hist: [] };
+    run.daily.attempt = { index: run.daily.index, key: boardKey(G), pos: G.start.slice(), moves: 0, hist: [] };
     run.rescue = { ...snapshotRescue(G), kind: 'daily' };
     return 'daily';
   }

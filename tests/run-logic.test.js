@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { decodeBoard } from '../src/engine/board.js';
 import {
   acceptRescue,
   applyMove,
@@ -21,6 +22,7 @@ import {
   resetBoardForRevive,
   resolveFail,
   restoreDailyAttempt,
+  boardKey,
   snapshotBoard,
   storeBoard,
   updateBest,
@@ -138,14 +140,49 @@ describe('guardado del tablero', () => {
   });
 
   it('el intento del reto se restaura solo en su tablero y con movimientos libres', () => {
-    const attempt = { index: 0, pos: [3, 4], moves: 2, hist: [[0, 0]] };
-    const G = board({ moves: 0 });
+    const real = () => ({
+      ...decodeBoard('h2.2.0 v2.3.2 h2.4.3 #1.3'),
+      start: [0, 2, 3],
+      moves: 0,
+      hist: [],
+      limit: 20,
+    });
+    const G = real();
+    G.pos = [0, 2, 3];
+    const key = boardKey(G);
+    const attempt = {
+      index: 0,
+      key,
+      pos: [1, 2, 0],
+      moves: 2,
+      hist: [
+        [0, 2, 3],
+        [0, 2, 0],
+      ],
+    };
     expect(restoreDailyAttempt(G, { index: 0, attempt })).toBe(true);
-    expect(G).toMatchObject({ pos: [3, 4], moves: 2 });
-    expect(restoreDailyAttempt(board(), { index: 1, attempt })).toBe(false);
-    expect(restoreDailyAttempt(board({ limit: 2 }), { index: 0, attempt })).toBe(false);
-    expect(restoreDailyAttempt(board(), { index: 0, attempt: { ...attempt, pos: [1] } })).toBe(false);
-    expect(restoreDailyAttempt(board(), undefined)).toBe(false);
+    expect(G).toMatchObject({ pos: [1, 2, 0], moves: 2 });
+    expect(restoreDailyAttempt(real(), { index: 1, attempt })).toBe(false);
+    expect(restoreDailyAttempt({ ...real(), limit: 2 }, { index: 0, attempt })).toBe(false);
+    expect(restoreDailyAttempt(real(), undefined)).toBe(false);
+  });
+
+  it('un intento de otro tablero (por ejemplo, el de antes de una actualización) no se aplica', () => {
+    const other = { ...decodeBoard('h2.2.0 v2.3.1 h2.4.3 #1.3'), start: [0, 1, 3] };
+    const attempt = { index: 0, key: boardKey(other), pos: [0, 2, 0], moves: 1, hist: [[0, 2, 3]] };
+    const G = { ...decodeBoard('h2.2.0 v2.3.2 h2.4.3 #1.3'), start: [0, 2, 3], moves: 0, hist: [], limit: 20 };
+    expect(restoreDailyAttempt(G, { index: 0, attempt })).toBe(false);
+    expect(G.pos).toEqual([0, 2, 3]);
+  });
+
+  it('los intentos antiguos sin huella solo se aplican si todas sus posiciones son legales en este tablero', () => {
+    const G = () => ({ ...decodeBoard('h2.2.0 v2.3.2 h2.4.3 #1.3'), start: [0, 2, 3], moves: 0, hist: [], limit: 20 });
+    const legacy = (pos, hist = []) => ({ index: 0, attempt: { index: 0, pos, moves: 1, hist } });
+    expect(restoreDailyAttempt(G(), legacy([0, 2, 0], [[0, 2, 3]]))).toBe(true);
+    expect(restoreDailyAttempt(G(), legacy([0, 3, 3]))).toBe(false); // la pieza vertical quedaría sobre otra
+    expect(restoreDailyAttempt(G(), legacy([0, 1, 3]))).toBe(false); // ...o sobre la roca
+    expect(restoreDailyAttempt(G(), legacy([0, 2, 0], [[0, 1, 3]]))).toBe(false); // deshacer llevaría a la roca
+    expect(restoreDailyAttempt(G(), legacy([1]))).toBe(false);
   });
 });
 
@@ -254,7 +291,8 @@ describe('derrota', () => {
   it('el reto diario siempre se puede repetir desde el inicio', () => {
     const run = { daily: { index: 1, boards: [] } };
     expect(resolveFail(run, board(), 'limit')).toBe('daily');
-    expect(run.daily.attempt).toEqual({ index: 1, pos: [0, 0], moves: 0, hist: [] });
+    expect(run.daily.attempt).toMatchObject({ index: 1, pos: [0, 0], moves: 0, hist: [] });
+    expect(run.daily.attempt.key).toBe(boardKey(board()));
     expect(run.rescue.kind).toBe('daily');
   });
 
