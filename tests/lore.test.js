@@ -65,8 +65,8 @@ describe('mundo e historia: Thyes, año 4133', () => {
   });
 
   it('la tienda, el revivir y la pantalla de derrota hablan el mismo idioma del mundo', () => {
-    expect(read('src/ui/shop.js')).toMatch(/Thyes/);
-    expect(read('src/ui/shop.js')).toMatch(/Kogn/);
+    expect(read('src/data/merchant.js')).toMatch(/Thyes/);
+    expect(read('src/data/merchant.js')).toMatch(/Kogn/);
     expect(read('index.html')).toMatch(/Viejo de la Fragua/);
     expect(read('src/ui/finale.js')).toMatch(/LA NOCHE SE CIERRA/);
   });
