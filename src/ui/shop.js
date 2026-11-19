@@ -112,6 +112,7 @@ export function openShop() {
     modal.classList.remove('show');
     $('shopClose').onclick = null;
     release();
+    updateHeroHud(); // la pista y el poder se pintaron desactivados mientras la tienda estaba abierta
   };
   render();
   modal.classList.add('show');
