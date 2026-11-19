@@ -6,14 +6,16 @@ const SAVE_KEY = 'desbloquea.rogue.v2';
 const saved = () => JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
 const shown = (app, id) => app.$(id).classList.contains('show');
 /** Partida guardada en el nivel 3 del camino Normal (sin tablero en curso). */
-const savedRun = { run: { level: 3, seed: 123, start: 1, mode: 'c', hero: 'van', score: 50, hints: 2, adj: 0, streak: 0 } };
+const savedRun = {
+  run: { level: 3, seed: 123, start: 1, mode: 'c', hero: 'van', score: 50, hints: 2, adj: 0, streak: 0 },
+};
 
 describe('interfaz: aventura', () => {
   it('«Continuar» retoma la partida guardada y pinta el HUD del nivel', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
     await untilPlayable(app, 3);
-    expect(app.S.run).toMatchObject({ hero: 'van', level: 3, revive: 0 });   // restoreRun completa los campos que faltan
+    expect(app.S.run).toMatchObject({ hero: 'van', level: 3, revive: 0 }); // restoreRun completa los campos que faltan
     expect(app.$('lvl').textContent).toBe('3');
     expect(app.$('lim').textContent).toBe(String(app.S.G.limit));
     expect(app.$('board').querySelectorAll('.piece').length).toBe(app.S.G.pieces.length);

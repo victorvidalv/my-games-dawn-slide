@@ -76,7 +76,8 @@ export const gateOpen = (pieces, i, g) => {
  */
 export function encodeBoard(pieces, pos, walls = [], doors = []) {
   const parts = pieces.map((p, i) => {
-    const suffix = p.kind === 'gate' ? `g${p.plate[0]}.${p.plate[1]}` : p.kind === 'heavy' ? 'p' : p.kind === 'ice' ? 'i' : '';
+    const suffix =
+      p.kind === 'gate' ? `g${p.plate[0]}.${p.plate[1]}` : p.kind === 'heavy' ? 'p' : p.kind === 'ice' ? 'i' : '';
     const tone = p.tone !== undefined ? `t${p.tone}` : '';
     return `${p.o}${p.len}.${p.fix}.${pos[i]}${suffix}${tone}`;
   });
@@ -103,8 +104,10 @@ export function decodeBoard(text) {
     const m = /^([hv])(\d)\.(\d)\.(\d)(?:g(\d)\.(\d)|([pi]))?(?:t(\d))?$/.exec(tok);
     if (!m) throw new Error(`Pieza ilegible: ${tok}`);
     const piece = { o: m[1], len: Number(m[2]), fix: Number(m[3]) };
-    if (m[5] !== undefined) { piece.kind = 'gate'; piece.plate = [Number(m[5]), Number(m[6])]; }
-    else if (m[7] === 'p') piece.kind = 'heavy';
+    if (m[5] !== undefined) {
+      piece.kind = 'gate';
+      piece.plate = [Number(m[5]), Number(m[6])];
+    } else if (m[7] === 'p') piece.kind = 'heavy';
     else if (m[7] === 'i') piece.kind = 'ice';
     if (m[8] !== undefined) piece.tone = Number(m[8]);
     pieces.push(piece);
@@ -240,7 +243,8 @@ export function slideRange(pieces, pos, i, walls = [], doors = []) {
 }
 
 /** ¿Está esta pieza candada ahora mismo? (para el aviso y la animación) */
-export const isLocked = (pieces, pos, i, walls = []) => pieces[i].kind === 'gate' && !gateOpen(pieces, i, occupancy(pieces, pos, walls));
+export const isLocked = (pieces, pos, i, walls = []) =>
+  pieces[i].kind === 'gate' && !gateOpen(pieces, i, occupancy(pieces, pos, walls));
 
 /** Con este arrastre mínimo (en casillas) la pieza ya cambia de casilla: los arrastres cortos no se «pegan». */
 export const DRAG_MIN = 0.3;

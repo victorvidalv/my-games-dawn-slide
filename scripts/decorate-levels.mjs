@@ -31,8 +31,11 @@ if (!isMainThread) {
   };
   for (const { rating, slot, family } of jobs) {
     const base = familySpec(family).base;
-    const text = base ? (bases[base]?.[rating - 1]?.[slot] || pickWallFallback(rating, slot)) : ratings[rating - 1][slot];
-    if (!text) { parentPort.postMessage({ rating, slot, family, text: null }); continue; }
+    const text = base ? bases[base]?.[rating - 1]?.[slot] || pickWallFallback(rating, slot) : ratings[rating - 1][slot];
+    if (!text) {
+      parentPort.postMessage({ rating, slot, family, text: null });
+      continue;
+    }
     const board = decodeBoard(text);
     const minOpt = base && !bases[base]?.[rating - 1]?.[slot] ? minReach(rating) - 2 : 0;
     const d = decorateBoard(board, family, hash32(rating, slot, family.length, 0xdec0), { minOpt });
@@ -41,46 +44,67 @@ if (!isMainThread) {
   process.exit(0);
 }
 
-const arg = (name, def) => { const i = process.argv.indexOf('--' + name); return i > 0 ? process.argv[i + 1] : def; };
+const arg = (name, def) => {
+  const i = process.argv.indexOf('--' + name);
+  return i > 0 ? process.argv[i + 1] : def;
+};
 const [from, to] = String(arg('only', '1-100')).split('-').map(Number);
 const { ratings } = JSON.parse(readFileSync(BANK, 'utf8'));
 const out = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : {};
 const allFamilies = Object.keys(FAMILIES);
 const rawFam = arg('families', '');
-const families = rawFam ? rawFam.split(',').map((s) => s.trim()).filter((f) => familySpec(f)) : arg('plan', '') ? [] : allFamilies;
+const families = rawFam
+  ? rawFam
+      .split(',')
+      .map((s) => s.trim())
+      .filter((f) => familySpec(f))
+  : arg('plan', '')
+    ? []
+    : allFamilies;
 for (const f of [...allFamilies, 'walls', ...families]) out[f] = out[f] || Array.from({ length: 100 }, () => []);
 const jobs = [];
-const planFile = arg('plan', '');   // --plan archivo.json: {familia: [dificultades]}; solo se generan esas (el calibrador calcula lo que hace falta)
+const planFile = arg('plan', ''); // --plan archivo.json: {familia: [dificultades]}; solo se generan esas (el calibrador calcula lo que hace falta)
 if (planFile) {
   const plan = JSON.parse(readFileSync(planFile, 'utf8'));
   for (const [family, rs] of Object.entries(plan)) {
     if (!familySpec(family)) continue;
     out[family] = out[family] || Array.from({ length: 100 }, () => []);
     for (const rating of rs) {
-      if (out[family][rating - 1]?.length >= 4) continue;               // ya generada
+      if (out[family][rating - 1]?.length >= 4) continue; // ya generada
       out[family][rating - 1] = [];
       ratings[rating - 1].forEach((_, slot) => jobs.push({ rating, slot, family }));
     }
     if (!families.includes(family)) families.push(family);
   }
 } else {
-for (let rating = from; rating <= (to || from); rating++) {
-  for (const f of families) out[f][rating - 1] = [];
-  ratings[rating - 1].forEach((_, slot) => { for (const family of families) jobs.push({ rating, slot, family }); });
-}
+  for (let rating = from; rating <= (to || from); rating++) {
+    for (const f of families) out[f][rating - 1] = [];
+    ratings[rating - 1].forEach((_, slot) => {
+      for (const family of families) jobs.push({ rating, slot, family });
+    });
+  }
 }
 jobs.sort((a, b) => b.rating - a.rating);
 const threads = Math.max(1, cpus().length - 1);
 let done = 0;
 let failed = 0;
-await Promise.all(Array.from({ length: threads }, (_, t) => new Promise((ok) => {
-  const w = new Worker(new URL(import.meta.url), { workerData: { jobs: jobs.filter((_, i) => i % threads === t), ratings, bases: { walls: out.walls } } });
-  w.on('message', (m) => {
-    if (m.text) out[m.family][m.rating - 1].push(m.text); else failed++;
-    if (++done % 200 === 0) console.log(`${done}/${jobs.length} (sin decorar: ${failed})`);
-  });
-  w.on('exit', ok);
-})));
-for (const f of families) out[f].forEach((l) => l.sort());      // orden estable: el resultado no depende de los hilos
+await Promise.all(
+  Array.from(
+    { length: threads },
+    (_, t) =>
+      new Promise((ok) => {
+        const w = new Worker(new URL(import.meta.url), {
+          workerData: { jobs: jobs.filter((_, i) => i % threads === t), ratings, bases: { walls: out.walls } },
+        });
+        w.on('message', (m) => {
+          if (m.text) out[m.family][m.rating - 1].push(m.text);
+          else failed++;
+          if (++done % 200 === 0) console.log(`${done}/${jobs.length} (sin decorar: ${failed})`);
+        });
+        w.on('exit', ok);
+      }),
+  ),
+);
+for (const f of families) out[f].forEach((l) => l.sort()); // orden estable: el resultado no depende de los hilos
 writeFileSync(OUT, JSON.stringify(out) + '\n');
 console.log(`Listo: ${done - failed} tableros decorados, ${failed} sin decorar → ${OUT}`);

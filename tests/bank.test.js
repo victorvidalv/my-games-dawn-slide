@@ -9,7 +9,7 @@ import { runPool, FULL } from './parallel/pool.js';
  * un solo análisis por tablero repartido entre todos los hilos, y cada test lee ese resumen.
  * (Sustituye a la validación en serie de levels.test.js y special-bank.test.js.)
  */
-const FAMILIES = Object.keys(special);   // las piezas sueltas y las combinaciones `combo_<letras>` que usa el calendario calibrado
+const FAMILIES = Object.keys(special); // las piezas sueltas y las combinaciones `combo_<letras>` que usa el calendario calibrado
 const COMBOS = FAMILIES.filter((f) => f.startsWith('combo_'));
 const RATINGS = Array.from({ length: 100 }, (_, i) => i + 1);
 
@@ -31,7 +31,7 @@ const of = (family) => results.filter((r) => r.family === family);
 beforeAll(async () => {
   const out = await runPool('board', jobs, { batch: 6 });
   results = out.map((r, i) => ({ ...r, family: jobs[i].family, text: jobs[i].text }));
-}, 1200000);   // ~9 minutos de CPU: en un runner de 4 núcleos compartido con los otros tests pesados pasa de los 5 minutos
+}, 1200000); // ~9 minutos de CPU: en un runner de 4 núcleos compartido con los otros tests pesados pasa de los 5 minutos
 
 describe('banco de tableros normales', () => {
   it('tiene tableros para las 100 dificultades', () => {
@@ -60,7 +60,10 @@ describe('banco de tableros especiales', () => {
     for (const f of FAMILIES) {
       expect(special[f], f).toHaveLength(100);
       const have = RATINGS.filter((r) => special[f][r - 1].length > 0).length;
-      if (!f.startsWith('combo_')) expect(have, `${f}: dificultades con tableros`).toBeGreaterThanOrEqual(f === 'walls' || f === 'doors' ? 80 : f === 'ice' ? 0 : 95);   // las combinaciones solo se generan a las dificultades que usa el calendario
+      if (!f.startsWith('combo_'))
+        expect(have, `${f}: dificultades con tableros`).toBeGreaterThanOrEqual(
+          f === 'walls' || f === 'doors' ? 80 : f === 'ice' ? 0 : 95,
+        ); // las combinaciones solo se generan a las dificultades que usa el calendario
       else expect(have, `${f}: dificultades con tableros`).toBeGreaterThanOrEqual(1);
     }
   });
@@ -78,7 +81,8 @@ describe('banco de tableros especiales', () => {
       for (const r of of(f)) {
         if (letters.includes('w')) expect(r.walls, `${f} ${r.text}`).toBeGreaterThan(0);
         if (letters.includes('d')) expect(r.doors, `${f} ${r.text}`).toBeGreaterThan(0);
-        for (const [c, k] of Object.entries(KIND)) if (letters.includes(c)) expect(has(r, k), `${f} ${r.text}`).toBe(true);
+        for (const [c, k] of Object.entries(KIND))
+          if (letters.includes(c)) expect(has(r, k), `${f} ${r.text}`).toBe(true);
       }
     }
   });
@@ -110,7 +114,8 @@ describe('banco de tableros especiales', () => {
   });
 
   it('el candado tiene su placa fuera de su carril y no cae sobre un muro', () => {
-    for (const r of results.filter((x) => x.kinds.includes('gate'))) expect(r.platesOk, `${r.family} ${r.rating} ${r.text}`).toBe(true);
+    for (const r of results.filter((x) => x.kinds.includes('gate')))
+      expect(r.platesOk, `${r.family} ${r.rating} ${r.text}`).toBe(true);
   });
 });
 

@@ -13,7 +13,8 @@ const run = (args, env = {}) => {
   const r = spawnSync('node', args, { stdio: 'inherit', env: { ...process.env, ...env } });
   if (r.status) process.exit(r.status);
 };
-if (!process.env.SKIP_GEN) {   // SKIP_GEN=1: saltar los pasos 1 y 2 (si los tableros ya están generados)
+if (!process.env.SKIP_GEN) {
+  // SKIP_GEN=1: saltar los pasos 1 y 2 (si los tableros ya están generados)
   console.log('1/4 optimizando el calendario…');
   run(['scripts/optimize-calibration.mjs'], { NO_FEAS: '1' });
   console.log('\n2/4 generando los tableros que faltan…');
@@ -24,8 +25,18 @@ run(['scripts/optimize-calibration.mjs']);
 console.log('\n4/4 limpiando familias sin uso…');
 const SPECIAL = new URL('../src/data/special.json', import.meta.url);
 const cal = JSON.parse(readFileSync(new URL('../src/data/calibration.json', import.meta.url), 'utf8'));
-const keyOf = (l) => ({ w: 'walls', h: 'heavy', g: 'gates', i: 'ice', d: 'doors' }[l] ?? `combo_${l}`);
-const keep = new Set(['walls', 'heavy', 'gates', 'ice', 'doors', ...cal.levels.map((r) => r[0]).filter(Boolean).map(keyOf)]);
+const keyOf = (l) => ({ w: 'walls', h: 'heavy', g: 'gates', i: 'ice', d: 'doors' })[l] ?? `combo_${l}`;
+const keep = new Set([
+  'walls',
+  'heavy',
+  'gates',
+  'ice',
+  'doors',
+  ...cal.levels
+    .map((r) => r[0])
+    .filter(Boolean)
+    .map(keyOf),
+]);
 const bank = JSON.parse(readFileSync(SPECIAL, 'utf8'));
 const dropped = Object.keys(bank).filter((k) => !keep.has(k));
 for (const k of dropped) delete bank[k];

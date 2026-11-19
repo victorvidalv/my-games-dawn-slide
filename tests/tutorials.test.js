@@ -1,7 +1,18 @@
 import { describe, it, expect } from 'vitest';
 import { TUTORIALS, tutorialFor, levelPlan } from '../src/game/mechanics.js';
 import { TUTORIAL_LEVELS } from '../src/engine/calibration.js';
-import { decodeBoard, isValidState, minMoves, hintMove, analyze, slideRange, isLocked, expand, N, encode } from '../src/engine/index.js';
+import {
+  decodeBoard,
+  isValidState,
+  minMoves,
+  hintMove,
+  analyze,
+  slideRange,
+  isLocked,
+  expand,
+  N,
+  encode,
+} from '../src/engine/index.js';
 
 const board = (t) => decodeBoard(t.board);
 
@@ -20,7 +31,7 @@ describe('tableros de aprendizaje', () => {
     expect(L('heavy')).toBeLessThan(L('gate'));
     expect(L('gate')).toBeLessThan(L('ice'));
     expect(L('ice')).toBeLessThan(L('door'));
-    expect(new Set(Object.values(TUTORIALS).map((t) => t.level)).size).toBe(6);   // nunca dos tutoriales en el mismo nivel
+    expect(new Set(Object.values(TUTORIALS).map((t) => t.level)).size).toBe(6); // nunca dos tutoriales en el mismo nivel
   });
 
   it('cada tablero es válido, se resuelve en exactamente 3 movimientos y contiene la pieza que enseña', () => {
@@ -70,8 +81,8 @@ describe('tableros de aprendizaje', () => {
     const b = board(TUTORIALS.heavy);
     const h = b.pieces.findIndex((p) => p.kind === 'heavy');
     const [lo, hi] = slideRange(b.pieces, b.pos, h, b.walls);
-    expect(hi).toBe(b.pos[h]);                 // abajo no puede (roca)
-    expect(lo).toBe(b.pos[h] - 1);             // arriba, solo una casilla aunque haya más sitio
+    expect(hi).toBe(b.pos[h]); // abajo no puede (roca)
+    expect(lo).toBe(b.pos[h] - 1); // arriba, solo una casilla aunque haya más sitio
   });
 
   it('roca: el bloque vertical solo puede bajar', () => {
@@ -88,9 +99,16 @@ describe('tableros de aprendizaje', () => {
     const [lo, hi] = slideRange(b.pieces, cleared, ice, b.walls);
     expect([lo, hi]).toEqual([0, 3]);
     const iceMoves = [];
-    expand(b.pieces, encode(cleared), new Array(3).fill(0), new Int8Array(N * N), (i, y) => {
-      if (i === ice) iceMoves.push(y);
-    }, b.walls);
+    expand(
+      b.pieces,
+      encode(cleared),
+      new Array(3).fill(0),
+      new Int8Array(N * N),
+      (i, y) => {
+        if (i === ice) iceMoves.push(y);
+      },
+      b.walls,
+    );
     expect(iceMoves).toEqual([3]);
   });
 

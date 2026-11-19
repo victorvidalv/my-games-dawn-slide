@@ -1,7 +1,10 @@
 /** Etiqueta y diferencia firmada respecto de la solución óptima. */
 export function resultRating(moves, opt) {
   const extra = Math.max(0, moves - opt);
-  return { title: extra === 0 ? 'PERFECTO' : extra <= 2 ? 'CASI' : 'MEJORABLE', delta: extra === 0 ? '0' : `−${extra}` };
+  return {
+    title: extra === 0 ? 'PERFECTO' : extra <= 2 ? 'CASI' : 'MEJORABLE',
+    delta: extra === 0 ? '0' : `−${extra}`,
+  };
 }
 
 /** Puntos base de un nivel según su dificultad. */

@@ -15,7 +15,8 @@
       out.set(n, n.nodeValue.replace(/\s+/g, ' ').trim());
     }
     for (const el of document.querySelectorAll('[aria-label],[alt],[title]')) {
-      for (const a of ['aria-label', 'alt', 'title']) if (el.getAttribute(a)) out.set(`${a}:${out.size}`, { el, a, v: el.getAttribute(a) });
+      for (const a of ['aria-label', 'alt', 'title'])
+        if (el.getAttribute(a)) out.set(`${a}:${out.size}`, { el, a, v: el.getAttribute(a) });
     }
     return out;
   };
@@ -24,7 +25,8 @@
   setLang('es');
   await new Promise((r) => setTimeout(r, 150));
   const same = new Set();
-  const allowed = /^(Lía|Jean|Juth|Don Dublón|Maela|Azhar|Tri|Vhorn|Thyes|Español|English|DAWN|SLIDE|DAWNSLIDE|Kogn|Sahrim|Ennari|Aluen|Normal|Menú?|Nivel|Zona|NORMAL|[IVX]+|[Ⅰ-Ⅻ]+|pts?|\d+.*)$/i;
+  const allowed =
+    /^(Lía|Jean|Juth|Don Dublón|Maela|Azhar|Tri|Vhorn|Thyes|Español|English|DAWN|SLIDE|DAWNSLIDE|Kogn|Sahrim|Ennari|Aluen|Normal|Menú?|Nivel|Zona|NORMAL|[IVX]+|[Ⅰ-Ⅻ]+|pts?|\d+.*)$/i;
   for (const [node, text] of en) {
     if (typeof node === 'string' || !node.isConnected) continue;
     const now = node.nodeValue.replace(/\s+/g, ' ').trim();

@@ -45,7 +45,10 @@ export function expand(pieces, key, pos, g, cb, walls = [], doors = []) {
       if (hi > x) cb(i, hi, key + (hi - x) * P8[i]);
       continue;
     }
-    if (p.kind === 'heavy') { lo = Math.max(lo, x - 1); hi = Math.min(hi, x + 1); }
+    if (p.kind === 'heavy') {
+      lo = Math.max(lo, x - 1);
+      hi = Math.min(hi, x + 1);
+    }
     for (let y = lo; y <= hi; y++) if (y !== x) cb(i, y, key + (y - x) * P8[i]);
   }
 }
@@ -66,12 +69,20 @@ export function analyze(pieces, pos0, cap = 300000, walls = [], doors = []) {
   if (!directed) {
     const seen = new Set([k0]);
     for (let q = 0; q < list.length; q++) {
-      expand(pieces, list[q], pos, g, (i, y, nk) => {
-        if (!seen.has(nk)) {
-          seen.add(nk);
-          list.push(nk);
-        }
-      }, walls, doors);
+      expand(
+        pieces,
+        list[q],
+        pos,
+        g,
+        (i, y, nk) => {
+          if (!seen.has(nk)) {
+            seen.add(nk);
+            list.push(nk);
+          }
+        },
+        walls,
+        doors,
+      );
       if (list.length > cap) return null;
     }
     const dist = new Map();
@@ -86,28 +97,44 @@ export function analyze(pieces, pos0, cap = 300000, walls = [], doors = []) {
     for (let q = 0; q < queue.length; q++) {
       const k = queue[q];
       const d = dist.get(k) + 1;
-      expand(pieces, k, pos, g, (i, y, nk) => {
-        if (!dist.has(nk)) {
-          dist.set(nk, d);
-          queue.push(nk);
-        }
-      }, walls, doors);
+      expand(
+        pieces,
+        k,
+        pos,
+        g,
+        (i, y, nk) => {
+          if (!dist.has(nk)) {
+            dist.set(nk, d);
+            queue.push(nk);
+          }
+        },
+        walls,
+        doors,
+      );
     }
     return { k0, list, dist };
   }
   const idxOf = new Map([[k0, 0]]);
   const rev = [[]];
   for (let q = 0; q < list.length; q++) {
-    expand(pieces, list[q], pos, g, (i, y, nk) => {
-      let vi = idxOf.get(nk);
-      if (vi === undefined) {
-        vi = list.length;
-        idxOf.set(nk, vi);
-        list.push(nk);
-        rev.push([]);
-      }
-      rev[vi].push(q);
-    }, walls, doors);
+    expand(
+      pieces,
+      list[q],
+      pos,
+      g,
+      (i, y, nk) => {
+        let vi = idxOf.get(nk);
+        if (vi === undefined) {
+          vi = list.length;
+          idxOf.set(nk, vi);
+          list.push(nk);
+          rev.push([]);
+        }
+        rev[vi].push(q);
+      },
+      walls,
+      doors,
+    );
     if (list.length > cap) return null;
   }
   const distIdx = new Int32Array(list.length).fill(-1);
@@ -154,14 +181,22 @@ export function hintMove(pieces, pos0, walls = [], doors = []) {
   const pos = new Array(pieces.length).fill(0);
   const g = new Int8Array(N * N);
   let best = null;
-  expand(pieces, an.k0, pos, g, (i, y, nk) => {
-    if (!best && an.dist.get(nk) === d - 1) best = { i, from: pos[i], to: y, left: d };
-  }, walls, doors);
+  expand(
+    pieces,
+    an.k0,
+    pos,
+    g,
+    (i, y, nk) => {
+      if (!best && an.dist.get(nk) === d - 1) best = { i, from: pos[i], to: y, left: d };
+    },
+    walls,
+    doors,
+  );
   return best;
 }
 
 /** Movimientos mínimos para resolver desde pos (o null si no tiene solución). */
 export function minMoves(pieces, pos, walls = [], doors = []) {
   const an = analyze(pieces, pos, 600000, walls, doors);
-  return an ? an.dist.get(an.k0) ?? null : null;
+  return an ? (an.dist.get(an.k0) ?? null) : null;
 }

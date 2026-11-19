@@ -12,6 +12,7 @@ self.onmessage = ({ data: { id, run, tips } }) => {
     const d = run.daily;
     const G = d ? buildDaily(challengeById(d.id), d.day, banks, d.index) : buildAdventureLevel(run, banks);
     self.postMessage({ id, G });
+  } catch (error) {
+    self.postMessage({ id, error: String(error?.message || error) });
   }
-  catch (error) { self.postMessage({ id, error: String(error?.message || error) }); }
 };

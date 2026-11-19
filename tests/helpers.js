@@ -19,25 +19,39 @@ export function checkBoard(board, label) {
     expect(isValidState(pieces, here, walls), `${label}: estado alcanzable válido`).toBe(true);
     let moves = 0;
     let hasStepCloser = false;
-    expand(pieces, k, tmp, g, (i, y, nk) => {
-      moves++;
-      const nd = an.dist.get(nk);
-      expect(nd, `${label}: vecino resoluble`).not.toBeUndefined();
-      expect(nd, `${label}: nunca mejora más de 1`).toBeGreaterThanOrEqual(d - 1);
-      if (nd === d - 1) hasStepCloser = true;
-      const [lo, hi] = ranges[i];
-      if (pieces[i].kind === 'ice') {
-        expect(y === lo || y === hi, `${label}: hielo solo va a tope`).toBe(true);
-      }
-      if (!hasIce) {
-        expect(Math.abs(nd - d), `${label}: vecinos a ≤1`).toBeLessThanOrEqual(1);
-      }
-      if (pieces[i].kind !== 'ice' || here[i] === lo || here[i] === hi) {
-        const back = [];
-        expand(pieces, nk, new Array(pieces.length).fill(0), new Int8Array(N * N), (j, z, bk) => back.push(bk), walls);
-        expect(back, `${label}: movimiento reversible`).toContain(k);
-      }
-    }, walls);
+    expand(
+      pieces,
+      k,
+      tmp,
+      g,
+      (i, y, nk) => {
+        moves++;
+        const nd = an.dist.get(nk);
+        expect(nd, `${label}: vecino resoluble`).not.toBeUndefined();
+        expect(nd, `${label}: nunca mejora más de 1`).toBeGreaterThanOrEqual(d - 1);
+        if (nd === d - 1) hasStepCloser = true;
+        const [lo, hi] = ranges[i];
+        if (pieces[i].kind === 'ice') {
+          expect(y === lo || y === hi, `${label}: hielo solo va a tope`).toBe(true);
+        }
+        if (!hasIce) {
+          expect(Math.abs(nd - d), `${label}: vecinos a ≤1`).toBeLessThanOrEqual(1);
+        }
+        if (pieces[i].kind !== 'ice' || here[i] === lo || here[i] === hi) {
+          const back = [];
+          expand(
+            pieces,
+            nk,
+            new Array(pieces.length).fill(0),
+            new Int8Array(N * N),
+            (j, z, bk) => back.push(bk),
+            walls,
+          );
+          expect(back, `${label}: movimiento reversible`).toContain(k);
+        }
+      },
+      walls,
+    );
     expect(moves, `${label}: nunca sin movimientos`).toBeGreaterThan(0);
     if (d > 0) expect(hasStepCloser, `${label}: existe jugada óptima`).toBe(true);
     // la interfaz y el solver coinciden en qué se puede mover
@@ -53,4 +67,3 @@ export function checkBoard(board, label) {
   }
   return checked;
 }
-

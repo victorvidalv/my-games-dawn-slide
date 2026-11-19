@@ -1,7 +1,25 @@
 import { describe, it, expect } from 'vitest';
 import { MERCHANT_LINES, SHOP_NOTES } from '../src/data/merchant.js';
 import { readFileSync } from 'node:fs';
-import { SHOP_ITEMS, extraTurns, pathPrice, REVIVE_SHARE, MAX_REVIVES, reviveCost, canPaidRevive, payRevive, hasRevive, useRevive, bossRetriesLeft, freeRetry, useFreeRetry, FREE_RETRY_UNTIL, priceOf, availability, buy } from '../src/game/shop.js';
+import {
+  SHOP_ITEMS,
+  extraTurns,
+  pathPrice,
+  REVIVE_SHARE,
+  MAX_REVIVES,
+  reviveCost,
+  canPaidRevive,
+  payRevive,
+  hasRevive,
+  useRevive,
+  bossRetriesLeft,
+  freeRetry,
+  useFreeRetry,
+  FREE_RETRY_UNTIL,
+  priceOf,
+  availability,
+  buy,
+} from '../src/game/shop.js';
 import { moveStatus } from '../src/engine/rules.js';
 import { baseScore } from '../src/engine/scoring.js';
 
@@ -17,7 +35,8 @@ describe('tienda: precios proporcionales', () => {
   it('el precio es N niveles de esa dificultad: sube con el nivel y es proporcional a lo que se gana', () => {
     const levels = { hint: 0.6, redo: 0.8, moves3: 1.2, moves: 2, skip: 4 };
     for (const rating of [1, 25, 50, 100]) {
-      for (const [id, n] of Object.entries(levels)) expect(priceOf(id, rating)).toBe(Math.round((n * baseScore(rating) * pathPrice(1)) / 10) * 10);
+      for (const [id, n] of Object.entries(levels))
+        expect(priceOf(id, rating)).toBe(Math.round((n * baseScore(rating) * pathPrice(1)) / 10) * 10);
     }
     for (const id of Object.keys(levels)) expect(priceOf(id, 80)).toBeGreaterThan(priceOf(id, 10));
     expect(priceOf('hint', 20)).toBeLessThan(priceOf('redo', 20));
@@ -207,8 +226,9 @@ describe('Don Dublón: vendedor sarcástico con frases variadas', () => {
     expect(pool('poor').length).toBeGreaterThanOrEqual(4);
   });
   it('suena con campanilla, monedas y gesto de «no») y nunca repite la frase anterior', () => {
-    for (const fn of ['merchantBell', 'merchantCoin', 'merchantNope']) expect(readFileSync(new URL('../src/audio/sound.js', import.meta.url), 'utf8')).toContain(fn);
-    expect(readFileSync(new URL('../src/audio/sound.js', import.meta.url), 'utf8')).not.toContain('merchantTalk');   // sin balbuceo grave de fondo
+    for (const fn of ['merchantBell', 'merchantCoin', 'merchantNope'])
+      expect(readFileSync(new URL('../src/audio/sound.js', import.meta.url), 'utf8')).toContain(fn);
+    expect(readFileSync(new URL('../src/audio/sound.js', import.meta.url), 'utf8')).not.toContain('merchantTalk'); // sin balbuceo grave de fondo
     expect(readFileSync(new URL('../src/ui/shop.js', import.meta.url), 'utf8')).toMatch(/sin repetir la anterior/);
   });
 });
@@ -234,17 +254,32 @@ describe('primeros pasos: en la primera ciudad del camino Normal se repite el ta
   });
 });
 
-
-
 describe('reintentos gratis de jefe', () => {
-  const boss = { n: 20, plan: { boss: true }, rate: 15, pieces: [{ o: 'h', len: 2, fix: 2 }],
-    start: [0], pos: [3], opt: 6, moves: 12, limit: 12, bought: 2, timeLimit: 180, timeLeft: 0 };
+  const boss = {
+    n: 20,
+    plan: { boss: true },
+    rate: 15,
+    pieces: [{ o: 'h', len: 2, fix: 2 }],
+    start: [0],
+    pos: [3],
+    opt: 6,
+    moves: 12,
+    limit: 12,
+    bought: 2,
+    timeLimit: 180,
+    timeLeft: 0,
+  };
   it('comparte el cupo entre derrotas por tiempo y por turnos, conserva puntos y pistas, y cuenta por jefe', () => {
     const initial = { start: 50, mode: 'c', score: 900, hints: 2, streak: 4, revive: 1 };
     expect(bossRetriesLeft(initial, 20)).toBe(2);
     expect(useFreeRetry(initial, boss, 'time')).toBe(true);
-    expect(initial).toMatchObject({ score: 900, hints: 2, streak: 0, revive: 1,
-      rescue: { level: 20, kind: 'boss', why: 'time', start: [0], limit: 10 } });
+    expect(initial).toMatchObject({
+      score: 900,
+      hints: 2,
+      streak: 0,
+      revive: 1,
+      rescue: { level: 20, kind: 'boss', why: 'time', start: [0], limit: 10 },
+    });
     const resumed = JSON.parse(JSON.stringify(initial));
     delete resumed.rescue;
     expect(bossRetriesLeft(resumed, 20)).toBe(1);

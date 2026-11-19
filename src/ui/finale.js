@@ -13,45 +13,118 @@ import { WORLD } from '../data/lore.js';
 import { zoneIdx } from '../data/zones.js';
 import { numLocale } from '../i18n.js';
 /* Final del nivel 100: felicitación + reto al siguiente camino (o aplausos si fue Experto) */
-let crowdTimer=0;
-function stopCrowd(){clearInterval(crowdTimer);setTimeout(()=>{$('crowd').innerHTML=''},3600)}
-function showFinale(prac,p,score,broken,heroId='lia'){
-  endingStory(true,heroId,100);
-  const mode=prac?'p':'c';
-  const F={
-    1: {ico:'trophy',tag:'SENDA NORMAL COMPLETADA',title:'¡Los sellos ceden!',text:'Rompiste los diez sellos y el Faro del Alba parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.',
-        chal:'En la senda <b>Difícil</b> las sombras de Vhorn pesan más: menos margen, más gloria.',next:[[50,'⚔️ Ir al camino Difícil',1]]},
-    50:{ico:'medal',tag:'SENDA DIFÍCIL COMPLETADA',title:'¡Viajero de Thyes!',text:'Recorriste otra vez los diez reinos, ya con la hora y la palabra de tu lado. El Faro arde casi entero; falta pronunciar el nombre de Vhorn.',
-        chal:'Solo resta la prueba suprema: la senda <b>Experto</b>, hasta el trono vacío.',next:[[75,'🔥 Ir al camino Experto',1]]},
-    75:{ico:'crown',tag:'SENDA EXPERTO COMPLETADA',title:'¡Thyes amanece!',text:'La brasa, la hora y la palabra encienden el Faro del Alba y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.',
-        chal:'Tu nombre queda grabado en los diez sellos.',next:[]},
-  }[p.s]||{ico:'trophy',tag:'SENDA COMPLETADA',title:'¡Felicidades!',text:'Superaste los 100 umbrales.',chal:'',next:[[1,'↻ Jugar otra vez',1]]};
-  const legend=p.s===75;
-  $('fCard').classList.toggle('legend',legend);
-  $('fIco').innerHTML=icon(F.ico);$('fTag').textContent=F.tag;$('fTitle').textContent=F.title;$('fText').textContent=F.text;$('fChal').innerHTML=F.chal;
-  $('fScore').textContent=prac?'':'0';$('fRec').innerHTML=(!prac&&broken)?'<span class="rec">★ NUEVO RÉCORD ★</span>':'';
-  const box=$('fBtns');box.innerHTML='';
-  F.next.forEach(([s,label,main])=>{const b=document.createElement('button');b.textContent=label;if(main)b.className='primary big';
-    b.onclick=()=>{$('finale').classList.remove('show');stopCrowd();Music.duck(1);store.mode=mode;persist();startRun(s,mode)};box.appendChild(b)});
-  const m=document.createElement('button');m.textContent='Ir al inicio';if(!F.next.length)m.className='primary big';m.onclick=()=>{$('finale').classList.remove('show');stopCrowd();Music.duck(1);openMenu()};box.appendChild(m);
-  $('finale').classList.add('show');Music.duck(.3);
-  if(!prac) countUp($('fScore'),0,score,1600);
-  tone(392,.35,'sine',.045);tone(523,.45,'sine',.035,.15);
+let crowdTimer = 0;
+function stopCrowd() {
+  clearInterval(crowdTimer);
+  setTimeout(() => {
+    $('crowd').innerHTML = '';
+  }, 3600);
+}
+function showFinale(prac, p, score, broken, heroId = 'lia') {
+  endingStory(true, heroId, 100);
+  const mode = prac ? 'p' : 'c';
+  const F = {
+    1: {
+      ico: 'trophy',
+      tag: 'SENDA NORMAL COMPLETADA',
+      title: '¡Los sellos ceden!',
+      text: 'Rompiste los diez sellos y el Faro del Alba parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.',
+      chal: 'En la senda <b>Difícil</b> las sombras de Vhorn pesan más: menos margen, más gloria.',
+      next: [[50, '⚔️ Ir al camino Difícil', 1]],
+    },
+    50: {
+      ico: 'medal',
+      tag: 'SENDA DIFÍCIL COMPLETADA',
+      title: '¡Viajero de Thyes!',
+      text: 'Recorriste otra vez los diez reinos, ya con la hora y la palabra de tu lado. El Faro arde casi entero; falta pronunciar el nombre de Vhorn.',
+      chal: 'Solo resta la prueba suprema: la senda <b>Experto</b>, hasta el trono vacío.',
+      next: [[75, '🔥 Ir al camino Experto', 1]],
+    },
+    75: {
+      ico: 'crown',
+      tag: 'SENDA EXPERTO COMPLETADA',
+      title: '¡Thyes amanece!',
+      text: 'La brasa, la hora y la palabra encienden el Faro del Alba y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.',
+      chal: 'Tu nombre queda grabado en los diez sellos.',
+      next: [],
+    },
+  }[p.s] || {
+    ico: 'trophy',
+    tag: 'SENDA COMPLETADA',
+    title: '¡Felicidades!',
+    text: 'Superaste los 100 umbrales.',
+    chal: '',
+    next: [[1, '↻ Jugar otra vez', 1]],
+  };
+  const legend = p.s === 75;
+  $('fCard').classList.toggle('legend', legend);
+  $('fIco').innerHTML = icon(F.ico);
+  $('fTag').textContent = F.tag;
+  $('fTitle').textContent = F.title;
+  $('fText').textContent = F.text;
+  $('fChal').innerHTML = F.chal;
+  $('fScore').textContent = prac ? '' : '0';
+  $('fRec').innerHTML = !prac && broken ? '<span class="rec">★ NUEVO RÉCORD ★</span>' : '';
+  const box = $('fBtns');
+  box.innerHTML = '';
+  F.next.forEach(([s, label, main]) => {
+    const b = document.createElement('button');
+    b.textContent = label;
+    if (main) b.className = 'primary big';
+    b.onclick = () => {
+      $('finale').classList.remove('show');
+      stopCrowd();
+      Music.duck(1);
+      store.mode = mode;
+      persist();
+      startRun(s, mode);
+    };
+    box.appendChild(b);
+  });
+  const m = document.createElement('button');
+  m.textContent = 'Ir al inicio';
+  if (!F.next.length) m.className = 'primary big';
+  m.onclick = () => {
+    $('finale').classList.remove('show');
+    stopCrowd();
+    Music.duck(1);
+    openMenu();
+  };
+  box.appendChild(m);
+  $('finale').classList.add('show');
+  Music.duck(0.3);
+  if (!prac) countUp($('fScore'), 0, score, 1600);
+  tone(392, 0.35, 'sine', 0.045);
+  tone(523, 0.45, 'sine', 0.035, 0.15);
 }
 
-export function endRun(victory,why){
-  const prac=S.run.mode==='p',p=pathOf(S.run.start),endingHero=heroOf().id;
+export function endRun(victory, why) {
+  const prac = S.run.mode === 'p',
+    p = pathOf(S.run.start),
+    endingHero = heroOf().id;
   rememberConfig(S.run);
   recordBest(true);
-  const rec=store.paths[rkey()];
-  if(victory){markStat('paths',S.run.start);countStat('completed');const sc=S.run.score,br=S.run.recBroken;discardRun();showFinale(prac,p,sc,br,endingHero);return}
-  endingStory(false,endingHero,S.run.level);
-  $('overTag').textContent='LA NOCHE SE CIERRA · '+p.n.toUpperCase();
-  const timeUp=why==='time';
-  $('overTitle').textContent=timeUp?'Sin tiempo':'Sin turnos';
-  $('overTxt').textContent=`${timeUp?'Se agotó el tiempo':'Te quedaste sin movimientos'} en el nivel ${S.run.level}. El Sello de ${CHAPTERS[zoneIdx(S.run.level)].seal} resiste… por ahora. Thyes, año ${WORLD.year}.`;
-  $('overRec').innerHTML=(!prac&&S.run.recBroken)?'<span class="rec">★ NUEVO RÉCORD ★</span>':'';
-  $('overLvl').textContent=S.run.level;$('overBest').textContent=rec.score.toLocaleString(numLocale());
-  $('over').classList.add('show');countUp($('overScore'),0,S.run.score,1200);$('bToMenu').focus();
+  const rec = store.paths[rkey()];
+  if (victory) {
+    markStat('paths', S.run.start);
+    countStat('completed');
+    const sc = S.run.score,
+      br = S.run.recBroken;
+    discardRun();
+    showFinale(prac, p, sc, br, endingHero);
+    return;
+  }
+  endingStory(false, endingHero, S.run.level);
+  $('overTag').textContent = 'LA NOCHE SE CIERRA · ' + p.n.toUpperCase();
+  const timeUp = why === 'time';
+  $('overTitle').textContent = timeUp ? 'Sin tiempo' : 'Sin turnos';
+  $('overTxt').textContent =
+    `${timeUp ? 'Se agotó el tiempo' : 'Te quedaste sin movimientos'} en el nivel ${S.run.level}. El Sello de ${CHAPTERS[zoneIdx(S.run.level)].seal} resiste… por ahora. Thyes, año ${WORLD.year}.`;
+  $('overRec').innerHTML = !prac && S.run.recBroken ? '<span class="rec">★ NUEVO RÉCORD ★</span>' : '';
+  $('overLvl').textContent = S.run.level;
+  $('overBest').textContent = rec.score.toLocaleString(numLocale());
+  $('over').classList.add('show');
+  countUp($('overScore'), 0, S.run.score, 1200);
+  $('bToMenu').focus();
   discardRun();
 }

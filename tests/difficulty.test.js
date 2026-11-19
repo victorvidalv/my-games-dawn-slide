@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { curve, rateAt, minReach, moveLimit, MAX_LEVEL, TARGET_KNOTS, targetFor, ratingForMin } from '../src/engine/difficulty.js';
+import {
+  curve,
+  rateAt,
+  minReach,
+  moveLimit,
+  MAX_LEVEL,
+  TARGET_KNOTS,
+  targetFor,
+  ratingForMin,
+} from '../src/engine/difficulty.js';
 import { levelPlan, mechanicsOfFamily, isBossLevel } from '../src/game/mechanics.js';
 import { TUTORIAL_LEVELS, hasCurse, minFor } from '../src/engine/calibration.js';
 import { calcGain, gainFor } from '../src/engine/scoring.js';
@@ -25,7 +34,10 @@ describe('dificultad: la curva calibrada se siente apropiada', () => {
     expect(targetAt(50, 1)).toBeLessThan(targetAt(1, 100));
   });
   it('sus curvas son más empinadas: llegan al máximo antes que Normal (Experto antes que Difícil)', () => {
-    const first = (start) => { for (let l = 1; l <= MAX_LEVEL; l++) if (targetAt(start, l) >= 37) return l; return MAX_LEVEL + 1; };
+    const first = (start) => {
+      for (let l = 1; l <= MAX_LEVEL; l++) if (targetAt(start, l) >= 37) return l;
+      return MAX_LEVEL + 1;
+    };
     expect(first(75)).toBeLessThan(first(50));
     expect(first(50)).toBeLessThan(first(1));
     expect(first(75)).toBeLessThanOrEqual(45);
@@ -87,12 +99,17 @@ describe('calendario de piezas especiales (calibrado)', () => {
       const t = TUTORIAL_LEVELS[m];
       expect(levelPlan(t).mechanics, m).toEqual([m]);
       expect(levelPlan(t).intro).toBe(true);
-      for (let l = 1; l < t; l++) expect(levelPlan(l).mechanics, `${m} antes de su tutorial (nivel ${l})`).not.toContain(m);
+      for (let l = 1; l < t; l++)
+        expect(levelPlan(l).mechanics, `${m} antes de su tutorial (nivel ${l})`).not.toContain(m);
     });
   });
   it('los primeros niveles son normales y en todos los tramos hay respiros normales', () => {
     for (let l = 1; l < TUTORIAL_LEVELS.wall; l++) expect(plans[l - 1].family, `nivel ${l}`).toBe('plain');
-    for (let c = 1; c < 10; c++) expect(plans.slice(c * 10, c * 10 + 10).filter((p) => p.family === 'plain').length, `tramo ${c + 1}`).toBeGreaterThanOrEqual(1);
+    for (let c = 1; c < 10; c++)
+      expect(
+        plans.slice(c * 10, c * 10 + 10).filter((p) => p.family === 'plain').length,
+        `tramo ${c + 1}`,
+      ).toBeGreaterThanOrEqual(1);
     for (let l = 1; l <= 100; l++) expect(plans[l - 1].boss, `nivel ${l}`).toBe(l % 10 === 0);
   });
   it('las mecánicas no se repiten seguidas: nunca la misma mezcla en dos niveles especiales consecutivos ni tres especiales pegados', () => {
@@ -108,7 +125,8 @@ describe('calendario de piezas especiales (calibrado)', () => {
       // salvo la práctica en solitario de una pieza recién llegada (los 8 niveles tras su tutorial), nunca la misma mezcla seguida
       const single = plans[l - 1].mechanics.length === 1 ? plans[l - 1].mechanics[0] : null;
       const practising = single && l - TUTORIAL_LEVELS[single] <= 8;
-      if (!plans[l - 1].boss && l > TUTORIAL_LEVELS.heavy && !practising) expect(f === prev, `nivel ${l}: ${f} repetida`).toBe(false);
+      if (!plans[l - 1].boss && l > TUTORIAL_LEVELS.heavy && !practising)
+        expect(f === prev, `nivel ${l}: ${f} repetida`).toBe(false);
       prev = f;
     }
   });
@@ -122,10 +140,15 @@ describe('calendario de piezas especiales (calibrado)', () => {
     }
   });
   it('el maleficio no compite con el aprendizaje: ninguno en los 4 niveles tras el tutorial de una pieza', () => {
-    for (const m of ORDER) for (let l = TUTORIAL_LEVELS[m] + 1; l <= TUTORIAL_LEVELS[m] + 4; l++) expect(hasCurse(l), `nivel ${l}`).toBe(false);
+    for (const m of ORDER)
+      for (let l = TUTORIAL_LEVELS[m] + 1; l <= TUTORIAL_LEVELS[m] + 4; l++)
+        expect(hasCurse(l), `nivel ${l}`).toBe(false);
   });
   it('las mezclas crecen: pocas al principio y todas juntas al final (el jefe 100 lleva las cinco)', () => {
-    const avg = (a, b) => { const s = plans.slice(a - 1, b).filter((p) => p.mechanics.length); return s.reduce((x, p) => x + p.mechanics.length, 0) / s.length; };
+    const avg = (a, b) => {
+      const s = plans.slice(a - 1, b).filter((p) => p.mechanics.length);
+      return s.reduce((x, p) => x + p.mechanics.length, 0) / s.length;
+    };
     expect(avg(12, 40)).toBeLessThan(avg(41, 70));
     expect(avg(41, 70)).toBeLessThan(avg(71, 100));
     expect(avg(80, 100)).toBeGreaterThanOrEqual(3);
@@ -133,7 +156,15 @@ describe('calendario de piezas especiales (calibrado)', () => {
     expect(Math.max(...plans.slice(80).map((p) => p.mechanics.length))).toBe(5);
   });
   it('cada mecánica sigue apareciendo hasta el final (ninguna se pierde)', () => {
-    for (const m of ORDER) for (const [a, b] of [[TUTORIAL_LEVELS[m], 60], [61, 100]]) expect(plans.slice(a - 1, b).some((p) => p.mechanics.includes(m)), `${m} en ${a}-${b}`).toBe(true);
+    for (const m of ORDER)
+      for (const [a, b] of [
+        [TUTORIAL_LEVELS[m], 60],
+        [61, 100],
+      ])
+        expect(
+          plans.slice(a - 1, b).some((p) => p.mechanics.includes(m)),
+          `${m} en ${a}-${b}`,
+        ).toBe(true);
   });
   it('cada familia declara qué mecánicas contiene', () => {
     expect(mechanicsOfFamily('plain')).toEqual([]);

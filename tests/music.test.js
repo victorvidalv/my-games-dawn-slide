@@ -1,5 +1,22 @@
 import { describe, it, expect } from 'vitest';
-import { layersFor, layerOfLevel, LAYERS_PER_CITY, ALL_THEMES, ZONE_THEMES, MENU_THEME, HEROES_THEME, SCALES, parseBar, shiftBar, shiftEntry, chordMidi, entryAt, FORM, FORM_BARS, sectionAt } from '../src/audio/themes.js';
+import {
+  layersFor,
+  layerOfLevel,
+  LAYERS_PER_CITY,
+  ALL_THEMES,
+  ZONE_THEMES,
+  MENU_THEME,
+  HEROES_THEME,
+  SCALES,
+  parseBar,
+  shiftBar,
+  shiftEntry,
+  chordMidi,
+  entryAt,
+  FORM,
+  FORM_BARS,
+  sectionAt,
+} from '../src/audio/themes.js';
 
 const degreesOf = (e, n) => {
   const d = typeof e === 'string' ? Number(e.split(':')[0]) : e;
@@ -25,11 +42,12 @@ describe('temas musicales', () => {
   it('las notas quedan en un registro cantable y los acordes existen en la escala', () => {
     for (const th of ALL_THEMES) {
       const n = SCALES[th.sc].length;
-      for (const bar of th.tune) for (const [, deg, dur] of bar) {
-        expect(deg, th.name).toBeGreaterThanOrEqual(-3);
-        expect(deg, th.name).toBeLessThanOrEqual(2 * n + 8);
-        expect(dur).toBeGreaterThan(0);
-      }
+      for (const bar of th.tune)
+        for (const [, deg, dur] of bar) {
+          expect(deg, th.name).toBeGreaterThanOrEqual(-3);
+          expect(deg, th.name).toBeLessThanOrEqual(2 * n + 8);
+          expect(dur).toBeGreaterThan(0);
+        }
       for (const e of th.prog.flat()) expect(shiftEntry(e, 0, n)).toBeLessThan(n);
     }
   });
@@ -52,12 +70,13 @@ describe('temas musicales', () => {
 
   it('los acordes son de 4 notas (séptimas) y suenan en un registro medio', () => {
     for (const th of ALL_THEMES) {
-      for (let bar = 0; bar < 16; bar++) for (const st of [0, 8]) {
-        const c = chordMidi(th, entryAt(th, bar, st));
-        expect(c.length).toBeGreaterThanOrEqual(4);
-        expect(c[0]).toBeGreaterThanOrEqual(36);
-        expect(c[0]).toBeLessThanOrEqual(70);
-      }
+      for (let bar = 0; bar < 16; bar++)
+        for (const st of [0, 8]) {
+          const c = chordMidi(th, entryAt(th, bar, st));
+          expect(c.length).toBeGreaterThanOrEqual(4);
+          expect(c[0]).toBeGreaterThanOrEqual(36);
+          expect(c[0]).toBeLessThanOrEqual(70);
+        }
     }
   });
 
@@ -74,11 +93,15 @@ describe('temas musicales', () => {
     expect(new Set(ids).size).toBe(ALL_THEMES.length);
     const tunes = ALL_THEMES.map((t) => JSON.stringify(t.tune));
     expect(new Set(tunes).size).toBe(ALL_THEMES.length);
-    for (let i = 0; i < ALL_THEMES.length; i++) for (let j = i + 1; j < ALL_THEMES.length; j++) {
-      const a = new Set(ALL_THEMES[i].tune.flatMap((b, k) => b.map(([at, d]) => `${k}:${at}:${d}`)));
-      const b = ALL_THEMES[j].tune.flatMap((bar, k) => bar.map(([at, d]) => `${k}:${at}:${d}`));
-      expect(b.filter((x) => a.has(x)).length / b.length, `${ALL_THEMES[i].name} vs ${ALL_THEMES[j].name}`).toBeLessThan(0.4);
-    }
+    for (let i = 0; i < ALL_THEMES.length; i++)
+      for (let j = i + 1; j < ALL_THEMES.length; j++) {
+        const a = new Set(ALL_THEMES[i].tune.flatMap((b, k) => b.map(([at, d]) => `${k}:${at}:${d}`)));
+        const b = ALL_THEMES[j].tune.flatMap((bar, k) => bar.map(([at, d]) => `${k}:${at}:${d}`));
+        expect(
+          b.filter((x) => a.has(x)).length / b.length,
+          `${ALL_THEMES[i].name} vs ${ALL_THEMES[j].name}`,
+        ).toBeLessThan(0.4);
+      }
     // varios timbres de melodía distintos entre las ciudades
     expect(new Set(ZONE_THEMES.map((t) => t.leadVoice)).size).toBeGreaterThanOrEqual(6);
   });
@@ -89,13 +112,17 @@ describe('temas musicales', () => {
     for (const th of ALL_THEMES) {
       expect(['ah', 'oh', 'oo', 'eh'], th.name).toContain(th.choir.vowel);
       expect(th.choir.chant.length, th.name).toBeGreaterThanOrEqual(1);
-      for (const st of [...th.choir.chant, ...th.choir.clap]) { expect(st).toBeGreaterThanOrEqual(0); expect(st).toBeLessThan(16); expect(Number.isInteger(st)).toBe(true); }
+      for (const st of [...th.choir.chant, ...th.choir.clap]) {
+        expect(st).toBeGreaterThanOrEqual(0);
+        expect(st).toBeLessThan(16);
+        expect(Number.isInteger(st)).toBe(true);
+      }
       sigs.add(JSON.stringify(th.choir));
       rhythms.add(JSON.stringify([th.choir.chant, th.choir.clap, th.hook.s]));
     }
     expect(sigs.size).toBe(ALL_THEMES.length);
     expect(rhythms.size).toBe(ALL_THEMES.length);
-    for (const th of ZONE_THEMES) expect(th.choir.clap.length, th.name).toBeGreaterThanOrEqual(1);   // palmas en todas las ciudades
+    for (const th of ZONE_THEMES) expect(th.choir.clap.length, th.name).toBeGreaterThanOrEqual(1); // palmas en todas las ciudades
     expect(MENU_THEME.choir).not.toEqual(HEROES_THEME.choir);
     expect(new Set(ZONE_THEMES.map((t) => t.choir.vowel)).size).toBeGreaterThanOrEqual(4);
   });
@@ -123,7 +150,18 @@ describe('temas musicales', () => {
 
   it('capas por nivel: el nivel dentro de la ciudad decide la capa y cada capa suma algo sin quitar nada', () => {
     expect([1, 2, 10, 11, 20, 21, 100].map(layerOfLevel)).toEqual([1, 2, 10, 1, 10, 1, 10]);
-    const flags = (l) => Object.entries(layersFor(l)).flatMap(([k, v]) => (v === true ? [k] : v === 'full' ? [k + ':full'] : v === 'light' ? [k + ':light'] : v === 'lite' ? [k + ':lite'] : []));
+    const flags = (l) =>
+      Object.entries(layersFor(l)).flatMap(([k, v]) =>
+        v === true
+          ? [k]
+          : v === 'full'
+            ? [k + ':full']
+            : v === 'light'
+              ? [k + ':light']
+              : v === 'lite'
+                ? [k + ':lite']
+                : [],
+      );
     let prev = 0;
     for (let l = 1; l <= LAYERS_PER_CITY; l++) {
       const n = flags(l).length;
@@ -138,9 +176,22 @@ describe('temas musicales', () => {
 
   it('forma de canción: 88 compases con intro, estrofas, coros, puente y coro final; dura unos 3 minutos y luego se repite', () => {
     expect(FORM_BARS).toBe(88);
-    expect(FORM.map((x) => x.id)).toEqual(['intro', 'verse', 'verse2', 'pre', 'chorus', 'break', 'verse3', 'chorus2', 'bridge', 'rise', 'final', 'outro']);
+    expect(FORM.map((x) => x.id)).toEqual([
+      'intro',
+      'verse',
+      'verse2',
+      'pre',
+      'chorus',
+      'break',
+      'verse3',
+      'chorus2',
+      'bridge',
+      'rise',
+      'final',
+      'outro',
+    ]);
     expect(sectionAt(0).sec.id).toBe('intro');
-    expect(sectionAt(FORM_BARS).sec.id).toBe('intro');                    // al terminar vuelve a empezar
+    expect(sectionAt(FORM_BARS).sec.id).toBe('intro'); // al terminar vuelve a empezar
     expect(sectionAt(FORM_BARS - 1)).toEqual({ sec: FORM[FORM.length - 1], k: 7 });
     for (const th of ALL_THEMES) {
       const seconds = (FORM_BARS * 4 * 60) / th.bpm;
@@ -148,7 +199,7 @@ describe('temas musicales', () => {
       expect(seconds, th.name).toBeLessThan(215);
     }
     expect(FORM.filter((x) => x.chorus).length).toBe(3);
-    expect(FORM.find((x) => x.id === 'final').mod).toBe(2);               // el coro final sube un tono
+    expect(FORM.find((x) => x.id === 'final').mod).toBe(2); // el coro final sube un tono
   });
 
   it('menú y héroes tienen una sección B propia (no es la A desplazada)', () => {

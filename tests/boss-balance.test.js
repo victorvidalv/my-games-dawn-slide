@@ -1,5 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { BOSS_LEVELS, BOSS_TARGET, FAMILY_HARD, REP_SKILL, bossBoardLength, bossDuel, bossWinRate, secondsPerMove, solveSeconds } from '../src/game/boss-balance.js';
+import {
+  BOSS_LEVELS,
+  BOSS_TARGET,
+  FAMILY_HARD,
+  REP_SKILL,
+  bossBoardLength,
+  bossDuel,
+  bossWinRate,
+  secondsPerMove,
+  solveSeconds,
+} from '../src/game/boss-balance.js';
 import { BOSS_RULES, bossTimeFor } from '../src/game/bosses.js';
 import { mulberry32 } from '../src/engine/rng.js';
 
@@ -28,20 +38,29 @@ describe('segundo simulador: reloj humano y piezas especiales', () => {
 
 describe('segundo simulador: los jefes están bien ajustados', () => {
   it('el jugador típico conserva la tasa mínima esperada', () => {
-    const rates = BOSS_LEVELS.map((level) => bossWinRate({ level, start: 1, skill: REP_SKILL[level], runs: RUNS }).rate);
+    const rates = BOSS_LEVELS.map(
+      (level) => bossWinRate({ level, start: 1, skill: REP_SKILL[level], runs: RUNS }).rate,
+    );
     BOSS_LEVELS.forEach((level, i) => {
       expect(rates[i], `jefe ${level}`).toBeGreaterThanOrEqual(BOSS_TARGET[level] - 0.06);
-      if (BOSS_RULES[level].kind === 'turns') expect(rates[i], `jefe ${level}`).toBeLessThanOrEqual(BOSS_TARGET[level] + 0.16);
+      if (BOSS_RULES[level].kind === 'turns')
+        expect(rates[i], `jefe ${level}`).toBeLessThanOrEqual(BOSS_TARGET[level] + 0.16);
     });
   });
 
   it('un jugador hábil los supera casi siempre en los tres caminos, y uno flojo aún tiene opciones en los primeros', () => {
     for (const start of [1, 50, 75]) {
       for (const level of BOSS_LEVELS) {
-        expect(bossWinRate({ level, start, skill: 0.92, runs: 200 }).rate, `camino ${start} jefe ${level}`).toBeGreaterThanOrEqual(level === 100 ? 0.6 : 0.8);
+        expect(
+          bossWinRate({ level, start, skill: 0.92, runs: 200 }).rate,
+          `camino ${start} jefe ${level}`,
+        ).toBeGreaterThanOrEqual(level === 100 ? 0.6 : 0.8);
       }
     }
-    for (const level of [10, 20, 30]) expect(bossWinRate({ level, start: 1, skill: 0.4, runs: 200 }).rate, `jefe ${level}`).toBeGreaterThanOrEqual(0.55);
+    for (const level of [10, 20, 30])
+      expect(bossWinRate({ level, start: 1, skill: 0.4, runs: 200 }).rate, `jefe ${level}`).toBeGreaterThanOrEqual(
+        0.55,
+      );
   });
 
   it('el tiempo extra reduce las derrotas por reloj en los jefes avanzados sin aflojar los turnos', () => {
@@ -59,7 +78,7 @@ describe('segundo simulador: los jefes están bien ajustados', () => {
     for (const level of BOSS_LEVELS.filter((l) => BOSS_RULES[l].kind !== 'turns')) {
       const d = bossBoardLength(level, 1);
       const typical = d * 1.25 * secondsPerMove(REP_SKILL[level], d);
-      expect(bossTimeFor(level, d), `jefe ${level}`).toBeGreaterThan(typical * 0.8);   // el jefe final es deliberadamente justo
+      expect(bossTimeFor(level, d), `jefe ${level}`).toBeGreaterThan(typical * 0.8); // el jefe final es deliberadamente justo
     }
   });
 });

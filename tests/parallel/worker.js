@@ -6,8 +6,30 @@
 import { parentPort } from 'node:worker_threads';
 import { readFileSync } from 'node:fs';
 import {
-  N, decode, decodeBoard, isValidState, analyze, expand, slideRange, maxDistance, isWon, curve, minReach, rateAt, braveExtra, pickBoard,
-  buildLevel, varyBoard, mulberry32, hash32, WINDOW, generateBoard, decorateBoard, FAMILIES, hintMove, moveLimit,
+  N,
+  decode,
+  decodeBoard,
+  isValidState,
+  analyze,
+  expand,
+  slideRange,
+  maxDistance,
+  isWon,
+  curve,
+  minReach,
+  rateAt,
+  braveExtra,
+  pickBoard,
+  buildLevel,
+  varyBoard,
+  mulberry32,
+  hash32,
+  WINDOW,
+  generateBoard,
+  decorateBoard,
+  FAMILIES,
+  hintMove,
+  moveLimit,
 } from '../../src/engine/index.js';
 import { levelPlan } from '../../src/game/mechanics.js';
 
@@ -16,7 +38,12 @@ const bank = read('../../src/data/levels.json');
 const special = read('../../src/data/special.json');
 
 const kindsOf = (pieces) => [...new Set(pieces.map((p) => p.kind).filter(Boolean))].sort();
-const stripped = (b) => ({ pieces: b.pieces.map(({ o, len, fix }) => ({ o, len, fix })), pos: b.pos, walls: [], doors: [] });
+const stripped = (b) => ({
+  pieces: b.pieces.map(({ o, len, fix }) => ({ o, len, fix })),
+  pos: b.pos,
+  walls: [],
+  doors: [],
+});
 const MAXV = 6; // violaciones que se guardan por tablero (basta para diagnosticar)
 
 /**
@@ -29,7 +56,9 @@ function checkStates(b, an, sample) {
   const n = pieces.length;
   const hasIce = pieces.some((p) => p.kind === 'ice');
   const v = [];
-  const bad = (m) => { if (v.length < MAXV) v.push(m); };
+  const bad = (m) => {
+    if (v.length < MAXV) v.push(m);
+  };
   const g = new Int8Array(N * N);
   const tmp = new Array(n).fill(0);
   const g2 = new Int8Array(N * N);
@@ -42,26 +71,47 @@ function checkStates(b, an, sample) {
     const here = decode(k, n);
     checked++;
     if (!isValidState(pieces, here, walls, doors)) bad(`estado inválido ${k}`);
-    if (d === undefined) { bad(`estado sin salida ${k}`); continue; }
+    if (d === undefined) {
+      bad(`estado sin salida ${k}`);
+      continue;
+    }
     const ranges = pieces.map((_, i) => slideRange(pieces, here, i, walls, doors));
     let moves = 0;
     let closer = false;
-    expand(pieces, k, tmp, g, (i, y, nk) => {
-      moves++;
-      const nd = an.dist.get(nk);
-      if (nd === undefined) return bad(`vecino sin solución ${k}→${nk}`);
-      if (nd < d - 1) bad(`mejora más de 1 (${d}→${nd})`);
-      if (nd === d - 1) closer = true;
-      if (!hasIce && nd > d + 1) bad(`vecino a más de 1 (${d}→${nd})`);
-      const [lo, hi] = ranges[i];
-      if (y < lo || y > hi) bad(`pieza ${i} fuera de su rango`);
-      if (pieces[i].kind === 'ice' && y !== lo && y !== hi) bad('hielo se detiene a medias');
-      if (pieces[i].kind !== 'ice' || here[i] === lo || here[i] === hi) {
-        let back = false;
-        expand(pieces, nk, tmp2, g2, (j, z, bk) => { if (bk === k) back = true; }, walls, doors);
-        if (!back) bad(`movimiento irreversible ${k}→${nk}`);
-      }
-    }, walls, doors);
+    expand(
+      pieces,
+      k,
+      tmp,
+      g,
+      (i, y, nk) => {
+        moves++;
+        const nd = an.dist.get(nk);
+        if (nd === undefined) return bad(`vecino sin solución ${k}→${nk}`);
+        if (nd < d - 1) bad(`mejora más de 1 (${d}→${nd})`);
+        if (nd === d - 1) closer = true;
+        if (!hasIce && nd > d + 1) bad(`vecino a más de 1 (${d}→${nd})`);
+        const [lo, hi] = ranges[i];
+        if (y < lo || y > hi) bad(`pieza ${i} fuera de su rango`);
+        if (pieces[i].kind === 'ice' && y !== lo && y !== hi) bad('hielo se detiene a medias');
+        if (pieces[i].kind !== 'ice' || here[i] === lo || here[i] === hi) {
+          let back = false;
+          expand(
+            pieces,
+            nk,
+            tmp2,
+            g2,
+            (j, z, bk) => {
+              if (bk === k) back = true;
+            },
+            walls,
+            doors,
+          );
+          if (!back) bad(`movimiento irreversible ${k}→${nk}`);
+        }
+      },
+      walls,
+      doors,
+    );
     if (!moves) bad(`sin movimientos en ${k}`);
     if (d > 0 && !closer) bad(`sin jugada óptima en ${k}`);
     if (v.length >= MAXV) break;
@@ -75,10 +125,16 @@ const tasks = {
     const b = decodeBoard(text);
     const doors = b.doors || [];
     const r = {
-      rating, kinds: kindsOf(b.pieces), walls: b.walls.length, doors: doors.length, pieces: b.pieces.length,
-      valid: isValidState(b.pieces, b.pos, b.walls, doors), keyPlain: b.pieces[0].kind === undefined && b.pieces[0].tone === undefined,
+      rating,
+      kinds: kindsOf(b.pieces),
+      walls: b.walls.length,
+      doors: doors.length,
+      pieces: b.pieces.length,
+      valid: isValidState(b.pieces, b.pos, b.walls, doors),
+      keyPlain: b.pieces[0].kind === undefined && b.pieces[0].tone === undefined,
       keyOk: b.pieces[0].o === 'h' && b.pieces[0].len === 2 && b.pieces[0].fix === 2,
-      platesOk: true, violations: [],
+      platesOk: true,
+      violations: [],
     };
     for (const p of b.pieces) {
       if (p.kind !== 'gate') continue;
@@ -113,9 +169,23 @@ const tasks = {
     const doors = lvl.doors || [];
     const an = analyze(lvl.pieces, lvl.pos, 600000, walls, doors);
     const out = {
-      start, level, rating, planFamily: plan.family, family: base.family, boss: plan.boss, opt: lvl.opt,
-      target: curve(rating).target, kinds: kindsOf(lvl.pieces), walls: walls.length, doors: doors.length,
-      valid: isValidState(lvl.pieces, lvl.pos, walls, doors), won0: isWon(lvl.pos), solvable: !!an, deadEnds: 0, optReal: null, moves: -1,
+      start,
+      level,
+      rating,
+      planFamily: plan.family,
+      family: base.family,
+      boss: plan.boss,
+      opt: lvl.opt,
+      target: curve(rating).target,
+      kinds: kindsOf(lvl.pieces),
+      walls: walls.length,
+      doors: doors.length,
+      valid: isValidState(lvl.pieces, lvl.pos, walls, doors),
+      won0: isWon(lvl.pos),
+      solvable: !!an,
+      deadEnds: 0,
+      optReal: null,
+      moves: -1,
     };
     if (!an) return out;
     out.deadEnds = an.list.length - an.dist.size;
@@ -127,7 +197,17 @@ const tasks = {
     while (an.dist.get(key) > 0 && moves < 500) {
       const d = an.dist.get(key);
       let nxt = null;
-      expand(lvl.pieces, key, tmp, g, (i, y, nk) => { if (nxt === null && an.dist.get(nk) === d - 1) nxt = nk; }, walls, doors);
+      expand(
+        lvl.pieces,
+        key,
+        tmp,
+        g,
+        (i, y, nk) => {
+          if (nxt === null && an.dist.get(nk) === d - 1) nxt = nk;
+        },
+        walls,
+        doors,
+      );
       if (nxt === null) break;
       key = nxt;
       moves++;
@@ -151,7 +231,12 @@ const tasks = {
         const an = analyze(lvl.pieces, lvl.pos, 600000);
         const normal = clamp(Math.max(1, target + adj));
         rows.push({
-          adj, brave, opt: lvl.opt, real: an?.dist.get(an.k0), valid: isValidState(lvl.pieces, lvl.pos), won0: isWon(lvl.pos),
+          adj,
+          brave,
+          opt: lvl.opt,
+          real: an?.dist.get(an.k0),
+          valid: isValidState(lvl.pieces, lvl.pos),
+          won0: isWon(lvl.pos),
           expected: brave ? (normal < hi ? Math.min(hi, normal + braveExtra(normal)) : normal) : normal,
         });
       }
@@ -168,11 +253,23 @@ const tasks = {
     const out = { rating, walls, seed, baseWalls: base.walls.length, baseReached: base.reached, combos: [] };
     const combos = [['base', base], ...families.map((f) => [f, decorateBoard(base, f, seed * 31 + rating)])];
     for (const [family, d] of combos) {
-      if (!d) { out.combos.push({ family, missing: true }); continue; }
+      if (!d) {
+        out.combos.push({ family, missing: true });
+        continue;
+      }
       const wallsD = d.walls || [];
       const doorsD = d.doors || [];
       const an = analyze(d.pieces, d.pos, 600000, wallsD, doorsD);
-      const c = { family, kinds: kindsOf(d.pieces), walls: wallsD.length, doors: doorsD.length, keyPlain: d.pieces[0].kind === undefined && d.pieces[0].tone === undefined, valid: isValidState(d.pieces, d.pos, wallsD, doorsD), solvable: !!an, violations: [] };
+      const c = {
+        family,
+        kinds: kindsOf(d.pieces),
+        walls: wallsD.length,
+        doors: doorsD.length,
+        keyPlain: d.pieces[0].kind === undefined && d.pieces[0].tone === undefined,
+        valid: isValidState(d.pieces, d.pos, wallsD, doorsD),
+        solvable: !!an,
+        violations: [],
+      };
       if (an) {
         c.deadEnds = an.list.length - an.dist.size;
         c.opt = an.dist.get(an.k0);
@@ -180,7 +277,10 @@ const tasks = {
         c.minGain = FAMILIES[family]?.minGain ?? 0;
         Object.assign(c, checkStates({ pieces: d.pieces, walls: wallsD, doors: doorsD }, an, sample));
         // nivel construido sobre ese tablero: mínimo exacto, límite = 2×, y la pista lleva a la salida en `opt` pasos
-        const lvl = buildLevel({ ...d, walls: wallsD, doors: doorsD }, { rating, adj: 0, brave: rating % 2 === 1, rng: mulberry32(rating) });
+        const lvl = buildLevel(
+          { ...d, walls: wallsD, doors: doorsD },
+          { rating, adj: 0, brave: rating % 2 === 1, rng: mulberry32(rating) },
+        );
         const la = analyze(lvl.pieces, lvl.pos, 600000, lvl.walls, lvl.doors);
         c.lvlOpt = lvl.opt;
         c.lvlReal = la?.dist.get(la.k0);
@@ -189,7 +289,10 @@ const tasks = {
         let hintOk = true;
         for (let st = 0; st < lvl.opt; st++) {
           const h = hintMove(lvl.pieces, cur, lvl.walls, lvl.doors);
-          if (!h || h.left !== lvl.opt - st) { hintOk = false; break; }
+          if (!h || h.left !== lvl.opt - st) {
+            hintOk = false;
+            break;
+          }
           cur[h.i] = h.to;
         }
         c.hintWins = hintOk && isWon(cur);

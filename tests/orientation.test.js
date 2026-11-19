@@ -14,18 +14,25 @@ describe('giro del tablero (la salida cambia de lado)', () => {
       expect(l % 10, `nivel ${l}`).not.toBe(0);
       if (l !== FIRST_ROTATED_LEVEL) expect(INTRO_LEVEL_LIST, `nivel ${l}`).not.toContain(l);
     }
-    for (let seed = 1; seed <= 20; seed++) expect(turned(seed)).toEqual(set);   // los niveles son los mismos en todas las partidas
+    for (let seed = 1; seed <= 20; seed++) expect(turned(seed)).toEqual(set); // los niveles son los mismos en todas las partidas
   });
   it('son una sorpresa: pocos, nunca pegados al principio, y el resto de niveles mantienen la salida a la derecha', () => {
     const set = [...rotatedLevels(1)];
     expect(set.length).toBeGreaterThanOrEqual(8);
     expect(set.length).toBeLessThanOrEqual(25);
-    for (let i = 1; i < set.length; i++) if (set[i] < 60) expect(set[i] - set[i - 1], `nivel ${set[i]}`).toBeGreaterThanOrEqual(3);
+    for (let i = 1; i < set.length; i++)
+      if (set[i] < 60) expect(set[i] - set[i - 1], `nivel ${set[i]}`).toBeGreaterThanOrEqual(3);
     expect(turned(5).length).toBe(set.length);
   });
   it('el sentido del giro es 90, 180 o 270, determinista y repartido', () => {
     const count = { 90: 0, 180: 0, 270: 0 };
-    for (let seed = 1; seed <= 200; seed++) for (const l of rotatedLevels(seed)) { const r = boardRotation(seed, l); expect([90, 180, 270]).toContain(r); count[r]++; expect(boardRotation(seed, l)).toBe(r); }
+    for (let seed = 1; seed <= 200; seed++)
+      for (const l of rotatedLevels(seed)) {
+        const r = boardRotation(seed, l);
+        expect([90, 180, 270]).toContain(r);
+        count[r]++;
+        expect(boardRotation(seed, l)).toBe(r);
+      }
     for (const k of Object.keys(count)) expect(count[k]).toBeGreaterThan(400);
   });
   it('el arrastre se traduce al eje del tablero girado', () => {

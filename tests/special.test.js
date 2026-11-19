@@ -1,8 +1,26 @@
 import { describe, it, expect } from 'vitest';
 import {
-  N, WALL, encode, encodeBoard, decodeBoard, isValidState, occupancy, slideRange, isLocked, snapDrag,
-  expand, hintMove, minMoves, analyze, moveLimit, randomBoard, mutate, generateBoard, decorateBoard,
-  mulberry32, isWon,
+  N,
+  WALL,
+  encode,
+  encodeBoard,
+  decodeBoard,
+  isValidState,
+  occupancy,
+  slideRange,
+  isLocked,
+  snapDrag,
+  expand,
+  hintMove,
+  minMoves,
+  analyze,
+  moveLimit,
+  randomBoard,
+  mutate,
+  generateBoard,
+  decorateBoard,
+  mulberry32,
+  isWon,
 } from '../src/engine/index.js';
 import { checkBoard } from './helpers.js';
 
@@ -17,7 +35,14 @@ describe('muros', () => {
     expect(minMoves(pieces, [0], [[2, 4]])).toBeNull(); // muro en la salida: sin solución
   });
   it('los muros cuentan como celdas ocupadas y no se puede colocar una pieza encima', () => {
-    const g = occupancy([RED], [0], [[0, 0], [5, 5]]);
+    const g = occupancy(
+      [RED],
+      [0],
+      [
+        [0, 0],
+        [5, 5],
+      ],
+    );
     expect(g[0]).toBe(WALL);
     expect(g[5 * N + 5]).toBe(WALL);
     expect(isValidState([RED], [0], [[2, 1]])).toBe(false);
@@ -36,17 +61,17 @@ describe('candado con placa', () => {
   // La placa (5,0) solo la puede cubrir la pieza horizontal de la fila 5.
   const pieces = [RED, { o: 'v', len: 2, fix: 3, kind: 'gate', plate: [5, 0] }, { o: 'h', len: 2, fix: 5 }];
   it('cerrado: no se mueve; abierto (placa cubierta): sí', () => {
-    const closed = [0, 1, 3];                     // la horizontal en columnas 3-4: la placa (5,0) está libre
+    const closed = [0, 1, 3]; // la horizontal en columnas 3-4: la placa (5,0) está libre
     expect(isLocked(pieces, closed, 1)).toBe(true);
     expect(slideRange(pieces, closed, 1)).toEqual([1, 1]);
-    const open = [0, 1, 0];                       // la horizontal cubre columnas 0-1 → cubre la placa
+    const open = [0, 1, 0]; // la horizontal cubre columnas 0-1 → cubre la placa
     expect(isLocked(pieces, open, 1)).toBe(false);
     expect(slideRange(pieces, open, 1)[1]).toBeGreaterThan(1);
   });
   it('la solución obliga a abrir el candado primero', () => {
     expect(minMoves(pieces, [0, 1, 3])).toBe(3); // placa, mover candado, sacar la llave
     const h = hintMove(pieces, [0, 1, 3]);
-    expect(h.i).toBe(2);                          // la primera pista es cubrir la placa
+    expect(h.i).toBe(2); // la primera pista es cubrir la placa
   });
   it('mover el candado no cambia la placa, así que todo movimiento es reversible', () => {
     const open = [0, 1, 0];
@@ -66,7 +91,7 @@ describe('pieza pesada', () => {
     expect(minMoves(light, [0])).toBe(1);
     const heavy = [{ ...RED, kind: 'heavy' }];
     expect(slideRange(heavy, [0], 0)).toEqual([0, 1]);
-    expect(minMoves(heavy, [0])).toBe(4);       // de la columna 0 a la 4, de una en una
+    expect(minMoves(heavy, [0])).toBe(4); // de la columna 0 a la 4, de una en una
     expect(snapDrag(0, ...slideRange(heavy, [0], 0), 3)).toBe(1);
   });
 });
@@ -79,7 +104,7 @@ describe('pieza de hielo y combinación de todas las especiales', () => {
     expand(pieces, encode([0, 1]), new Array(2).fill(0), new Int8Array(N * N), (i, y) => {
       if (i === 1) targets.push(y);
     });
-    expect(targets).toEqual([0, 4]);              // nunca para en 2 ni en 3
+    expect(targets).toEqual([0, 4]); // nunca para en 2 ni en 3
     expect(snapDrag(1, 0, 4, 0.35, 'ice')).toBe(4);
     expect(snapDrag(1, 0, 4, -0.35, 'ice')).toBe(0);
     expect(snapDrag(1, 0, 4, 0.25, 'ice')).toBe(1);
@@ -90,7 +115,7 @@ describe('pieza de hielo y combinación de todas las especiales', () => {
     const pieces = [RED, { o: 'v', len: 2, fix: 3, kind: 'ice' }, { o: 'h', len: 2, fix: 4 }];
     const pos = [0, 1, 2];
     const d = minMoves(pieces, pos);
-    expect(d).toBe(2);                            // 1→0 (patina arriba), llave 0→4
+    expect(d).toBe(2); // 1→0 (patina arriba), llave 0→4
     const nextMoves = [];
     expand(pieces, encode([0, 2, 2]), new Array(3).fill(0), new Int8Array(N * N), (i, y, nk) => nextMoves.push(nk));
     expect(nextMoves).not.toContain(encode(pos)); // transición dirigida no reversible
@@ -125,12 +150,31 @@ describe('pieza de hielo y combinación de todas las especiales', () => {
 
 describe('formato de texto', () => {
   it('los muros, candados, pesadas e hielo sobreviven a codificar y decodificar', () => {
-    const pieces = [RED, { o: 'v', len: 3, fix: 2, kind: 'gate', plate: [4, 5] }, { o: 'h', len: 2, fix: 0, kind: 'heavy' }, { o: 'v', len: 2, fix: 4, kind: 'ice' }];
-    const text = encodeBoard(pieces, [1, 0, 3, 2], [[5, 0], [3, 3]]);
+    const pieces = [
+      RED,
+      { o: 'v', len: 3, fix: 2, kind: 'gate', plate: [4, 5] },
+      { o: 'h', len: 2, fix: 0, kind: 'heavy' },
+      { o: 'v', len: 2, fix: 4, kind: 'ice' },
+    ];
+    const text = encodeBoard(
+      pieces,
+      [1, 0, 3, 2],
+      [
+        [5, 0],
+        [3, 3],
+      ],
+    );
     expect(text).toContain('g4.5');
     expect(text).toContain('v2.4.2i');
     expect(text).toContain('#5.0');
-    expect(decodeBoard(text)).toEqual({ pieces, pos: [1, 0, 3, 2], walls: [[5, 0], [3, 3]] });
+    expect(decodeBoard(text)).toEqual({
+      pieces,
+      pos: [1, 0, 3, 2],
+      walls: [
+        [5, 0],
+        [3, 3],
+      ],
+    });
   });
   it('un texto ilegible da un error claro', () => {
     expect(() => decodeBoard('h2.2.x')).toThrow(/ilegible/);
@@ -148,7 +192,9 @@ describe('generador con muros y decoración', () => {
       const m = mutate(d, rng, 0.3);
       if (!m) continue;
       expect(m.walls).toEqual(d.walls);
-      d.pieces.forEach((p, i) => { if (p.kind) expect(m.pieces[i]).toEqual(p); });
+      d.pieces.forEach((p, i) => {
+        if (p.kind) expect(m.pieces[i]).toEqual(p);
+      });
       expect(isValidState(m.pieces, m.pos, m.walls)).toBe(true);
     }
   }, 60000);

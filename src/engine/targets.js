@@ -8,7 +8,18 @@ export const MAX_RATING = 100;
  *   75     el Experto empieza aquí (29)
  *   100    desafiante de verdad (37)
  */
-export const TARGET_KNOTS = [[1, 2], [10, 3], [20, 6], [30, 11], [40, 15], [50, 19], [60, 23], [75, 29], [90, 34], [100, 37]];
+export const TARGET_KNOTS = [
+  [1, 2],
+  [10, 3],
+  [20, 6],
+  [30, 11],
+  [40, 15],
+  [50, 19],
+  [60, 23],
+  [75, 29],
+  [90, 34],
+  [100, 37],
+];
 
 export function targetFor(rating) {
   const r = Math.max(1, Math.min(MAX_RATING, rating));
@@ -19,4 +30,3 @@ export function targetFor(rating) {
   }
   return TARGET_KNOTS[TARGET_KNOTS.length - 1][1];
 }
-

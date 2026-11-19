@@ -2,7 +2,17 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import levelBank from '../src/data/levels.json';
 import specialBank from '../src/data/special.json';
-import { BOSSES, BOSS_RULES, bossCapFor, bossMechLabel, bossPortraitPath, bossRating, bossRule, bossRuleLabel, bossTimeFor } from '../src/game/bosses.js';
+import {
+  BOSSES,
+  BOSS_RULES,
+  bossCapFor,
+  bossMechLabel,
+  bossPortraitPath,
+  bossRating,
+  bossRule,
+  bossRuleLabel,
+  bossTimeFor,
+} from '../src/game/bosses.js';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { moveLimit } from '../src/engine/difficulty.js';
 import { minFor } from '../src/engine/calibration.js';
@@ -11,7 +21,11 @@ import { ZONE_THEMES } from '../src/audio/themes.js';
 
 const LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 const tips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_door'].map((k) => [k, true]));
-const build = (level, mode = 'c') => buildAdventureLevel({ seed: 46, hero: 'lia', start: 1, level, route: 'normal', mode, adj: 0, hints: 3, score: 0 }, { levels: levelBank.ratings, special: specialBank, tips });
+const build = (level, mode = 'c') =>
+  buildAdventureLevel(
+    { seed: 46, hero: 'lia', start: 1, level, route: 'normal', mode, adj: 0, hints: 3, score: 0 },
+    { levels: levelBank.ratings, special: specialBank, tips },
+  );
 
 describe('jefes: datos y reglas', () => {
   it('hay un jefe por ciudad con nombre, título, lore, mecánica, color y regla propia', () => {
@@ -27,9 +41,11 @@ describe('jefes: datos y reglas', () => {
   });
 
   it('cada jefe tiene su ilustración en public/jefes (las diez, en JPG optimizado)', () => {
-    const missing = LEVELS.filter((l) => !fs.existsSync(`public/jefes/${BOSSES[l].art}.jpg`)).map((l) => `${l}:${BOSSES[l].art}`);
+    const missing = LEVELS.filter((l) => !fs.existsSync(`public/jefes/${BOSSES[l].art}.jpg`)).map(
+      (l) => `${l}:${BOSSES[l].art}`,
+    );
     expect(missing).toEqual([]);
-    expect(fs.existsSync('public/jefes/sentinel.jpg')).toBe(true);   // la imagen de reserva (si falta alguna, el juego usa esta)
+    expect(fs.existsSync('public/jefes/sentinel.jpg')).toBe(true); // la imagen de reserva (si falta alguna, el juego usa esta)
   });
 
   it('cada jefe tiene un retrato WebP recortado y una frase corta propia', () => {
@@ -59,9 +75,9 @@ describe('jefes: datos y reglas', () => {
       expect(boss, `jefe ${l}`).toBeLessThanOrEqual(Math.max(32, Math.round(30 * bossRule(l).cap)));
       expect(boss, `jefe ${l}`).toBeGreaterThanOrEqual(32);
     }
-    expect(bossRule(60).cap).toBeLessThan(bossRule(10).cap);                    // los jefes de turnos aprietan más según avanzas
+    expect(bossRule(60).cap).toBeLessThan(bossRule(10).cap); // los jefes de turnos aprietan más según avanzas
     expect(heroLimit('lia', 30, 1, 60, false, bossCapFor(60))).toBeLessThan(heroLimit('lia', 30, 1, 60, false, false));
-    expect(bonusTurns('lia', 40, true)).toBeLessThan(bonusTurns('lia', 40, false));   // en jefes la reserva de Lía es menor
+    expect(bonusTurns('lia', 40, true)).toBeLessThan(bonusTurns('lia', 40, false)); // en jefes la reserva de Lía es menor
     expect(bonusTurns('jean', 40, true)).toBe(0);
   });
 
@@ -106,13 +122,37 @@ describe('jefes: niveles generados', () => {
   it('al reanudar una partida guardada se conserva el tiempo que quedaba', () => {
     const G = build(100);
     expect(G.timeLimit).toBeGreaterThan(0);
-    const run = { seed: 46, hero: 'lia', start: 1, level: 100, route: 'normal', mode: 'c', adj: 0, hints: 3, score: 0,
-      board: { level: 100, rate: G.rate, pieces: G.pieces, walls: G.walls, doors: G.doors, pos: G.pos, start: G.start, opt: G.opt, limit: G.limit, moves: 0, hist: [], timeLimit: G.timeLimit, timeLeft: 47 } };
+    const run = {
+      seed: 46,
+      hero: 'lia',
+      start: 1,
+      level: 100,
+      route: 'normal',
+      mode: 'c',
+      adj: 0,
+      hints: 3,
+      score: 0,
+      board: {
+        level: 100,
+        rate: G.rate,
+        pieces: G.pieces,
+        walls: G.walls,
+        doors: G.doors,
+        pos: G.pos,
+        start: G.start,
+        opt: G.opt,
+        limit: G.limit,
+        moves: 0,
+        hist: [],
+        timeLimit: G.timeLimit,
+        timeLeft: 47,
+      },
+    };
     const R = buildAdventureLevel(run, { levels: levelBank.ratings, special: specialBank, tips });
     expect(R.timeLeft).toBe(47);
     expect(R.timeLimit).toBe(G.timeLimit);
 
-    run.board.timeLimit = 120;  // partida guardada antes del cambio, con 73 segundos consumidos
+    run.board.timeLimit = 120; // partida guardada antes del cambio, con 73 segundos consumidos
     const migrated = buildAdventureLevel(run, { levels: levelBank.ratings, special: specialBank, tips });
     expect(migrated.timeLimit).toBe(600);
     expect(migrated.timeLeft).toBe(527);

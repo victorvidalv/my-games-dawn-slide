@@ -12,7 +12,8 @@ export const CHAPTERS = [
   {
     seal: 'Corazón',
     title: 'La brasa sale del valle',
-    opening: 'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Alba y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.',
+    opening:
+      'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Alba y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.',
     cityLines: [
       'El Valle Esmeralda duerme bajo una niebla que nunca se va.',
       'Cada tablero se gana sacando la llave roja y cada sello se rompe al terminar el reino.',
@@ -23,7 +24,8 @@ export const CHAPTERS = [
   {
     seal: 'Marea',
     title: 'Las velas de los Kogn',
-    opening: 'Los Kogn, navegantes de las mareas, dejaron una vela encendida en cada muelle para que nadie se pierda. Pero el mar no se mueve y las naves no zarpan. Rompe el sello de la Marea.',
+    opening:
+      'Los Kogn, navegantes de las mareas, dejaron una vela encendida en cada muelle para que nadie se pierda. Pero el mar no se mueve y las naves no zarpan. Rompe el sello de la Marea.',
     cityLines: [
       'Los Kogn encendían una vela por cada marinero al que esperaban.',
       'Las velas arden, pero el mar sigue quieto.',
@@ -34,7 +36,8 @@ export const CHAPTERS = [
   {
     seal: 'Agua',
     title: 'El pozo de los Sahrim',
-    opening: 'Los Sahrim cuentan los pozos como otros cuentan los años, y la Noche Larga les arrebató el último. Sin agua la caravana no avanza. Rompe el sello del Agua y haz brotar el pozo.',
+    opening:
+      'Los Sahrim cuentan los pozos como otros cuentan los años, y la Noche Larga les arrebató el último. Sin agua la caravana no avanza. Rompe el sello del Agua y haz brotar el pozo.',
     cityLines: [
       'Las dunas cubrieron el último pozo de los Sahrim.',
       'Aquí cada movimiento de más cuesta agua.',
@@ -45,7 +48,8 @@ export const CHAPTERS = [
   {
     seal: 'Memoria',
     title: 'Los nombres de la corteza',
-    opening: 'Los Ennari escribían los nombres de sus muertos en la corteza de los árboles. Vhorn los borró, porque se alimenta de lo que se olvida. Rompe el sello de la Memoria y devuélveselos.',
+    opening:
+      'Los Ennari escribían los nombres de sus muertos en la corteza de los árboles. Vhorn los borró, porque se alimenta de lo que se olvida. Rompe el sello de la Memoria y devuélveselos.',
     cityLines: [
       'Las hojas cubren los altares donde escribían los Ennari.',
       'Un nombre olvidado es un nombre que Vhorn ya devoró.',
@@ -56,7 +60,8 @@ export const CHAPTERS = [
   {
     seal: 'Chispa',
     title: 'La hora detenida',
-    opening: 'El reloj mayor se paró la noche en que Vhorn apagó el Faro, y con él se detuvo el tiempo de la ciudad. Rompe el sello de la Chispa para que las agujas vuelvan a girar.',
+    opening:
+      'El reloj mayor se paró la noche en que Vhorn apagó el Faro, y con él se detuvo el tiempo de la ciudad. Rompe el sello de la Chispa para que las agujas vuelvan a girar.',
     cityLines: [
       'Los relojeros kogn y ennari firmaron juntos cada engranaje.',
       'Un movimiento torpe puede atascar toda la calle.',
@@ -67,7 +72,8 @@ export const CHAPTERS = [
   {
     seal: 'Valor',
     title: 'El filo del hielo',
-    opening: 'En la cumbre, el hielo sepultó la campana que los Aluen oían desde el cielo. Hace frío y da miedo seguir, pero el sello del Valor solo cede ante quien se atreve.',
+    opening:
+      'En la cumbre, el hielo sepultó la campana que los Aluen oían desde el cielo. Hace frío y da miedo seguir, pero el sello del Valor solo cede ante quien se atreve.',
     cityLines: [
       'El hielo hace resbalar todo lo que toca.',
       'El refugio calla bajo un manto de nieve.',
@@ -78,7 +84,8 @@ export const CHAPTERS = [
   {
     seal: 'Vida',
     title: 'El jardín quieto',
-    opening: 'Los Sahrim trajeron la primera semilla de cerezo cruzando tres desiertos. Hoy los pétalos flotan inmóviles y, por primera vez, Vhorn se deja ver entre ellos. Rompe el sello de la Vida.',
+    opening:
+      'Los Sahrim trajeron la primera semilla de cerezo cruzando tres desiertos. Hoy los pétalos flotan inmóviles y, por primera vez, Vhorn se deja ver entre ellos. Rompe el sello de la Vida.',
     cityLines: [
       'Los pétalos cuelgan en el aire, como si el tiempo dudara.',
       'Los candados de la villa se abren cubriendo la placa correcta.',
@@ -90,7 +97,8 @@ export const CHAPTERS = [
   {
     seal: 'Fuego',
     title: 'La fragua bajo la ceniza',
-    opening: 'Aquí la brasa duerme bajo la piedra negra. Vhorn susurra que descansar es más fácil que luchar; romper el sello del Fuego es decirle que no.',
+    opening:
+      'Aquí la brasa duerme bajo la piedra negra. Vhorn susurra que descansar es más fácil que luchar; romper el sello del Fuego es decirle que no.',
     cityLines: [
       'La ceniza cubre el puerto y las rejas guardan el calor.',
       'La fragua marca el ritmo: un golpe, un paso.',
@@ -102,7 +110,8 @@ export const CHAPTERS = [
   {
     seal: 'Cielo',
     title: 'Los puentes de luz',
-    opening: 'Los Aluen tejían puentes de luz entre islas flotantes, y Vhorn los cortó. Aquí los héroes descubren su secreto: Vhorn fue el primer vigía del Faro, hasta que el mundo lo olvidó.',
+    opening:
+      'Los Aluen tejían puentes de luz entre islas flotantes, y Vhorn los cortó. Aquí los héroes descubren su secreto: Vhorn fue el primer vigía del Faro, hasta que el mundo lo olvidó.',
     cityLines: [
       'Las islas flotan sobre un abismo sin fondo.',
       'Cada tablero es un puente que hay que tejer a mano.',
@@ -114,7 +123,8 @@ export const CHAPTERS = [
   {
     seal: 'Alba',
     title: 'El trono vacío',
-    opening: 'Aquí espera el Faro del Alba y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.',
+    opening:
+      'Aquí espera el Faro del Alba y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.',
     cityLines: [
       'Murallas de oro guardan la última cámara.',
       'La brasa, la hora y la palabra deben actuar juntas.',
@@ -147,7 +157,8 @@ export const HERO_LORE = {
       'Llegamos. Hoy encendemos el Faro, por mi valle y por todos los reinos.',
     ],
     quote: '«Incluso la ceniza recuerda el calor.»',
-    endingLore: 'Lía enciende el Faro del Alba con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.',
+    endingLore:
+      'Lía enciende el Faro del Alba con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.',
     thanksWin: '«Mi llama resistió porque no me soltaste. Prometí volver con el alba, y aquí está.»',
     thanksLoss: '«La brasa se apaga por hoy, viajero. Cuando vuelvas a llamarla, volverá a arder.»',
   },
@@ -165,7 +176,8 @@ export const HERO_LORE = {
       'Es la hora final. Esta vez llego a tiempo: el Faro volverá a marcar el alba.',
     ],
     quote: '«Todo error deja una grieta por donde volver.»',
-    endingLore: 'Jean ajusta la última aguja del Faro del Alba. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.',
+    endingLore:
+      'Jean ajusta la última aguja del Faro del Alba. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.',
     thanksWin: '«Cada paso atrás valió la pena. Hoy llegamos a tiempo: el mañana vuelve a empezar.»',
     thanksLoss: '«El péndulo se detiene aquí. Descansa; otra hora nos espera.»',
   },
@@ -183,7 +195,8 @@ export const HERO_LORE = {
       'La última hoja está en blanco. Hoy digo el nombre que falta y cierro el libro.',
     ],
     quote: '«Lo que no se nombra sigue buscando salida.»',
-    endingLore: 'Juth traza el último signo sobre el Faro del Alba y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.',
+    endingLore:
+      'Juth traza el último signo sobre el Faro del Alba y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.',
     thanksWin: '«Cerramos el códice con luz limpia. Ya nadie olvidará esos nombres.»',
     thanksLoss: '«Faltó una línea en esta página, compañero. Volveremos a abrir el libro.»',
   },

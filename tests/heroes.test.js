@@ -1,9 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { moveLimit } from '../src/engine/difficulty.js';
-import {
-  HEROES, bonusTurns, heroLimit, clearRewards, spendHint, canHint } from '../src/game/heroes.js';
+import { HEROES, bonusTurns, heroLimit, clearRewards, spendHint, canHint } from '../src/game/heroes.js';
 
-const newRun = (extra = {}) => ({ hints: 3, lifeUsed: false, undoUsedAt: 0, undoUsedLevel: 0, undoUsedCount: 0, vanAwardedAt: 0, ...extra });
+const newRun = (extra = {}) => ({
+  hints: 3,
+  lifeUsed: false,
+  undoUsedAt: 0,
+  undoUsedLevel: 0,
+  undoUsedCount: 0,
+  vanAwardedAt: 0,
+  ...extra,
+});
 
 describe('héroes', () => {
   it('hay tres héroes con poder descrito', () => {
@@ -21,10 +28,11 @@ describe('Lía · turnos de reserva', () => {
     expect(bonusTurns('van', 40)).toBe(0);
   });
   it('heroLimit suma el bonus al límite normal, igual en todos los caminos, y no cambia para el resto de héroes', () => {
-    for (const opt of [2, 7, 20, 37]) for (const start of [1, 50, 75]) {
-      expect(heroLimit('jean', opt, start)).toBe(moveLimit(opt, start));
-      expect(heroLimit('lia', opt, start)).toBe(moveLimit(opt, start) + bonusTurns('lia', opt));
-    }
+    for (const opt of [2, 7, 20, 37])
+      for (const start of [1, 50, 75]) {
+        expect(heroLimit('jean', opt, start)).toBe(moveLimit(opt, start));
+        expect(heroLimit('lia', opt, start)).toBe(moveLimit(opt, start) + bonusTurns('lia', opt));
+      }
   });
 });
 

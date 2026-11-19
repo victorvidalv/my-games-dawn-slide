@@ -20,10 +20,16 @@ export function runPool(task, items, { threads = THREADS, batch = 4 } = {}) {
   let pending = 0;
   const workers = [];
   return new Promise((resolve, reject) => {
-    const fail = (err) => { workers.forEach((w) => w.terminate()); reject(err); };
+    const fail = (err) => {
+      workers.forEach((w) => w.terminate());
+      reject(err);
+    };
     const feed = (w) => {
       if (next >= items.length) {
-        if (pending === 0) { workers.forEach((x) => x.terminate()); resolve(out); }
+        if (pending === 0) {
+          workers.forEach((x) => x.terminate());
+          resolve(out);
+        }
         return;
       }
       const from = next;
@@ -36,7 +42,9 @@ export function runPool(task, items, { threads = THREADS, batch = 4 } = {}) {
       workers.push(w);
       w.on('message', ({ from, results, error }) => {
         if (error) return fail(new Error(error));
-        results.forEach((r, i) => { out[from + i] = r; });
+        results.forEach((r, i) => {
+          out[from + i] = r;
+        });
         pending--;
         feed(w);
       });

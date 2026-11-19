@@ -27,7 +27,8 @@ export async function wipeIn(kind = 'ink', label = '') {
   el.classList.remove('out', 'in');
   void el.offsetWidth;
   el.classList.add('in');
-  if (kind === 'boss') sfx.bossAlarm(); else sfx.whoosh(true);
+  if (kind === 'boss') sfx.bossAlarm();
+  else sfx.whoosh(true);
   await wait(kind === 'boss' ? 760 : 240);
 }
 
@@ -84,7 +85,11 @@ export function levelBanner(title, sub = '', boss = false) {
 }
 
 /* Toque suave en cualquier botón: toda la interfaz responde igual. */
-document.addEventListener('click', (e) => {
-  const b = e.target.closest?.('button');
-  if (b && !b.disabled && !b.closest('#board')) sfx.ui();
-}, { capture: true, passive: true });
+document.addEventListener(
+  'click',
+  (e) => {
+    const b = e.target.closest?.('button');
+    if (b && !b.disabled && !b.closest('#board')) sfx.ui();
+  },
+  { capture: true, passive: true },
+);

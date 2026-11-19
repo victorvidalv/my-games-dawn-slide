@@ -171,5 +171,7 @@ export const ICON_NAMES = Object.keys(BODIES);
 
 /** Rellena los elementos del HTML estático marcados con data-icon="nombre". */
 export function hydrateIcons(root = document) {
-  root.querySelectorAll('[data-icon]').forEach((el) => { el.innerHTML = icon(el.dataset.icon); });
+  root.querySelectorAll('[data-icon]').forEach((el) => {
+    el.innerHTML = icon(el.dataset.icon);
+  });
 }

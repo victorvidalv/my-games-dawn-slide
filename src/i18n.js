@@ -25,21 +25,39 @@ export const DICTS = { en: EN, zh: ZH, ja: JA };
 /** Datos de cada idioma: etiqueta HTML (`lang`), formato de números y nombre propio para el selector. */
 export const LANG_INFO = {
   en: { html: 'en', locale: 'en-US', name: 'English' },
-  es: { html: 'es', locale: 'de-DE', name: 'Español' },   // de-DE: separador de miles con punto también por debajo de 10.000
+  es: { html: 'es', locale: 'de-DE', name: 'Español' }, // de-DE: separador de miles con punto también por debajo de 10.000
   zh: { html: 'zh-Hans', locale: 'zh-CN', name: '中文' },
   ja: { html: 'ja', locale: 'ja-JP', name: '日本語' },
 };
 /** Idioma del juego que corresponde a una lista de preferencias del navegador («es-CL», «zh-TW», «ja»…), o inglés. */
 export function detectLang(preferred = []) {
   for (const tag of preferred) {
-    const base = String(tag || '').toLowerCase().split(/[-_]/)[0];
+    const base = String(tag || '')
+      .toLowerCase()
+      .split(/[-_]/)[0];
     if (LANGS.includes(base)) return base;
   }
   return 'en';
 }
-const stored = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
+const stored = (() => {
+  try {
+    return localStorage.getItem(KEY);
+  } catch {
+    return null;
+  }
+})();
 /* Solo en el navegador: en Node (tests, scripts) el idioma por defecto es siempre el inglés, sea cual sea el del sistema. */
-const browser = (() => { try { return typeof document === 'undefined' || typeof navigator === 'undefined' ? [] : (navigator.languages?.length ? navigator.languages : [navigator.language]); } catch { return []; } })();
+const browser = (() => {
+  try {
+    return typeof document === 'undefined' || typeof navigator === 'undefined'
+      ? []
+      : navigator.languages?.length
+        ? navigator.languages
+        : [navigator.language];
+  } catch {
+    return [];
+  }
+})();
 export let lang = LANGS.includes(stored) ? stored : detectLang(browser);
 /** true cuando el idioma activo es el inglés (se conserva por compatibilidad; para saber si hay que traducir usa `lang !== 'es'`). */
 export let isEnglish = lang === 'en';
@@ -55,11 +73,14 @@ function compile(dict) {
   for (const [es, out] of Object.entries(dict)) {
     if (/\{\w+\}/.test(es)) {
       const names = [];
-      const source = esc(norm(es)).replace(/\{(\w+)\}/g, (_, n) => { names.push(n); return '(.+?)'; });
+      const source = esc(norm(es)).replace(/\{(\w+)\}/g, (_, n) => {
+        names.push(n);
+        return '(.+?)';
+      });
       patterns.push({ re: new RegExp(`^${source}$`), names, out, literal: norm(es).replace(/\{\w+\}/g, '').length });
     } else {
       exact.set(norm(es), out.trim());
-      const quoted = norm(es).match(/^«(.+)»$/);   // una frase entre «» también se reconoce sin las comillas (se cita dentro de otros textos)
+      const quoted = norm(es).match(/^«(.+)»$/); // una frase entre «» también se reconoce sin las comillas (se cita dentro de otros textos)
       if (quoted) exact.set(quoted[1], unquote(out.trim()));
     }
   }
@@ -95,8 +116,8 @@ export function tr(text, to = lang) {
 export const t = tr;
 
 const ATTRS = ['aria-label', 'alt', 'title', 'placeholder'];
-const written = new Map();       // nodo de texto → { es, en }: lo que había y lo que escribimos (para restaurar y no re-traducir lo nuestro)
-const attrWritten = new Map();   // elemento → { atributo: { es, en } }
+const written = new Map(); // nodo de texto → { es, en }: lo que había y lo que escribimos (para restaurar y no re-traducir lo nuestro)
+const attrWritten = new Map(); // elemento → { atributo: { es, en } }
 
 function textNode(node) {
   const value = node.nodeValue;
@@ -105,7 +126,10 @@ function textNode(node) {
   const lead = value.match(/^\s*/)[0];
   const trail = value.match(/\s*$/)[0];
   const out = tr(value);
-  if (out === value || out === norm(value)) { if (rec) written.delete(node); return; }
+  if (out === value || out === norm(value)) {
+    if (rec) written.delete(node);
+    return;
+  }
   const next = lead + out + trail;
   written.set(node, { es: value, en: next });
   node.nodeValue = next;
@@ -123,7 +147,10 @@ function attrs(el) {
   }
 }
 function walk(root) {
-  if (root.nodeType === 3) { textNode(root); return; }
+  if (root.nodeType === 3) {
+    textNode(root);
+    return;
+  }
   if (root.nodeType !== 1) return;
   if (root.tagName === 'SCRIPT' || root.tagName === 'STYLE') return;
   attrs(root);
@@ -174,13 +201,21 @@ export function setLang(next) {
   if (!LANGS.includes(next) || next === lang) return;
   lang = next;
   isEnglish = next === 'en';
-  try { localStorage.setItem(KEY, next); } catch { /* sin almacenamiento: no se recuerda */ }
-  stopTranslating();                               // vuelve al español de origen y, si toca, traduce desde ahí al idioma nuevo
+  try {
+    localStorage.setItem(KEY, next);
+  } catch {
+    /* sin almacenamiento: no se recuerda */
+  }
+  stopTranslating(); // vuelve al español de origen y, si toca, traduce desde ahí al idioma nuevo
   if (DICTS[lang]) startTranslating();
   document.dispatchEvent(new CustomEvent('langchange', { detail: { lang } }));
 }
 
 if (typeof document !== 'undefined') {
-  const start = () => { if (DICTS[lang]) startTranslating(); else document.documentElement.lang = 'es'; };
-  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  const start = () => {
+    if (DICTS[lang]) startTranslating();
+    else document.documentElement.lang = 'es';
+  };
+  if (document.body) start();
+  else document.addEventListener('DOMContentLoaded', start);
 }

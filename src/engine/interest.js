@@ -33,19 +33,28 @@ export function interestOf(pieces, key, an, walls = [], doors = []) {
     let legal = 0;
     let good = 0;
     let pick = null;
-    expand(pieces, cur, pos, g, (i, y, nk) => {
-      legal++;
-      if (an.dist.get(nk) !== d - 1) return;
-      good++;
-      // entre los óptimos se prefiere seguir con una pieza distinta a la anterior (soluciones más «naturales» y estables)
-      if (!pick || (path.length && pick.i === path[path.length - 1].i && i !== pick.i)) pick = { i, from: pos[i], to: y, nk };
-    }, walls, doors);
+    expand(
+      pieces,
+      cur,
+      pos,
+      g,
+      (i, y, nk) => {
+        legal++;
+        if (an.dist.get(nk) !== d - 1) return;
+        good++;
+        // entre los óptimos se prefiere seguir con una pieza distinta a la anterior (soluciones más «naturales» y estables)
+        if (!pick || (path.length && pick.i === path[path.length - 1].i && i !== pick.i))
+          pick = { i, from: pos[i], to: y, nk };
+      },
+      walls,
+      doors,
+    );
     if (!pick) break;
     choiceSum += legal ? 1 - good / legal : 0;
     path.push(pick);
     cur = pick.nk;
   }
-  const body = path.slice(0, -1);                 // la última es la llave saliendo: no cuenta
+  const body = path.slice(0, -1); // la última es la llave saliendo: no cuenta
   const m = body.length;
   if (!m) return { score: 0, trivial: true, locked: 0, dirs: 0, run: 0, mix: 0, choice: 0, revisit: 0, moves: total };
 
@@ -66,7 +75,10 @@ export function interestOf(pieces, key, an, walls = [], doors = []) {
     if (run > best) best = run;
     prev = dir;
     times.set(s.i, (times.get(s.i) || 0) + 1);
-    if (s.i !== 0) { if (p.o === 'h') h = true; else v = true; }
+    if (s.i !== 0) {
+      if (p.o === 'h') h = true;
+      else v = true;
+    }
   }
   let entropy = 0;
   for (const c of dirCount) if (c) entropy -= (c / m) * Math.log(c / m);
@@ -93,7 +105,14 @@ export const INTEREST_MAX_TARGET = 16;
  * La más interesante de una lista de claves de estado (se puntúan como mucho `sample`, repartidas por toda la lista).
  * Entre las casi empatadas con la mejor (a menos de `slack`) elige con `rng`, para que las partidas no se repitan.
  */
-export function pickInteresting(pieces, keys, an, walls = [], doors = [], { sample = 40, rng = null, slack = 0.04 } = {}) {
+export function pickInteresting(
+  pieces,
+  keys,
+  an,
+  walls = [],
+  doors = [],
+  { sample = 40, rng = null, slack = 0.04 } = {},
+) {
   const step = Math.max(1, keys.length / sample);
   const offset = rng ? Math.floor(rng() * step) : 0;
   const scored = [];

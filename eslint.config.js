@@ -4,7 +4,11 @@ export default [
   { ignores: ['dist', 'node_modules', 'coverage'] },
   {
     files: ['src/**/*.js'],
-    languageOptions: { ecmaVersion: 2025, sourceType: 'module', globals: { ...globals.browser, __APP_VERSION__: 'readonly' } },
+    languageOptions: {
+      ecmaVersion: 2025,
+      sourceType: 'module',
+      globals: { ...globals.browser, __APP_VERSION__: 'readonly' },
+    },
     rules: {
       'no-undef': 'error',
       'no-import-assign': 'error',

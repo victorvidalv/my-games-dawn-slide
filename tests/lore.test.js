@@ -43,7 +43,7 @@ describe('mundo e historia: Thyes, año 4133', () => {
       expect(home, `${p.name} en su reino`).toContain(p.name);
       expect((storyText.match(new RegExp(p.name, 'g')) || []).length, `${p.name} mencionado`).toBeGreaterThanOrEqual(2);
     }
-    expect(JSON.stringify(CHAPTERS[1])).toMatch(/Kogn/);   // el Puerto de las Velas: los antiguos Kogn viajan hasta allí
+    expect(JSON.stringify(CHAPTERS[1])).toMatch(/Kogn/); // el Puerto de las Velas: los antiguos Kogn viajan hasta allí
   });
 
   it('el malo se llama Vhorn: se nombra en la historia, aparece al inicio y en el final, y Tri no es la culpable en los textos oficiales', () => {
@@ -72,7 +72,8 @@ describe('mundo e historia: Thyes, año 4133', () => {
   });
 
   it('no quedan en los textos del juego las ideas antiguas que chocan con la historia', () => {
-    for (const bad of ['dios del fuego', 'Dios nórdico', 'LA SOMBRA DE TRI']) expect(read('index.html')).not.toContain(bad);
+    for (const bad of ['dios del fuego', 'Dios nórdico', 'LA SOMBRA DE TRI'])
+      expect(read('index.html')).not.toContain(bad);
     expect(read('src/data/story.js')).not.toContain('Tri apagó');
   });
 
@@ -91,7 +92,9 @@ describe('mundo e historia: Thyes, año 4133', () => {
   });
 
   it('en el tutorial de cada pieza, cada héroe se queja o desafía a Vhorn; Vhorn habla desde Villa Sakura y se revela en Ciudad Celeste', () => {
-    for (const hero of ['lia', 'jean', 'van']) for (const mech of ['wall', 'heavy', 'gate', 'ice']) expect(HERO_TUTORIAL_TALK[hero][mech], `${hero} ${mech}`).toMatch(/Vhorn/);
+    for (const hero of ['lia', 'jean', 'van'])
+      for (const mech of ['wall', 'heavy', 'gate', 'ice'])
+        expect(HERO_TUTORIAL_TALK[hero][mech], `${hero} ${mech}`).toMatch(/Vhorn/);
     expect(CHAPTERS.map((c) => !!c.vhorn)).toEqual([false, false, false, false, false, false, true, true, true, true]);
     expect(CHAPTERS[8].opening).toMatch(/primer vigía/);
   });

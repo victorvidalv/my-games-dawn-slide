@@ -27,15 +27,20 @@ function mechanicsPresent(G) {
 function renderLegend() {
   const el = $('legend');
   const G = S.G;
-  const chips = G ? mechanicsPresent(G).map((m) => `<span class="chip chip-${m}"><i>${icon(MECHANICS[m].icon)}</i>${MECHANICS[m].chip}</span>`) : [];
+  const chips = G
+    ? mechanicsPresent(G).map(
+        (m) => `<span class="chip chip-${m}"><i>${icon(MECHANICS[m].icon)}</i>${MECHANICS[m].chip}</span>`,
+      )
+    : [];
   el.innerHTML = chips.join('');
   el.hidden = !chips.length;
-  dispatchEvent(new Event('resize'));            // la leyenda ocupa sitio: el tablero se reajusta para no taparla
+  dispatchEvent(new Event('resize')); // la leyenda ocupa sitio: el tablero se reajusta para no taparla
 }
 
 const DEMO = {
   drag: '<div class="mini"><div class="mp red"></div><div class="mexit">➜</div><span class="finger">👆</span></div>',
-  score: '<div class="mini meter-demo"><div class="mbar"><i></i><u></u></div><div class="mlbl"><span>Mínimo 5</span><span>Límite 10</span></div></div>',
+  score:
+    '<div class="mini meter-demo"><div class="mbar"><i></i><u></u></div><div class="mlbl"><span>Mínimo 5</span><span>Límite 10</span></div></div>',
   tools: `<div class="mini tools-demo"><span>${icon('stars')}</span><span>${icon('hint')}</span><span>${icon('purse')}</span></div>`,
   hero: '<div class="mini hero-demo"></div>',
   boss: '<div class="mini boss-demo"><span class="bd-skull">☠</span><b>+30 %</b></div>',
@@ -51,18 +56,63 @@ const DEMO = {
 
 function tipFor(id) {
   if (MECHANICS[id]) {
-    const h = heroOf(), talk = HERO_TUTORIAL_TALK[h.id]?.[id];
-    return { tag: id === 'curse' ? 'MALEFICIO' : 'PIEZA NUEVA', title: `${icon(MECHANICS[id].icon)} ${MECHANICS[id].name}`, text: MECHANICS[id].tip + (talk ? `<br><br><i><b>${h.name}:</b> «${talk}»</i>` : ''), demo: id };
+    const h = heroOf(),
+      talk = HERO_TUTORIAL_TALK[h.id]?.[id];
+    return {
+      tag: id === 'curse' ? 'MALEFICIO' : 'PIEZA NUEVA',
+      title: `${icon(MECHANICS[id].icon)} ${MECHANICS[id].name}`,
+      text: MECHANICS[id].tip + (talk ? `<br><br><i><b>${h.name}:</b> «${talk}»</i>` : ''),
+      demo: id,
+    };
   }
   const h = heroOf();
   return {
-    drag: { tag: 'PRIMEROS PASOS', title: '¡Saca la llave roja!', text: 'Desliza los bloques para abrirle camino a la llave roja 🔑 hasta la salida ➜. <b>Arrastra el bloque que brilla.</b>', demo: 'drag' },
-    score: { tag: 'PUNTOS', title: 'Cada movimiento cuenta', text: '<b>Mínimo</b> es la mejor solución: si la igualas, ¡<b>PERFECTO</b>! y más puntos. Si agotas los turnos del <b>Límite</b> (el doble del mínimo) sin sacar la llave, ya no puedes mover más y la aventura termina.', demo: 'score', glow: '#meter' },
-    tools: { tag: 'AYUDAS', title: 'Si te atoras', text: `<b>Poder</b> es propio de tu héroe: Jean rebobina y Juth traza un cuarto de los pasos que faltan (si quedan 3 o más); un uso por tablero. ${icon('hint')} <b>Pista</b> te enseña el mejor movimiento. ${icon('purse')} <b>Tienda</b>: ayudas muy caras que se pagan con tus puntos.`, demo: 'tools', glow: '.controls' },
-    seal: {tag:'OBJETIVO OPCIONAL',title:`${icon('seal1')}${icon('seal2')}${icon('seal3')} Sellos de bronce, plata y oro`,text:'Lleva la <b>pieza de borde discontinuo</b> hasta el sello del suelo con el <b>mismo borde</b> para ganar puntos. Cuanto más rodeo cuesta, mejor premio: el de <b>bronce</b> es pequeño, el de <b>plata</b> medio y el de <b>oro</b> el gran premio. Puedes salir sin recogerlo.',demo:'seal',glow:'#sealStatus'},
-    boss: { tag: 'JEFE DE LA CIUDAD', title: 'Un guardián te cierra el paso', text: 'Cada ciudad termina con un jefe: un tablero más difícil, con menos margen y <b>+30 % de puntos</b>. Cada jefe presiona de una forma distinta: <b>turnos ajustados</b> o <b>contrarreloj</b>. Mira el aviso antes de empezar.', demo: 'boss' },
-    bosstime: { tag: 'CONTRARRELOJ', title: 'La barra de tiempo', text: 'Este jefe tiene <b>tiempo limitado</b>: la barra baja mientras piensas y mueves, y se detiene en la pausa, la tienda, los poderes y los avisos. Si llega a cero, pierdes el tablero. Con menos de 10 segundos suena un tictac.', demo: 'bosstime' },
-    hero: { tag: 'TU HÉROE', title: `${icon(h.icon)} ${h.name}: ${h.power}`, text: `${h.detail} <b>${h.short}.</b>`, demo: 'hero', glow: '#heroHudName' },
+    drag: {
+      tag: 'PRIMEROS PASOS',
+      title: '¡Saca la llave roja!',
+      text: 'Desliza los bloques para abrirle camino a la llave roja 🔑 hasta la salida ➜. <b>Arrastra el bloque que brilla.</b>',
+      demo: 'drag',
+    },
+    score: {
+      tag: 'PUNTOS',
+      title: 'Cada movimiento cuenta',
+      text: '<b>Mínimo</b> es la mejor solución: si la igualas, ¡<b>PERFECTO</b>! y más puntos. Si agotas los turnos del <b>Límite</b> (el doble del mínimo) sin sacar la llave, ya no puedes mover más y la aventura termina.',
+      demo: 'score',
+      glow: '#meter',
+    },
+    tools: {
+      tag: 'AYUDAS',
+      title: 'Si te atoras',
+      text: `<b>Poder</b> es propio de tu héroe: Jean rebobina y Juth traza un cuarto de los pasos que faltan (si quedan 3 o más); un uso por tablero. ${icon('hint')} <b>Pista</b> te enseña el mejor movimiento. ${icon('purse')} <b>Tienda</b>: ayudas muy caras que se pagan con tus puntos.`,
+      demo: 'tools',
+      glow: '.controls',
+    },
+    seal: {
+      tag: 'OBJETIVO OPCIONAL',
+      title: `${icon('seal1')}${icon('seal2')}${icon('seal3')} Sellos de bronce, plata y oro`,
+      text: 'Lleva la <b>pieza de borde discontinuo</b> hasta el sello del suelo con el <b>mismo borde</b> para ganar puntos. Cuanto más rodeo cuesta, mejor premio: el de <b>bronce</b> es pequeño, el de <b>plata</b> medio y el de <b>oro</b> el gran premio. Puedes salir sin recogerlo.',
+      demo: 'seal',
+      glow: '#sealStatus',
+    },
+    boss: {
+      tag: 'JEFE DE LA CIUDAD',
+      title: 'Un guardián te cierra el paso',
+      text: 'Cada ciudad termina con un jefe: un tablero más difícil, con menos margen y <b>+30 % de puntos</b>. Cada jefe presiona de una forma distinta: <b>turnos ajustados</b> o <b>contrarreloj</b>. Mira el aviso antes de empezar.',
+      demo: 'boss',
+    },
+    bosstime: {
+      tag: 'CONTRARRELOJ',
+      title: 'La barra de tiempo',
+      text: 'Este jefe tiene <b>tiempo limitado</b>: la barra baja mientras piensas y mueves, y se detiene en la pausa, la tienda, los poderes y los avisos. Si llega a cero, pierdes el tablero. Con menos de 10 segundos suena un tictac.',
+      demo: 'bosstime',
+    },
+    hero: {
+      tag: 'TU HÉROE',
+      title: `${icon(h.icon)} ${h.name}: ${h.power}`,
+      text: `${h.detail} <b>${h.short}.</b>`,
+      demo: 'hero',
+      glow: '#heroHudName',
+    },
   }[id];
 }
 
@@ -71,11 +121,15 @@ let showing = false;
 const CAN_WAIT = ['score', 'tools', 'hero', 'seal'];
 
 function show(ids, done) {
-  if (!ids.length) { done?.(); return; }
+  if (!ids.length) {
+    done?.();
+    return;
+  }
   const id = ids[0];
   const t = tipFor(id);
   const modal = $('coach');
-  $('coachDemo').innerHTML = t.demo === 'hero' ? `<img class="hero-demo-img" src="heroes/${heroOf().id}.webp" alt="">` : DEMO[t.demo] || '';
+  $('coachDemo').innerHTML =
+    t.demo === 'hero' ? `<img class="hero-demo-img" src="heroes/${heroOf().id}.webp" alt="">` : DEMO[t.demo] || '';
   $('coachTag').textContent = t.tag;
   $('coachTitle').innerHTML = t.title;
   $('coachText').innerHTML = t.text;
@@ -102,7 +156,7 @@ function pointAtNextMove(prefix = '', custom = null) {
   const h = hintMove(G.pieces, G.pos, G.walls, G.doors);
   if (!h) return;
   const p = G.pieces[h.i];
-  const dir = p.o === 'h' ? (h.to > h.from ? 'derecha' : 'izquierda') : (h.to > h.from ? 'abajo' : 'arriba');
+  const dir = p.o === 'h' ? (h.to > h.from ? 'derecha' : 'izquierda') : h.to > h.from ? 'abajo' : 'arriba';
   G.els.forEach((e) => e.classList.remove('hint'));
   G.els[h.i].classList.add('hint');
   $('msg').textContent = custom ?? `${prefix}Arrastra el bloque que brilla hacia ${dir}.`;
@@ -126,7 +180,8 @@ export function startCoach() {
   if (!G || !run || G.done || run.mode === 'p' || showing) return;
   store.tips = store.tips || {};
   const queue = [];
-  if (!run.daily) {                                 // los retos diarios no enseñan el juego: solo las piezas que traen
+  if (!run.daily) {
+    // los retos diarios no enseñan el juego: solo las piezas que traen
     if (G.n === 1) queue.push('drag');
     if (G.n >= 2) queue.push('score');
     if (G.n >= 3) queue.push('tools');
@@ -136,13 +191,16 @@ export function startCoach() {
   if (G.timeLimit > 0) queue.push('bosstime');
   if (G.seal) queue.push('seal');
   queue.push(...mechanicsPresent(G));
-  if (G.rot) queue.push('curse');                // tablero con maleficio: se explica la primera vez
+  if (G.rot) queue.push('curse'); // tablero con maleficio: se explica la primera vez
   // Una sola explicación general por nivel: lo que hace falta YA para jugar este tablero (arrastrar, piezas nuevas, jefe, maleficio)
   // se enseña siempre; las demás (puntos, ayudas, héroe, sellos) esperan su turno si ya hay otra ventana en este nivel.
   const pending = queue.filter((id) => !store.tips[id]);
   const urgent = pending.filter((id) => !CAN_WAIT.includes(id));
   const todo = urgent.length ? urgent : pending.slice(0, 1);
-  if (!todo.length) { guide(); return; }
+  if (!todo.length) {
+    guide();
+    return;
+  }
   showing = true;
   const release = holdBusy();
   show(todo, () => {
@@ -156,7 +214,10 @@ export function startCoach() {
 export function coachOnMove() {
   const G = S.G;
   if (!G || G.done || S.run?.mode === 'p' || !G.moves || G.pos[0] === 4) return;
-  if (G.tutorial) { guide(); return; }
+  if (G.tutorial) {
+    guide();
+    return;
+  }
   if (G.n !== 1) return;
   pointAtNextMove('¡Muy bien! ');
 }

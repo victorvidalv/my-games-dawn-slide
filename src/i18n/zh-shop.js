@@ -1,17 +1,19 @@
 /* Diccionario español → chino simplificado (shop). Mismas claves y mismo orden que en-shop.js. */
 export const ZH_SHOP = {
-  "Ya compraste una pista para este tablero.": "你已经为这块棋盘购买过提示。",
-  "Una compra por tablero": "每块棋盘限购一次",
-  "Ya compraste turnos para este tablero.": "你已经为这块棋盘购买了额外步数。",
-  "Los jefes no se pueden saltar.": "无法跳过首领关卡。",
-  "Ya usaste el salto de esta ciudad.": "你已经用过这座城市的跳过机会。",
-  "Un paquete por tablero": "每块棋盘限购一份",
-  "Un salto por ciudad · fuera de jefes": "每座城市可跳过一关 · 首领除外",
-  'Maela': 'Maela',
+  'Ya compraste una pista para este tablero.': '你已经为这块棋盘购买过提示。',
+  'Una compra por tablero': '每块棋盘限购一次',
+  'Ya compraste turnos para este tablero.': '你已经为这块棋盘购买了额外步数。',
+  'Los jefes no se pueden saltar.': '无法跳过首领关卡。',
+  'Ya usaste el salto de esta ciudad.': '你已经用过这座城市的跳过机会。',
+  'Un paquete por tablero': '每块棋盘限购一份',
+  'Un salto por ciudad · fuera de jefes': '每座城市可跳过一关 · 首领除外',
+  Maela: 'Maela',
   'El Mercader': '商人',
   'El Tasador de Runas': '符文鉴定师',
-  'Soy Maela. Acércate: aquí hasta las brasas encuentran repuesto.': '我是 Maela。过来吧：在这里，连余烬都能找到替换的火种。',
-  'Una luz para el camino, Lía. Y un precio para mantenerla encendida.': '给你的路添一点光，Lía。也有让它一直亮着的价钱。',
+  'Soy Maela. Acércate: aquí hasta las brasas encuentran repuesto.':
+    '我是 Maela。过来吧：在这里，连余烬都能找到替换的火种。',
+  'Una luz para el camino, Lía. Y un precio para mantenerla encendida.':
+    '给你的路添一点光，Lía。也有让它一直亮着的价钱。',
   'Un farol pequeño también revela una gran salida.': '一盏小提灯，也能照出一个大出口。',
   'Te presto claridad. El aceite va incluido.': '借你一点光亮。灯油已经算在里面了。',
   'Un poco de aire para esa brasa.': '给那团余烬添一点风。',
@@ -41,20 +43,27 @@ export const ZH_SHOP = {
   'Las páginas pacientes esperan a su lector.': '耐心的书页会等待它的读者。',
   'Aún no hay tinta que borrar.': '还没有需要擦掉的墨迹。',
   'Ah, un cliente. Qué sorpresa… y qué poco he dormido.': '啊，有客人。真是惊喜……我可没睡多久。',
-  'Pasa, pasa. El que no compra, al menos admira mi mercancía… cara.': '请进，请进。不买的话，至少欣赏一下我的商品……很贵的。',
-  'Bienvenido a la única tienda de Thyes abierta en plena Noche Larga. Sí, tengo monopolio.': '欢迎来到 Thyes 唯一在漫漫长夜里营业的商店。没错，独此一家。',
+  'Pasa, pasa. El que no compra, al menos admira mi mercancía… cara.':
+    '请进，请进。不买的话，至少欣赏一下我的商品……很贵的。',
+  'Bienvenido a la única tienda de Thyes abierta en plena Noche Larga. Sí, tengo monopolio.':
+    '欢迎来到 Thyes 唯一在漫漫长夜里营业的商店。没错，独此一家。',
   '¿Perdiendo otra vez? Tranquilo, tengo remedio para eso. Con recargo.': '又输了？别担心，我有办法。要加价。',
-  'Mi oro es anterior a Tri. Mis precios, también. Y no han bajado.': '我的金子比 Tri 还古老。我的价格也是。而且没降过。',
+  'Mi oro es anterior a Tri. Mis precios, también. Y no han bajado.':
+    '我的金子比 Tri 还古老。我的价格也是。而且没降过。',
   '¿Solo mirando? Mirar es gratis. Lo demás… no tanto.': '只是看看？看是免费的。别的嘛……就不一定了。',
   'Vhorn apagó el Faro, pero mi caja sigue brillando.': 'Vhorn 熄灭了灯塔，但我的钱箱还在闪光。',
   'Huelo ecos en tu bolsillo. Ven, que no muerdo. Cobro.': '我闻到你口袋里有回响的味道。过来，我不咬人。我只收钱。',
-  '¿Un milagro? Estás en la tienda correcta. ¿Descuentos? En la de enfrente. No hay de enfrente.': '想要奇迹？你来对店了。想要折扣？去对面那家。对面没有店。',
-  'Ayudas, atajos y milagros. Todos garantizados por mí mismo. Es decir, por nadie.': '帮助、捷径和奇迹。全都由我本人担保。也就是说，没人担保。',
-  'Los Kogn me pagan en perlas, los Sahrim en agua… tú me pagarás en puntos.': 'Kogn 人用珍珠付账，Sahrim 人用水付账……你呢，用分数付。',
+  '¿Un milagro? Estás en la tienda correcta. ¿Descuentos? En la de enfrente. No hay de enfrente.':
+    '想要奇迹？你来对店了。想要折扣？去对面那家。对面没有店。',
+  'Ayudas, atajos y milagros. Todos garantizados por mí mismo. Es decir, por nadie.':
+    '帮助、捷径和奇迹。全都由我本人担保。也就是说，没人担保。',
+  'Los Kogn me pagan en perlas, los Sahrim en agua… tú me pagarás en puntos.':
+    'Kogn 人用珍珠付账，Sahrim 人用水付账……你呢，用分数付。',
   'Un consejo gratis: no te metas en deudas. Salvo conmigo, claro.': '免费送你一句忠告：别欠债。当然，欠我的除外。',
   'Una pista: susurro lo obvio, pero a precio de oro.': '一条提示：我悄悄告诉你显而易见的事，价格却堪比黄金。',
   'Un empujoncito. Los empujones baratos no existen.': '轻轻推你一把。便宜的推一把，可不存在。',
-  'Pista en camino. Qué pena que el tablero no traiga instrucciones; para eso estoy yo.': '提示马上到。可惜棋盘不附说明书；所以才有我。',
+  'Pista en camino. Qué pena que el tablero no traiga instrucciones; para eso estoy yo.':
+    '提示马上到。可惜棋盘不附说明书；所以才有我。',
   'Unos turnos más para quien planifica con optimismo.': '给乐观地做计划的人多几步。',
   'Más turnos, mismos errores, pero con más margen para repetirlos.': '步数更多，错误照旧，只是有更多余地再犯一遍。',
   'El futuro es caro. Este trocito, algo menos.': '未来很贵。这一小块，稍微便宜一点。',
@@ -64,7 +73,8 @@ export const ZH_SHOP = {
   'Rebobino el tablero. Borrón y cuenta nueva… la cuenta, tuya.': '我把棋盘倒回去。一笔勾销，重新开始……账记在你头上。',
   '¿Empezar de cero? Qué humildad tan rentable.': '从零开始？多么有利可图的谦虚。',
   'El tiempo no vuelve atrás, pero el tablero sí. A cambio de oro.': '时间不会倒流，但棋盘可以。拿金子来换。',
-  '¿Saltarte un nivel? Los atajos son para quien puede pagarlos. Qué casualidad.': '想跳过一关？捷径是留给付得起的人的。真巧啊。',
+  '¿Saltarte un nivel? Los atajos son para quien puede pagarlos. Qué casualidad.':
+    '想跳过一关？捷径是留给付得起的人的。真巧啊。',
   'Un lujo, amigo. Y los lujos se pagan, hasta en el año 4133.': '这是奢侈品，朋友。奢侈品是要付钱的，哪怕在 4133 年。',
   'Saltar un nivel: porque sufrir gratis ya no está de moda.': '跳过一关：因为白白受苦已经不流行了。',
   '¿Eso es todo? Vuelve cuando tu bolsillo haga ruido.': '就这些？等你的口袋叮当响了再来。',

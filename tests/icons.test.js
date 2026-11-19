@@ -26,7 +26,8 @@ describe('iconos propios', () => {
     for (const i of SHOP_ITEMS) expect(ICON_NAMES, `tienda ${i.id}`).toContain(i.icon);
     for (const m of Object.values(MECHANICS)) expect(ICON_NAMES, `pieza ${m.id}`).toContain(m.icon);
     for (const h of HEROES) expect(ICON_NAMES, `héroe ${h.id}`).toContain(h.icon);
-    for (const n of ['undo', 'hint', 'purse', 'crown', 'alert', 'crystal', 'trophy', 'medal', 'unlock']) expect(ICON_NAMES).toContain(n);
+    for (const n of ['undo', 'hint', 'purse', 'crown', 'alert', 'crystal', 'trophy', 'medal', 'unlock'])
+      expect(ICON_NAMES).toContain(n);
   });
   it('los iconos son todos distintos entre sí', () => {
     const bodies = ICON_NAMES.map((n) => icon(n).replace(`ic-${n}`, ''));

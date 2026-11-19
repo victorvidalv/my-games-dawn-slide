@@ -39,7 +39,8 @@ const arg = (name, def) => {
 const per = Number(arg('per', 12));
 const [from, to] = String(arg('only', '1-100')).split('-').map(Number);
 const jobs = [];
-for (let slot = 0; slot < per; slot++) for (let rating = from; rating <= (to || from); rating++) jobs.push({ rating, slot });
+for (let slot = 0; slot < per; slot++)
+  for (let rating = from; rating <= (to || from); rating++) jobs.push({ rating, slot });
 jobs.sort((a, b) => b.rating - a.rating); // lo más pesado primero
 
 const threads = Math.max(1, cpus().length - 1);
@@ -49,23 +50,31 @@ try {
   existing = JSON.parse((await import('node:fs')).readFileSync(OUT, 'utf8'));
   if (existing?.ratings) existing.ratings.forEach((l, i) => (bank[i] = l.slice()));
 } catch {}
-if (from !== 1 || (to || from) !== 100) { /* regeneración parcial: sólo sustituye esos rangos */
+if (from !== 1 || (to || from) !== 100) {
+  /* regeneración parcial: sólo sustituye esos rangos */
   for (let r = from; r <= (to || from); r++) bank[r - 1] = [];
 } else for (let i = 0; i < 100; i++) bank[i] = [];
 
 let done = 0;
 let bad = 0;
 await Promise.all(
-  Array.from({ length: threads }, (_, t) => new Promise((ok) => {
-    const mine = jobs.filter((_, i) => i % threads === t);
-    const w = new Worker(new URL(import.meta.url), { workerData: { jobs: mine } });
-    w.on('message', (m) => {
-      if (!m.ok) { bad++; console.warn(`⚠ dificultad ${m.rating}: no alcanzó el objetivo (maxd=${m.maxd})`); }
-      bank[m.rating - 1][m.slot] = m.text;
-      if (++done % 50 === 0) console.log(`${done}/${jobs.length}`);
-    });
-    w.on('exit', ok);
-  })),
+  Array.from(
+    { length: threads },
+    (_, t) =>
+      new Promise((ok) => {
+        const mine = jobs.filter((_, i) => i % threads === t);
+        const w = new Worker(new URL(import.meta.url), { workerData: { jobs: mine } });
+        w.on('message', (m) => {
+          if (!m.ok) {
+            bad++;
+            console.warn(`⚠ dificultad ${m.rating}: no alcanzó el objetivo (maxd=${m.maxd})`);
+          }
+          bank[m.rating - 1][m.slot] = m.text;
+          if (++done % 50 === 0) console.log(`${done}/${jobs.length}`);
+        });
+        w.on('exit', ok);
+      }),
+  ),
 );
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify({ version: 1, ratings: bank }) + '\n');

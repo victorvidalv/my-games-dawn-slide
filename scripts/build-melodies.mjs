@@ -9,8 +9,15 @@ import { dirname, resolve } from 'node:path';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = await build({
-  root: ROOT, configFile: false, logLevel: 'silent', define: { __APP_VERSION__: '"melodias"' },
-  build: { write: false, minify: true, lib: { entry: resolve(ROOT, 'src/tools/melodies.js'), formats: ['iife'], name: 'Melodias' } },
+  root: ROOT,
+  configFile: false,
+  logLevel: 'silent',
+  define: { __APP_VERSION__: '"melodias"' },
+  build: {
+    write: false,
+    minify: true,
+    lib: { entry: resolve(ROOT, 'src/tools/melodies.js'), formats: ['iife'], name: 'Melodias' },
+  },
 });
 const code = (Array.isArray(out) ? out[0] : out).output[0].code.replace(/<\/script/gi, '<\\/script');
 const html = readFileSync(resolve(ROOT, 'melodies.html'), 'utf8')

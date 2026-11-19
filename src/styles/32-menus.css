@@ -5,93 +5,399 @@
  */
 
 /* ---------- menú principal: medallones de camino como sellos de lacre ---------- */
-#menu .pemo{position:relative;border:3px solid #150e0c;color:#150e0c!important;text-shadow:0 1px 0 #ffffff59;
-  background:var(--hatch),radial-gradient(circle at 34% 28%,color-mix(in srgb,var(--pc) 55%,#fff8dc),var(--pc) 58%,color-mix(in srgb,var(--pc) 62%,#150e0c));
-  box-shadow:inset 0 0 0 2px #ffffff40,inset 0 -4px 0 #00000038,3px 4px 0 #150e0c}
-#menu .pemo::after{content:'';position:absolute;inset:5px;border-radius:50%;border:1.5px dashed #150e0c73;pointer-events:none}
-#menu .path:hover .pemo,#menu .path:focus-visible .pemo{transform:rotate(-6deg) scale(1.05);transition:transform .18s cubic-bezier(.3,1.6,.5,1)}
-#menu .path:active{transform:translate(2px,3px)}
-#menu .cont{position:relative;overflow:hidden}
-#menu .lang-switch{row-gap:10px}
+#menu .pemo {
+  position: relative;
+  border: 3px solid #150e0c;
+  color: #150e0c !important;
+  text-shadow: 0 1px 0 #ffffff59;
+  background:
+    var(--hatch),
+    radial-gradient(
+      circle at 34% 28%,
+      color-mix(in srgb, var(--pc) 55%, #fff8dc),
+      var(--pc) 58%,
+      color-mix(in srgb, var(--pc) 62%, #150e0c)
+    );
+  box-shadow:
+    inset 0 0 0 2px #ffffff40,
+    inset 0 -4px 0 #00000038,
+    3px 4px 0 #150e0c;
+}
+#menu .pemo::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1.5px dashed #150e0c73;
+  pointer-events: none;
+}
+#menu .path:hover .pemo,
+#menu .path:focus-visible .pemo {
+  transform: rotate(-6deg) scale(1.05);
+  transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+#menu .path:active {
+  transform: translate(2px, 3px);
+}
+#menu .cont {
+  position: relative;
+  overflow: hidden;
+}
+#menu .lang-switch {
+  row-gap: 10px;
+}
 
 /* ---------- elección de héroe: la ilustración del héroe elegido es el telón de fondo ---------- */
-#heroSelect{background:radial-gradient(120% 80% at 50% 0,#0000 20%,#120c20e6 85%),linear-gradient(#1b1430b8,#120c20e0),var(--hero-scene) center 18%/cover;backdrop-filter:none;-webkit-backdrop-filter:none;transition:background-image .3s}
-#heroSelect .hero-choice{transition:transform .18s cubic-bezier(.3,1.5,.5,1),filter .18s,box-shadow .18s}
-#heroSelect .hero-choice:not(.selected){filter:saturate(.62) brightness(.8)}
-#heroSelect .hero-choice.selected{transform:translateY(-4px);box-shadow:0 0 0 2px var(--accent),0 0 18px color-mix(in srgb,var(--accent) 60%,#0000),4px 7px 0 #150e0c}
-#heroSelect .hero-power{border-left:5px solid var(--chosen,#e0b04f)}
-#heroSelect .hero-selector-actions #heroCancel{flex:none}
-@media(max-height:700px) and (max-aspect-ratio:13/10){
-  #heroSelect{padding:8px}
-  #heroSelect .hero-selector{padding:14px 12px 12px!important;max-height:calc(100dvh - 16px)}
-  #heroSelect .hero-selector h2{font-size:20px;margin:2px 0 8px}
-  #heroSelect .hero-choice{height:118px}
-  #heroSelect .hero-choice-name{font-size:19px;bottom:6px}
-  #heroSelect .hero-power,#heroSelect .hero-route-info{margin-top:7px;padding:7px 9px}
-  #heroSelect .hero-route-info strong{font-size:12px;line-height:1.25}
-  #heroSelect #heroStartNote{display:none}
-  #heroSelect .start-chip{min-height:38px}
-  #heroSelect .start-chip small{display:none}
-  #heroSelect .hero-selector-actions{margin-top:9px;gap:8px;flex-direction:row-reverse}
-  #heroSelect .hero-selector-actions button{min-height:44px;margin:0}
-  #heroSelect .hero-selector-actions #heroConfirm{flex:1}
-  #heroSelect .hero-selector-actions #heroCancel{width:auto;padding-inline:14px}
+#heroSelect {
+  background:
+    radial-gradient(120% 80% at 50% 0, #0000 20%, #120c20e6 85%),
+    linear-gradient(#1b1430b8, #120c20e0),
+    var(--hero-scene) center 18% / cover;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: background-image 0.3s;
+}
+#heroSelect .hero-choice {
+  transition:
+    transform 0.18s cubic-bezier(0.3, 1.5, 0.5, 1),
+    filter 0.18s,
+    box-shadow 0.18s;
+}
+#heroSelect .hero-choice:not(.selected) {
+  filter: saturate(0.62) brightness(0.8);
+}
+#heroSelect .hero-choice.selected {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 0 18px color-mix(in srgb, var(--accent) 60%, #0000),
+    4px 7px 0 #150e0c;
+}
+#heroSelect .hero-power {
+  border-left: 5px solid var(--chosen, #e0b04f);
+}
+#heroSelect .hero-selector-actions #heroCancel {
+  flex: none;
+}
+@media (max-height: 700px) and (max-aspect-ratio: 13/10) {
+  #heroSelect {
+    padding: 8px;
+  }
+  #heroSelect .hero-selector {
+    padding: 14px 12px 12px !important;
+    max-height: calc(100dvh - 16px);
+  }
+  #heroSelect .hero-selector h2 {
+    font-size: 20px;
+    margin: 2px 0 8px;
+  }
+  #heroSelect .hero-choice {
+    height: 118px;
+  }
+  #heroSelect .hero-choice-name {
+    font-size: 19px;
+    bottom: 6px;
+  }
+  #heroSelect .hero-power,
+  #heroSelect .hero-route-info {
+    margin-top: 7px;
+    padding: 7px 9px;
+  }
+  #heroSelect .hero-route-info strong {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+  #heroSelect #heroStartNote {
+    display: none;
+  }
+  #heroSelect .start-chip {
+    min-height: 38px;
+  }
+  #heroSelect .start-chip small {
+    display: none;
+  }
+  #heroSelect .hero-selector-actions {
+    margin-top: 9px;
+    gap: 8px;
+    flex-direction: row-reverse;
+  }
+  #heroSelect .hero-selector-actions button {
+    min-height: 44px;
+    margin: 0;
+  }
+  #heroSelect .hero-selector-actions #heroConfirm {
+    flex: 1;
+  }
+  #heroSelect .hero-selector-actions #heroCancel {
+    width: auto;
+    padding-inline: 14px;
+  }
 }
 
 /* ---------- pausa: la ciudad en la que estás, de fondo, y el retrato del héroe en la cabecera ---------- */
-#pause{background:radial-gradient(120% 80% at 50% 0,#0000 20%,#120c20e6 85%),linear-gradient(#1b1430c4,#120c20e8),var(--pause-scene,none) center/cover;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
-#pause .pause-head{display:flex;align-items:center;gap:14px;margin:0 0 18px}
-#pause .pause-hero{flex:none;width:62px;height:74px;object-fit:cover;object-position:center 14%;border:3px solid #150e0c;border-radius:var(--wob-c);box-shadow:0 0 0 2px var(--hero-color,#e0b04f),4px 5px 0 #150e0c;background:#1c1428}
-#pause .pause-head .tag{display:block}
-#pause .pause-head h2{margin:4px 0 3px}
-#pause .pause-head .pause-context{margin:0!important}
-@media(max-height:560px){#pause .pause-head{margin-bottom:8px}#pause .pause-hero{width:44px;height:52px}}
-@media(prefers-reduced-motion:reduce){#menu .path .pemo,#heroSelect .hero-choice{transition:none}}
-@media(min-aspect-ratio:13/10) and (max-height:480px){
-  #heroSelect .hero-selector{padding:10px 14px!important;max-height:calc(100dvh - 12px)}
-  #heroSelect .hero-selector h2{font-size:17px;margin:0 0 5px}
-  #heroSelect .hero-choice{height:92px}
-  #heroSelect .hero-choice.selected{transform:none}
-  #heroSelect .hero-power,#heroSelect .hero-route-info{margin-top:5px;padding:5px 9px}
-  #heroSelect #heroStartNote,#heroSelect .start-chip small{display:none}
-  #heroSelect .start-chip{min-height:32px}
-  #heroSelect .hero-selector-actions{margin-top:6px}
-  #pause .pause-menu{width:min(94vw,560px);padding:14px 18px}
-  #pause .pause-head{margin-bottom:8px}
-  #pause .pause-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  #pause .pause-actions button{min-height:44px;margin:0}
-  #pause .pause-actions .primary{grid-column:1/3}
+#pause {
+  background:
+    radial-gradient(120% 80% at 50% 0, #0000 20%, #120c20e6 85%),
+    linear-gradient(#1b1430c4, #120c20e8),
+    var(--pause-scene, none) center/cover;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+#pause .pause-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 18px;
+}
+#pause .pause-hero {
+  flex: none;
+  width: 62px;
+  height: 74px;
+  object-fit: cover;
+  object-position: center 14%;
+  border: 3px solid #150e0c;
+  border-radius: var(--wob-c);
+  box-shadow:
+    0 0 0 2px var(--hero-color, #e0b04f),
+    4px 5px 0 #150e0c;
+  background: #1c1428;
+}
+#pause .pause-head .tag {
+  display: block;
+}
+#pause .pause-head h2 {
+  margin: 4px 0 3px;
+}
+#pause .pause-head .pause-context {
+  margin: 0 !important;
+}
+@media (max-height: 560px) {
+  #pause .pause-head {
+    margin-bottom: 8px;
+  }
+  #pause .pause-hero {
+    width: 44px;
+    height: 52px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #menu .path .pemo,
+  #heroSelect .hero-choice {
+    transition: none;
+  }
+}
+@media (min-aspect-ratio: 13/10) and (max-height: 480px) {
+  #heroSelect .hero-selector {
+    padding: 10px 14px !important;
+    max-height: calc(100dvh - 12px);
+  }
+  #heroSelect .hero-selector h2 {
+    font-size: 17px;
+    margin: 0 0 5px;
+  }
+  #heroSelect .hero-choice {
+    height: 92px;
+  }
+  #heroSelect .hero-choice.selected {
+    transform: none;
+  }
+  #heroSelect .hero-power,
+  #heroSelect .hero-route-info {
+    margin-top: 5px;
+    padding: 5px 9px;
+  }
+  #heroSelect #heroStartNote,
+  #heroSelect .start-chip small {
+    display: none;
+  }
+  #heroSelect .start-chip {
+    min-height: 32px;
+  }
+  #heroSelect .hero-selector-actions {
+    margin-top: 6px;
+  }
+  #pause .pause-menu {
+    width: min(94vw, 560px);
+    padding: 14px 18px;
+  }
+  #pause .pause-head {
+    margin-bottom: 8px;
+  }
+  #pause .pause-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  #pause .pause-actions button {
+    min-height: 44px;
+    margin: 0;
+  }
+  #pause .pause-actions .primary {
+    grid-column: 1/3;
+  }
 }
 
 /* ---------- selector de idioma: cuatro banderas (inglés, español, chino, japonés) que caben en una o dos filas ---------- */
-#menu .lang-switch{gap:9px;row-gap:9px}
-#menu .lang-btn{gap:7px;min-height:42px;padding:6px 12px 6px 8px;font-size:13px}
-#menu .lang-btn .flag{width:30px;height:20px}
-@media(max-width:420px){#menu .lang-btn{flex:1 1 40%;justify-content:center}}
+#menu .lang-switch {
+  gap: 9px;
+  row-gap: 9px;
+}
+#menu .lang-btn {
+  gap: 7px;
+  min-height: 42px;
+  padding: 6px 12px 6px 8px;
+  font-size: 13px;
+}
+#menu .lang-btn .flag {
+  width: 30px;
+  height: 20px;
+}
+@media (max-width: 420px) {
+  #menu .lang-btn {
+    flex: 1 1 40%;
+    justify-content: center;
+  }
+}
 
 /* ---------- chino y japonés: las fuentes de rótulo no traen esos signos, así que se eligen serifas CJK del sistema ---------- */
-html:lang(zh-Hans){--font-title:'Songti SC','STSong','Noto Serif CJK SC','Source Han Serif SC','SimSun',Georgia,serif;--font-book:'Songti SC','STSong','Noto Serif CJK SC','Source Han Serif SC','SimSun',Georgia,serif;--font-ui:'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC',system-ui,sans-serif}
-html:lang(ja){--font-title:'Hiragino Mincho ProN','Yu Mincho','Noto Serif CJK JP','Source Han Serif JP',Georgia,serif;--font-book:'Hiragino Mincho ProN','Yu Mincho','Noto Serif CJK JP','Source Han Serif JP',Georgia,serif;--font-ui:'Hiragino Sans','Yu Gothic UI','Meiryo','Noto Sans CJK JP',system-ui,sans-serif}
-html:lang(zh-Hans) body,html:lang(ja) body{line-break:strict;word-break:normal;overflow-wrap:anywhere}
-html:lang(zh-Hans) :is(h1,h2,h3,.tag,button,small,b,strong,span,p),html:lang(ja) :is(h1,h2,h3,.tag,button,small,b,strong,span,p){letter-spacing:.02em;font-style:normal}
-html:lang(zh-Hans) .logo,html:lang(ja) .logo{letter-spacing:.07em}
+html:lang(zh-Hans) {
+  --font-title: 'Songti SC', 'STSong', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', Georgia, serif;
+  --font-book: 'Songti SC', 'STSong', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', Georgia, serif;
+  --font-ui: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', system-ui, sans-serif;
+}
+html:lang(ja) {
+  --font-title: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP', 'Source Han Serif JP', Georgia, serif;
+  --font-book: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP', 'Source Han Serif JP', Georgia, serif;
+  --font-ui: 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', 'Noto Sans CJK JP', system-ui, sans-serif;
+}
+html:lang(zh-Hans) body,
+html:lang(ja) body {
+  line-break: strict;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+html:lang(zh-Hans) :is(h1, h2, h3, .tag, button, small, b, strong, span, p),
+html:lang(ja) :is(h1, h2, h3, .tag, button, small, b, strong, span, p) {
+  letter-spacing: 0.02em;
+  font-style: normal;
+}
+html:lang(zh-Hans) .logo,
+html:lang(ja) .logo {
+  letter-spacing: 0.07em;
+}
 
 /* ---------- aviso de pocos movimientos: cartel claro («Te quedan 3 movimientos») y contador fijo en el medidor ---------- */
-#lowBanner{top:calc(env(safe-area-inset-top) + 10px);max-width:min(92vw,420px);width:max-content;white-space:normal;align-items:center;gap:11px;padding:10px 18px 10px 13px;border:3px solid #150e0c;border-radius:var(--wob-b);
-  background:var(--hatch),linear-gradient(170deg,#4a2f1c,#33200f);box-shadow:inset 0 0 0 2px #f2c45c88,4px 6px 0 #150e0c,0 14px 30px #000a}
-#lowBanner i{flex:none}
-#lowBanner i .ic{width:30px;height:30px}
-#lowBanner>div{display:block;text-align:left}
-#lowBanner b{font:700 17px/1.15 var(--font-title);letter-spacing:.04em;color:#ffe29a;text-shadow:0 2px 0 #150e0c}
-#lowBanner span{margin-top:3px;font:700 12.5px/1.3 var(--font-ui);color:#f3e5c8}
-#lowBanner.last{background:var(--hatch),linear-gradient(170deg,#6a2018,#421009);box-shadow:inset 0 0 0 2px #ff9a86aa,4px 6px 0 #150e0c,0 14px 30px #000a}
-#lowBanner.last b{color:#ffd0c4}
-#lowBanner.show{animation:low-banner-2 3s cubic-bezier(.2,1.2,.4,1) forwards}
-@keyframes low-banner-2{0%{opacity:0;transform:translate(-50%,-26px) scale(.9)}9%{opacity:1;transform:translate(-50%,0) scale(1.04)}14%{transform:translate(-50%,0) scale(1)}88%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}
-.meter .mrow .left-chip{align-self:center;padding:3px 10px;border:2px solid #150e0c;border-radius:99px;background:#f2c45c;color:#2a1808;font:800 11px/1.2 var(--font-ui);letter-spacing:.06em;opacity:1;box-shadow:2px 3px 0 #150e0c;animation:left-chip 1.2s ease-in-out infinite}
-.meter .mrow .left-chip.last{background:#e0503a;color:#fff;animation-duration:.6s}
-.meter .mrow .left-chip.tick{animation:left-chip-tick .38s cubic-bezier(.2,1.7,.4,1)}
-.meter .mrow .left-chip[hidden]{display:none}
-@keyframes left-chip{50%{transform:scale(1.07)}}
-@keyframes left-chip-tick{0%{transform:scale(1.5)}}
-@media(prefers-reduced-motion:reduce){#lowBanner.show{animation:low-banner-fade 3s linear forwards}.meter .mrow .left-chip{animation:none}}
+#lowBanner {
+  top: calc(env(safe-area-inset-top) + 10px);
+  max-width: min(92vw, 420px);
+  width: max-content;
+  white-space: normal;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 18px 10px 13px;
+  border: 3px solid #150e0c;
+  border-radius: var(--wob-b);
+  background: var(--hatch), linear-gradient(170deg, #4a2f1c, #33200f);
+  box-shadow:
+    inset 0 0 0 2px #f2c45c88,
+    4px 6px 0 #150e0c,
+    0 14px 30px #000a;
+}
+#lowBanner i {
+  flex: none;
+}
+#lowBanner i .ic {
+  width: 30px;
+  height: 30px;
+}
+#lowBanner > div {
+  display: block;
+  text-align: left;
+}
+#lowBanner b {
+  font: 700 17px/1.15 var(--font-title);
+  letter-spacing: 0.04em;
+  color: #ffe29a;
+  text-shadow: 0 2px 0 #150e0c;
+}
+#lowBanner span {
+  margin-top: 3px;
+  font: 700 12.5px/1.3 var(--font-ui);
+  color: #f3e5c8;
+}
+#lowBanner.last {
+  background: var(--hatch), linear-gradient(170deg, #6a2018, #421009);
+  box-shadow:
+    inset 0 0 0 2px #ff9a86aa,
+    4px 6px 0 #150e0c,
+    0 14px 30px #000a;
+}
+#lowBanner.last b {
+  color: #ffd0c4;
+}
+#lowBanner.show {
+  animation: low-banner-2 3s cubic-bezier(0.2, 1.2, 0.4, 1) forwards;
+}
+@keyframes low-banner-2 {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -26px) scale(0.9);
+  }
+  9% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1.04);
+  }
+  14% {
+    transform: translate(-50%, 0) scale(1);
+  }
+  88% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+}
+.meter .mrow .left-chip {
+  align-self: center;
+  padding: 3px 10px;
+  border: 2px solid #150e0c;
+  border-radius: 99px;
+  background: #f2c45c;
+  color: #2a1808;
+  font: 800 11px/1.2 var(--font-ui);
+  letter-spacing: 0.06em;
+  opacity: 1;
+  box-shadow: 2px 3px 0 #150e0c;
+  animation: left-chip 1.2s ease-in-out infinite;
+}
+.meter .mrow .left-chip.last {
+  background: #e0503a;
+  color: #fff;
+  animation-duration: 0.6s;
+}
+.meter .mrow .left-chip.tick {
+  animation: left-chip-tick 0.38s cubic-bezier(0.2, 1.7, 0.4, 1);
+}
+.meter .mrow .left-chip[hidden] {
+  display: none;
+}
+@keyframes left-chip {
+  50% {
+    transform: scale(1.07);
+  }
+}
+@keyframes left-chip-tick {
+  0% {
+    transform: scale(1.5);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #lowBanner.show {
+    animation: low-banner-fade 3s linear forwards;
+  }
+  .meter .mrow .left-chip {
+    animation: none;
+  }
+}

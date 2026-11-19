@@ -4,7 +4,11 @@ import { sfx, vib } from '../audio/sound.js';
  * Maleficio: cuando un tablero llega girado (la salida cambia de lado), una introducción de ~2 s lo anuncia con un título hechizado
  * sobre una niebla oscura; el marco del tablero queda con un borde maldito mientras dure el nivel. Un toque la salta.
  */
-const TEXT = { 90: 'La salida ahora está abajo', 180: 'La salida ahora está a la izquierda', 270: 'La salida ahora está arriba' };
+const TEXT = {
+  90: 'La salida ahora está abajo',
+  180: 'La salida ahora está a la izquierda',
+  270: 'La salida ahora está arriba',
+};
 let el = null;
 let timer = 0;
 
@@ -12,8 +16,9 @@ function build() {
   el = document.createElement('div');
   el.id = 'curseIntro';
   el.setAttribute('aria-hidden', 'true');
-  el.innerHTML = '<div class="curse-fog"></div><div class="curse-rune r1">ᛉ</div><div class="curse-rune r2">ᚦ</div><div class="curse-rune r3">ᛞ</div>'
-    + '<div class="curse-card"><small>MALEFICIO</small><b class="curse-title" data-t="¡Cuidado!">¡Cuidado!</b><span class="curse-arrow">➜</span><em></em></div>';
+  el.innerHTML =
+    '<div class="curse-fog"></div><div class="curse-rune r1">ᛉ</div><div class="curse-rune r2">ᚦ</div><div class="curse-rune r3">ᛞ</div>' +
+    '<div class="curse-card"><small>MALEFICIO</small><b class="curse-title" data-t="¡Cuidado!">¡Cuidado!</b><span class="curse-arrow">➜</span><em></em></div>';
   document.body.appendChild(el);
   el.addEventListener('pointerdown', hideCurse);
   return el;

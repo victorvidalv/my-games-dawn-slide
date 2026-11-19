@@ -14,7 +14,8 @@ function node() {
     stage = document.createElement('div');
     stage.id = 'powerStage';
     stage.setAttribute('aria-hidden', 'true');
-    stage.innerHTML = '<div class="ps-sigil"><i class="ps-glow"></i><svg viewBox="-100 -100 200 200"></svg><i class="ps-wave"></i><i class="ps-wave two"></i></div><div class="ps-title"><b></b><span></span></div>';
+    stage.innerHTML =
+      '<div class="ps-sigil"><i class="ps-glow"></i><svg viewBox="-100 -100 200 200"></svg><i class="ps-wave"></i><i class="ps-wave two"></i></div><div class="ps-title"><b></b><span></span></div>';
     document.body.appendChild(stage);
   }
   return stage;
@@ -34,7 +35,19 @@ function glyphRing(svg, cls, glyphs, r, size) {
   glyphs.forEach((ch, i) => {
     const deg = (360 * i) / glyphs.length;
     const [x, y] = polar(r, deg);
-    mk(g, 'text', { x: x.toFixed(1), y: y.toFixed(1), 'font-size': size, 'text-anchor': 'middle', 'dominant-baseline': 'central', transform: `rotate(${deg} ${x.toFixed(1)} ${y.toFixed(1)})` }, ch);
+    mk(
+      g,
+      'text',
+      {
+        x: x.toFixed(1),
+        y: y.toFixed(1),
+        'font-size': size,
+        'text-anchor': 'middle',
+        'dominant-baseline': 'central',
+        transform: `rotate(${deg} ${x.toFixed(1)} ${y.toFixed(1)})`,
+      },
+      ch,
+    );
   });
   return g;
 }
@@ -50,9 +63,12 @@ function drawClock(svg) {
   glyphRing(svg, 'spin-back slow glyphs', ROMAN, 68, 11);
   mk(svg, 'circle', { r: 54, class: 'ring dash spin' });
   mk(svg, 'circle', { r: 30, class: 'ring' });
-  const spiral = mk(svg, 'g', { class: 'spin-back fast' });       // espiral: el tiempo que se enrosca hacia el centro
+  const spiral = mk(svg, 'g', { class: 'spin-back fast' }); // espiral: el tiempo que se enrosca hacia el centro
   let d = '';
-  for (let k = 0; k <= 80; k++) { const [x, y] = polar(4 + k * 0.6, k * 13); d += `${k ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`; }
+  for (let k = 0; k <= 80; k++) {
+    const [x, y] = polar(4 + k * 0.6, k * 13);
+    d += `${k ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
+  }
   mk(spiral, 'path', { d, class: 'ring thin' });
   mk(mk(svg, 'g', { class: 'hand hour' }), 'path', { d: 'M0 6 L-3 0 L0 -40 L3 0Z' });
   mk(mk(svg, 'g', { class: 'hand minute' }), 'path', { d: 'M0 8 L-2 0 L0 -62 L2 0Z' });
@@ -64,13 +80,23 @@ function drawRunes(svg) {
   glyphRing(svg, 'spin slow glyphs', [...RUNES], 87.5, 8.5);
   const star = mk(svg, 'g', { class: 'spin-back slow' });
   for (const turn of [0, 180]) {
-    const pts = [0, 120, 240].map((a) => polar(78, a + turn).map((v) => v.toFixed(1)).join(',')).join(' ');
+    const pts = [0, 120, 240]
+      .map((a) =>
+        polar(78, a + turn)
+          .map((v) => v.toFixed(1))
+          .join(','),
+      )
+      .join(' ');
     mk(star, 'polygon', { points: pts, class: 'ring draw' });
   }
   mk(svg, 'circle', { r: 45, class: 'ring dash spin' });
   mk(svg, 'circle', { r: 26, class: 'ring draw' });
-  const eye = mk(svg, 'g', { class: 'spin' });                    // la mira del destino, como en el libro de Juth
-  for (const a of [0, 90, 180, 270]) { const [x1, y1] = polar(14, a); const [x2, y2] = polar(36, a); mk(eye, 'line', { x1, y1, x2, y2, class: 'tick big' }); }
+  const eye = mk(svg, 'g', { class: 'spin' }); // la mira del destino, como en el libro de Juth
+  for (const a of [0, 90, 180, 270]) {
+    const [x1, y1] = polar(14, a);
+    const [x2, y2] = polar(36, a);
+    mk(eye, 'line', { x1, y1, x2, y2, class: 'tick big' });
+  }
   mk(svg, 'circle', { r: 9, class: 'ring thick' });
   mk(svg, 'circle', { r: 3, class: 'hub' });
 }
@@ -92,7 +118,8 @@ export function openPowerStage(hero, kind, title = '', sub = '') {
   el.dataset.hero = hero;
   el.dataset.kind = kind;
   svg.replaceChildren();
-  if (kind === 'rewind') drawClock(svg); else drawRunes(svg);
+  if (kind === 'rewind') drawClock(svg);
+  else drawRunes(svg);
   el.querySelector('.ps-title b').textContent = title;
   el.querySelector('.ps-title span').textContent = sub;
   el.classList.remove('unleash');

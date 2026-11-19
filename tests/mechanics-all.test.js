@@ -5,9 +5,20 @@ import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { levelPlan, isBossLevel } from '../src/game/mechanics.js';
 import { N, analyze, decode, expand, isValidState, minMoves, slideRange, hintMove } from '../src/engine/index.js';
 
-const run = (level, start = 1) => ({ seed: 46, hero: 'lia', start, level, route: 'normal', mode: 'c', adj: 0, hints: 3, score: 0 });
+const run = (level, start = 1) => ({
+  seed: 46,
+  hero: 'lia',
+  start,
+  level,
+  route: 'normal',
+  mode: 'c',
+  adj: 0,
+  hints: 3,
+  score: 0,
+});
 const allTips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_door'].map((k) => [k, true]));
-const build = (level, start = 1) => buildAdventureLevel(run(level, start), { levels: levelBank.ratings, special: specialBank, tips: allTips });
+const build = (level, start = 1) =>
+  buildAdventureLevel(run(level, start), { levels: levelBank.ratings, special: specialBank, tips: allTips });
 
 /** Cada movimiento del solver coincide con lo que el jugador puede arrastrar (slideRange) en una muestra de estados alcanzables. */
 function parity(G, label, sample = 120) {
@@ -24,9 +35,12 @@ function parity(G, label, sample = 120) {
     expand(pieces, k, tmp, g, (i, to) => targets[i].add(to), walls, doors);
     pieces.forEach((p, i) => {
       const [lo, hi] = slideRange(pieces, here, i, walls, doors);
-      for (const t of targets[i]) expect(t >= lo && t <= hi && t !== here[i], `${label}: pieza ${i} a ${t} fuera de [${lo},${hi}]`).toBe(true);
-      if (!p.kind && lo < hi) {   // pieza normal: puede ir a cualquier casilla libre de su recorrido
-        for (let x = lo; x <= hi; x++) if (x !== here[i]) expect(targets[i].has(x), `${label}: pieza ${i} debería poder ir a ${x}`).toBe(true);
+      for (const t of targets[i])
+        expect(t >= lo && t <= hi && t !== here[i], `${label}: pieza ${i} a ${t} fuera de [${lo},${hi}]`).toBe(true);
+      if (!p.kind && lo < hi) {
+        // pieza normal: puede ir a cualquier casilla libre de su recorrido
+        for (let x = lo; x <= hi; x++)
+          if (x !== here[i]) expect(targets[i].has(x), `${label}: pieza ${i} debería poder ir a ${x}`).toBe(true);
       }
     });
   }
@@ -36,7 +50,7 @@ describe('mecánicas: los 100 niveles', () => {
   it('todos los niveles se generan válidos, resolubles, con el mínimo correcto y con portones coherentes', () => {
     for (const start of [1, 75]) {
       for (let level = 1; level <= 100; level++) {
-        if (start !== 1 && level % 10 !== 0) continue;   // el camino Experto: solo los jefes (ya se prueban todos los niveles en Normal)
+        if (start !== 1 && level % 10 !== 0) continue; // el camino Experto: solo los jefes (ya se prueban todos los niveles en Normal)
         const label = `camino ${start} nivel ${level}`;
         const G = build(level, start);
         const doors = G.doors || [];
@@ -46,7 +60,11 @@ describe('mecánicas: los 100 niveles', () => {
         const plan = levelPlan(level);
         expect(G.plan?.boss ?? plan.boss, label).toBe(isBossLevel(level));
         // un portón solo tiene sentido si hay una pieza de su tinte que pueda cruzarlo
-        for (const [, , tone] of doors) expect(G.pieces.some((p) => p.tone === tone), `${label}: portón sin pieza de su tinte`).toBe(true);
+        for (const [, , tone] of doors)
+          expect(
+            G.pieces.some((p) => p.tone === tone),
+            `${label}: portón sin pieza de su tinte`,
+          ).toBe(true);
         // las piezas con tinte no empiezan sobre portones ajenos (ya lo comprueba isValidState) y la salida no está cerrada
         const hint = hintMove(G.pieces, G.pos, G.walls, doors);
         if (G.opt > 0) expect(hint, `${label}: pista`).not.toBeNull();

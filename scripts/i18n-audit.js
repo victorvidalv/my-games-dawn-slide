@@ -3,8 +3,10 @@
  * (texto visible o atributos de accesibilidad) para añadirlos a src/i18n/en*.js.
  */
 (() => {
-  const spanish = /[áéíóúñ¿¡Á-Ú]|\b(el|la|los|las|de|del|un|una|tu|tus|que|con|para|por|se|te|al|nivel|niveles|pista|turnos?|puntos?|tienda|elige|volver|siguiente|jugar|salir|héroe|camino|tablero|pieza|movimiento|llave|sello|aventura|partida|ahora|aquí|cada|más|sin|ya|como|pero|este|esta|todo|hasta)\b/i;
-  const allowed = /^(Lía|Jean|Juth|Don Dublón|Maela|Azhar|Tri|Vhorn|Thyes|Español|English|DAWN|SLIDE|DAWNSLIDE|Kogn|Sahrim|Ennari|Aluen)$/;
+  const spanish =
+    /[áéíóúñ¿¡Á-Ú]|\b(el|la|los|las|de|del|un|una|tu|tus|que|con|para|por|se|te|al|nivel|niveles|pista|turnos?|puntos?|tienda|elige|volver|siguiente|jugar|salir|héroe|camino|tablero|pieza|movimiento|llave|sello|aventura|partida|ahora|aquí|cada|más|sin|ya|como|pero|este|esta|todo|hasta)\b/i;
+  const allowed =
+    /^(Lía|Jean|Juth|Don Dublón|Maela|Azhar|Tri|Vhorn|Thyes|Español|English|DAWN|SLIDE|DAWNSLIDE|Kogn|Sahrim|Ennari|Aluen)$/;
   const out = new Set();
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let n; (n = walker.nextNode());) {

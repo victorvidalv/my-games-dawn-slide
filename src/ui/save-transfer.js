@@ -99,7 +99,9 @@ export function initSaveTransfer() {
   window.addEventListener('hashchange', importFromHash);
 }
 
-$('bTransfer').onclick = () => { if (!importFromHash()) showExport(); };
+$('bTransfer').onclick = () => {
+  if (!importFromHash()) showExport();
+};
 $('transferOpenImport').onclick = showImport;
 $('transferBack').onclick = showExport;
 $('transferClose').onclick = () => dialog.close();
@@ -134,7 +136,11 @@ $('transferCopy').onclick = async () => {
     linkField.focus();
     linkField.select();
     let copied = false;
-    try { copied = document.execCommand('copy'); } catch { /* ofrecer selección manual */ }
+    try {
+      copied = document.execCommand('copy');
+    } catch {
+      /* ofrecer selección manual */
+    }
     status.textContent = copied ? '¡Enlace copiado!' : 'Copia el enlace seleccionado.';
   }
 };

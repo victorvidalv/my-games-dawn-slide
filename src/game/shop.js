@@ -16,10 +16,38 @@ export const MAX_REVIVES = 1;
 
 export const SHOP_ITEMS = [
   { id: 'hint', icon: 'hint', name: 'Pista', levels: 0.6, detail: 'Una pista que te enseña el mejor movimiento.' },
-  { id: 'moves3', icon: 'hourglass', name: 'Turnos extra', levels: 1.2, share: 0.05, min: 1, detail: 'Más turnos para este tablero.' },
-  { id: 'moves', icon: 'hourglass', name: 'Muchos turnos extra', levels: 2, share: 0.1, min: 2, detail: 'Bastantes más turnos para este tablero.' },
-  { id: 'redo', icon: 'rewind', name: 'Rehacer tablero', levels: 0.8, detail: 'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados).' },
-  { id: 'skip', icon: 'skip', name: 'Saltar nivel', levels: 4, detail: 'Pasa al siguiente nivel sin puntos y sin racha.' },
+  {
+    id: 'moves3',
+    icon: 'hourglass',
+    name: 'Turnos extra',
+    levels: 1.2,
+    share: 0.05,
+    min: 1,
+    detail: 'Más turnos para este tablero.',
+  },
+  {
+    id: 'moves',
+    icon: 'hourglass',
+    name: 'Muchos turnos extra',
+    levels: 2,
+    share: 0.1,
+    min: 2,
+    detail: 'Bastantes más turnos para este tablero.',
+  },
+  {
+    id: 'redo',
+    icon: 'rewind',
+    name: 'Rehacer tablero',
+    levels: 0.8,
+    detail: 'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados).',
+  },
+  {
+    id: 'skip',
+    icon: 'skip',
+    name: 'Saltar nivel',
+    levels: 4,
+    detail: 'Pasa al siguiente nivel sin puntos y sin racha.',
+  },
 ];
 
 export const itemById = (id) => SHOP_ITEMS.find((i) => i.id === id);
@@ -37,7 +65,7 @@ export const extraTurns = (id, limit) => {
 };
 
 /** Una lección y el tablero que le sigue pueden compartir el número de nivel. */
-export const shopBoardKey = (G) => G.tutorial ? `${G.n}:${G.tutorial}` : G.n;
+export const shopBoardKey = (G) => (G.tutorial ? `${G.n}:${G.tutorial}` : G.n);
 
 /** ¿Se puede usar el objeto ahora mismo? (reason = por qué no) */
 export function availability(id, { run, G }) {
@@ -72,15 +100,13 @@ export function buy(id, { run, G }) {
   if (id === 'hint') {
     run.hints = (run.hints || 0) + 1;
     run.hintPurchaseBoard = shopBoardKey(G);
-  }
-  else if (id === 'skip') run.lastSkipZone = zoneIdx(G.n);
+  } else if (id === 'skip') run.lastSkipZone = zoneIdx(G.n);
   else if (item?.share) {
     const moves = extraTurns(id, G.limit);
     G.limit += moves;
     run.turnPackBoard = shopBoardKey(G);
     G.bought = moves; // turnos comprados: se muestran congelados y se «derriten» al usarse
-  }
-  else if (id === 'redo') {
+  } else if (id === 'redo') {
     G.pos = G.start.slice();
     G.hist = [];
     G.moves = 0;
@@ -111,7 +137,7 @@ export const BOSS_FREE_RETRIES = 2;
 /** Cada jefe tiene su propio cupo de reintentos en esta aventura. */
 export function bossRetriesLeft(run, level) {
   if (!run || run.daily || run.mode === 'p' || !isBossLevel(level)) return 0;
-  const used = run.bossRetry?.level === level ? (run.bossRetry.used || 0) : 0;
+  const used = run.bossRetry?.level === level ? run.bossRetry.used || 0 : 0;
   return Math.max(0, BOSS_FREE_RETRIES - used);
 }
 

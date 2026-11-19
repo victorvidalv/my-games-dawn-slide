@@ -5,7 +5,8 @@ import { startHintsFor } from '../engine/difficulty.js';
 export const START_LEVELS = [1, 21, 51, 71];
 
 /** Opciones de inicio según el nivel más alto alcanzado en el camino: `[{level, unlocked}]`. El 1 siempre está disponible. */
-export const startOptions = (reached = 0) => START_LEVELS.map((level) => ({ level, unlocked: level === 1 || reached >= level }));
+export const startOptions = (reached = 0) =>
+  START_LEVELS.map((level) => ({ level, unlocked: level === 1 || reached >= level }));
 
 /** ¿Se puede empezar desde `level` habiendo llegado a `reached`? */
 export const canStartAt = (reached, level) => startOptions(reached).some((o) => o.level === level && o.unlocked);

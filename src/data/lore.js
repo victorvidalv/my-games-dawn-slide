@@ -25,7 +25,12 @@ export const WORLD = {
 export const PEOPLES = [
   { id: 'kogn', name: 'Kogn', city: 1, trait: 'navegantes de las mareas antiguas' },
   { id: 'sahrim', name: 'Sahrim', city: 2, trait: 'caravaneros que cuentan pozos como quien cuenta años' },
-  { id: 'ennari', name: 'Ennari', city: 3, trait: 'escribas de la corteza que escriben los nombres de los muertos en los árboles' },
+  {
+    id: 'ennari',
+    name: 'Ennari',
+    city: 3,
+    trait: 'escribas de la corteza que escriben los nombres de los muertos en los árboles',
+  },
   { id: 'aluen', name: 'Aluen', city: 8, trait: 'tejedores de puentes bajo las estrellas' },
 ];
 

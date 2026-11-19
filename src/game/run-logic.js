@@ -13,25 +13,66 @@ const copyRows = (rows) => rows.map((p) => p.slice());
 /** Partida nueva de aventura. `from` es el nivel inicial ya validado. */
 export function newAdventureRun({ seed, start, mode = 'c', hero, from, hints }) {
   return {
-    seed, level: from, start, mode, hero, lifeUsed: false, revive: 0, revivesBought: 0,
-    undoUsedAt: 0, undoUsedLevel: 0, undoUsedCount: 0, vanAwardedAt: 0, score: 0, hints, adj: 0, streak: 0,
-    recBroken: false, firstLevel: from,
+    seed,
+    level: from,
+    start,
+    mode,
+    hero,
+    lifeUsed: false,
+    revive: 0,
+    revivesBought: 0,
+    undoUsedAt: 0,
+    undoUsedLevel: 0,
+    undoUsedCount: 0,
+    vanAwardedAt: 0,
+    score: 0,
+    hints,
+    adj: 0,
+    streak: 0,
+    recBroken: false,
+    firstLevel: from,
   };
 }
 
 /** Partida guardada lista para continuar: rellena los campos que faltan en guardados antiguos. */
 export const restoreRun = (saved) => ({
-  start: 1, mode: 'c', hero: 'lia', lifeUsed: false, revive: 0, revivesBought: 0, undoUsedAt: 0, undoUsedLevel: 0,
-  undoUsedCount: 0, vanAwardedAt: 0, recBroken: false, ...saved,
+  start: 1,
+  mode: 'c',
+  hero: 'lia',
+  lifeUsed: false,
+  revive: 0,
+  revivesBought: 0,
+  undoUsedAt: 0,
+  undoUsedLevel: 0,
+  undoUsedCount: 0,
+  vanAwardedAt: 0,
+  recBroken: false,
+  ...saved,
 });
 
 /** Partida de reto diario: sin héroe, sin vidas y con la ruta normal. */
 export function newDailyRun({ challenge, day, index, boards, attempt }) {
   return {
     daily: { id: challenge.id, day, index, boards, attempt },
-    seed: day, level: challenge.level, start: 1, mode: 'c', hero: 'none', score: 0, hints: 0, adj: 0, streak: 0,
-    lifeUsed: true, revive: 0, revivesBought: 0, undoUsedAt: 0, undoUsedLevel: 0, undoUsedCount: 0, vanAwardedAt: 0,
-    recBroken: false, route: 'normal', routeZone: zoneIdx(challenge.level),
+    seed: day,
+    level: challenge.level,
+    start: 1,
+    mode: 'c',
+    hero: 'none',
+    score: 0,
+    hints: 0,
+    adj: 0,
+    streak: 0,
+    lifeUsed: true,
+    revive: 0,
+    revivesBought: 0,
+    undoUsedAt: 0,
+    undoUsedLevel: 0,
+    undoUsedCount: 0,
+    vanAwardedAt: 0,
+    recBroken: false,
+    route: 'normal',
+    routeZone: zoneIdx(challenge.level),
   };
 }
 
@@ -44,12 +85,18 @@ export function dailyEntry(progress, targets, index) {
 }
 
 /** Posición en curso del reto diario, para retomarla si se cierra el juego. */
-export const dailyAttempt = (daily, G) => ({ index: daily.index, pos: G.pos.slice(), moves: G.moves, hist: copyRows(G.hist) });
+export const dailyAttempt = (daily, G) => ({
+  index: daily.index,
+  pos: G.pos.slice(),
+  moves: G.moves,
+  hist: copyRows(G.hist),
+});
 
 /** Un intento guardado del reto vale solo si es del mismo tablero y aún le quedan movimientos. */
 export function restoreDailyAttempt(G, daily) {
   const saved = daily?.attempt;
-  if (!saved || saved.index !== daily.index || saved.moves >= G.limit || saved.pos.length !== G.pos.length) return false;
+  if (!saved || saved.index !== daily.index || saved.moves >= G.limit || saved.pos.length !== G.pos.length)
+    return false;
   Object.assign(G, { pos: saved.pos.slice(), moves: saved.moves, hist: copyRows(saved.hist) });
   return true;
 }
@@ -61,10 +108,23 @@ export const canSaveBoard = (run, G) =>
 /** Copia serializable del tablero en curso (lo que se guarda en `run.board`). */
 export function snapshotBoard(G) {
   return {
-    level: G.n, rate: G.rate, pieces: G.pieces.map((p) => ({ ...p })), walls: copyRows(G.walls || []),
-    doors: copyRows(G.doors || []), pos: G.pos.slice(), start: G.start.slice(), opt: G.opt, limit: G.limit,
-    bought: G.bought || 0, timeLimit: G.timeLimit || 0, timeLeft: Math.ceil(G.timeLeft || 0), tutorial: G.tutorial || null,
-    moves: G.moves, hist: copyRows(G.hist), colors: G.colors?.slice(), family: G.family,
+    level: G.n,
+    rate: G.rate,
+    pieces: G.pieces.map((p) => ({ ...p })),
+    walls: copyRows(G.walls || []),
+    doors: copyRows(G.doors || []),
+    pos: G.pos.slice(),
+    start: G.start.slice(),
+    opt: G.opt,
+    limit: G.limit,
+    bought: G.bought || 0,
+    timeLimit: G.timeLimit || 0,
+    timeLeft: Math.ceil(G.timeLeft || 0),
+    tutorial: G.tutorial || null,
+    moves: G.moves,
+    hist: copyRows(G.hist),
+    colors: G.colors?.slice(),
+    family: G.family,
     seal: G.seal ? { ...G.seal, cell: G.seal.cell.slice() } : null,
   };
 }
@@ -82,8 +142,16 @@ export const needsBossIntro = (run, G) =>
 /** Antes del nivel 11 no se puede ir por la ruta heroica (salvo que ya se eligiera). Devuelve si cambió algo. */
 export function normalizeRoute(run) {
   let changed = false;
-  if (run.enterPending) { delete run.enterPending; Object.assign(run, { route: 'normal', routeZone: 0, travelFrom: 0 }); changed = true; }
-  if (run.level <= 10 && !run.pendingClear?.routeChosen && run.route !== 'normal') { run.route = 'normal'; run.routeZone = 0; changed = true; }
+  if (run.enterPending) {
+    delete run.enterPending;
+    Object.assign(run, { route: 'normal', routeZone: 0, travelFrom: 0 });
+    changed = true;
+  }
+  if (run.level <= 10 && !run.pendingClear?.routeChosen && run.route !== 'normal') {
+    run.route = 'normal';
+    run.routeZone = 0;
+    changed = true;
+  }
   return changed;
 }
 
@@ -91,7 +159,8 @@ export function normalizeRoute(run) {
 export const cityAfter = (level) => Math.min(9, Math.floor(level / 10));
 
 /** El viaje entre ciudades solo se ofrece tras los niveles 10, 20… 90 cuando aún no se eligió la ruta. */
-export const needsTravelChoice = (run) => !!run?.pendingClear && run.pendingClear.level % 10 === 0 && run.pendingClear.level < 100;
+export const needsTravelChoice = (run) =>
+  !!run?.pendingClear && run.pendingClear.level % 10 === 0 && run.pendingClear.level < 100;
 
 /** Aplica la ruta elegida en el viaje ('normal' o 'brave') y marca el capítulo como visto. */
 export function chooseRoute(run, choice, city) {
@@ -143,14 +212,28 @@ export function resolveFail(run, G, why) {
     return 'daily';
   }
   if (useFreeRetry(run, G, why)) return 'retry';
-  if (hasRevive(run)) { useRevive(run, G); return 'revive'; }            // compatibilidad con cargas antiguas
-  if (canPaidRevive(run, run.mode)) { run.pendingRevive = why || 'limit'; return 'offer'; }
+  if (hasRevive(run)) {
+    useRevive(run, G);
+    return 'revive';
+  } // compatibilidad con cargas antiguas
+  if (canPaidRevive(run, run.mode)) {
+    run.pendingRevive = why || 'limit';
+    return 'offer';
+  }
   return 'gameover';
 }
 
 /** Tras pagar el renacer el tablero vuelve a su inicio, sin los turnos comprados y con el reloj completo. */
 export function resetBoardForRevive(G) {
-  Object.assign(G, { pos: G.start.slice(), moves: 0, hist: [], done: false, limit: G.limit - (G.bought || 0), bought: 0, timeLeft: G.timeLimit || 0 });
+  Object.assign(G, {
+    pos: G.start.slice(),
+    moves: 0,
+    hist: [],
+    done: false,
+    limit: G.limit - (G.bought || 0),
+    bought: 0,
+    timeLeft: G.timeLimit || 0,
+  });
 }
 
 /** Acepta un rescate (reintento, vida o poder de Lía): el tablero vuelve a empezar y el rescate se consume. */
@@ -167,7 +250,9 @@ export function applyMove(G, i, x) {
 }
 
 /** Marca que en este nivel se usó ayuda (cuenta para los logros «sin ayuda»). */
-export const markHelped = (run, level) => { run.helpAt = level; };
+export const markHelped = (run, level) => {
+  run.helpAt = level;
+};
 
 /** Cómo sigue la aventura tras superar el nivel `n`: fin del juego, cruce de ciudad (cada 10) o nivel siguiente. */
 export const clearKind = (n) => (n >= MAX_LEVEL ? 'final' : n % 10 === 0 ? 'crossing' : 'next');
@@ -183,7 +268,11 @@ export function advanceRun(run, n, { bonus = false } = {}) {
 /** Actualiza el récord del camino (`paths[key]`). `final` cuenta la partida como terminada. */
 export function updateBest(paths, key, run, { final = false, now = Date.now() } = {}) {
   const r = paths[key] || (paths[key] = { score: 0, level: 0, runs: 0 });
-  if (run.mode === 'c' && run.score > r.score) { r.score = run.score; r.recordAt = now; run.recBroken = true; }
+  if (run.mode === 'c' && run.score > r.score) {
+    r.score = run.score;
+    r.recordAt = now;
+    run.recBroken = true;
+  }
   if (run.level > r.level) r.level = run.level;
   if (final) r.runs++;
   return r;

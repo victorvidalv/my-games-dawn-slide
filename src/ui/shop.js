@@ -15,7 +15,7 @@ import { numLocale } from '../i18n.js';
 
 const fmt = (n) => n.toLocaleString(numLocale());
 /** Nombre con los turnos reales que da en este tablero (son un % del límite). */
-const nameOf = (item) => (item.share ? `+${extraTurns(item.id, S.G.limit)} turnos` : item.name);   // la cifra real, nunca un porcentaje
+const nameOf = (item) => (item.share ? `+${extraTurns(item.id, S.G.limit)} turnos` : item.name); // la cifra real, nunca un porcentaje
 const priceNow = (id) => priceOf(id, S.G.rate, S.run.start, S.run);
 
 /** Refleja en pantalla la compra ya cobrada. */
@@ -44,9 +44,11 @@ export async function confirmBuy(id) {
   const item = itemById(id);
   const price = priceNow(id);
   const ok = await ask({
-    ico: item.icon, title: `${nameOf(item)} · ${fmt(price)} pts`,
+    ico: item.icon,
+    title: `${nameOf(item)} · ${fmt(price)} pts`,
     text: `${item.detail}<br><br>Tienes <b>${fmt(S.run.score)}</b> puntos y te quedarían <b>${fmt(S.run.score - price)}</b>.`,
-    yes: 'Comprar', no: 'Ahora no',
+    yes: 'Comprar',
+    no: 'Ahora no',
   });
   if (!ok) return false;
   const r = buy(id, { run: S.run, G: S.G });
@@ -59,7 +61,7 @@ export async function confirmBuy(id) {
 /* Don Dublón, vendedor sarcástico: varias frases por situación, elegidas al azar sin repetir la anterior. */
 const shortOf = (id) => SHOP_NOTES[id];
 const lastIdx = new Map();
-const merchantLine = key => pick(shopPersona(S.run?.hero).lines?.[key] || MERCHANT_LINES[key]);
+const merchantLine = (key) => pick(shopPersona(S.run?.hero).lines?.[key] || MERCHANT_LINES[key]);
 /** Elige una frase al azar sin repetir la anterior de la misma lista. */
 const pick = (arr) => {
   if (typeof arr === 'string') return arr;
@@ -90,7 +92,7 @@ function render() {
     const a = availability(i.id, { run: S.run, G: S.G });
     return `<button class="shop-item${a.ok ? '' : ' off'}" data-id="${i.id}" aria-disabled="${!a.ok}">
       <span class="ico">${icon(i.icon)}</span><span><b>${nameOf(i)}</b><small>${a.ok || !a.reason ? shortOf(i.id) : a.reason}</small></span>
-      <span class="price">${shopDiscount(S.run)?`<del>${fmt(priceOf(i.id,S.G.rate,S.run.start))}</del>`:''}${fmt(priceNow(i.id))}</span></button>`;
+      <span class="price">${shopDiscount(S.run) ? `<del>${fmt(priceOf(i.id, S.G.rate, S.run.start))}</del>` : ''}${fmt(priceNow(i.id))}</span></button>`;
   }).join('');
 }
 
@@ -99,11 +101,13 @@ export function openShop() {
   if (!S.G || S.G.done || S.busy || !S.run) return;
   const release = holdBusy();
   const modal = $('shop');
-  const persona=shopPersona(S.run.hero);modal.dataset.hero=S.run.hero;
-  $('shopBg').src=persona.background;$('shopMerchant').src=persona.portrait;
-  $('shopMerchant').alt=`${persona.name}, ${persona.title}`;
-  $('shopTitle').textContent=`Tienda de ${persona.name}`;
-  modal.style.setProperty('--shop-scene',cssUrl(persona.background));
+  const persona = shopPersona(S.run.hero);
+  modal.dataset.hero = S.run.hero;
+  $('shopBg').src = persona.background;
+  $('shopMerchant').src = persona.portrait;
+  $('shopMerchant').alt = `${persona.name}, ${persona.title}`;
+  $('shopTitle').textContent = `Tienda de ${persona.name}`;
+  modal.style.setProperty('--shop-scene', cssUrl(persona.background));
   const close = () => {
     modal.classList.remove('show');
     $('shopClose').onclick = null;
@@ -111,7 +115,8 @@ export function openShop() {
   };
   render();
   modal.classList.add('show');
-  sfx.merchantBell(); say(merchantLine('greet'), 'happy');
+  sfx.merchantBell();
+  say(merchantLine('greet'), 'happy');
   $('shopClose').onclick = close;
   const list = $('shopList');
   const lineFor = (b) => {
@@ -122,23 +127,38 @@ export function openShop() {
     }
     return merchantLine(b.dataset.id);
   };
-  list.onpointerover = (e) => { const b = e.target.closest('.shop-item'); if (b && e.pointerType === 'mouse') say(lineFor(b)); };
-  list.onfocusin = (e) => { const b = e.target.closest('.shop-item'); if (b) say(lineFor(b)); };
+  list.onpointerover = (e) => {
+    const b = e.target.closest('.shop-item');
+    if (b && e.pointerType === 'mouse') say(lineFor(b));
+  };
+  list.onfocusin = (e) => {
+    const b = e.target.closest('.shop-item');
+    if (b) say(lineFor(b));
+  };
   list.onclick = async (e) => {
     const b = e.target.closest('.shop-item');
     if (!b) return;
-    if (b.classList.contains('off')) { sfx.merchantNope(); say(lineFor(b), 'nope'); return; }
+    if (b.classList.contains('off')) {
+      sfx.merchantNope();
+      say(lineFor(b), 'nope');
+      return;
+    }
     const id = b.dataset.id;
     say(merchantLine(id));
-    if (!(await confirmBuy(id))) { sfx.merchantNope(); say(merchantLine('decline')); return; }
-    sfx.merchantCoin(); say(merchantLine('bought'), 'happy');
+    if (!(await confirmBuy(id))) {
+      sfx.merchantNope();
+      say(merchantLine('decline'));
+      return;
+    }
+    sfx.merchantCoin();
+    say(merchantLine('bought'), 'happy');
     if (id === 'skip') {
       close();
       skipLevel();
       return;
     }
     render();
-    if (id === 'redo' || itemById(id)?.share) setTimeout(close, 650);   // un instante para ver a Don Dublón contento
+    if (id === 'redo' || itemById(id)?.share) setTimeout(close, 650); // un instante para ver a Don Dublón contento
   };
   $('shopClose').focus();
 }

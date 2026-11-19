@@ -16,14 +16,14 @@ import { mulberry32 } from './rng.js';
  * garantizando que el jugador nunca quede atrapado sin solución desde ningún estado alcanzable.
  */
 export const FAMILIES = {
-  gates:   { gate: 1, minGain: 1 },
-  heavy:   { heavy: 1, minGain: 1 },
-  ice:     { ice: 1, minGain: 1 },
-  duo:     { duo: 1, minGain: 2 },
-  doors:   { door: 1, minGain: 1 },
+  gates: { gate: 1, minGain: 1 },
+  heavy: { heavy: 1, minGain: 1 },
+  ice: { ice: 1, minGain: 1 },
+  duo: { duo: 1, minGain: 2 },
+  doors: { door: 1, minGain: 1 },
   doorduo: { doorDuo: 1, minGain: 2 },
-  mixed:   { gate: 1, heavy: 1, ice: 1, minGain: 2, base: 'walls' },
-  all:     { gate: 1, heavy: 1, ice: 1, door: 1, minGain: 2, base: 'walls' },   // las cinco piezas a la vez (roca, candado, pesada, hielo y portón)
+  mixed: { gate: 1, heavy: 1, ice: 1, minGain: 2, base: 'walls' },
+  all: { gate: 1, heavy: 1, ice: 1, door: 1, minGain: 2, base: 'walls' }, // las cinco piezas a la vez (roca, candado, pesada, hielo y portón)
 };
 
 /**
@@ -46,7 +46,11 @@ export function familySpec(name) {
   return spec;
 }
 
-const DUO_PAIRS = [['heavy', 'ice'], ['gate', 'ice'], ['gate', 'heavy']];
+const DUO_PAIRS = [
+  ['heavy', 'ice'],
+  ['gate', 'ice'],
+  ['gate', 'heavy'],
+];
 const DOOR_COMBOS = [['door2'], ['door', 'heavy'], ['door', 'ice'], ['door', 'gate']];
 
 /** Celdas por las que puede pasar alguna pieza (sus carriles), saltando la pieza `skip`. */
@@ -84,13 +88,15 @@ export function decorateBoard(board, family, seed, { tries, minOpt = 0 } = {}) {
     const pieces = board.pieces.map((p) => ({ ...p }));
     const doors = baseDoors.map((d) => d.slice());
     const used = new Set([0]);
-    const pair = spec.duo ? DUO_PAIRS[(seed + t) % DUO_PAIRS.length]
-      : spec.doorDuo ? DOOR_COMBOS[(seed + t) % DOOR_COMBOS.length]
-      : null;
+    const pair = spec.duo
+      ? DUO_PAIRS[(seed + t) % DUO_PAIRS.length]
+      : spec.doorDuo
+        ? DOOR_COMBOS[(seed + t) % DOOR_COMBOS.length]
+        : null;
     const useHeavy = spec.heavy || pair?.includes('heavy');
     const useIce = spec.ice || pair?.includes('ice');
     const useGate = spec.gate || pair?.includes('gate');
-    const doorCount = pair?.includes('door2') ? 2 : (spec.door || pair?.includes('door')) ? 1 : 0;
+    const doorCount = pair?.includes('door2') ? 2 : spec.door || pair?.includes('door') ? 1 : 0;
     if (useHeavy) {
       const cand = [];
       for (let i = 1; i < n; i++) if (pieces[i].len === 2) cand.push(i);
@@ -117,7 +123,7 @@ export function decorateBoard(board, family, seed, { tries, minOpt = 0 } = {}) {
       for (let i = 1; i < n; i++) if (!used.has(i)) cand.push(i);
       if (!cand.length) continue;
       const i = pick(cand);
-      const lanes = laneCells(pieces, i);            // la placa debe poder ser cubierta por OTRA pieza
+      const lanes = laneCells(pieces, i); // la placa debe poder ser cubierta por OTRA pieza
       const wallSet = new Set(walls.map(([r, c]) => r * N + c));
       const options = [];
       for (let r = 0; r < N; r++) {
@@ -137,7 +143,8 @@ export function decorateBoard(board, family, seed, { tries, minOpt = 0 } = {}) {
       // Mapa de ocupación inicial (cell -> índice de pieza); solo esa pieza con el mismo tinte podría estar encima al empezar
       const initAt = new Int8Array(N * N).fill(-1);
       pieces.forEach((p, idx) => {
-        for (let k = 0; k < p.len; k++) initAt[p.o === 'h' ? p.fix * N + board.pos[idx] + k : (board.pos[idx] + k) * N + p.fix] = idx;
+        for (let k = 0; k < p.len; k++)
+          initAt[p.o === 'h' ? p.fix * N + board.pos[idx] + k : (board.pos[idx] + k) * N + p.fix] = idx;
       });
       let okDoors = true;
       for (let d = 0; d < doorCount; d++) {
@@ -155,7 +162,10 @@ export function decorateBoard(board, family, seed, { tries, minOpt = 0 } = {}) {
             toneCandidates.push({ i, r, c });
           }
         }
-        if (!toneCandidates.length) { okDoors = false; break; }
+        if (!toneCandidates.length) {
+          okDoors = false;
+          break;
+        }
         const chosen = pick(toneCandidates);
         pieces[chosen.i].tone = tone;
         doors.push([chosen.r, chosen.c, tone]);

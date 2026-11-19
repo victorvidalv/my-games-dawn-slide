@@ -10,61 +10,81 @@ import { isBossLevel, levelPlan } from './mechanics.js';
  */
 export const BOSSES = {
   10: {
-    city: 0, art: 'sentinel', color: ['#7fc9a4', '#d9f2c7'],
+    city: 0,
+    art: 'sentinel',
+    color: ['#7fc9a4', '#d9f2c7'],
     name: 'El Vigía de la Bruma',
     title: 'Guardián del Primer Umbral',
     lore: '«¿Listo? Mi farol apuesta por ti.»',
   },
   20: {
-    city: 1, art: 'keeper', color: ['#5fb4d8', '#cdeeff'],
+    city: 1,
+    art: 'keeper',
+    color: ['#5fb4d8', '#cdeeff'],
     name: 'El Farero Ciego',
     title: 'Guardián del Puerto Oscuro',
     lore: '«¡A toda vela, que corre el reloj!»',
   },
   30: {
-    city: 2, art: 'jailer', color: ['#e0a548', '#ffe2a8'],
+    city: 2,
+    art: 'jailer',
+    color: ['#e0a548', '#ffe2a8'],
     name: 'El Carcelero de Duna',
     title: 'Guardián de las Arenas',
     lore: '«Tengo mil llaves. ¿Probamos la tuya?»',
   },
   40: {
-    city: 3, art: 'dusk', color: ['#e07a3c', '#ffd0a0'],
+    city: 3,
+    art: 'dusk',
+    color: ['#e07a3c', '#ffd0a0'],
     name: 'La Dama del Ocaso',
     title: 'Guardián del Bosque Caído',
     lore: '«¡Desliza con estilo! Yo pongo las hojas.»',
   },
   50: {
-    city: 4, art: 'warden', color: ['#d8b24a', '#fff0b0'],
+    city: 4,
+    art: 'warden',
+    color: ['#d8b24a', '#fff0b0'],
     name: 'El Maestro Relojero',
     title: 'Guardián de la Torre Parada',
     lore: '«¡Mis relojes siempre se adelantan!»',
   },
   60: {
-    city: 5, art: 'judge', color: ['#7ad6ff', '#e4f8ff'],
+    city: 5,
+    art: 'judge',
+    color: ['#7ad6ff', '#e4f8ff'],
     name: 'El Juez de Escarcha',
     title: 'Guardián del Paso Helado',
     lore: '«¡Que el hielo no te quite la sonrisa!»',
   },
   70: {
-    city: 6, art: 'weaver', color: ['#e08aa8', '#ffd9e6'],
+    city: 6,
+    art: 'weaver',
+    color: ['#e08aa8', '#ffd9e6'],
     name: 'El Tejedor de Cerezos',
     title: 'Guardián del Jardín Mudo',
     lore: '«¡Con un tironcito se desenreda todo!»',
   },
   80: {
-    city: 7, art: 'forger', color: ['#ff7a2f', '#ffd27a'],
+    city: 7,
+    art: 'forger',
+    color: ['#ff7a2f', '#ffd27a'],
     name: 'El Forjador de Ceniza',
     title: 'Guardián de la Fragua Fría',
     lore: '«¡Este puzle está recién salido del horno!»',
   },
   90: {
-    city: 8, art: 'scribe', color: ['#8a8cff', '#dcdcff'],
+    city: 8,
+    art: 'scribe',
+    color: ['#8a8cff', '#dcdcff'],
     name: 'El Escriba del Olvido',
     title: 'Guardián del Archivo Borrado',
     lore: '«¿Dónde dejé la salida? Ah, ya sé.»',
   },
   100: {
-    city: 9, art: 'sovereign', color: ['#b06cff', '#f2d8ff'],
+    city: 9,
+    art: 'sovereign',
+    color: ['#b06cff', '#f2d8ff'],
     name: 'Vhorn, la Sombra del Faro',
     title: 'Guardián del Último Umbral',
     lore: '«¡Que suene la campana del último reto!»',
@@ -112,7 +132,16 @@ export function bossTimeFor(level, opt, rule = bossRule(level)) {
 /** Cuántas piezas especiales lleva el tablero del jefe (según el calibrador), dicho en una frase. */
 export function bossMechLabel(level) {
   const n = levelPlan(level).mechanics.length;
-  return ['Sin piezas especiales', 'Una pieza especial', 'Dos piezas especiales', 'Tres piezas especiales', 'Cuatro piezas especiales', 'Todas las piezas juntas'][n] ?? 'Todas las piezas juntas';
+  return (
+    [
+      'Sin piezas especiales',
+      'Una pieza especial',
+      'Dos piezas especiales',
+      'Tres piezas especiales',
+      'Cuatro piezas especiales',
+      'Todas las piezas juntas',
+    ][n] ?? 'Todas las piezas juntas'
+  );
 }
 /** Texto de la regla (español, se traduce en pantalla). */
 export function bossRuleLabel(level, seconds = 0) {

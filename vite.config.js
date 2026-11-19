@@ -21,9 +21,19 @@ const seo = () => ({
     },
   },
   generateBundle() {
-    const urls = ['', ...Object.values(guidePaths)].map(path => `  <url><loc>${SITE_URL}/${path}</loc><changefreq>monthly</changefreq></url>`).join('\n');
-    this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `User-agent: *\nAllow: /\nDisallow: /melodies.html\n\nSitemap: ${SITE_URL}/sitemap.xml\n` });
-    this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n` });
+    const urls = ['', ...Object.values(guidePaths)]
+      .map((path) => `  <url><loc>${SITE_URL}/${path}</loc><changefreq>monthly</changefreq></url>`)
+      .join('\n');
+    this.emitFile({
+      type: 'asset',
+      fileName: 'robots.txt',
+      source: `User-agent: *\nAllow: /\nDisallow: /melodies.html\n\nSitemap: ${SITE_URL}/sitemap.xml\n`,
+    });
+    this.emitFile({
+      type: 'asset',
+      fileName: 'sitemap.xml',
+      source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+    });
   },
 });
 
@@ -44,11 +54,12 @@ export default defineConfig({
       registerType: 'prompt',
       injectRegister: false,
       manifestFilename: 'manifest.webmanifest',
-      injectManifest: { globPatterns: ['**/*.{js,css,html,webp,png,gif,webmanifest}'], globIgnores: ['**/jefes/**'] },   // las ilustraciones de jefe se guardan al verlas (sw.js)
+      injectManifest: { globPatterns: ['**/*.{js,css,html,webp,png,gif,webmanifest}'], globIgnores: ['**/jefes/**'] }, // las ilustraciones de jefe se guardan al verlas (sw.js)
       manifest: {
         name: 'DAWNSLIDE',
         short_name: 'DAWNSLIDE',
-        description: 'Open the road between the ten cities of Tri. A block puzzle, three heroes and one hundred levels.',
+        description:
+          'Open the road between the ten cities of Tri. A block puzzle, three heroes and one hundred levels.',
         lang: 'en',
         start_url: './',
         scope: './',

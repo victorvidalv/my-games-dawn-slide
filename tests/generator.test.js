@@ -11,11 +11,16 @@ const RATINGS = FULL ? [3, 8, 14, 20, 28, 36, 45, 55, 65, 75, 85] : [6, 18, 32, 
 const SEEDS = FULL ? [1, 2, 3] : [1, 2];
 
 const jobs = [];
-for (const rating of RATINGS) for (const walls of [0, 3]) for (const seed of SEEDS) jobs.push({ rating, walls, seed, families: FAMILIES, sample: FULL ? 120 : 40 });
+for (const rating of RATINGS)
+  for (const walls of [0, 3])
+    for (const seed of SEEDS) jobs.push({ rating, walls, seed, families: FAMILIES, sample: FULL ? 120 : 40 });
 jobs.sort((a, b) => b.rating - a.rating);
 
 let runs = [];
-const combos = () => runs.flatMap((r) => r.combos.filter((c) => !c.missing).map((c) => ({ ...c, rating: r.rating, walls0: r.walls, seed: r.seed })));
+const combos = () =>
+  runs.flatMap((r) =>
+    r.combos.filter((c) => !c.missing).map((c) => ({ ...c, rating: r.rating, walls0: r.walls, seed: r.seed })),
+  );
 
 beforeAll(async () => {
   runs = await runPool('generate', jobs, { batch: 1 });
@@ -35,7 +40,9 @@ describe('generador: todas las combinaciones de piezas', () => {
     for (const f of FAMILIES) {
       const all = runs.map((r) => r.combos.find((c) => c.family === f));
       const ok = all.filter((c) => c && !c.missing).length;
-      expect(ok, `${f}: decorados ${ok}/${all.length}`).toBeGreaterThanOrEqual(f === 'ice' ? 1 : Math.ceil(all.length * 0.3));
+      expect(ok, `${f}: decorados ${ok}/${all.length}`).toBeGreaterThanOrEqual(
+        f === 'ice' ? 1 : Math.ceil(all.length * 0.3),
+      );
     }
     expect(combos().length).toBeGreaterThan(30);
   });

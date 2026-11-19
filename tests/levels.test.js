@@ -1,7 +1,17 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import bank from '../src/data/levels.json';
 import {
-  isValidState, analyze, maxDistance, minReach, MAX_LEVEL, pickBoard, varyBoard, encodeBoard, calcGain, moveLimit, moveStatus,
+  isValidState,
+  analyze,
+  maxDistance,
+  minReach,
+  MAX_LEVEL,
+  pickBoard,
+  varyBoard,
+  encodeBoard,
+  calcGain,
+  moveLimit,
+  moveStatus,
 } from '../src/engine/index.js';
 import { runPool, FULL } from './parallel/pool.js';
 
@@ -30,12 +40,15 @@ describe('variantes: cada partida tiene tableros distintos', () => {
   }, 120000);
 });
 
-
 describe('construcción de niveles (mínimos exactos)', () => {
   let builds = [];
   beforeAll(async () => {
     const ratings = FULL ? RATINGS : RATINGS.filter((r) => r % 3 === 1 || r > 95);
-    builds = await runPool('build', ratings.map((rating) => ({ rating })), { batch: 2 });
+    builds = await runPool(
+      'build',
+      ratings.map((rating) => ({ rating })),
+      { batch: 2 },
+    );
   }, 600000);
 
   it('el mínimo anunciado es el real y respeta ajuste adaptativo y ruta aventurera', () => {
@@ -67,10 +80,16 @@ const adjFor = (level) => {
 };
 
 describe('partida completa simulada (3 caminos × 100 niveles, con piezas especiales y hielo)', () => {
-  const jobs = STARTS.flatMap((start) => Array.from({ length: MAX_LEVEL }, (_, i) => ({ start, level: i + 1, seed: SEED, adj: adjFor(i + 1) })));
+  const jobs = STARTS.flatMap((start) =>
+    Array.from({ length: MAX_LEVEL }, (_, i) => ({ start, level: i + 1, seed: SEED, adj: adjFor(i + 1) })),
+  );
   let sim = [];
   beforeAll(async () => {
-    sim = await runPool('level', jobs.sort((a, b) => b.level - a.level), { batch: 3 });
+    sim = await runPool(
+      'level',
+      jobs.sort((a, b) => b.level - a.level),
+      { batch: 3 },
+    );
   }, 600000);
   const path = (start) => sim.filter((r) => r.start === start).sort((a, b) => a.level - b.level);
 
@@ -89,7 +108,10 @@ describe('partida completa simulada (3 caminos × 100 niveles, con piezas especi
         if (r.family === 'heavy') expect(r.kinds, id).toContain('heavy');
         if (r.family === 'ice') expect(r.kinds, id).toContain('ice');
         if (r.family === 'duo') expect(r.kinds.length, id).toBe(2);
-        if (r.family === 'mixed') { expect(r.walls, id).toBeGreaterThan(0); expect(r.kinds, id).toEqual(['gate', 'heavy', 'ice']); }
+        if (r.family === 'mixed') {
+          expect(r.walls, id).toBeGreaterThan(0);
+          expect(r.kinds, id).toEqual(['gate', 'heavy', 'ice']);
+        }
         // dificultad prevista: ±3 del objetivo (+2 de margen en los tableros con muros)
         expect(r.opt, id).toBeGreaterThanOrEqual(Math.max(1, r.target - 5));
         expect(r.opt, id).toBeLessThanOrEqual(r.target + 3 + 2);
@@ -104,7 +126,9 @@ describe('partida completa simulada (3 caminos × 100 niveles, con piezas especi
         expect(calcGain(r.rating, r.moves, r.opt, streak).eff).toBe(1);
         streak++;
       }
-      expect(fallbacks, 'niveles que tuvieron que usar un tablero normal por falta de la familia').toBeLessThanOrEqual(4);
+      expect(fallbacks, 'niveles que tuvieron que usar un tablero normal por falta de la familia').toBeLessThanOrEqual(
+        4,
+      );
     });
   }
 
@@ -132,15 +156,22 @@ describe('partida completa simulada (3 caminos × 100 niveles, con piezas especi
     for (const start of STARTS) {
       let prev = 0;
       for (let block = 0; block < 10; block++) {
-        const avg = path(start).slice(block * 10, block * 10 + 10).reduce((a, r) => a + r.opt, 0) / 10;
-        expect(avg, `camino ${start}, tramo ${block + 1}`).toBeGreaterThanOrEqual(prev - 2.5);   // en el tope (37) los tableros reales varían ±3
+        const avg =
+          path(start)
+            .slice(block * 10, block * 10 + 10)
+            .reduce((a, r) => a + r.opt, 0) / 10;
+        expect(avg, `camino ${start}, tramo ${block + 1}`).toBeGreaterThanOrEqual(prev - 2.5); // en el tope (37) los tableros reales varían ±3
         prev = avg;
       }
     }
   });
 
   it('en Normal, a partir del nivel 30 el mínimo medio ya exige pensar (≥ 10) y al final es desafiante (≥ 30)', () => {
-    const avg = (from, to) => path(1).slice(from - 1, to).reduce((a, r) => a + r.opt, 0) / (to - from + 1);
+    const avg = (from, to) =>
+      path(1)
+        .slice(from - 1, to)
+        .reduce((a, r) => a + r.opt, 0) /
+      (to - from + 1);
     expect(avg(30, 39)).toBeGreaterThanOrEqual(10);
     expect(avg(91, 100)).toBeGreaterThanOrEqual(30);
   });

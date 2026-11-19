@@ -24,7 +24,11 @@ import { boardInterest, INTEREST_MAX_TARGET } from './interest.js';
  * @returns {{pieces, pos, maxd, target, reached:boolean, iters:number}}
  *   pos = estado más lejano de la victoria encontrado; reached = maxd >= target.
  */
-export function generateBoard(rating, seed, { goalIters = 60, maxIters = 20000, tuneIters = 500, walls: wallCount = 0 } = {}) {
+export function generateBoard(
+  rating,
+  seed,
+  { goalIters = 60, maxIters = 20000, tuneIters = 500, walls: wallCount = 0 } = {},
+) {
   const c = curve(rating);
   const floor = minReach(rating);
   const goal = c.target + 3;
@@ -68,7 +72,8 @@ export function generateBoard(rating, seed, { goalIters = 60, maxIters = 20000, 
         stall = 0;
       }
     }
-    if (cur && (!best || curV > best.value)) best = { pieces: cur.pieces, pos: cur.farthest, walls: cur.walls || [], maxd: cur.maxd, value: curV };
+    if (cur && (!best || curV > best.value))
+      best = { pieces: cur.pieces, pos: cur.farthest, walls: cur.walls || [], maxd: cur.maxd, value: curV };
     if (!best) continue;
     if (tuned) {
       const interest = best.value - Math.min(best.maxd, goal);
@@ -80,7 +85,13 @@ export function generateBoard(rating, seed, { goalIters = 60, maxIters = 20000, 
     }
   }
   const { value, ...board } = best;
-  return { ...board, target: c.target, reached: best.maxd >= floor, iters, ...(tuned ? { interest: value - Math.min(best.maxd, goal) } : {}) };
+  return {
+    ...board,
+    target: c.target,
+    reached: best.maxd >= floor,
+    iters,
+    ...(tuned ? { interest: value - Math.min(best.maxd, goal) } : {}),
+  };
 }
 
 /** Estado de la componente con mayor distancia a la victoria. */

@@ -38,7 +38,7 @@ import './styles/31-polish.css';
 import './styles/32-menus.css';
 import './styles/33-daily.css';
 import './styles/34-menu-home.css';
-import './styles/35-lite.css';                 // modo ligero automático (src/ui/perf.js): siempre la última
+import './styles/35-lite.css'; // modo ligero automático (src/ui/perf.js): siempre la última
 import './ui/transitions.js';
 import './ui/achievements.js';
 import { hooks } from './audio/sound.js';
@@ -56,24 +56,37 @@ import { hydrateIcons } from './ui/icons.js';
 import './ui/controls.js';
 import './pwa.js';
 
-hydrateIcons();                       // iconos propios en el HTML estático (botones, avisos)
+hydrateIcons(); // iconos propios en el HTML estático (botones, avisos)
 // Evita zoom accidental por pellizco o doble toque en móvil, iPad y trackpad
 for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) {
   document.addEventListener(ev, (e) => e.preventDefault(), { passive: false });
 }
-document.addEventListener('touchstart', (e) => {
-  if (e.touches.length > 1) e.preventDefault();
-}, { passive: false });
-document.addEventListener('touchmove', (e) => {
-  if (e.touches.length > 1) e.preventDefault();
-}, { passive: false });
-document.addEventListener('wheel', (e) => {
-  if (e.ctrlKey) e.preventDefault();
-}, { passive: false });
+document.addEventListener(
+  'touchstart',
+  (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+  },
+  { passive: false },
+);
+document.addEventListener(
+  'touchmove',
+  (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+  },
+  { passive: false },
+);
+document.addEventListener(
+  'wheel',
+  (e) => {
+    if (e.ctrlKey) e.preventDefault();
+  },
+  { passive: false },
+);
 hooks.onSuspend = () => (S.run ? saveRun() : persist());
 syncHero(store.run?.hero || store.heroChoice || 'lia');
 fitBoard();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBoard);
 openMenu();
 initSaveTransfer();
-warmBanks();warmLevelWorker();   // los tableros se descargan en un momento libre, mientras ves el menú
+warmBanks();
+warmLevelWorker(); // los tableros se descargan en un momento libre, mientras ves el menú

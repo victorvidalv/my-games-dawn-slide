@@ -1,8 +1,19 @@
 import { describe, it, expect } from 'vitest';
 import bank from '../src/data/levels.json';
 import {
-  N, decodeBoard, decode, isValidState, slideRange, snapDrag, DRAG_MIN, expand, analyze,
-  buildLevel, mulberry32, curve, minReach,
+  N,
+  decodeBoard,
+  decode,
+  isValidState,
+  slideRange,
+  snapDrag,
+  DRAG_MIN,
+  expand,
+  analyze,
+  buildLevel,
+  mulberry32,
+  curve,
+  minReach,
 } from '../src/engine/index.js';
 
 /** Para cada pieza, el rango [mín, máx] que resulta de los movimientos que permite el solver. */
@@ -26,7 +37,9 @@ describe('movilidad de las piezas', () => {
       for (const k of an.list.slice(0, 400)) {
         const pos = decode(k, lvl.pieces.length);
         const expected = solverRanges(lvl.pieces, pos);
-        lvl.pieces.forEach((_, i) => expect(slideRange(lvl.pieces, pos, i), `dif ${rating} pieza ${i}`).toEqual(expected[i]));
+        lvl.pieces.forEach((_, i) =>
+          expect(slideRange(lvl.pieces, pos, i), `dif ${rating} pieza ${i}`).toEqual(expected[i]),
+        );
       }
     }
   });
@@ -65,7 +78,10 @@ describe('movilidad de las piezas', () => {
   it('el estado inicial de cada dificultad tiene al menos una pieza que se puede mover y la llave roja sale en el mínimo anunciado', () => {
     for (let rating = 1; rating <= 100; rating += 3) {
       const lvl = buildLevel(decodeBoard(bank.ratings[rating - 1][2]), { rating, rng: mulberry32(rating) });
-      const movable = lvl.pieces.filter((_, i) => { const [lo, hi] = slideRange(lvl.pieces, lvl.pos, i); return hi > lo; });
+      const movable = lvl.pieces.filter((_, i) => {
+        const [lo, hi] = slideRange(lvl.pieces, lvl.pos, i);
+        return hi > lo;
+      });
       expect(movable.length, `dif ${rating}`).toBeGreaterThan(0);
       expect(lvl.opt).toBeLessThanOrEqual(curve(rating).target);
       expect(lvl.opt).toBeGreaterThanOrEqual(minReach(rating)); // en las dificultades más altas el banco admite hasta 3 menos
@@ -90,25 +106,29 @@ describe('arrastre: snapDrag', () => {
     expect(snapDrag(2, 2, 2, -3)).toBe(2);
   });
   it('respeta el redondeo normal en arrastres largos y siempre avanza en la dirección del arrastre', () => {
-    for (let x0 = 0; x0 <= 4; x0++) for (let lo = 0; lo <= x0; lo++) for (let hi = x0; hi <= 4; hi++) {
-      for (let d = -5; d <= 5; d += 0.1) {
-        const r = snapDrag(x0, lo, hi, d);
-        expect(r).toBeGreaterThanOrEqual(lo);
-        expect(r).toBeLessThanOrEqual(hi);
-        if (d > 0) expect(r).toBeGreaterThanOrEqual(x0);
-        if (d < 0) expect(r).toBeLessThanOrEqual(x0);
-        if (Math.abs(d) >= DRAG_MIN + 1e-9 && ((d > 0 && hi > x0) || (d < 0 && lo < x0))) expect(r).not.toBe(x0);
-      }
-    }
+    for (let x0 = 0; x0 <= 4; x0++)
+      for (let lo = 0; lo <= x0; lo++)
+        for (let hi = x0; hi <= 4; hi++) {
+          for (let d = -5; d <= 5; d += 0.1) {
+            const r = snapDrag(x0, lo, hi, d);
+            expect(r).toBeGreaterThanOrEqual(lo);
+            expect(r).toBeLessThanOrEqual(hi);
+            if (d > 0) expect(r).toBeGreaterThanOrEqual(x0);
+            if (d < 0) expect(r).toBeLessThanOrEqual(x0);
+            if (Math.abs(d) >= DRAG_MIN + 1e-9 && ((d > 0 && hi > x0) || (d < 0 && lo < x0))) expect(r).not.toBe(x0);
+          }
+        }
   });
   it('con hielo (kind="ice"), cualquier arrastre válido lleva la pieza directo hasta el tope', () => {
-    for (let x0 = 0; x0 <= 4; x0++) for (let lo = 0; lo <= x0; lo++) for (let hi = x0; hi <= 4; hi++) {
-      for (let d = -5; d <= 5; d += 0.15) {
-        const r = snapDrag(x0, lo, hi, d, 'ice');
-        expect([x0, lo, hi]).toContain(r);
-        if (d > DRAG_MIN && hi > x0) expect(r).toBe(hi);
-        if (d < -DRAG_MIN && lo < x0) expect(r).toBe(lo);
-      }
-    }
+    for (let x0 = 0; x0 <= 4; x0++)
+      for (let lo = 0; lo <= x0; lo++)
+        for (let hi = x0; hi <= 4; hi++) {
+          for (let d = -5; d <= 5; d += 0.15) {
+            const r = snapDrag(x0, lo, hi, d, 'ice');
+            expect([x0, lo, hi]).toContain(r);
+            if (d > DRAG_MIN && hi > x0) expect(r).toBe(hi);
+            if (d < -DRAG_MIN && lo < x0) expect(r).toBe(lo);
+          }
+        }
   });
 });

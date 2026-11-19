@@ -10,14 +10,17 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 
 /* Ilustraciones de jefe (≈ 130 KB cada una): no se descargan todas al instalar; se guardan la primera vez que se ven y después
    salen de la caché (también sin conexión). */
-registerRoute(({ url }) => /\/jefes\/[^/]+\.(jpg|webp)$/.test(url.pathname), async ({ request }) => {
-  const cache = await caches.open('jefes-v1');
-  const hit = await cache.match(request);
-  if (hit) return hit;
-  const res = await fetch(request);
-  if (res.ok) cache.put(request, res.clone());
-  return res;
-});
+registerRoute(
+  ({ url }) => /\/jefes\/[^/]+\.(jpg|webp)$/.test(url.pathname),
+  async ({ request }) => {
+    const cache = await caches.open('jefes-v1');
+    const hit = await cache.match(request);
+    if (hit) return hit;
+    const res = await fetch(request);
+    if (res.ok) cache.put(request, res.clone());
+    return res;
+  },
+);
 
 /* La página pide activar la versión nueva cuando el usuario pulsa «Actualizar» */
 self.addEventListener('message', (e) => {

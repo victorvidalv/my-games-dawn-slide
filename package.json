@@ -11,6 +11,8 @@
     "test": "vitest run",
     "test:full": "FULL=1 vitest run",
     "lint": "eslint .",
+    "format": "prettier --write src tests scripts vite.config.js vitest.config.js eslint.config.js",
+    "format:check": "prettier --check src tests scripts vite.config.js vitest.config.js eslint.config.js",
     "levels": "node scripts/generate-levels.mjs",
     "levels:decorate": "node scripts/decorate-levels.mjs",
     "levels:walls": "node scripts/generate-walls.mjs",
@@ -27,6 +29,7 @@
     "eslint": "^10.14.0",
     "globals": "^17.14.0",
     "happy-dom": "^21.0.4",
+    "prettier": "^3.10.1",
     "vite": "^8.3.8",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.0"

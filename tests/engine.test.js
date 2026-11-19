@@ -1,9 +1,31 @@
 import { describe, it, expect } from 'vitest';
 import {
-  N, WIN_POS, encode, decode, encodeBoard, decodeBoard, isValidState, randomBoard,
-  analyze, hintMove, minMoves, maxDistance, expand,
-  curve, rateAt, moveLimit, MAX_LEVEL,
-  generateBoard, mulberry32, calcGain, gainFor, baseScore, moveStatus, movesLeft, isWon, isLow,
+  N,
+  WIN_POS,
+  encode,
+  decode,
+  encodeBoard,
+  decodeBoard,
+  isValidState,
+  randomBoard,
+  analyze,
+  hintMove,
+  minMoves,
+  maxDistance,
+  expand,
+  curve,
+  rateAt,
+  moveLimit,
+  MAX_LEVEL,
+  generateBoard,
+  mulberry32,
+  calcGain,
+  gainFor,
+  baseScore,
+  moveStatus,
+  movesLeft,
+  isWon,
+  isLow,
 } from '../src/engine/index.js';
 
 /** Tablero mínimo: llave roja sola → 1 movimiento (un arrastre largo hasta la salida). */
@@ -11,7 +33,10 @@ const solo = { pieces: [{ o: 'h', len: 2, fix: 2 }], pos: [0] };
 
 /** Un coche vertical de largo 3 tapa la salida: hay que moverlo antes → 2 movimientos. */
 const blocked = {
-  pieces: [{ o: 'h', len: 2, fix: 2 }, { o: 'v', len: 3, fix: 4 }],
+  pieces: [
+    { o: 'h', len: 2, fix: 2 },
+    { o: 'v', len: 3, fix: 4 },
+  ],
   pos: [0, 1], // ocupa filas 1-3 de la columna 4
 };
 
@@ -44,7 +69,11 @@ describe('solver', () => {
   });
   it('detecta tableros sin solución: una columna entera bloqueada', () => {
     const stuck = {
-      pieces: [{ o: 'h', len: 2, fix: 2 }, { o: 'v', len: 3, fix: 2 }, { o: 'v', len: 3, fix: 2 }],
+      pieces: [
+        { o: 'h', len: 2, fix: 2 },
+        { o: 'v', len: 3, fix: 2 },
+        { o: 'v', len: 3, fix: 2 },
+      ],
       pos: [0, 0, 3], // dos verticales de 3 llenan la columna 2 y no pueden moverse
     };
     expect(isValidState(stuck.pieces, stuck.pos)).toBe(true);
@@ -115,9 +144,10 @@ describe('codificación', () => {
 describe('dificultad', () => {
   it('rateAt sube desde la dificultad inicial de cada camino hasta 100 (solo baja tras un jefe)', () => {
     for (const start of [1, 50, 75]) {
-      expect(rateAt(start, 1)).toBeGreaterThanOrEqual(start === 1 ? 5 : start === 50 ? 25 : 40);   // Normal parte de 3 movimientos
+      expect(rateAt(start, 1)).toBeGreaterThanOrEqual(start === 1 ? 5 : start === 50 ? 25 : 40); // Normal parte de 3 movimientos
       expect(rateAt(start, MAX_LEVEL)).toBeGreaterThanOrEqual(95);
-      for (let l = 2; l <= MAX_LEVEL; l++) if (l % 10 !== 1) expect(rateAt(start, l)).toBeGreaterThanOrEqual(rateAt(start, l - 1));   // solo baja justo después de un jefe (+2)
+      for (let l = 2; l <= MAX_LEVEL; l++)
+        if (l % 10 !== 1) expect(rateAt(start, l)).toBeGreaterThanOrEqual(rateAt(start, l - 1)); // solo baja justo después de un jefe (+2)
     }
   });
   it('los movimientos objetivo crecen con la dificultad (tutorial suave → 37)', () => {
@@ -176,30 +206,30 @@ describe('puntaje y límite de movimientos', () => {
   it('estado del contador: ok → pocos → último turno → sin turnos (ya no se puede mover)', () => {
     expect(moveStatus(3, 10)).toBe('ok');
     expect(moveStatus(6, 10)).toBe('ok');
-    expect(moveStatus(7, 10)).toBe('warn');      // quedan 3: «piensa bien»
-    expect(moveStatus(8, 10)).toBe('warn');      // quedan 2
-    expect(moveStatus(9, 10)).toBe('last');      // queda 1
-    expect(moveStatus(10, 10)).toBe('over');     // 0 turnos: terminó
+    expect(moveStatus(7, 10)).toBe('warn'); // quedan 3: «piensa bien»
+    expect(moveStatus(8, 10)).toBe('warn'); // quedan 2
+    expect(moveStatus(9, 10)).toBe('last'); // queda 1
+    expect(moveStatus(10, 10)).toBe('over'); // 0 turnos: terminó
     expect(moveStatus(11, 10)).toBe('over');
     expect(movesLeft(7, 10)).toBe(3);
     expect(movesLeft(12, 10)).toBe(0);
   });
   it('«pocos turnos» = quedan 3 movimientos (o el 20 % del límite si es más; en tableros cortos, no antes de gastar el 60 %) y aún se puede mover', () => {
     expect(isLow(6, 10)).toBe(false);
-    expect(isLow(7, 10)).toBe(true);             // quedan 3
+    expect(isLow(7, 10)).toBe(true); // quedan 3
     expect(isLow(17, 20)).toBe(true);
-    expect(isLow(4, 6)).toBe(true);              // límite 6: avisa con 2
+    expect(isLow(4, 6)).toBe(true); // límite 6: avisa con 2
     expect(isLow(3, 6)).toBe(false);
-    expect(isLow(5, 8)).toBe(true);              // límite 8: avisa con 3
+    expect(isLow(5, 8)).toBe(true); // límite 8: avisa con 3
     expect(isLow(27, 30)).toBe(true);
-    expect(isLow(23, 30)).toBe(false);           // 30: el 20 % son 6
+    expect(isLow(23, 30)).toBe(false); // 30: el 20 % son 6
     expect(isLow(24, 30)).toBe(true);
     expect(isLow(8, 10)).toBe(true);
     expect(isLow(9, 10)).toBe(true);
-    expect(isLow(10, 10)).toBe(false);           // sin turnos: ya no hay aviso, hay derrota
+    expect(isLow(10, 10)).toBe(false); // sin turnos: ya no hay aviso, hay derrota
     expect(isLow(15, 20)).toBe(false);
     expect(isLow(16, 20)).toBe(true);
-    expect(isLow(3, 4)).toBe(true);              // límites pequeños: el último turno ya avisa
+    expect(isLow(3, 4)).toBe(true); // límites pequeños: el último turno ya avisa
     expect(isLow(2, 4)).toBe(false);
   });
   it('al agotar los turnos no se puede seguir: todo estado con 0 turnos es «over»', () => {

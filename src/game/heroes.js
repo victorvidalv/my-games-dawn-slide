@@ -7,9 +7,42 @@ import { HEROIC_BENEFITS, heroicHintsLeft, heroicPowerFactor, useHeroicHint } fr
 
 /* Ojo: el identificador interno de Juth sigue siendo 'van' (imágenes heroes/van*.webp y partidas guardadas). Solo cambia el nombre que se ve. */
 export const HEROES = [
-  { id: 'lia', name: 'Lía', role: 'Portadora de la Brasa', icon: 'heart', color: '#68d8bd', power: 'Turnos de reserva', short: 'Más turnos en cada tablero', detail: 'Cada tablero te da turnos extra (un cuarto del mínimo necesario) para perdonar los errores pequeños sin quitarte el reto.', quote: '«Incluso la ceniza recuerda el calor.»' },
-  { id: 'jean', name: 'Jean', role: 'Vigía del Péndulo', icon: 'clock', color: '#8fb9ff', power: 'Rebobinar', short: 'Retrocede varios movimientos', detail: 'Una vez por tablero, devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.', quote: '«Todo error deja una grieta por donde volver.»' },
-  { id: 'van', name: 'Juth', role: 'Escriba de las Runas', icon: 'stars', color: '#c5a2ff', power: 'Trazar destino', short: 'Ejecuta movimientos óptimos', detail: 'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos tres pasos pendientes.', quote: '«Lo que no se nombra sigue buscando salida.»' },
+  {
+    id: 'lia',
+    name: 'Lía',
+    role: 'Portadora de la Brasa',
+    icon: 'heart',
+    color: '#68d8bd',
+    power: 'Turnos de reserva',
+    short: 'Más turnos en cada tablero',
+    detail:
+      'Cada tablero te da turnos extra (un cuarto del mínimo necesario) para perdonar los errores pequeños sin quitarte el reto.',
+    quote: '«Incluso la ceniza recuerda el calor.»',
+  },
+  {
+    id: 'jean',
+    name: 'Jean',
+    role: 'Vigía del Péndulo',
+    icon: 'clock',
+    color: '#8fb9ff',
+    power: 'Rebobinar',
+    short: 'Retrocede varios movimientos',
+    detail:
+      'Una vez por tablero, devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.',
+    quote: '«Todo error deja una grieta por donde volver.»',
+  },
+  {
+    id: 'van',
+    name: 'Juth',
+    role: 'Escriba de las Runas',
+    icon: 'stars',
+    color: '#c5a2ff',
+    power: 'Trazar destino',
+    short: 'Ejecuta movimientos óptimos',
+    detail:
+      'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos tres pasos pendientes.',
+    quote: '«Lo que no se nombra sigue buscando salida.»',
+  },
 ];
 
 export const heroById = (id) => HEROES.find((h) => h.id === id) || HEROES[0];
@@ -43,7 +76,8 @@ export function heroBaseLimit(hero, opt, start, level, heroic, boss) {
 
 /** Límite de movimientos de un tablero de mínimo `opt` para ese héroe, camino y jefe. */
 export const heroLimit = (heroId, opt, start = 1, level = 1, brave = false, boss = false) =>
-  heroBaseLimit(heroId, opt, start, level, brave, boss) + bonusTurns(heroId, opt, boss, heroicPowerFactor(heroId, brave));
+  heroBaseLimit(heroId, opt, start, level, brave, boss) +
+  bonusTurns(heroId, opt, boss, heroicPowerFactor(heroId, brave));
 
 /** Foto del tablero para repetirlo desde el principio con 0 movimientos (la usa el revivir). */
 export function snapshotRescue(G) {
@@ -79,7 +113,8 @@ export function spendHint({ run, mode, level }) {
 }
 
 /** ¿Se puede pedir una pista ahora? (gratis o de la reserva) */
-export const canHint = (run, mode, level) => isPractice(mode) || heroicHintsLeft(run, level) > 0 || (run?.hints || 0) > 0;
+export const canHint = (run, mode, level) =>
+  isPractice(mode) || heroicHintsLeft(run, level) > 0 || (run?.hints || 0) > 0;
 
 /**
  * Pistas ganadas al completar `level`; suma a run.hints y devuelve cuántas.

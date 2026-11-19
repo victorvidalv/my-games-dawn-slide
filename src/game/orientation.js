@@ -21,7 +21,7 @@ export function rotatedLevels(_seed, max = 100) {
  * Es determinista por partida y nivel, así que al reanudar, reintentar o revivir el tablero se ve igual.
  */
 export function boardRotation(seed, level, tutorial = false) {
-  if (tutorial) return TUTORIALS[tutorial]?.rot ?? 0;                      // solo el tutorial del maleficio gira
+  if (tutorial) return TUTORIALS[tutorial]?.rot ?? 0; // solo el tutorial del maleficio gira
   if (!hasCurse(level)) return 0;
   return (1 + (hash32(seed ?? 0, level, 90) % 3)) * 90;
 }
@@ -29,6 +29,11 @@ export function boardRotation(seed, level, tutorial = false) {
 /** Pasa un desplazamiento de pantalla (dx, dy) al eje del tablero girado `deg` grados: devuelve el desplazamiento en el eje `o` ('h' o 'v'). */
 export function localDelta(dx, dy, deg, o) {
   const r = (((deg % 360) + 360) % 360) / 90;
-  const [c, s] = [[1, 0], [0, 1], [-1, 0], [0, -1]][r];
+  const [c, s] = [
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+    [0, -1],
+  ][r];
   return o === 'h' ? dx * c + dy * s : -dx * s + dy * c;
 }

@@ -12,8 +12,8 @@
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 const obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
 
-const recordTime = (record) => Number.isFinite(record.recordAt) && record.recordAt > 0 && record.recordAt <= 8.64e15
-  ? record.recordAt : Infinity;
+const recordTime = (record) =>
+  Number.isFinite(record.recordAt) && record.recordAt > 0 && record.recordAt <= 8.64e15 ? record.recordAt : Infinity;
 
 function betterRecord(a, b) {
   const diff = num(a.score) - num(b.score);
@@ -34,9 +34,16 @@ export function bestAdventureRecord(paths) {
 export function mergePaths(a = {}, b = {}) {
   const out = { ...obj(a) };
   for (const [k, y] of Object.entries(obj(b))) {
-    const x = obj(out[k]), yy = obj(y);
+    const x = obj(out[k]),
+      yy = obj(y);
     const best = betterRecord(x, yy);
-    const merged = { ...yy, ...x, score: num(best.score), level: Math.max(num(x.level), num(yy.level)), runs: Math.max(num(x.runs), num(yy.runs)) };
+    const merged = {
+      ...yy,
+      ...x,
+      score: num(best.score),
+      level: Math.max(num(x.level), num(yy.level)),
+      runs: Math.max(num(x.runs), num(yy.runs)),
+    };
     if (recordTime(best) === Infinity) delete merged.recordAt;
     else merged.recordAt = best.recordAt;
     out[k] = merged;
@@ -45,14 +52,16 @@ export function mergePaths(a = {}, b = {}) {
 }
 export function mergeAch(a = {}, b = {}) {
   const out = { ...obj(a) };
-  for (const [id, t] of Object.entries(obj(b))) out[id] = id in out && num(out[id]) && num(t) ? Math.min(num(out[id]), num(t)) : out[id] || t;
+  for (const [id, t] of Object.entries(obj(b)))
+    out[id] = id in out && num(out[id]) && num(t) ? Math.min(num(out[id]), num(t)) : out[id] || t;
   return out;
 }
 export function mergeStats(a = {}, b = {}) {
   const out = { ...obj(a) };
   for (const [k, y] of Object.entries(obj(b))) {
     const x = out[k];
-    if (Array.isArray(x) || Array.isArray(y)) out[k] = [...new Set([...(Array.isArray(x) ? x : []), ...(Array.isArray(y) ? y : [])])];
+    if (Array.isArray(x) || Array.isArray(y))
+      out[k] = [...new Set([...(Array.isArray(x) ? x : []), ...(Array.isArray(y) ? y : [])])];
     else out[k] = Math.max(num(x), num(y));
   }
   return out;
@@ -62,7 +71,8 @@ const better = (x, y) => {
   if (!x) return y;
   if (!y) return x;
   if (Boolean(x.boards) !== Boolean(y.boards)) return x.boards ? x : y;
-  const rx = MEDAL_RANK[x.medal] || 0, ry = MEDAL_RANK[y.medal] || 0;
+  const rx = MEDAL_RANK[x.medal] || 0,
+    ry = MEDAL_RANK[y.medal] || 0;
   return ry > rx || (ry === rx && num(y.moves) < num(x.moves)) ? y : x;
 };
 export function mergeDaily(a, b) {
@@ -78,17 +88,29 @@ export function mergeDaily(a, b) {
   }
   const latest = num(b.last) > num(a.last) || (num(b.last) === num(a.last) && num(b.streak) > num(a.streak)) ? b : a;
   return {
-    ...b, ...a,
-    solved: Math.max(num(a.solved), num(b.solved)), gold: Math.max(num(a.gold), num(b.gold)), best: Math.max(num(a.best), num(b.best)),
-    streak: num(latest.streak), last: latest.last ?? -1, by, days,
+    ...b,
+    ...a,
+    solved: Math.max(num(a.solved), num(b.solved)),
+    gold: Math.max(num(a.gold), num(b.gold)),
+    best: Math.max(num(a.best), num(b.best)),
+    streak: num(latest.streak),
+    last: latest.last ?? -1,
+    by,
+    days,
   };
 }
 /** Une el guardado en memoria (`mine`) con el que ya está escrito (`disk`). Devuelve un objeto nuevo; no toca ninguno de los dos. */
 export function mergeSaves(mine = {}, disk = {}) {
-  const out = { ...mine, paths: mergePaths(mine.paths, disk?.paths), ach: mergeAch(mine.ach, disk?.ach), stats: mergeStats(mine.stats, disk?.stats) };
+  const out = {
+    ...mine,
+    paths: mergePaths(mine.paths, disk?.paths),
+    ach: mergeAch(mine.ach, disk?.ach),
+    stats: mergeStats(mine.stats, disk?.stats),
+  };
   const daily = mergeDaily(mine.daily, disk?.daily);
   if (daily) out.daily = daily;
-  const a = mine.dailyPlay, b = disk?.dailyPlay;
+  const a = mine.dailyPlay,
+    b = disk?.dailyPlay;
   if (!a || (b && b.day > a.day)) {
     if (b) out.dailyPlay = b;
   } else if (b?.day === a.day) {

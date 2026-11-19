@@ -6,12 +6,27 @@ import { QR_MAX_BYTES, qrMatrix } from '../src/qr.js';
 const now = new Date('2026-11-18T10:00:00Z');
 const recordAt = now.getTime();
 const run = {
-  mode: 'c', level: 40, hero: 'van', start: 75, route: 'brave', seed: 2147483647, hints: 17,
-  score: 123456, adj: 2, firstLevel: 21, helpAt: 39, streak: 4, revivesBought: 1,
+  mode: 'c',
+  level: 40,
+  hero: 'van',
+  start: 75,
+  route: 'brave',
+  seed: 2147483647,
+  hints: 17,
+  score: 123456,
+  adj: 2,
+  firstLevel: 21,
+  helpAt: 39,
+  streak: 4,
+  revivesBought: 1,
   bossRetry: { level: 40, used: 1 },
 };
 const snapshot = {
-  paths: { c1: { score: 600000, level: 100, runs: 4, recordAt }, c50: { score: 4200000000, level: 90, runs: 320 }, c75: { score: 123456, level: 40, runs: 1 } },
+  paths: {
+    c1: { score: 600000, level: 100, runs: 4, recordAt },
+    c50: { score: 4200000000, level: 90, runs: 320 },
+    c75: { score: 123456, level: 40, runs: 1 },
+  },
   ach: { perf10: recordAt, perf50: recordAt, lv50: recordAt, day7: recordAt },
   stats: { perfects: 55555, heroes: ['lia', 'van'], paths: [1, 75], mini5Kinds: ['catch', 'shell'] },
   daily: { last: dayNumber(now), streak: 5, best: 7, solved: 25, gold: 12, by: { classic: 13, all: 12 } },
@@ -35,7 +50,9 @@ describe('enlaces de transferencia', () => {
     expect(readSaveLink(exportSaveLink({}), now)).toMatchObject({ paths: {}, ach: {}, run: null, daily: { last: -1 } });
     const crossing = { ...run, level: 10, firstLevel: 1, helpAt: 3, pendingClear: { level: 10, routeChosen: true } };
     expect(readSaveLink(exportSaveLink({ run: crossing }), now).run).toMatchObject({
-      level: 10, route: 'brave', pendingClear: { level: 10, routeChosen: true },
+      level: 10,
+      route: 'brave',
+      pendingClear: { level: 10, routeChosen: true },
     });
     expect(readSaveLink(exportSaveLink({ run: { ...run, daily: {} } }), now).run).toBeNull();
   });
@@ -48,7 +65,8 @@ describe('enlaces de transferencia', () => {
       link.replace(/#s=(.)/, (_, first) => '#s=' + (first === 'Z' ? 'A' : 'Z')),
       link.slice(0, -5),
       exportSaveLink({ daily: { last: dayNumber(now) + 2, streak: 1, best: 1 } }),
-    ]) expect(() => readSaveLink(invalid, now)).toThrow();
+    ])
+      expect(() => readSaveLink(invalid, now)).toThrow();
   });
 });
 
@@ -71,8 +89,10 @@ describe('importar al guardado local', () => {
 
   it('preserva la aventura local hasta confirmar y combina máximos, logros y racha al aceptar', async () => {
     const local = {
-      run: { ...run, level: 20 }, paths: { c1: { score: 750000, level: 93 } },
-      ach: { clean: recordAt - 86400000 }, daily: { streak: 9, best: 9, last: dayNumber(now) - 1 },
+      run: { ...run, level: 20 },
+      paths: { c1: { score: 750000, level: 93 } },
+      ach: { clean: recordAt - 86400000 },
+      daily: { streak: 9, best: 9, last: dayNumber(now) - 1 },
     };
     const { importProgress, store, disk } = await withLocal(local);
     const incoming = readSaveLink(exportSaveLink(snapshot), now);
@@ -81,9 +101,11 @@ describe('importar al guardado local', () => {
     expect(JSON.parse(disk.get(key))).toEqual(local);
     expect(importProgress(incoming, { replaceRun: true })).toBe('done');
     expect(store).toMatchObject({
-      run: { level: 40 }, paths: { c1: { score: 750000, level: 100 } },
+      run: { level: 40 },
+      paths: { c1: { score: 750000, level: 100 } },
       ach: { clean: local.ach.clean, perf10: recordAt },
-      daily: { streak: 5, best: 9 }, look: snapshot.look,
+      daily: { streak: 5, best: 9 },
+      look: snapshot.look,
     });
     expect(JSON.parse(disk.get(key + '.bak'))).toEqual(JSON.parse(disk.get(key)));
   });

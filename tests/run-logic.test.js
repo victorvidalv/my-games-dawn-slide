@@ -1,30 +1,98 @@
 import { describe, expect, it } from 'vitest';
 import {
-  acceptRescue, applyMove, markHelped, restoreRun,
-  advanceRun, applyAdventureWin, applyDailyWin, applySkip, canSaveBoard, chooseRoute, cityAfter, clearKind, dailyEntry,
-  needsBossIntro, needsTravelChoice, newAdventureRun, newDailyRun, normalizeRoute, resetBoardForRevive, resolveFail,
-  restoreDailyAttempt, snapshotBoard, storeBoard, updateBest,
+  acceptRescue,
+  applyMove,
+  markHelped,
+  restoreRun,
+  advanceRun,
+  applyAdventureWin,
+  applyDailyWin,
+  applySkip,
+  canSaveBoard,
+  chooseRoute,
+  cityAfter,
+  clearKind,
+  dailyEntry,
+  needsBossIntro,
+  needsTravelChoice,
+  newAdventureRun,
+  newDailyRun,
+  normalizeRoute,
+  resetBoardForRevive,
+  resolveFail,
+  restoreDailyAttempt,
+  snapshotBoard,
+  storeBoard,
+  updateBest,
 } from '../src/game/run-logic.js';
 
 /** Tablero mínimo con la forma que usa el juego (sin DOM). */
 const board = (over = {}) => ({
-  n: 5, rate: 40, opt: 6, limit: 12, moves: 3, done: false, bought: 0,
-  pieces: [{ x: 0, len: 2, dir: 'h' }, { x: 3, len: 3, dir: 'v' }],
-  pos: [1, 2], start: [0, 0], hist: [[0, 0], [1, 0]], walls: [[1, 1]], doors: [],
-  plan: {}, tutorial: null, family: 'base', colors: [2, 1], seal: null,
+  n: 5,
+  rate: 40,
+  opt: 6,
+  limit: 12,
+  moves: 3,
+  done: false,
+  bought: 0,
+  pieces: [
+    { x: 0, len: 2, dir: 'h' },
+    { x: 3, len: 3, dir: 'v' },
+  ],
+  pos: [1, 2],
+  start: [0, 0],
+  hist: [
+    [0, 0],
+    [1, 0],
+  ],
+  walls: [[1, 1]],
+  doors: [],
+  plan: {},
+  tutorial: null,
+  family: 'base',
+  colors: [2, 1],
+  seal: null,
   ...over,
 });
-const adventure = (over = {}) => ({ ...newAdventureRun({ seed: 7, start: 1, hero: 'lia', from: 5, hints: 3 }), ...over });
+const adventure = (over = {}) => ({
+  ...newAdventureRun({ seed: 7, start: 1, hero: 'lia', from: 5, hints: 3 }),
+  ...over,
+});
 
 describe('crear partidas', () => {
   it('la aventura empieza sin puntos, en el nivel elegido y con las pistas dadas', () => {
     const run = newAdventureRun({ seed: 7, start: 50, hero: 'van', from: 21, hints: 4 });
-    expect(run).toMatchObject({ seed: 7, start: 50, mode: 'c', hero: 'van', level: 21, firstLevel: 21, score: 0, hints: 4, streak: 0, lifeUsed: false });
+    expect(run).toMatchObject({
+      seed: 7,
+      start: 50,
+      mode: 'c',
+      hero: 'van',
+      level: 21,
+      firstLevel: 21,
+      score: 0,
+      hints: 4,
+      streak: 0,
+      lifeUsed: false,
+    });
   });
 
   it('el reto diario no tiene héroe ni vidas y va por la ruta normal', () => {
-    const run = newDailyRun({ challenge: { id: 'classic', level: 34 }, day: 900, index: 1, boards: [null, null, null], attempt: null });
-    expect(run).toMatchObject({ seed: 900, level: 34, hero: 'none', lifeUsed: true, hints: 0, route: 'normal', routeZone: 3 });
+    const run = newDailyRun({
+      challenge: { id: 'classic', level: 34 },
+      day: 900,
+      index: 1,
+      boards: [null, null, null],
+      attempt: null,
+    });
+    expect(run).toMatchObject({
+      seed: 900,
+      level: 34,
+      hero: 'none',
+      lifeUsed: true,
+      hints: 0,
+      route: 'normal',
+      routeZone: 3,
+    });
     expect(run.daily).toEqual({ id: 'classic', day: 900, index: 1, boards: [null, null, null], attempt: null });
   });
 
@@ -43,14 +111,17 @@ describe('guardado del tablero', () => {
     const G = board({ timeLeft: 4.2 });
     const snap = snapshotBoard(G);
     expect(snap).toMatchObject({ level: 5, pos: [1, 2], moves: 3, timeLeft: 5, tutorial: null });
-    G.pos[0] = 9; G.hist[0][0] = 9; G.pieces[0].x = 9;
+    G.pos[0] = 9;
+    G.hist[0][0] = 9;
+    G.pieces[0].x = 9;
     expect(snap.pos[0]).toBe(1);
     expect(snap.hist[0][0]).toBe(0);
     expect(snap.pieces[0].x).toBe(0);
   });
 
   it('solo guarda mientras se juega el nivel de la partida', () => {
-    const run = adventure(), G = board();
+    const run = adventure(),
+      G = board();
     expect(canSaveBoard(run, G)).toBe(true);
     expect(canSaveBoard(run, { ...G, done: true })).toBe(false);
     expect(canSaveBoard(run, { ...G, n: 6 })).toBe(false);
@@ -110,7 +181,13 @@ describe('presentación y rutas', () => {
     expect(cityAfter(20)).toBe(2);
     const run = adventure({ pendingClear: { level: 20 } });
     chooseRoute(run, 'brave', 2);
-    expect(run).toMatchObject({ route: 'brave', routeZone: 2, storyChapterSeen: 2, storySeen: 21, pendingClear: { routeChosen: true } });
+    expect(run).toMatchObject({
+      route: 'brave',
+      routeZone: 2,
+      storyChapterSeen: 2,
+      storySeen: 21,
+      pendingClear: { routeChosen: true },
+    });
   });
 });
 
@@ -134,7 +211,7 @@ describe('victoria', () => {
     expect(d.boards[0]).toEqual({ moves: 7, opt: 6, points: 50 });
     expect(d.attempt).toBeNull();
     applyDailyWin(d, board({ moves: 8 }), 40);
-    expect(d.boards[0].moves).toBe(7);                     // una marca peor no reemplaza a la mejor
+    expect(d.boards[0].moves).toBe(7); // una marca peor no reemplaza a la mejor
     d.index = 1;
     expect(applyDailyWin(d, board({ moves: 5, opt: 4 }), 80)).toEqual({ next: -1, totals: { moves: 12, opt: 10 } });
   });
@@ -197,7 +274,9 @@ describe('derrota', () => {
     const rich = adventure({ start: 50, score: 900 });
     expect(resolveFail(rich, board({ n: 60 }), undefined)).toBe('offer');
     expect(rich.pendingRevive).toBe('limit');
-    expect(resolveFail(adventure({ start: 50, score: 900, revivesBought: 1 }), board({ n: 60 }), 'time')).toBe('gameover');
+    expect(resolveFail(adventure({ start: 50, score: 900, revivesBought: 1 }), board({ n: 60 }), 'time')).toBe(
+      'gameover',
+    );
     expect(resolveFail(adventure({ start: 50, score: 0 }), board({ n: 60 }), 'time')).toBe('gameover');
   });
 
@@ -210,7 +289,8 @@ describe('derrota', () => {
 
 describe('rescates, movimientos y partidas guardadas', () => {
   it('aceptar un rescate reinicia el tablero y lo consume', () => {
-    const run = adventure({ rescue: { kind: 'lia' } }), G = board({ done: true, bought: 1, limit: 13 });
+    const run = adventure({ rescue: { kind: 'lia' } }),
+      G = board({ done: true, bought: 1, limit: 13 });
     acceptRescue(run, G);
     expect(run.rescue).toBeUndefined();
     expect(G).toMatchObject({ pos: [0, 0], moves: 0, done: false, limit: 12 });
@@ -229,6 +309,14 @@ describe('rescates, movimientos y partidas guardadas', () => {
   });
 
   it('una partida guardada antigua recibe los campos que le faltan', () => {
-    expect(restoreRun({ level: 30, seed: 1, hero: 'van', score: 70 })).toMatchObject({ level: 30, hero: 'van', score: 70, start: 1, mode: 'c', revive: 0, recBroken: false });
+    expect(restoreRun({ level: 30, seed: 1, hero: 'van', score: 70 })).toMatchObject({
+      level: 30,
+      hero: 'van',
+      score: 70,
+      start: 1,
+      mode: 'c',
+      revive: 0,
+      recBroken: false,
+    });
   });
 });

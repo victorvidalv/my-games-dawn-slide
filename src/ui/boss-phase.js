@@ -64,13 +64,15 @@ function ambientStep() {
   if (reduced() || document.hidden || modalOpen()) return;
   const board = $('board')?.getBoundingClientRect();
   if (!board || !board.width) return;
-  if (tick % 3 === 0) {   // chispas de poder desde un borde del tablero
+  if (tick % 3 === 0) {
+    // chispas de poder desde un borde del tablero
     const side = Math.floor(Math.random() * 4);
     const x = board.left + (side === 1 ? board.width : side === 3 ? 0 : Math.random() * board.width);
     const y = board.top + (side === 0 ? 0 : side === 2 ? board.height : Math.random() * board.height);
     burst(x, y, 5 + t * 4, [active.color[0], active.color[1], '#fff'], 3 + t);
   }
-  if (tick % 14 === 0) {  // oleada de intensidad: el color se enciende un instante
+  if (tick % 14 === 0) {
+    // oleada de intensidad: el color se enciende un instante
     body.classList.add('boss-surge');
     setTimeout(() => body.classList.remove('boss-surge'), 1100);
   }
@@ -126,7 +128,9 @@ export function leaveBossPhase() {
 let timerId = 0;
 let last = 0;
 let lastSecond = -1;
-export const onBossTimeUp = (fn) => { timeUpHandler = fn; };
+export const onBossTimeUp = (fn) => {
+  timeUpHandler = fn;
+};
 const clock = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
 function renderTimer() {
@@ -145,14 +149,23 @@ function timerStep() {
   const now = performance.now();
   const dt = (now - last) / 1000;
   last = now;
-  if (!G || G.done || !(G.timeLimit > 0)) { syncBossTimer(); return; }
+  if (!G || G.done || !(G.timeLimit > 0)) {
+    syncBossTimer();
+    return;
+  }
   // el tiempo solo corre cuando se puede jugar: sin pausa, tienda, poderes, animaciones ni ventanas
   if (S.busy || document.hidden || modalOpen() || $('board')?.classList.contains('board-lock')) return;
   G.timeLeft = Math.max(0, G.timeLeft - Math.min(dt, 0.5));
   renderTimer();
   const sec = Math.ceil(G.timeLeft);
-  if (G.timeLeft < 10 && sec !== lastSecond && G.timeLeft > 0) { lastSecond = sec; sfx.warn(); }
-  if (G.timeLeft <= 0) { timeUpHandler?.(); syncBossTimer(); }
+  if (G.timeLeft < 10 && sec !== lastSecond && G.timeLeft > 0) {
+    lastSecond = sec;
+    sfx.warn();
+  }
+  if (G.timeLeft <= 0) {
+    timeUpHandler?.();
+    syncBossTimer();
+  }
 }
 
 /** Muestra u oculta la barra de tiempo y arranca o detiene el reloj según el nivel actual. */
@@ -163,7 +176,10 @@ export function syncBossTimer() {
   if (el) el.hidden = !on;
   if (on) {
     renderTimer();
-    if (!timerId) { last = performance.now(); timerId = setInterval(timerStep, 200); }
+    if (!timerId) {
+      last = performance.now();
+      timerId = setInterval(timerStep, 200);
+    }
   } else if (timerId) {
     clearInterval(timerId);
     timerId = 0;

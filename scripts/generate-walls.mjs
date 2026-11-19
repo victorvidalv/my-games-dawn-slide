@@ -41,7 +41,10 @@ if (!isMainThread) {
   process.exit(0);
 }
 
-const arg = (name, def) => { const i = process.argv.indexOf('--' + name); return i > 0 ? process.argv[i + 1] : def; };
+const arg = (name, def) => {
+  const i = process.argv.indexOf('--' + name);
+  return i > 0 ? process.argv[i + 1] : def;
+};
 const [from, to] = String(arg('only', '1-100')).split('-').map(Number);
 const out = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : {};
 out.walls = out.walls || Array.from({ length: 100 }, () => []);
@@ -54,14 +57,23 @@ jobs.sort((a, b) => b.rating - a.rating);
 const threads = Math.max(1, cpus().length - 1);
 let done = 0;
 let failed = 0;
-await Promise.all(Array.from({ length: threads }, (_, t) => new Promise((ok) => {
-  const w = new Worker(new URL(import.meta.url), { workerData: { jobs: jobs.filter((_, i) => i % threads === t) } });
-  w.on('message', (m) => {
-    if (m.text) out.walls[m.rating - 1].push(m.text); else failed++;
-    if (++done % 100 === 0) console.log(`${done}/${jobs.length} (sin lograr: ${failed})`);
-  });
-  w.on('exit', ok);
-})));
+await Promise.all(
+  Array.from(
+    { length: threads },
+    (_, t) =>
+      new Promise((ok) => {
+        const w = new Worker(new URL(import.meta.url), {
+          workerData: { jobs: jobs.filter((_, i) => i % threads === t) },
+        });
+        w.on('message', (m) => {
+          if (m.text) out.walls[m.rating - 1].push(m.text);
+          else failed++;
+          if (++done % 100 === 0) console.log(`${done}/${jobs.length} (sin lograr: ${failed})`);
+        });
+        w.on('exit', ok);
+      }),
+  ),
+);
 out.walls.forEach((l) => l.sort());
 writeFileSync(OUT, JSON.stringify(out) + '\n');
 console.log(`Listo: ${done - failed} tableros con muros, ${failed} sin lograr → ${OUT}`);

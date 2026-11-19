@@ -5,64 +5,102 @@ import { beginPower, destinyCount, rewindCount, destinyPlan, powerState, reserve
 import bank from '../src/data/levels.json';
 import special from '../src/data/special.json';
 
-const rewindBoard = n => ({ n: 7, moves: n, limit: 30, pos: [n], hist: Array.from({length:n},(_,i)=>[i]) });
-const run = hero => ({ hero, hints: 4, score: 1234 });
+const rewindBoard = (n) => ({ n: 7, moves: n, limit: 30, pos: [n], hist: Array.from({ length: n }, (_, i) => [i]) });
+const run = (hero) => ({ hero, hints: 4, score: 1234 });
 
 describe('Jean: ~33 % de los movimientos hechos, mínimo 3', () => {
- for(const count of [0,1,4,5,8,12,20]) it(`rebobina el historial real de ${count} movimientos`,()=>{
-  const r=run('jean'),G=rewindBoard(count),action=beginPower(r,G);
-  if(!count){expect(action).toBeNull();expect(r.powerUsedLevel).toBeUndefined();return;}
-  const k=rewindCount(count);expect(k).toBe(Math.min(count,Math.max(3,Math.round(count/3))));
-  expect(action.steps).toHaveLength(k);expect(action.steps.at(-1)).toEqual([count-k]);
-  expect(beginPower(r,G)).toBeNull();expect(r.hints).toBe(4);expect(r.score).toBe(1234);
- });
- it('guardar y cargar, rehacer y revivir no recargan el poder del mismo nivel',()=>{
-  const r=run('jean'),G=rewindBoard(3);beginPower(r,G);
-  const loaded=JSON.parse(JSON.stringify(r));expect(powerState(loaded,G).ok).toBe(false);
-  expect(powerState(loaded,{...G,moves:0,hist:[]}).ok).toBe(false);
-  expect(powerState(loaded,{...G,n:8}).ok).toBe(true);
- });
- it('un uso antiguo de Jean cuenta como poder gastado en ese tablero',()=>{
-  expect(powerState({...run('jean'),undoUsedLevel:7,undoUsedCount:1},rewindBoard(4)).ok).toBe(false);
- });
+  for (const count of [0, 1, 4, 5, 8, 12, 20])
+    it(`rebobina el historial real de ${count} movimientos`, () => {
+      const r = run('jean'),
+        G = rewindBoard(count),
+        action = beginPower(r, G);
+      if (!count) {
+        expect(action).toBeNull();
+        expect(r.powerUsedLevel).toBeUndefined();
+        return;
+      }
+      const k = rewindCount(count);
+      expect(k).toBe(Math.min(count, Math.max(3, Math.round(count / 3))));
+      expect(action.steps).toHaveLength(k);
+      expect(action.steps.at(-1)).toEqual([count - k]);
+      expect(beginPower(r, G)).toBeNull();
+      expect(r.hints).toBe(4);
+      expect(r.score).toBe(1234);
+    });
+  it('guardar y cargar, rehacer y revivir no recargan el poder del mismo nivel', () => {
+    const r = run('jean'),
+      G = rewindBoard(3);
+    beginPower(r, G);
+    const loaded = JSON.parse(JSON.stringify(r));
+    expect(powerState(loaded, G).ok).toBe(false);
+    expect(powerState(loaded, { ...G, moves: 0, hist: [] }).ok).toBe(false);
+    expect(powerState(loaded, { ...G, n: 8 }).ok).toBe(true);
+  });
+  it('un uso antiguo de Jean cuenta como poder gastado en ese tablero', () => {
+    expect(powerState({ ...run('jean'), undoUsedLevel: 7, undoUsedCount: 1 }, rewindBoard(4)).ok).toBe(false);
+  });
 });
 
-describe('Juth: ~25 % de los pasos que faltan, legales',()=>{
- for(const family of ['plain','walls','gates','heavy','ice','combo_hg','combo_wh']) it(`respeta ${family} y reduce la distancia exacta en su parte`,()=>{
-  const raw=family==='plain'?bank.ratings[29][0]:special[family].find((l,k)=>k>=20&&l.length)[0];
-  const G={...decodeBoard(raw),n:45,moves:0,limit:100,hist:[]};
-  const an=analyze(G.pieces,G.pos,600000,G.walls),before=an.dist.get(encode(G.pos));
-  expect(before).toBeGreaterThan(2);
-  const n=destinyCount(before);expect(n).toBeGreaterThanOrEqual(1);expect(n).toBeLessThan(before);
-  const action=beginPower(run('van'),G);expect(action.steps).toHaveLength(n);
-  for(const step of action.steps){
-   const legal=[];expand(G.pieces,encode(G.pos),Array(G.pieces.length).fill(0),new Int8Array(N*N),(i,to)=>legal.push([i,to]),G.walls);
-   expect(legal).toContainEqual([step.i,step.to]);G.pos[step.i]=step.to;
-   expect(isValidState(G.pieces,G.pos,G.walls)).toBe(true);
-  }
-  expect(an.dist.get(encode(G.pos))).toBe(before-n);
- });
- it('se desactiva cuando quedan dos o menos pasos y no consume la carga',()=>{
-  const G={...decodeBoard('h2.2.0'),n:10,moves:0,limit:10,hist:[]},r=run('van');
-  expect(destinyPlan(G)).toBeNull();expect(beginPower(r,G)).toBeNull();expect(r.powerUsedLevel).toBeUndefined();
- });
- it('la parte es ~25 %, mínimo 1 con 3+ pasos, nada con 1 o 2, y nunca el último',()=>{
-  expect([1,2].map(l=>destinyCount(l))).toEqual([0,0]);
-  expect([3,4,5,6,8,12,20].map(l=>destinyCount(l))).toEqual([1,1,1,2,2,3,5]);
-  for(let l=3;l<40;l++)expect(destinyCount(l,.4)).toBeLessThan(l);
- });
- it('no activa una secuencia si quedan menos turnos que pasos a ejecutar',()=>{
-  const G={...decodeBoard(bank.ratings[29][0]),n:4,moves:9,limit:11,hist:[]};
-  expect(powerState(run('van'),G)).toMatchObject({ok:false,reason:expect.stringMatching(/^Necesitas \d+ turnos$/)});
- });
- it('ningún héroe recibe el poder del otro',()=>{
-  expect(beginPower(run('lia'),rewindBoard(4))).toBeNull();
- });
+describe('Juth: ~25 % de los pasos que faltan, legales', () => {
+  for (const family of ['plain', 'walls', 'gates', 'heavy', 'ice', 'combo_hg', 'combo_wh'])
+    it(`respeta ${family} y reduce la distancia exacta en su parte`, () => {
+      const raw = family === 'plain' ? bank.ratings[29][0] : special[family].find((l, k) => k >= 20 && l.length)[0];
+      const G = { ...decodeBoard(raw), n: 45, moves: 0, limit: 100, hist: [] };
+      const an = analyze(G.pieces, G.pos, 600000, G.walls),
+        before = an.dist.get(encode(G.pos));
+      expect(before).toBeGreaterThan(2);
+      const n = destinyCount(before);
+      expect(n).toBeGreaterThanOrEqual(1);
+      expect(n).toBeLessThan(before);
+      const action = beginPower(run('van'), G);
+      expect(action.steps).toHaveLength(n);
+      for (const step of action.steps) {
+        const legal = [];
+        expand(
+          G.pieces,
+          encode(G.pos),
+          Array(G.pieces.length).fill(0),
+          new Int8Array(N * N),
+          (i, to) => legal.push([i, to]),
+          G.walls,
+        );
+        expect(legal).toContainEqual([step.i, step.to]);
+        G.pos[step.i] = step.to;
+        expect(isValidState(G.pieces, G.pos, G.walls)).toBe(true);
+      }
+      expect(an.dist.get(encode(G.pos))).toBe(before - n);
+    });
+  it('se desactiva cuando quedan dos o menos pasos y no consume la carga', () => {
+    const G = { ...decodeBoard('h2.2.0'), n: 10, moves: 0, limit: 10, hist: [] },
+      r = run('van');
+    expect(destinyPlan(G)).toBeNull();
+    expect(beginPower(r, G)).toBeNull();
+    expect(r.powerUsedLevel).toBeUndefined();
+  });
+  it('la parte es ~25 %, mínimo 1 con 3+ pasos, nada con 1 o 2, y nunca el último', () => {
+    expect([1, 2].map((l) => destinyCount(l))).toEqual([0, 0]);
+    expect([3, 4, 5, 6, 8, 12, 20].map((l) => destinyCount(l))).toEqual([1, 1, 1, 2, 2, 3, 5]);
+    for (let l = 3; l < 40; l++) expect(destinyCount(l, 0.4)).toBeLessThan(l);
+  });
+  it('no activa una secuencia si quedan menos turnos que pasos a ejecutar', () => {
+    const G = { ...decodeBoard(bank.ratings[29][0]), n: 4, moves: 9, limit: 11, hist: [] };
+    expect(powerState(run('van'), G)).toMatchObject({
+      ok: false,
+      reason: expect.stringMatching(/^Necesitas \d+ turnos$/),
+    });
+  });
+  it('ningún héroe recibe el poder del otro', () => {
+    expect(beginPower(run('lia'), rewindBoard(4))).toBeNull();
+  });
 });
 
-describe('reserva de Lía antes de los turnos comprados',()=>{
- it('marca y consume solo su tramo, dejando la compra al final',()=>{
-  const G={limit:16,bought:3,moves:9};expect(reserveState(G,3)).toEqual({start:10,end:13,left:3});
-  G.moves=11;expect(reserveState(G,3).left).toBe(2);G.moves=14;expect(reserveState(G,3).left).toBe(0);
- });
+describe('reserva de Lía antes de los turnos comprados', () => {
+  it('marca y consume solo su tramo, dejando la compra al final', () => {
+    const G = { limit: 16, bought: 3, moves: 9 };
+    expect(reserveState(G, 3)).toEqual({ start: 10, end: 13, left: 3 });
+    G.moves = 11;
+    expect(reserveState(G, 3).left).toBe(2);
+    G.moves = 14;
+    expect(reserveState(G, 3).left).toBe(0);
+  });
 });
