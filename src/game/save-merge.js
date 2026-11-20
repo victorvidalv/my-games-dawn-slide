@@ -3,7 +3,7 @@
  * ya está en localStorage: así, si hay dos pestañas abiertas (por ejemplo, una con la versión vieja y otra recién actualizada de
  * la PWA), la última en guardar no borra lo que consiguió la otra. Regla: cada dato de progreso solo puede crecer.
  *   paths  – mejor puntaje con su fecha, nivel máximo y partidas de cada camino.
- *   ach    – logros ganados: todos los de ambos (con la fecha más antigua).
+ *   ach    – logros ganados: todos los de ambos (con la fecha más antigua). Igual con reclamos, cofres y canjes.
  *   stats  – contadores: el mayor; colecciones (listas): la unión.
  *   daily  – retos resueltos, oros, mejor racha y cuenta por reto: el mayor; la racha vigente: la del último día jugado;
  *            resultados de cada día: el mejor.
@@ -109,10 +109,14 @@ export function mergeSaves(mine = {}, disk = {}) {
     ach: mergeAch(mine.ach, disk?.ach),
     achClaimed: mergeAch(mine.achClaimed, disk?.achClaimed),
     shopOwned: mergeAch(mine.shopOwned, disk?.shopOwned),
+    shopPaid: mergeAch(mine.shopPaid, disk?.shopPaid),
+    achMilestones: mergeAch(mine.achMilestones, disk?.achMilestones),
     stats: mergeStats(mine.stats, disk?.stats),
   };
   const daily = mergeDaily(mine.daily, disk?.daily);
   if (daily) out.daily = daily;
+  const shopEco = Math.max(num(mine.shopEco), num(disk?.shopEco));
+  if (shopEco) out.shopEco = shopEco;
   if (disk?.survival && (!mine.survival || disk.survival.updatedAt > mine.survival.updatedAt)) {
     out.survival = disk.survival;
   }

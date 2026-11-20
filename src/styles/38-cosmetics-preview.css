@@ -1,0 +1,1186 @@
+/* ============================ Logros: cofres, rarezas, probador y cosméticos animados ============================ */
+
+:root {
+  --rar-common: #b9a682;
+  --rar-rare: #5aa8ff;
+  --rar-epic: #b585ff;
+  --rar-legendary: #ffd24a;
+}
+
+/* ---------- Cofres de colección ---------- */
+.ach-chests {
+  margin-bottom: 12px;
+  padding: 10px 12px 11px;
+  border-radius: var(--wob-d);
+  border: 2px solid #091118;
+  background: linear-gradient(160deg, #2a2231, #171420);
+  box-shadow:
+    0 3px 0 #091118,
+    inset 0 1px 0 #ffffff14;
+}
+
+.ach-chests-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.ach-chests-head b {
+  color: #ffe7a8;
+  font: 850 13px/1.1 var(--font-ui);
+}
+
+.ach-chests-head small {
+  color: #cdbfa6;
+  font: 750 11px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.ach-chest-track {
+  position: relative;
+  height: 58px;
+  margin: 0 18px;
+}
+
+.ach-chest-track > u {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 16px;
+  height: 6px;
+  border-radius: 99px;
+  background: #0c0a12;
+  box-shadow: inset 0 1px 2px #000a;
+  overflow: hidden;
+}
+
+.ach-chest-track > u i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #e09a26, #ffdf73);
+  box-shadow: 0 0 8px #ffd24a88;
+}
+
+.ach-chest-track ol {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chest {
+  position: absolute;
+  top: 0;
+  left: calc(var(--at) * 1%);
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+}
+
+.chest > button,
+.chest:not(.ready) {
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+}
+
+.chest > button {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.chest i {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 2px solid #091118;
+  background: #2b2735;
+  color: #7e7590;
+  box-shadow: 0 2px 0 #091118;
+}
+
+.chest i .ic {
+  width: 17px;
+  height: 17px;
+}
+
+.chest b {
+  color: #cdbfa6;
+  font: 850 10.5px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.chest small {
+  color: #9d917c;
+  font: 750 9px/1 var(--font-ui);
+}
+
+.chest.open i {
+  background: linear-gradient(160deg, #3d5a4a, #22362b);
+  color: #9ae6cc;
+}
+
+.chest.ready i {
+  background: linear-gradient(180deg, #ffdf73, #e09a26);
+  color: #241606;
+  box-shadow:
+    0 2px 0 #091118,
+    0 0 16px #ffd24aaa;
+}
+
+.chest.ready b,
+.chest.ready small {
+  color: #ffe39e;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chest.ready i {
+    animation: chest-wiggle 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes chest-wiggle {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  70% {
+    transform: rotate(-9deg) scale(1.1);
+  }
+  80% {
+    transform: rotate(8deg) scale(1.1);
+  }
+  90% {
+    transform: rotate(-4deg) scale(1.05);
+  }
+}
+
+.ach-chests-note {
+  margin: 4px 0 0;
+  color: #d9ccb2;
+  font: 650 11.5px/1.3 var(--font-ui);
+  text-align: center;
+}
+
+.ach-chest-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+  padding: 9px 12px;
+  border-radius: 11px;
+  border: 2px solid #091118;
+  background: linear-gradient(180deg, #ffdf73, #e09a26);
+  color: #191006;
+  font: 800 12.5px/1.1 var(--font-ui);
+  box-shadow:
+    0 3px 0 #091118,
+    0 0 16px #ffd24a77;
+}
+
+.ach-chest-open .ic {
+  width: 18px;
+  height: 18px;
+}
+
+.ach-chest-open b {
+  font-weight: 900;
+}
+
+/* Grupo con su avance */
+.ach-group-h {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.ach-group-h small {
+  color: #cdbfa6;
+  font: 750 11px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.ach-group-h u {
+  height: 4px;
+  border-radius: 99px;
+  background: #0c0a12;
+  overflow: hidden;
+}
+
+.ach-group-h u i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #4fae95, #9ae6cc);
+}
+
+.ach-group-h.full u i {
+  background: linear-gradient(90deg, #e09a26, #ffdf73);
+}
+
+.ach-near-h::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: #ffd24a;
+  box-shadow: 0 0 8px #ffd24a;
+  vertical-align: 1px;
+}
+
+.ach-near .ach {
+  border-color: #6b5a3a !important;
+}
+
+.ach-claim-banner {
+  margin-top: 2px;
+}
+
+.ach-claim-banner + .ach-list {
+  margin-bottom: 12px;
+}
+
+/* Aviso de logro: color según dificultad */
+.ach-toast.tier-silver {
+  border-color: #c7d6e6;
+}
+
+.ach-toast.tier-gold {
+  box-shadow:
+    0 6px 0 #150e0c,
+    0 0 26px #ffd24a88;
+}
+
+/* ---------- Tarjetas de Canjear con rareza ---------- */
+.ach-shop-card {
+  position: relative;
+  --rar: var(--rar-common);
+  border-color: color-mix(in srgb, var(--rar) 55%, #091118);
+  grid-template-rows: 1fr auto auto;
+  gap: 6px;
+  padding: 8px 8px 9px;
+  overflow: hidden;
+}
+
+.ach-shop-card.r-rare {
+  --rar: var(--rar-rare);
+  background: linear-gradient(160deg, #1d3550, #13202d);
+}
+
+.ach-shop-card.r-epic {
+  --rar: var(--rar-epic);
+  background: linear-gradient(160deg, #31254d, #171628);
+}
+
+.ach-shop-card.r-legendary {
+  --rar: var(--rar-legendary);
+  background: linear-gradient(160deg, #4b3818, #1f1810);
+  box-shadow:
+    0 3px 0 #091118,
+    0 0 14px #ffd24a33;
+}
+
+.ach-shop-card.on {
+  border-color: #e7b963;
+}
+
+.ach-shop-card.can-buy {
+  box-shadow:
+    0 3px 0 #091118,
+    0 0 0 1px color-mix(in srgb, var(--rar) 60%, transparent);
+}
+
+/* Destello que recorre las legendarias */
+.ach-shop-card.r-legendary::after {
+  content: '';
+  position: absolute;
+  inset: -40% auto -40% -60%;
+  width: 40%;
+  pointer-events: none;
+  background: linear-gradient(100deg, #fff0, #fff3c94d 50%, #fff0);
+  transform: skewX(-16deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ach-shop-card.r-legendary::after {
+    animation: card-sheen 3.8s ease-in-out infinite;
+  }
+}
+
+@keyframes card-sheen {
+  0%,
+  55% {
+    translate: 0 0;
+  }
+  100% {
+    translate: 420% 0;
+  }
+}
+
+.ach-shop-open {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 0;
+  padding: 18px 0 0;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ach-shop-open:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+.ach-shop-open:focus-visible {
+  outline: 3px solid #ffdb8f;
+  outline-offset: 2px;
+}
+
+.rar-chip,
+.anim-chip {
+  position: absolute;
+  top: 7px;
+  padding: 3px 7px;
+  border-radius: 99px;
+  border: 1px solid #091118;
+  font: 850 9px/1 var(--font-ui);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.rar-chip {
+  left: 7px;
+  background: color-mix(in srgb, var(--rar, var(--rar-common)) 28%, #0d1218);
+  color: color-mix(in srgb, var(--rar, var(--rar-common)) 70%, #fff);
+}
+
+.r-legendary .rar-chip {
+  background: linear-gradient(135deg, #ffe38a, #d99a1e);
+  color: #241606;
+}
+
+.anim-chip {
+  right: 7px;
+  background: #102a2a;
+  color: #8ff0d9;
+}
+
+.ach-shop-art {
+  min-height: 60px;
+}
+
+.ach-shop-art .sw {
+  width: 54px;
+  height: 54px;
+  border-radius: 13px;
+}
+
+.ach-shop-card .ach-shop-art .sw-cover {
+  width: 100%;
+  height: 84px;
+}
+
+.shop-save {
+  display: block;
+  width: 100%;
+  height: 4px;
+  border-radius: 99px;
+  background: #0b131b;
+  overflow: hidden;
+}
+
+.shop-save i {
+  display: block;
+  height: 100%;
+  background: color-mix(in srgb, var(--rar, #e7b963) 80%, #fff);
+}
+
+.shop-save.pv-save {
+  height: 7px;
+  margin-bottom: 8px;
+}
+
+.shop-act.buy:not(.affordable) {
+  opacity: 0.92;
+}
+
+/* Muestras: más grandes, con brillo propio en las animadas */
+.sw {
+  position: relative;
+  overflow: hidden;
+}
+
+.sw-board {
+  box-shadow: inset 0 0 0 8px #121c2a;
+}
+
+.sw-board[data-board='celestial'] {
+  background:
+    radial-gradient(circle at 18% 22%, #fff 0 1.5px, #0000 2px),
+    radial-gradient(circle at 78% 30%, #ffe9ad 0 1.5px, #0000 2px),
+    radial-gradient(circle at 30% 82%, #bfe6ff 0 1.2px, #0000 1.8px),
+    radial-gradient(circle at 84% 78%, #fff 0 1.2px, #0000 1.8px), linear-gradient(150deg, #34497a, #121a33);
+  border-color: #ffe08a;
+}
+
+.sw-board[data-board='obsidian'] {
+  background:
+    repeating-linear-gradient(60deg, #c084fc22 0 1px, #0000 1px 7px), linear-gradient(150deg, #2c243a, #0e0b16);
+}
+
+.sw-board[data-board='crimson'] {
+  background:
+    radial-gradient(circle at 20% 80%, #ff9a3d 0 2px, #0000 3px),
+    radial-gradient(circle at 75% 20%, #ffd24a 0 1.5px, #0000 2.5px), linear-gradient(150deg, #8c3030, #381217);
+}
+
+.sw-music {
+  background: radial-gradient(circle, #f3e5c8 0 12%, #150e0c 13% 16%, #2c2433 17% 100%);
+  border-radius: 50%;
+  color: #ffe39e;
+}
+
+.r-rare .sw-music {
+  background: radial-gradient(circle, #cfe6ff 0 12%, #091118 13% 16%, #1c3756 17% 100%);
+}
+
+.r-epic .sw-music {
+  background: radial-gradient(circle, #ecdcff 0 12%, #091118 13% 16%, #3a2466 17% 100%);
+}
+
+.sw-music .ic {
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+}
+
+.sw-key,
+.sw-piece {
+  border-radius: 12px;
+}
+
+.sw-key::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 9px 0 9px 15px;
+  border-color: #0000 #0000 #0000 #fffe;
+  filter: drop-shadow(0 1px 2px #0007);
+}
+
+/* Destello animado en las muestras épicas y legendarias */
+.ach-shop-card:is(.r-epic, .r-legendary) .sw:not(.sw-cover)::before {
+  content: '';
+  position: absolute;
+  inset: -30% auto -30% -70%;
+  width: 45%;
+  background: linear-gradient(100deg, #fff0, #ffffffa0 50%, #fff0);
+  transform: skewX(-16deg);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ach-shop-card:is(.r-epic, .r-legendary) .sw:not(.sw-cover)::before {
+    animation: sw-sheen 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes sw-sheen {
+  0%,
+  50% {
+    translate: 0 0;
+  }
+  100% {
+    translate: 360% 0;
+  }
+}
+
+/* ---------- Probador (vista previa antes de canjear) ---------- */
+.look-pv-ov {
+  position: fixed;
+  inset: 0;
+  z-index: 55; /* bajo el lienzo de partículas (#fx, 60): la celebración se ve encima */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  background: #050714e0;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fade 0.2s;
+}
+
+.look-pv {
+  --rar: var(--rar-common);
+  position: relative;
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: 360px;
+  max-height: 100%;
+  overflow: auto;
+  padding: 14px 14px 14px;
+  border-radius: 22px;
+  border: 2.5px solid color-mix(in srgb, var(--rar) 70%, #091118);
+  background: linear-gradient(165deg, #1f2c3a, #121a24);
+  box-shadow:
+    0 6px 0 #091118,
+    0 24px 60px #000c,
+    0 0 40px color-mix(in srgb, var(--rar) 25%, transparent);
+  text-align: center;
+  animation: pop 0.42s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.look-pv.r-rare {
+  --rar: var(--rar-rare);
+  background: linear-gradient(165deg, #1b3350, #101b29);
+}
+
+.look-pv.r-epic {
+  --rar: var(--rar-epic);
+  background: linear-gradient(165deg, #2f2550, #141325);
+}
+
+.look-pv.r-legendary {
+  --rar: var(--rar-legendary);
+  background: radial-gradient(ellipse at 50% 0%, #ffd24a2e, #0000 60%), linear-gradient(165deg, #3f2f17, #17120c);
+}
+
+.look-pv-head {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding-top: 20px;
+}
+
+.look-pv-head .rar-chip {
+  top: 0;
+  left: 0;
+}
+
+.look-pv-head .anim-chip {
+  top: 0;
+  right: 36px;
+}
+
+.look-pv-head small {
+  color: color-mix(in srgb, var(--rar) 60%, #fff);
+  font: 800 10.5px/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.look-pv-head h3 {
+  margin: 0;
+  color: #fff4d6;
+  font: 900 21px/1.1 var(--font-title, var(--font-ui));
+  text-wrap: balance;
+}
+
+.r-legendary .look-pv-head h3 {
+  background: linear-gradient(180deg, #fff6c9, #ffd24a 60%, #e09a26);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 #091118);
+}
+
+.look-pv-x {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  border-radius: 99px;
+  border: 2px solid #091118;
+  background: #273a4c;
+  color: #e8eef4;
+  font-size: 14px;
+  line-height: 1;
+  box-shadow: 0 2px 0 #091118;
+}
+
+.look-pv-stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 14px 8px 12px;
+  border-radius: 16px;
+  background: radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--rar) 22%, transparent), #0000 70%), #0b1219;
+  box-shadow: inset 0 2px 10px #000a;
+}
+
+.look-pv-replay,
+.look-pv-play {
+  min-height: 34px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: 2px solid #091118;
+  background: linear-gradient(180deg, #3c5b73, #274054);
+  color: #f3f7fb;
+  font: 800 12px/1 var(--font-ui);
+  box-shadow: 0 2px 0 #091118;
+}
+
+.look-pv-note {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+
+.look-pv-note b {
+  color: #f3e5c8;
+  font: 800 12.5px/1.2 var(--font-ui);
+}
+
+.look-pv-note span {
+  color: #b9c4cf;
+  font: 600 11.5px/1.3 var(--font-ui);
+}
+
+.look-pv-foot {
+  display: grid;
+  gap: 5px;
+}
+
+.look-pv-foot .shop-act {
+  min-height: 42px;
+  font-size: 13.5px;
+}
+
+.look-pv-foot .shop-act.buy:not(.affordable) {
+  background: #1b2732;
+  color: #a9b7c4;
+  cursor: default;
+}
+
+.look-pv-sub {
+  color: #b9c4cf;
+  font: 650 11px/1.2 var(--font-ui);
+}
+
+/* Al canjear: destello de revelado */
+.look-pv.unlocked .look-pv-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--rar) 70%, #fff) 0%, #0000 65%);
+  opacity: 0;
+  animation: pv-reveal 0.9s ease-out;
+}
+
+.look-pv.unlocked {
+  animation: pv-unlock 0.5s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+@keyframes pv-reveal {
+  25% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pv-unlock {
+  40% {
+    transform: scale(1.04);
+  }
+}
+
+/* Tablero de muestra */
+.frame.look-mini {
+  --cell: 30px;
+  --gap: 3px;
+  padding: 10px;
+  pointer-events: none;
+}
+
+.frame.look-mini::before {
+  top: calc(10px + var(--cell) * 2);
+}
+
+.look-mini-board {
+  position: relative;
+  width: calc(var(--cell) * 6);
+  height: calc(var(--cell) * 6);
+  border-radius: 9px;
+  border: 2px solid #091118;
+  background:
+    linear-gradient(#d8caa812 1px, transparent 1px) 0 0 / var(--cell) var(--cell),
+    linear-gradient(90deg, #d8caa812 1px, transparent 1px) 0 0 / var(--cell) var(--cell),
+    #11222c;
+  box-shadow: inset 0 3px 9px #0009;
+}
+
+.look-mini .piece {
+  width: calc(var(--cell) * var(--w));
+  height: calc(var(--cell) * var(--h));
+  translate: calc(var(--cell) * var(--x)) calc(var(--cell) * var(--y));
+  transition: none;
+  cursor: default;
+}
+
+.look-mini .piece.red .face::after {
+  border-width: 7px 0 7px 12px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .look-mini .piece.red .face {
+    animation: look-key-run 3.4s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+  }
+}
+
+@keyframes look-key-run {
+  0%,
+  22% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  44%,
+  62% {
+    transform: translateX(calc(var(--cell) * 4));
+    opacity: 1;
+  }
+  72% {
+    transform: translateX(calc(var(--cell) * 4.8));
+    opacity: 0;
+  }
+  80% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Portada */
+.look-pv-cover {
+  width: 100%;
+  border-radius: 12px;
+  background: radial-gradient(circle at 50% 62%, #314969, #121c2c);
+  overflow: hidden;
+}
+
+.look-pv-cover img {
+  display: block;
+  width: 100%;
+  height: 210px;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.r-legendary .look-pv-cover {
+  background:
+    repeating-conic-gradient(from 0deg at 50% 70%, #ffd24a1f 0 8deg, #0000 8deg 20deg),
+    radial-gradient(circle at 50% 62%, #6b4a1e, #1c140c);
+}
+
+/* Melodía: disco que gira mientras suena */
+.look-pv-music {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 6px 0 2px;
+}
+
+.look-disc {
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid #091118;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--rar) 75%, #fff) 0 17%, #091118 18% 20%, #0000 21%),
+    repeating-radial-gradient(circle, #1a1622 0 2px, #241f2e 2px 4px);
+  box-shadow:
+    0 6px 0 #091118,
+    0 0 26px color-mix(in srgb, var(--rar) 30%, transparent);
+}
+
+.look-disc i .ic {
+  width: 26px;
+  height: 26px;
+  color: #241606;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .look-pv-music.on .look-disc {
+    animation: disc-spin 3s linear infinite;
+  }
+}
+
+@keyframes disc-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* ======================== Cosméticos animados en el tablero ======================== */
+/* Un anillo (máscara: solo el marco, no el tablero) con su propio brillo. Fuera en Desafío, Diario, jefes y tableros girados. */
+body:not(.survival-run, .daily-run, .boss-fight):is(
+    [data-board='celestial'],
+    [data-board='obsidian'],
+    [data-board='crimson']
+  )
+  .frame:is([data-rot='0'], [data-rot=''])::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: inherit;
+  border-radius: inherit;
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Observatorio astral (legendaria): cielo estrellado que titila y un hilo dorado que recorre el borde */
+body:not(.survival-run, .daily-run)[data-board='celestial'] .frame {
+  background:
+    radial-gradient(circle at 8% 14%, #fff 0 1px, #0000 1.6px),
+    radial-gradient(circle at 92% 10%, #ffe9ad 0 1.2px, #0000 1.8px),
+    radial-gradient(circle at 96% 88%, #fff 0 1px, #0000 1.6px),
+    radial-gradient(circle at 4% 70%, #bfe6ff 0 1px, #0000 1.6px),
+    linear-gradient(135deg, #f3cd7a22 0%, transparent 30%, #7dd3fc22 100%),
+    linear-gradient(155deg, #2d3e61, #192440 55%, #0f172b);
+}
+
+body:not(.survival-run, .daily-run, .boss-fight)[data-board='celestial']
+  .frame:is([data-rot='0'], [data-rot=''])::after {
+  background:
+    radial-gradient(circle at 20% 4%, #fff 0 1.4px, #0000 2px),
+    radial-gradient(circle at 50% 97%, #ffe9ad 0 1.6px, #0000 2.2px),
+    radial-gradient(circle at 2% 40%, #fff 0 1.3px, #0000 2px),
+    radial-gradient(circle at 98% 55%, #bfe6ff 0 1.5px, #0000 2.2px),
+    radial-gradient(circle at 72% 3%, #fff 0 1.2px, #0000 1.8px),
+    radial-gradient(circle at 35% 98%, #fff 0 1.2px, #0000 1.8px),
+    conic-gradient(from 0deg, #0000 0 70%, #ffe08a99 82%, #0000 92%);
+}
+
+/* Obsidiana real (épica): runas violetas que laten */
+body:not(.survival-run, .daily-run, .boss-fight)[data-board='obsidian']
+  .frame:is([data-rot='0'], [data-rot=''])::after {
+  background:
+    repeating-linear-gradient(60deg, #d8b4fe55 0 1.5px, #0000 1.5px 11px),
+    repeating-linear-gradient(-60deg, #c084fc33 0 1px, #0000 1px 13px),
+    radial-gradient(ellipse at 50% 50%, #c084fc44, #0000 70%);
+}
+
+/* Forja carmesí (épica): brasas que respiran en el metal */
+body:not(.survival-run, .daily-run, .boss-fight)[data-board='crimson'] .frame:is([data-rot='0'], [data-rot=''])::after {
+  background:
+    radial-gradient(circle at 10% 96%, #ffb04a 0 2px, #0000 4px),
+    radial-gradient(circle at 60% 3%, #ffd24a 0 1.5px, #0000 3px),
+    radial-gradient(circle at 97% 30%, #ff7a3d 0 2px, #0000 4px),
+    radial-gradient(circle at 3% 25%, #ff9a3d 0 1.5px, #0000 3px),
+    radial-gradient(circle at 85% 97%, #ffd24a 0 1.5px, #0000 3px),
+    linear-gradient(0deg, #ff6a3d44, #0000 40%, #0000 60%, #ff9a3d33);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lite)
+    body:not(.survival-run, .daily-run, .boss-fight)[data-board='celestial']
+    .frame:is([data-rot='0'], [data-rot=''])::after {
+    animation: ring-twinkle 2.6s ease-in-out infinite alternate;
+  }
+  html:not(.lite)
+    body:not(.survival-run, .daily-run, .boss-fight)[data-board='obsidian']
+    .frame:is([data-rot='0'], [data-rot=''])::after {
+    animation: ring-pulse 3.2s ease-in-out infinite;
+  }
+  html:not(.lite)
+    body:not(.survival-run, .daily-run, .boss-fight)[data-board='crimson']
+    .frame:is([data-rot='0'], [data-rot=''])::after {
+    animation: ring-ember 1.9s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes ring-twinkle {
+  0% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes ring-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes ring-ember {
+  0% {
+    opacity: 0.55;
+  }
+  40% {
+    opacity: 0.9;
+  }
+  55% {
+    opacity: 0.65;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ---------- Fichas animadas ---------- */
+/* Oro viejo (legendaria): un destello recorre cada ficha, una tras otra */
+body[data-pieces='oldgold'] .piece:not(.red) .face {
+  box-shadow:
+    0 5px 0 #150e0c,
+    0 0 10px #e9c46a44,
+    inset 0 -5px 0 var(--d),
+    inset 0 2px 0 #fff4d688,
+    inset 0 0 0 1.5px #ffe9a866;
+}
+
+body[data-pieces='oldgold'] .piece:not(.red) .face::before,
+body[data-pieces='lacquer'] .piece:not(.red) .face::before {
+  inset: -30% auto -30% -70%;
+  width: 45%;
+  height: auto;
+  border-radius: 0;
+  background: linear-gradient(100deg, #fff0, #fff6d0b0 50%, #fff0);
+  transform: skewX(-18deg);
+}
+
+body[data-pieces='lacquer'] .piece:not(.red) .face::before {
+  background: linear-gradient(100deg, #fff0, #ffd98a80 50%, #fff0);
+}
+
+/* Lacado imperial (épica): filete de oro y brillo de laca */
+body[data-pieces='lacquer'] .piece:not(.red) .face {
+  background-image: linear-gradient(160deg, #ffffff2a 0 18%, #fff0 30%);
+}
+
+/* Pergamino rúnico (épica): las runas brillan en violeta */
+body[data-pieces='runic'] .piece:not(.red) .face::after {
+  opacity: 0.75;
+  background: repeating-linear-gradient(90deg, #b07cff 0 2px, #0000 2px 4px, #e6d8ff 4px 5px, #0000 5px 9px);
+  filter: drop-shadow(0 0 3px #b07cff);
+}
+
+body[data-pieces='runic'] .piece.v:not(.red) .face::after {
+  background: repeating-linear-gradient(180deg, #b07cff 0 2px, #0000 2px 4px, #e6d8ff 4px 5px, #0000 5px 9px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lite) body:is([data-pieces='oldgold'], [data-pieces='lacquer']) .piece:not(.red) .face::before {
+    animation: face-sheen 4.2s ease-in-out infinite;
+  }
+  html:not(.lite) body[data-pieces='lacquer'] .piece:not(.red) .face::before {
+    animation-duration: 6s;
+  }
+  html:not(.lite) body[data-pieces='runic'] .piece:not(.red) .face::after {
+    animation: rune-glow 2.8s ease-in-out infinite;
+  }
+  html:not(.lite)
+    body:is([data-pieces='oldgold'], [data-pieces='lacquer'], [data-pieces='runic'])
+    .piece.c1
+    .face::before,
+  html:not(.lite) body[data-pieces='runic'] .piece.c1 .face::after {
+    animation-delay: 0.35s;
+  }
+  html:not(.lite)
+    body:is([data-pieces='oldgold'], [data-pieces='lacquer'], [data-pieces='runic'])
+    .piece.c2
+    .face::before,
+  html:not(.lite) body[data-pieces='runic'] .piece.c2 .face::after {
+    animation-delay: 0.7s;
+  }
+  html:not(.lite)
+    body:is([data-pieces='oldgold'], [data-pieces='lacquer'], [data-pieces='runic'])
+    .piece.c3
+    .face::before,
+  html:not(.lite) body[data-pieces='runic'] .piece.c3 .face::after {
+    animation-delay: 1.05s;
+  }
+  html:not(.lite)
+    body:is([data-pieces='oldgold'], [data-pieces='lacquer'], [data-pieces='runic'])
+    .piece.c4
+    .face::before,
+  html:not(.lite) body[data-pieces='runic'] .piece.c4 .face::after {
+    animation-delay: 1.4s;
+  }
+  html:not(.lite)
+    body:is([data-pieces='oldgold'], [data-pieces='lacquer'], [data-pieces='runic'])
+    .piece.c5
+    .face::before,
+  html:not(.lite) body[data-pieces='runic'] .piece.c5 .face::after {
+    animation-delay: 1.75s;
+  }
+  html:not(.lite)
+    body:is([data-pieces='oldgold'], [data-pieces='lacquer'], [data-pieces='runic'])
+    .piece.c6
+    .face::before,
+  html:not(.lite) body[data-pieces='runic'] .piece.c6 .face::after {
+    animation-delay: 2.1s;
+  }
+  html:not(.lite)
+    body:is([data-pieces='oldgold'], [data-pieces='lacquer'], [data-pieces='runic'])
+    .piece.c7
+    .face::before,
+  html:not(.lite) body[data-pieces='runic'] .piece.c7 .face::after {
+    animation-delay: 2.45s;
+  }
+}
+
+@keyframes face-sheen {
+  0%,
+  60% {
+    translate: 0 0;
+  }
+  100% {
+    translate: 420% 0;
+  }
+}
+
+@keyframes rune-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+/* ---------- Llaves animadas ---------- */
+/* Llave dorada (legendaria): resplandor que late y destello que la cruza */
+body[data-key='gold'] .piece.red .face::before {
+  inset: -30% auto -30% -70%;
+  width: 45%;
+  height: auto;
+  border-radius: 0;
+  background: linear-gradient(100deg, #fff0, #ffffffd0 50%, #fff0);
+  transform: skewX(-18deg);
+}
+
+/* Llave de estrellas (épica): estrellas que titilan sobre la llave */
+body[data-key='star'] .piece.red .face::before {
+  inset: 0;
+  height: auto;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 15% 25%, #fff 0 1.6px, #0000 2.4px),
+    radial-gradient(circle at 42% 72%, #ffe9ad 0 1.4px, #0000 2.2px),
+    radial-gradient(circle at 68% 30%, #fff 0 1.2px, #0000 2px),
+    radial-gradient(circle at 88% 70%, #d7c3ff 0 1.6px, #0000 2.4px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lite) body[data-key='gold'] .piece.red {
+    animation: key-gold-glow 2.4s ease-in-out infinite;
+  }
+  html:not(.lite) body[data-key='gold'] .piece.red .face::before {
+    animation: face-sheen 3s ease-in-out infinite;
+  }
+  html:not(.lite) body[data-key='star'] .piece.red .face::before {
+    animation: rune-glow 1.8s ease-in-out infinite;
+  }
+  html:not(.lite) body[data-key='star'] .piece.red {
+    animation: key-star-glow 3.2s ease-in-out infinite;
+  }
+  html:not(.lite) body[data-key='obsidian'] .piece.red {
+    animation: key-obsidian-glow 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes key-gold-glow {
+  50% {
+    filter: drop-shadow(0 0 12px #ffd24acc);
+  }
+}
+
+@keyframes key-star-glow {
+  50% {
+    filter: drop-shadow(0 0 11px #b08cffcc);
+  }
+}
+
+@keyframes key-obsidian-glow {
+  50% {
+    filter: drop-shadow(0 0 10px #c084fcbb);
+  }
+}
+
+/* Celebraciones en la muestra: anillos de ráfaga para las de varias oleadas */
+.sw-fx[data-fx='aurora']::after,
+.sw-fx[data-fx='prism']::after,
+.sw-fx[data-fx='fireworks']::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 2px dashed #ffffffaa;
+}
+
+.sw-fx[data-fx='fireworks']::after {
+  inset: 3px;
+  border: 2px dotted #fff;
+  box-shadow:
+    inset 0 0 0 6px #0000,
+    inset 0 0 0 8px #ffffff55;
+}
+
+html.lite .ach-shop-card.r-legendary::after,
+html.lite .ach-shop-card .sw::before {
+  animation: none !important;
+}
+
+/* En las tarjetas, «Animado» va bajo la rareza para que no choquen en pantallas angostas */
+.ach-shop-card .anim-chip {
+  top: 25px;
+  left: 7px;
+  right: auto;
+}
+
+.ach-shop-open:has(.anim-chip) {
+  padding-top: 34px;
+}

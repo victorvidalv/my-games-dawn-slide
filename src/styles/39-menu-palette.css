@@ -1,0 +1,197 @@
+/*
+ * Paleta del menú a juego con las ilustraciones de los héroes: entintado grueso y tonos de joya.
+ *   índigo medianoche (abrigo de Van) · amatista (túnica) · jade verdín (capa de Lía) · carmesí lacado (llave y pañuelo)
+ *   · filetes de oro viejo y texto pergamino. Solo afecta al menú (#menu); el juego y el paisaje no cambian.
+ */
+#menu {
+  --mp-ink: #0d0a14;
+  --mp-indigo-1: #262d63;
+  --mp-indigo-2: #1a1f47;
+  --mp-indigo-3: #11142f;
+  --mp-gold: #d9a845;
+  --mp-gold-hi: #f6d68a;
+  --mp-gold-lo: #8a6420;
+  --mp-parch: #f6e8c6;
+  --mp-filigree:
+    repeating-linear-gradient(45deg, #f6d68a0a 0 1px, #0000 1px 9px),
+    repeating-linear-gradient(-45deg, #f6d68a0a 0 1px, #0000 1px 9px);
+}
+
+/* ---------- Placa principal: laca índigo con doble filete de oro ---------- */
+#menu #menuCard {
+  border-color: var(--mp-ink);
+  background:
+    radial-gradient(circle at 35% 30%, #fff3c9 0 1.4px, #c99a3a 2.4px, #5a3d10 3.6px, #0000 4.2px) 13px 13px / 9px 9px
+      no-repeat,
+    radial-gradient(circle at 35% 30%, #fff3c9 0 1.4px, #c99a3a 2.4px, #5a3d10 3.6px, #0000 4.2px) calc(100% - 13px)
+      13px / 9px 9px no-repeat,
+    radial-gradient(circle at 35% 30%, #fff3c9 0 1.4px, #c99a3a 2.4px, #5a3d10 3.6px, #0000 4.2px) 13px
+      calc(100% - 13px) / 9px 9px no-repeat,
+    radial-gradient(circle at 35% 30%, #fff3c9 0 1.4px, #c99a3a 2.4px, #5a3d10 3.6px, #0000 4.2px) calc(100% - 13px)
+      calc(100% - 13px) / 9px 9px no-repeat,
+    radial-gradient(ellipse at 50% -10%, #6b3a8a55, #0000 55%),
+    radial-gradient(ellipse at 50% 115%, #8e1f2433, #0000 50%),
+    var(--mp-filigree),
+    linear-gradient(160deg, var(--mp-indigo-1) 0 28%, var(--mp-indigo-2) 28.5% 72%, var(--mp-indigo-3) 72.5%);
+  box-shadow:
+    0 0 0 1.5px #f6d68a88,
+    0 0 0 4.5px var(--mp-ink),
+    0 0 0 6px #d9a84566,
+    inset 0 0 0 1px #f6d68a33,
+    inset 0 1px 0 #ffffff1c,
+    0 26px 60px #000b,
+    0 0 40px #6b3a8a33;
+}
+
+/* ---------- Tres placas de modo: lacas de joya con filete dorado ---------- */
+#menu .home-btn.hb-adv {
+  --hb1: #c23a30;
+  --hb2: #8a1c22;
+  --hb3: #4a0d14;
+  --hbg: #ff8a5c;
+}
+#menu .home-btn.hb-survival {
+  --hb1: #7a3ea6;
+  --hb2: #4c2270;
+  --hb3: #26103d;
+  --hbg: #c99bff;
+}
+#menu .home-btn.hb-daily {
+  --hb1: #2f8a78;
+  --hb2: #1a5a52;
+  --hb3: #0b2f2c;
+  --hbg: #6fe3c8;
+}
+#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily) {
+  border-color: var(--mp-ink);
+  color: var(--mp-parch);
+  background:
+    linear-gradient(100deg, #fff0 0 55%, #ffffff10 62%, #fff0 70%), var(--hatch),
+    linear-gradient(150deg, var(--hb1) 0 24%, var(--hb2) 24.75% 80%, var(--hb3) 81%);
+  box-shadow:
+    inset 0 0 0 1.5px #f6d68a99,
+    inset 0 0 0 4px #0d0a1433,
+    inset 0 -5px 0 #0006,
+    4px 6px 0 var(--mp-ink),
+    0 0 0 1px #d9a84533;
+}
+#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily):active {
+  box-shadow:
+    inset 0 0 0 1.5px #f6d68a99,
+    1px 2px 0 var(--mp-ink);
+}
+#menu .home-btn .hb-ico {
+  border-color: var(--mp-ink);
+  color: var(--mp-gold-hi);
+  background:
+    radial-gradient(circle at 35% 28%, #ffffff38, #0000 55%), radial-gradient(circle, var(--hb2) 0 60%, var(--hb3) 100%);
+  box-shadow:
+    inset 0 0 0 2px var(--mp-gold),
+    inset 0 0 0 4px #0d0a1466,
+    2px 3px 0 var(--mp-ink),
+    0 0 16px color-mix(in srgb, var(--hbg) 70%, transparent);
+}
+#menu .home-btn .hb-copy b {
+  color: #ffe9b0;
+  text-shadow:
+    0 2px 0 var(--mp-ink),
+    0 0 12px #d9a84544;
+}
+#menu .home-btn .hb-copy small {
+  color: #f3e6d4;
+}
+#menu .home-btn .hb-go {
+  color: var(--mp-gold-hi);
+}
+#menu .home-btn.has-news::after {
+  background: var(--mp-gold-hi);
+  border-color: var(--mp-ink);
+  box-shadow: 0 0 10px #f6d68a;
+}
+
+/* Récords dentro de las placas: cartela oscura con borde de oro */
+#menu .record-pill {
+  background: #0d0a14b3;
+  border-color: var(--mp-gold);
+  color: #fff2c5;
+}
+
+/* ---------- Accesos pequeños (Logros, Más) ---------- */
+#menu .home-pill {
+  border-color: #d9a84588;
+  background: #11142fa6;
+  color: #ffe7b5;
+  opacity: 0.95;
+}
+#menu .home-pill:hover,
+#menu .home-pill[aria-expanded='true'] {
+  background: #262d63;
+  border-color: var(--mp-gold);
+}
+#menu .tool-btn {
+  border-color: var(--mp-ink);
+  background: linear-gradient(160deg, var(--mp-indigo-1), var(--mp-indigo-3));
+  color: var(--mp-gold-hi);
+}
+
+/* ---------- Cabecera de secciones (Volver + título) ---------- */
+#menu .menu-back {
+  border-color: var(--mp-ink);
+  background: linear-gradient(180deg, #4c2270, #2c1446);
+  color: var(--mp-parch);
+  box-shadow:
+    inset 0 0 0 1.5px #d9a84588,
+    2px 3px 0 var(--mp-ink);
+}
+#menu .menu-title {
+  color: #ffe9b0;
+  text-shadow:
+    0 2px 0 var(--mp-ink),
+    0 0 14px #d9a84533;
+}
+
+/* ---------- Cinta del subtítulo y escudo ---------- */
+#menu .title-sub {
+  border-color: var(--mp-ink);
+  color: var(--mp-parch);
+  background: var(--hatch), linear-gradient(180deg, #3a1f58, #1d1036);
+  box-shadow:
+    inset 0 0 0 1.5px #d9a845aa,
+    3px 4px 0 var(--mp-ink);
+}
+
+/* ---------- Selector de idioma ---------- */
+#menu .lang-btn {
+  border-color: var(--mp-ink);
+}
+#menu .lang-btn[aria-pressed='false'] {
+  background: var(--hatch), linear-gradient(175deg, var(--mp-indigo-1), var(--mp-indigo-3));
+  box-shadow:
+    inset 0 0 0 1.5px #d9a84566,
+    3px 5px 0 var(--mp-ink);
+}
+#menu .lang-btn[aria-pressed='true'] {
+  background: var(--hatch), linear-gradient(175deg, #c23a30, #8a1c22);
+  box-shadow:
+    inset 0 0 0 2px var(--mp-gold-hi),
+    3px 5px 0 var(--mp-ink),
+    0 0 18px #c23a3066;
+}
+
+/* Crédito al pie */
+#menu .home-credit {
+  color: #e9dcc0;
+}
+
+/* ---------- Pestañas y tarjetas de Logros dentro del menú: mismo índigo y oro ---------- */
+#menu .ach-tab {
+  background: linear-gradient(180deg, #262d63, #171b40);
+}
+#menu .ach-tab.on {
+  border-color: var(--mp-gold);
+  background: linear-gradient(155deg, #4c2270, #26103d);
+}
+#menu .ach-wallet {
+  border-color: var(--mp-gold);
+  background: linear-gradient(155deg, #3a1f58, #1a1036);
+}

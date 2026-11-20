@@ -2,6 +2,14 @@ import { describe, it, expect } from 'vitest';
 import {
   ACHIEVEMENTS,
   COLLECTIONS,
+  MILESTONES,
+  RARITY,
+  RARITY_ORDER,
+  collectAllAchievements,
+  migrateShop,
+  nearAchievements,
+  openMilestone,
+  readyMilestones,
   COUNTERS,
   DEFAULT_LOOK,
   GROUPS,
@@ -120,6 +128,84 @@ describe('economía de logros y canje', () => {
   });
 });
 
+describe('economía equilibrada: rarezas, cofres y precios justos', () => {
+  const all = () => REWARD_TYPES.flatMap((t) => REWARDS[t].slice(1).map((r) => ({ ...r, type: t })));
+
+  it('cada objeto tiene rareza y lo más vistoso cuesta más: común < rara < épica < legendaria', () => {
+    for (const r of all()) expect(RARITY[r.rarity], `${r.type}:${r.id}`).toBeTruthy();
+    for (const type of REWARD_TYPES) {
+      const by = (rar) =>
+        REWARDS[type]
+          .slice(1)
+          .filter((r) => r.rarity === rar)
+          .map((r) => r.price);
+      for (let i = 1; i < RARITY_ORDER.length; i++) {
+        const lower = by(RARITY_ORDER[i - 1]),
+          higher = by(RARITY_ORDER[i]);
+        if (lower.length && higher.length) expect(Math.min(...higher), type).toBeGreaterThan(Math.max(...lower) - 1);
+      }
+    }
+    // Lo animado es siempre épico o legendario
+    for (const r of all().filter((x) => x.anim)) expect(['epic', 'legendary'], r.id).toContain(r.rarity);
+  });
+
+  it('con todos los logros y cofres se puede canjear todo el catálogo, pero solo con dedicación (≥ 85 %)', () => {
+    const earn = ACHIEVEMENTS.reduce((s, a) => s + a.points, 0) + MILESTONES.reduce((s, m) => s + m.points, 0);
+    const cost = all().reduce((s, r) => s + r.price, 0);
+    expect(cost).toBeLessThanOrEqual(earn);
+    expect(cost / earn).toBeGreaterThan(0.85);
+    // Los logros simples alcanzan para varios objetos comunes desde la primera sesión
+    const bronze = ACHIEVEMENTS.filter((a) => a.tier === 'bronze').reduce((s, a) => s + a.points, 0);
+    const commons = all()
+      .filter((r) => r.rarity === 'common')
+      .map((r) => r.price);
+    expect(bronze).toBeGreaterThan(Math.min(...commons) * 8);
+  });
+
+  it('los cofres se abren al reclamar 5, 15, 30… logros y suman sus puntos una sola vez', () => {
+    const store = { ach: {}, achClaimed: {} };
+    ACHIEVEMENTS.slice(0, 16).forEach((a, i) => (store.ach[a.id] = i + 1));
+    expect(readyMilestones(store)).toEqual([]); // cumplidos pero sin reclamar: aún no cuentan
+    const res = collectAllAchievements(store, 50);
+    expect(res.achievements).toHaveLength(16);
+    expect(readyMilestones(store).map((m) => m.n)).toEqual([5, 15]);
+    const before = achBalance(store);
+    expect(openMilestone(store, 5, 60)).toMatchObject({ points: 25, balance: before + 25 });
+    expect(openMilestone(store, 5, 61)).toBeNull();
+    expect(openMilestone(store, 30, 62)).toBeNull(); // aún no alcanzado
+    expect(readyMilestones(store).map((m) => m.n)).toEqual([15]);
+  });
+
+  it('los canjes anteriores al reajuste se cuentan a su precio de entonces (nadie pierde saldo)', () => {
+    const store = {
+      achClaimed: { firstWin: 1, lv5: 1, city1: 1, lv20: 1, lv25: 1 },
+      shopOwned: { 'board:celestial': 1 }, // costaba 85; ahora es legendaria
+    };
+    expect(migrateShop(store)).toBe(true);
+    expect(spentPoints(store)).toBe(85);
+    expect(migrateShop(store)).toBe(false); // una sola vez
+    // Lo que se canjea después paga el precio nuevo
+    store.achClaimed.lv100 = 1;
+    store.achClaimed.done = 1;
+    store.achClaimed.hard100 = 1;
+    store.achClaimed.expert = 1;
+    store.achClaimed.paths3 = 1;
+    const bal = achBalance(store);
+    expect(buyShopItem(store, 'key', 'gold', 5)).toMatchObject({ ok: true, balance: bal - 280 });
+    expect(store.shopPaid['key:gold']).toBe(280);
+  });
+
+  it('«Casi lo tienes» propone los logros pendientes con más avance', () => {
+    const store = { stats: { perfects: 9, boardsSolved: 9 }, paths: { c1: { level: 4 } } };
+    claimAchievements(store, 1);
+    const near = nearAchievements(store, 3).map((a) => a.id);
+    expect(near).toHaveLength(3);
+    expect(near).toContain('perf10');
+    expect(near).toContain('boards10');
+    for (const id of near) expect(store.ach[id]).toBeUndefined();
+  });
+});
+
 describe('estadísticas', () => {
   it('contadores y colecciones se guardan en store.stats y se rechazan nombres desconocidos', () => {
     const store = {};
@@ -212,6 +298,11 @@ describe('guardado compatible con actualizaciones', () => {
     expect(m.ach).toEqual({ city1: 10, lv25: 20, day1: 30 });
     expect(m.achClaimed).toEqual({ city1: 12, day1: 35 });
     expect(m.shopOwned).toEqual({ 'key:amber': 50, 'board:slate': 60 });
+    expect(mergeSaves({ shopPaid: { 'key:gold': 280 }, shopEco: 2 }, { achMilestones: { 5: 9 } })).toMatchObject({
+      shopPaid: { 'key:gold': 280 },
+      achMilestones: { 5: 9 },
+      shopEco: 2,
+    });
     expect(m.stats).toEqual({ perfects: 30, bosses: 1, heroes: ['jean', 'lia', 'van'] });
   });
 });

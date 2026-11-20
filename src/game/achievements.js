@@ -1,7 +1,8 @@
 /**
  * Sistema de logros (100 logros: 25 simples, 50 medios y 25 difíciles) y pestaña Canjear (Tienda cosmética).
  * Cada logro cumplido queda listo para reclamar en la pantalla de Logros: al reclamarlo otorga puntos
- * acumulables que se canjean por bordes del tablero, fichas, llaves, celebraciones y melodías del menú.
+ * acumulables que se canjean por bordes del tablero, fichas, llaves, celebraciones, melodías y portadas.
+ * Reclamar logros también abre cofres de colección (puntos extra a los 5, 15, 30, 50, 75 y 100 logros).
  * Lógica pura (sin DOM).
  */
 import { CHALLENGES, maxLevelReached } from './daily.js';
@@ -13,127 +14,189 @@ export const TIERS = {
   gold: { id: 'gold', name: 'Difícil' },
 };
 
-/** Recompensas canjeables en Canjear: la primera de cada tipo es gratuita (de serie). */
+/**
+ * Rareza de cada recompensa: marca el precio (y lo vistoso del diseño). Los diseños épicos y legendarios están animados.
+ *   · común       20–45 pts   · se consigue en la primera sesión
+ *   · rara        40–95 pts   · un par de logros medios
+ *   · épica      80–190 pts   · animada o con brillo propio
+ *   · legendaria 250–280 pts  · la joya de cada categoría (varios logros difíciles)
+ */
+export const RARITY = {
+  common: { id: 'common', name: 'Común', note: 'Un cambio sencillo y elegante.' },
+  rare: { id: 'rare', name: 'Rara', note: 'Materiales con más detalle y relieve.' },
+  epic: { id: 'epic', name: 'Épica', note: 'Diseño animado con brillo propio.' },
+  legendary: { id: 'legendary', name: 'Legendaria', note: 'La pieza más espectacular de su colección.' },
+};
+export const RARITY_ORDER = ['common', 'rare', 'epic', 'legendary'];
+
+/**
+ * Recompensas canjeables en Canjear: la primera de cada tipo es gratuita (de serie).
+ * IMPORTANTE: el orden y los id de cada lista forman parte del formato de transferencia QR (v3): no reordenar ni quitar.
+ * `anim: true` = el diseño se mueve en el tablero (se apaga en modo ligero y con «reducir movimiento»).
+ */
 export const REWARDS = {
   board: [
-    { id: 'wood', name: 'Madera tallada', price: 0 },
-    { id: 'slate', name: 'Pizarra nocturna', price: 30 },
-    { id: 'amber', name: 'Ámbar solar', price: 35 },
-    { id: 'marble', name: 'Mármol real', price: 45 },
-    { id: 'sapphire', name: 'Zafiro real', price: 50 },
-    { id: 'jade', name: 'Jade imperial', price: 55 },
-    { id: 'crimson', name: 'Forja carmesí', price: 65 },
-    { id: 'ivory', name: 'Pergamino dorado', price: 70 },
-    { id: 'celestial', name: 'Observatorio astral', price: 85 },
-    { id: 'obsidian', name: 'Obsidiana real', price: 110 },
+    { id: 'wood', name: 'Madera tallada', price: 0, rarity: 'common' },
+    { id: 'slate', name: 'Pizarra nocturna', price: 30, rarity: 'common' },
+    { id: 'amber', name: 'Ámbar solar', price: 35, rarity: 'common' },
+    { id: 'marble', name: 'Mármol real', price: 65, rarity: 'rare' },
+    { id: 'sapphire', name: 'Zafiro real', price: 75, rarity: 'rare' },
+    { id: 'jade', name: 'Jade imperial', price: 45, rarity: 'common' },
+    { id: 'crimson', name: 'Forja carmesí', price: 150, rarity: 'epic', anim: true },
+    { id: 'ivory', name: 'Pergamino dorado', price: 90, rarity: 'rare' },
+    { id: 'celestial', name: 'Observatorio astral', price: 280, rarity: 'legendary', anim: true },
+    { id: 'obsidian', name: 'Obsidiana real', price: 190, rarity: 'epic', anim: true },
   ],
   pieces: [
-    { id: 'paint', name: 'Madera pintada', price: 0 },
-    { id: 'stone', name: 'Piedra tallada', price: 30 },
-    { id: 'glass', name: 'Vidrio de colores', price: 40 },
-    { id: 'night', name: 'Tinta nocturna', price: 50 },
-    { id: 'ceramic', name: 'Porcelana celeste', price: 55 },
-    { id: 'brass', name: 'Latón bruñido', price: 65 },
-    { id: 'runic', name: 'Pergamino rúnico', price: 80 },
-    { id: 'lacquer', name: 'Lacado imperial', price: 95 },
-    { id: 'oldgold', name: 'Oro viejo', price: 120 },
+    { id: 'paint', name: 'Madera pintada', price: 0, rarity: 'common' },
+    { id: 'stone', name: 'Piedra tallada', price: 30, rarity: 'common' },
+    { id: 'glass', name: 'Vidrio de colores', price: 40, rarity: 'common' },
+    { id: 'night', name: 'Tinta nocturna', price: 75, rarity: 'rare' },
+    { id: 'ceramic', name: 'Porcelana celeste', price: 65, rarity: 'rare' },
+    { id: 'brass', name: 'Latón bruñido', price: 90, rarity: 'rare' },
+    { id: 'runic', name: 'Pergamino rúnico', price: 150, rarity: 'epic', anim: true },
+    { id: 'lacquer', name: 'Lacado imperial', price: 180, rarity: 'epic', anim: true },
+    { id: 'oldgold', name: 'Oro viejo', price: 280, rarity: 'legendary', anim: true },
   ],
   key: [
-    { id: 'red', name: 'Llave roja', price: 0 },
-    { id: 'amber', name: 'Llave de ámbar', price: 20 },
-    { id: 'iron', name: 'Llave de hierro antiguo', price: 30 },
-    { id: 'emerald', name: 'Llave de esmeralda', price: 40 },
-    { id: 'sapphire', name: 'Llave de zafiro', price: 45 },
-    { id: 'rose', name: 'Llave de coral', price: 50 },
-    { id: 'crystal', name: 'Llave de cristal', price: 60 },
-    { id: 'obsidian', name: 'Llave de obsidiana', price: 75 },
-    { id: 'star', name: 'Llave de estrellas', price: 90 },
-    { id: 'gold', name: 'Llave dorada', price: 115 },
+    { id: 'red', name: 'Llave roja', price: 0, rarity: 'common' },
+    { id: 'amber', name: 'Llave de ámbar', price: 25, rarity: 'common' },
+    { id: 'iron', name: 'Llave de hierro antiguo', price: 30, rarity: 'common' },
+    { id: 'emerald', name: 'Llave de esmeralda', price: 65, rarity: 'rare' },
+    { id: 'sapphire', name: 'Llave de zafiro', price: 70, rarity: 'rare' },
+    { id: 'rose', name: 'Llave de coral', price: 40, rarity: 'common' },
+    { id: 'crystal', name: 'Llave de cristal', price: 90, rarity: 'rare' },
+    { id: 'obsidian', name: 'Llave de obsidiana', price: 150, rarity: 'epic', anim: true },
+    { id: 'star', name: 'Llave de estrellas', price: 190, rarity: 'epic', anim: true },
+    { id: 'gold', name: 'Llave dorada', price: 280, rarity: 'legendary', anim: true },
   ],
   fx: [
-    { id: 'none', name: 'Sin adornos', price: 0 },
+    { id: 'none', name: 'Sin adornos', price: 0, rarity: 'common' },
     {
       id: 'embers',
       name: 'Brasas',
-      price: 20,
+      price: 25,
+      rarity: 'common',
       burst: { n: 26, colors: ['#ff9a3d', '#ffd24a', '#ff6a3d', '#fff0b8'], speed: 7 },
     },
     {
       id: 'sparks',
       name: 'Chispas doradas',
       price: 30,
+      rarity: 'common',
       burst: { n: 34, colors: ['#ffd24a', '#fff6c9', '#e0b04f', '#ffffff'], speed: 9 },
     },
     {
       id: 'petals',
       name: 'Pétalos',
-      price: 35,
+      price: 40,
+      rarity: 'common',
       burst: { n: 30, colors: ['#ffb7d0', '#ff8fb8', '#ffe3ee', '#f7c6d9'], speed: 5 },
     },
     {
       id: 'ink',
       name: 'Salpicadura de tinta',
-      price: 40,
-      burst: { n: 28, colors: ['#150e0c', '#3a2a44', '#e0b04f', '#f3e5c8'], speed: 8 },
+      price: 65,
+      rarity: 'rare',
+      burst: { n: 36, colors: ['#150e0c', '#3a2a44', '#e0b04f', '#f3e5c8'], speed: 8 },
     },
     {
       id: 'frost',
       name: 'Destello glaciar',
-      price: 45,
-      burst: { n: 34, colors: ['#b8f2ff', '#5fd6ff', '#ffffff', '#8ab8ff'], speed: 7 },
+      price: 75,
+      rarity: 'rare',
+      burst: { n: 40, colors: ['#b8f2ff', '#5fd6ff', '#ffffff', '#8ab8ff'], speed: 7 },
     },
     {
       id: 'stars',
       name: 'Lluvia de estrellas',
-      price: 60,
-      burst: { n: 36, colors: ['#d7c3ff', '#8fd8ff', '#ffffff', '#ffe9ad'], speed: 8 },
+      price: 90,
+      rarity: 'rare',
+      burst: { n: 44, colors: ['#d7c3ff', '#8fd8ff', '#ffffff', '#ffe9ad'], speed: 8 },
     },
     {
       id: 'aurora',
       name: 'Aurora',
-      price: 75,
-      burst: { n: 40, colors: ['#58f0c8', '#8fd8ff', '#b08cff', '#e6fff6'], speed: 6 },
+      price: 150,
+      rarity: 'epic',
+      burst: { n: 44, colors: ['#58f0c8', '#8fd8ff', '#b08cff', '#e6fff6'], speed: 6, waves: 2 },
     },
     {
       id: 'prism',
       name: 'Prisma solar',
-      price: 90,
-      burst: { n: 46, colors: ['#ff8a65', '#ffd54f', '#4dd0e1', '#ce93d8', '#fff8e1'], speed: 9 },
+      price: 190,
+      rarity: 'epic',
+      burst: { n: 48, colors: ['#ff8a65', '#ffd54f', '#4dd0e1', '#ce93d8', '#fff8e1'], speed: 9, waves: 2 },
     },
     {
       id: 'fireworks',
       name: 'Fuegos artificiales',
-      price: 120,
-      burst: { n: 60, colors: ['#ff5f8f', '#ffd24a', '#58d8c8', '#6cb6ff', '#ffffff'], speed: 11 },
+      price: 280,
+      rarity: 'legendary',
+      burst: { n: 60, colors: ['#ff5f8f', '#ffd24a', '#58d8c8', '#6cb6ff', '#ffffff'], speed: 11, waves: 4 },
     },
   ],
   music: [
-    { id: 'menu', name: 'Crónicas de la llave roja', price: 0 },
-    { id: 'z0', name: 'Un corazón al sol', price: 25 },
-    { id: 'z1', name: 'Vals de las pequeñas velas', price: 25 },
-    { id: 'z2', name: 'Gotas sobre la arena', price: 30 },
-    { id: 'z3', name: 'Las hojas recuerdan', price: 35 },
-    { id: 'z4', name: 'Las horas prestadas', price: 35 },
-    { id: 'heroes', name: 'Llamada de los héroes', price: 40 },
-    { id: 'z5', name: 'Campanas de cristal', price: 40 },
-    { id: 'z6', name: 'Pétalos en el viento', price: 45 },
-    { id: 'z7', name: 'La fragua de los sueños', price: 50 },
-    { id: 's0', name: 'Contrarreloj', price: 55 },
-    { id: 'z8', name: 'Un puente entre estrellas', price: 60 },
-    { id: 's1', name: 'Alba de acero', price: 65 },
-    { id: 'boss', name: 'El guardián del umbral', price: 75 },
-    { id: 'z9', name: 'El regreso del alba', price: 85 },
-    { id: 's2', name: 'Cumbre astral', price: 95 },
+    { id: 'menu', name: 'Crónicas de la llave roja', price: 0, rarity: 'common' },
+    { id: 'z0', name: 'Un corazón al sol', price: 20, rarity: 'common' },
+    { id: 'z1', name: 'Vals de las pequeñas velas', price: 20, rarity: 'common' },
+    { id: 'z2', name: 'Gotas sobre la arena', price: 25, rarity: 'common' },
+    { id: 'z3', name: 'Las hojas recuerdan', price: 25, rarity: 'common' },
+    { id: 'z4', name: 'Las horas prestadas', price: 30, rarity: 'common' },
+    { id: 'heroes', name: 'Llamada de los héroes', price: 40, rarity: 'rare' },
+    { id: 'z5', name: 'Campanas de cristal', price: 40, rarity: 'rare' },
+    { id: 'z6', name: 'Pétalos en el viento', price: 45, rarity: 'rare' },
+    { id: 'z7', name: 'La fragua de los sueños', price: 45, rarity: 'rare' },
+    { id: 's0', name: 'Contrarreloj', price: 50, rarity: 'rare' },
+    { id: 'z8', name: 'Un puente entre estrellas', price: 55, rarity: 'rare' },
+    { id: 's1', name: 'Alba de acero', price: 80, rarity: 'epic' },
+    { id: 'boss', name: 'El guardián del umbral', price: 85, rarity: 'epic' },
+    { id: 'z9', name: 'El regreso del alba', price: 95, rarity: 'epic' },
+    { id: 's2', name: 'Cumbre astral', price: 110, rarity: 'epic' },
   ],
   cover: [
-    { id: 'classic', name: 'Trío del alba', price: 0, src: 'backgrounds/cover-heroes.webp' },
-    { id: 'lia', name: 'Lía en solitario', price: 50, src: 'backgrounds/cover-heroes-lia.png' },
-    { id: 'van', name: 'Van en solitario', price: 50, src: 'backgrounds/cover-heroes-van.png' },
-    { id: 'jean', name: 'Jean en solitario', price: 50, src: 'backgrounds/cover-heroes-jean.png' },
-    { id: 'battle', name: 'En guardia', price: 75, src: 'backgrounds/cover-heroes-battle.png' },
-    { id: 'victory', name: 'Alba victoriosa', price: 90, src: 'backgrounds/cover-heroes-victory.png' },
+    { id: 'classic', name: 'Trío del alba', price: 0, rarity: 'common', src: 'backgrounds/cover-heroes.webp' },
+    { id: 'lia', name: 'Lía en solitario', price: 60, rarity: 'rare', src: 'backgrounds/cover-heroes-lia.png' },
+    { id: 'van', name: 'Van en solitario', price: 60, rarity: 'rare', src: 'backgrounds/cover-heroes-van.png' },
+    { id: 'jean', name: 'Jean en solitario', price: 60, rarity: 'rare', src: 'backgrounds/cover-heroes-jean.png' },
+    { id: 'battle', name: 'En guardia', price: 140, rarity: 'epic', src: 'backgrounds/cover-heroes-battle.png' },
+    {
+      id: 'victory',
+      name: 'Alba victoriosa',
+      price: 250,
+      rarity: 'legendary',
+      src: 'backgrounds/cover-heroes-victory.png',
+    },
   ],
 };
+
+/**
+ * Precio que tenía cada recompensa antes del reajuste de la economía (mismo orden que REWARDS). Lo ya canjeado con
+ * esos precios se sigue contando a su precio de entonces: nadie pierde saldo porque un objeto que ya tiene suba.
+ */
+const LEGACY_PRICES = {
+  board: [0, 30, 35, 45, 50, 55, 65, 70, 85, 110],
+  pieces: [0, 30, 40, 50, 55, 65, 80, 95, 120],
+  key: [0, 20, 30, 40, 45, 50, 60, 75, 90, 115],
+  fx: [0, 20, 30, 35, 40, 45, 60, 75, 90, 120],
+  music: [0, 25, 25, 30, 35, 35, 40, 40, 45, 50, 55, 60, 65, 75, 85, 95],
+  cover: [0, 50, 50, 50, 75, 90],
+};
+/** Versión de la economía de Canjear guardada en `store.shopEco`. */
+export const SHOP_ECONOMY = 2;
+
+/**
+ * Cofres de colección: al reclamar 5, 15, 30, 50, 75 y 100 logros se abre un cofre con puntos extra.
+ * Premian la constancia (no solo los logros difíciles) y marcan metas intermedias en todo el recorrido.
+ */
+export const MILESTONES = [
+  { n: 5, points: 25, name: 'Cofre de madera' },
+  { n: 15, points: 50, name: 'Cofre de bronce' },
+  { n: 30, points: 80, name: 'Cofre de plata' },
+  { n: 50, points: 120, name: 'Cofre de oro' },
+  { n: 75, points: 180, name: 'Cofre real' },
+  { n: 100, points: 300, name: 'Cofre del alba' },
+];
 
 export const REWARD_TYPES = Object.keys(REWARDS);
 export const DEFAULT_LOOK = { board: 'wood', pieces: 'paint', key: 'red', fx: 'none', music: 'menu', cover: 'classic' };
@@ -1269,17 +1332,44 @@ export function unclaimedAchievements(store = {}) {
   return ACHIEVEMENTS.filter((a) => got[a.id] && !claimed[a.id]);
 }
 
-export function earnedPoints(store = {}) {
-  const claimed = store?.achClaimed || {};
-  return ACHIEVEMENTS.reduce((sum, a) => sum + (claimed[a.id] ? a.points : 0), 0);
+/** Cuántos logros ha reclamado el jugador (lo que hace avanzar los cofres de colección). */
+export const claimedCount = (store = {}) => ACHIEVEMENTS.filter((a) => store?.achClaimed?.[a.id]).length;
+
+/** Cofres alcanzados y aún sin abrir. */
+export function readyMilestones(store = {}) {
+  const count = claimedCount(store),
+    opened = store?.achMilestones || {};
+  return MILESTONES.filter((m) => count >= m.n && !opened[m.n]);
 }
 
+/** Próximo cofre por alcanzar (o null si ya están todos). */
+export const nextMilestone = (store = {}) => MILESTONES.find((m) => claimedCount(store) < m.n) || null;
+
+export function openMilestone(store, n, now = Date.now()) {
+  const m = readyMilestones(store).find((item) => item.n === n);
+  if (!m) return null;
+  (store.achMilestones ||= {})[m.n] = now;
+  return { milestone: m, points: m.points, balance: achBalance(store) };
+}
+
+export function earnedPoints(store = {}) {
+  const claimed = store?.achClaimed || {};
+  const opened = store?.achMilestones || {};
+  return (
+    ACHIEVEMENTS.reduce((sum, a) => sum + (claimed[a.id] ? a.points : 0), 0) +
+    MILESTONES.reduce((sum, m) => sum + (opened[m.n] ? m.points : 0), 0)
+  );
+}
+
+/** Lo que costó cada objeto canjeado: el precio pagado si se guardó; si no, el precio actual. */
 export function spentPoints(store = {}) {
   const owned = store?.shopOwned || {};
+  const paid = store?.shopPaid || {};
   let total = 0;
   for (const type of REWARD_TYPES) {
     for (const item of REWARDS[type]) {
-      if (item.price > 0 && owned[rewardKey(type, item.id)]) total += item.price;
+      const key = rewardKey(type, item.id);
+      if (item.price > 0 && owned[key]) total += Number.isFinite(paid[key]) ? paid[key] : item.price;
     }
   }
   return total;
@@ -1287,12 +1377,47 @@ export function spentPoints(store = {}) {
 
 export const achBalance = (store = {}) => Math.max(0, earnedPoints(store) - spentPoints(store));
 
+/**
+ * Pasa un guardado a la economía actual: lo canjeado antes del reajuste queda anotado a su precio de entonces.
+ * Devuelve true si cambió algo (para guardar).
+ */
+export function migrateShop(store) {
+  if (!store || store.shopEco >= SHOP_ECONOMY) return false;
+  const owned = store.shopOwned || {};
+  for (const type of REWARD_TYPES)
+    REWARDS[type].forEach((item, i) => {
+      const key = rewardKey(type, item.id);
+      if (!owned[key] || Number.isFinite(store.shopPaid?.[key])) return;
+      (store.shopPaid ||= {})[key] = Math.min(item.price, LEGACY_PRICES[type][i] ?? item.price);
+    });
+  store.shopEco = SHOP_ECONOMY;
+  return true;
+}
+
 export function collectAchievement(store, id, now = Date.now()) {
   const a = ACHIEVEMENTS.find((item) => item.id === id);
   if (!a || !store?.ach?.[id] || store?.achClaimed?.[id]) return null;
   const claimed = (store.achClaimed ||= {});
   claimed[id] = now;
   return { achievement: a, points: a.points, balance: achBalance(store) };
+}
+
+/** Reclama de golpe todos los logros pendientes. */
+export function collectAllAchievements(store, now = Date.now()) {
+  const list = unclaimedAchievements(store);
+  for (const a of list) (store.achClaimed ||= {})[a.id] = now;
+  return { achievements: list, points: list.reduce((s, a) => s + a.points, 0), balance: achBalance(store) };
+}
+
+/** Los `n` logros pendientes más cerca de cumplirse (con algo de avance), para animar a ir por ellos. */
+export function nearAchievements(store = {}, n = 3) {
+  const stats = statsOf(store),
+    got = store?.ach || {};
+  return ACHIEVEMENTS.filter((a) => !got[a.id] && progressOf(a, stats) > 0)
+    .map((a) => ({ a, ratio: progressOf(a, stats) / a.goal }))
+    .sort((x, y) => y.ratio - x.ratio || x.a.goal - y.a.goal)
+    .slice(0, n)
+    .map((x) => x.a);
 }
 
 export function rewardUnlocked(type, id, storeOrOwned = {}) {
@@ -1308,7 +1433,9 @@ export function buyShopItem(store, type, id, now = Date.now()) {
   const key = rewardKey(type, id);
   if (owned[key]) return { ok: false, reason: 'owned' };
   if (achBalance(store) < item.price) return { ok: false, reason: 'funds' };
+  migrateShop(store);
   owned[key] = now;
+  (store.shopPaid ||= {})[key] = item.price;
   store.look = { ...lookOf(store), [type]: id };
   claimAchievements(store, now);
   return { ok: true, item, balance: achBalance(store) };

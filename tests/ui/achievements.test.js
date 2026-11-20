@@ -27,14 +27,32 @@ it('muestra la badge de logros pendientes en inicio, permite reclamar uno a uno 
   for (const id of ['lv5', 'city1', 'lv20', 'lv25', 'score1k']) {
     panel.querySelector(`[data-claim="${id}"]`).click();
   }
-  expect(app.$('homeAchBadge').hidden).toBe(true);
   expect(app.$('achWallet').textContent).toContain('90');
+  // 5 logros reclamados abren el primer cofre de colección (+25): la badge lo avisa
+  expect(app.$('homeAchBadge').textContent).toBe('1');
+  panel.querySelector('[data-chest="5"]').click();
+  expect(app.$('homeAchBadge').hidden).toBe(true);
+  expect(app.$('achWallet').textContent).toContain('115');
 
-  // Ir a la pestaña Canjear y comprar borde "Pizarra nocturna" (30 pts)
+  // Ir a la pestaña Canjear: «Ver» abre el probador con el borde puesto, sin gastar nada todavía
   panel.querySelector('[data-ach-tab="shop"]').click();
   panel.querySelector('[data-buy-type="board"][data-buy-id="slate"]').click();
+  const preview = document.querySelector('.look-pv-ov');
+  expect(preview).toBeTruthy();
+  expect(preview.querySelector('.look-mini')).toBeTruthy();
   expect(document.body.dataset.board).toBe('slate');
-  expect(app.$('achWallet').textContent).toContain('60');
+  expect(app.$('achWallet').textContent).toContain('115');
+  // Cerrar sin canjear devuelve el borde equipado
+  preview.querySelector('[data-pv-close]').click();
+  expect(document.querySelector('.look-pv-ov')).toBeNull();
+  expect(document.body.dataset.board).toBe('wood');
+
+  // Canjear «Pizarra nocturna» (30 pts) desde el probador
+  panel.querySelector('[data-open-type="board"][data-open-id="slate"]').click();
+  document.querySelector('[data-confirm-buy]').click();
+  expect(app.$('achWallet').textContent).toContain('85');
+  document.querySelector('[data-pv-close]').click();
+  expect(document.body.dataset.board).toBe('slate');
   // Comprar el primer elemento desbloquea "Primer estilo" -> badge vuelve a mostrar "1"
   expect(app.$('homeAchBadge').hidden).toBe(false);
   expect(app.$('homeAchBadge').textContent).toBe('1');
