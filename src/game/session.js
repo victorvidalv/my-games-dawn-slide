@@ -187,6 +187,8 @@ export function startSurvival({ restart = false, route, relic } = {}) {
         updatedAt: store.survival?.updatedAt,
       });
   setRun({ survival: progress, level: progress.cleared + 1 });
+  markStat('challengeRoutesPlayed', progress.route);
+  markStat('challengeRelics', progress.relic);
   persist();
   setDailyMode(false);
   setSurvivalMode(true);
@@ -234,6 +236,7 @@ export function activateChallengeRelic() {
       return;
     }
     run.survival = writeSurvival(store, useChallengeHint(run.survival));
+    countStat('challengeRelicsUsed');
     persist();
     updateSurvivalHud(run.survival);
     const p = G.pieces[h.i];
@@ -251,6 +254,7 @@ export function activateChallengeRelic() {
   }
   if (kind === 'reset') {
     run.survival = writeSurvival(store, useChallengeReset(run.survival));
+    countStat('challengeRelicsUsed');
     G.pos = G.start.slice();
     G.moves = 0;
     G.hist = [];
@@ -267,6 +271,7 @@ export function activateChallengeRelic() {
   }
   if (kind === 'undo') {
     run.survival = writeSurvival(store, useChallengeUndo(run.survival));
+    countStat('challengeRelicsUsed');
     G.pos = run.survival.pos.slice();
     G.moves = Math.max(0, G.moves - 1);
     G.hist.pop();
@@ -289,6 +294,7 @@ export function playSurvivalTurn(won) {
   haltBoard();
   lockBoard();
   if (won) {
+    countStat('challengeBoards');
     sfx.success();
     playKeyExit(G, { party: false });
     boardEl.classList.add('survival-clear');

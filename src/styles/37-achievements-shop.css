@@ -1,0 +1,708 @@
+/* ============================ Logros (60) y Canjear (Tienda cosmética) ============================ */
+
+/* Badge numérica en la pantalla principal (botón Logros) */
+#tabAch {
+  position: relative;
+}
+
+#menu .home-pill.has-news::after {
+  display: none;
+}
+
+.ach-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  margin-left: 2px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #ffdf73, #e69b28);
+  border: 1.5px solid #091118;
+  box-shadow:
+    0 2px 0 #091118,
+    0 0 10px #ffd24a88;
+  color: #16100a;
+  font: 900 11px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ach-pill-badge:not([hidden]) {
+    animation: ach-badge-pulse 2.2s ease-in-out infinite;
+  }
+}
+
+@keyframes ach-badge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+/* Cabecera con progreso total + saldo acumulado */
+.ach-top-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.ach-top-summary .ach-total {
+  flex: 1;
+  margin: 0 !important;
+}
+
+.ach-wallet {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  padding: 7px 12px;
+  border-radius: var(--wob-d);
+  border: 2px solid #e7b963;
+  background: linear-gradient(155deg, #4b3922, #231b14);
+  box-shadow:
+    0 3px 0 #091118,
+    inset 0 1px 0 #fff1c944;
+  color: #ffe39e;
+}
+
+.ach-wallet .ic {
+  width: 20px;
+  height: 20px;
+  color: #ffd24a;
+}
+
+.ach-wallet b {
+  display: block;
+  font: 900 17px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  color: #fff3cf;
+}
+
+.ach-wallet small {
+  display: block;
+  font: 750 9.5px/1 var(--font-ui);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #e7c682;
+}
+
+.ach-wallet.pop {
+  animation: ach-wallet-pop 0.42s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes ach-wallet-pop {
+  35% {
+    transform: scale(1.12);
+    box-shadow:
+      0 3px 0 #091118,
+      0 0 22px #ffd24aaa;
+  }
+}
+
+/* Dos pestañas: Logros / Canjear */
+.ach-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ach-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 10px;
+  border-radius: var(--wob-d);
+  border: 2px solid #091118;
+  background: linear-gradient(180deg, #273847, #1b2733);
+  color: #cfd9e2;
+  font: 800 13px/1 var(--font-ui);
+  box-shadow: 0 2px 0 #091118;
+  cursor: pointer;
+}
+
+.ach-tab .ic {
+  width: 16px;
+  height: 16px;
+}
+
+.ach-tab small {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.78;
+}
+
+.ach-tab.on {
+  border-color: #e7b963;
+  background: linear-gradient(155deg, #5c4329, #2f231a);
+  color: #fff4d6;
+  box-shadow:
+    0 2px 0 #091118,
+    inset 0 1px 0 #fff0cf38;
+}
+
+.ach-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: #ffd24a;
+  color: #16100a;
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 900;
+}
+
+/* Banner de logros listos para reclamar */
+.ach-claim-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 9px 12px;
+  border-radius: var(--wob-d);
+  border: 2px solid #e7b963;
+  background: linear-gradient(155deg, #513b20, #281e15);
+  box-shadow:
+    0 3px 0 #091118,
+    0 0 16px #ffd24a2a;
+  text-align: left;
+}
+
+.ach-claim-banner b {
+  display: block;
+  color: #ffe7a8;
+  font: 800 13px/1.2 var(--font-ui);
+}
+
+.ach-claim-banner small {
+  display: block;
+  color: #d9ccb2;
+  font: 600 11px/1.25 var(--font-ui);
+}
+
+.ach-claim-all {
+  flex: none;
+  padding: 7px 11px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Filtros horizontales */
+.ach-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ach-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  min-height: 30px;
+  border-radius: 99px;
+  border: 1.5px solid #091118;
+  background: #1a2a36;
+  color: #c8d6e2;
+  font: 700 11.5px/1 var(--font-ui);
+  box-shadow: 0 2px 0 #091118;
+  cursor: pointer;
+}
+
+.ach-filter .ic {
+  width: 13px;
+  height: 13px;
+}
+
+.ach-filter small {
+  opacity: 0.72;
+  font-size: 10px;
+}
+
+.ach-filter.on {
+  border-color: #e7b963;
+  background: linear-gradient(155deg, #4b3a24, #282019);
+  color: #fff2cf;
+}
+
+/* Tarjetas de logro mejoradas */
+.ach.ready {
+  border-color: #e7b963 !important;
+  background: linear-gradient(155deg, #4a371f, #261e19) !important;
+  box-shadow:
+    0 3px 0 #091118,
+    0 0 14px #ffd24a30 !important;
+}
+
+.ach-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ach-tier {
+  font-style: normal;
+  font: 800 9.5px/1 var(--font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 99px;
+  border: 1px solid #091118;
+}
+
+.tier-bronze .ach-tier {
+  background: #5a3a24;
+  color: #f4c69d;
+}
+
+.tier-silver .ach-tier {
+  background: #334354;
+  color: #dbe8f5;
+}
+
+.tier-gold .ach-tier {
+  background: #614919;
+  color: #ffe38a;
+}
+
+.tier-legend .ach-tier {
+  background: linear-gradient(135deg, #62327a, #9e4866);
+  color: #ffe6ff;
+}
+
+.ach-prog em {
+  display: block;
+  margin-bottom: 3px;
+  font-style: normal;
+  font: 800 10.5px/1 var(--font-ui);
+  color: #f0c975;
+  text-align: right;
+}
+
+.ach-claim-btn {
+  flex: none;
+  padding: 7px 11px;
+  border-radius: 10px;
+  border: 2px solid #091118;
+  background: linear-gradient(180deg, #ffdf73, #e09a26);
+  color: #191006;
+  font: 800 12px/1.1 var(--font-ui);
+  box-shadow:
+    0 3px 0 #091118,
+    0 0 12px #ffd24a66;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ach-claim-btn b {
+  font-weight: 900;
+}
+
+.ach-claimed-tag {
+  flex: none;
+  padding: 5px 9px;
+  border-radius: 99px;
+  background: #1a332b;
+  border: 1px solid #4fae9566;
+  color: #9ae6cc;
+  font: 800 11px/1 var(--font-ui);
+  white-space: nowrap;
+}
+
+/* Animación flotante al reclamar o canjear */
+.ach-reward-pop {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  padding: 5px 11px;
+  border-radius: 99px;
+  background: #17120c;
+  border: 1.5px solid #ffd24a;
+  color: #ffe48d;
+  font: 900 14px/1 var(--font-ui);
+  box-shadow: 0 4px 16px #000a;
+  animation: ach-reward-float 0.88s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+
+@keyframes ach-reward-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -30%) scale(0.75);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -85%) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -185%) scale(0.95);
+  }
+}
+
+/* ---------- Pestaña Canjear (Tienda de elementos) ---------- */
+.ach-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+@media (min-width: 560px) {
+  .ach-shop-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ach-shop-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  gap: 7px;
+  padding: 10px 8px 9px;
+  border-radius: var(--wob-d);
+  border: 2px solid #091118;
+  background: linear-gradient(160deg, #213241, #14202b);
+  box-shadow: 0 3px 0 #091118;
+  text-align: center;
+}
+
+.ach-shop-card.owned {
+  background: linear-gradient(160deg, #243846, #172531);
+}
+
+.ach-shop-card.on {
+  border-color: #e7b963;
+  background: linear-gradient(160deg, #4b3822, #251d17);
+  box-shadow:
+    0 3px 0 #091118,
+    inset 0 0 0 1px #fff0cf30;
+}
+
+.ach-shop-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+}
+
+.ach-shop-art .sw {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.shop-preview-btn {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 26px;
+  height: 26px;
+  min-height: 26px;
+  padding: 0;
+  border-radius: 99px;
+  border: 1.5px solid #091118;
+  background: #273a4c;
+  color: #ffe39e;
+  font-size: 11px;
+  line-height: 1;
+  box-shadow: 0 2px 0 #091118;
+  cursor: pointer;
+}
+
+.ach-shop-name {
+  color: #fff2d6;
+  font: 750 12px/1.2 var(--font-ui);
+}
+
+.shop-act {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  border: 2px solid #091118;
+  font: 800 11.5px/1.1 var(--font-ui);
+  box-shadow: 0 2px 0 #091118;
+  cursor: pointer;
+}
+
+.shop-act.buy.affordable {
+  background: linear-gradient(180deg, #ffdf73, #df9926);
+  color: #191006;
+}
+
+.shop-act.buy:not(.affordable) {
+  background: #1b2732;
+  color: #8ea0b0;
+  opacity: 0.78;
+}
+
+.shop-act.equip {
+  background: linear-gradient(180deg, #3c5b73, #274054);
+  color: #f3f7fb;
+}
+
+.shop-act.equipped {
+  background: #1f4438;
+  border-color: #4fae95;
+  color: #b7f5de;
+  cursor: default;
+}
+
+/* ---------- Muestras y estilos en vivo de los nuevos cosméticos ---------- */
+
+/* Marcos de tablero: muestras en la Tienda */
+.sw-board {
+  display: inline-block;
+  border: 3px solid #091118;
+  box-shadow: inset 0 0 0 6px #121c2a;
+}
+
+.sw-board[data-board='wood'] {
+  background: linear-gradient(150deg, #9b6840, #5c3624);
+  border-color: #e0b04f;
+}
+
+.sw-board[data-board='slate'] {
+  background: linear-gradient(150deg, #526478, #283340);
+  border-color: #c2d4e6;
+}
+
+.sw-board[data-board='amber'] {
+  background: linear-gradient(150deg, #d48a2e, #7c4212);
+  border-color: #ffe08a;
+}
+
+.sw-board[data-board='sapphire'] {
+  background: linear-gradient(150deg, #2d66b8, #142f63);
+  border-color: #93c5fd;
+}
+
+.sw-board[data-board='marble'] {
+  background: linear-gradient(150deg, #efe8d8, #c7bca4);
+  border-color: #d9b25f;
+}
+
+.sw-board[data-board='jade'] {
+  background: linear-gradient(150deg, #3b8d72, #1b4b3d);
+  border-color: #d8b56c;
+}
+
+.sw-board[data-board='crimson'] {
+  background: linear-gradient(150deg, #7c2d2d, #381217);
+  border-color: #ff9c54;
+}
+
+.sw-board[data-board='ivory'] {
+  background: linear-gradient(150deg, #d8c08e, #9b7f49);
+  border-color: #fff0c2;
+}
+
+.sw-board[data-board='celestial'] {
+  background: linear-gradient(150deg, #314472, #141e38);
+  border-color: #e6c373;
+}
+
+.sw-board[data-board='obsidian'] {
+  background: linear-gradient(150deg, #2c243a, #0e0b16);
+  border-color: #c084fc;
+}
+
+/* Marcos de tablero: aplicación en Aventura */
+body:not(.survival-run, .daily-run)[data-board='slate'] .frame {
+  background:
+    repeating-linear-gradient(135deg, #ffffff08 0 2px, transparent 2px 9px),
+    linear-gradient(155deg, #4b5d70, #2a3644 55%, #1c242e);
+  box-shadow:
+    inset 0 0 0 2px #c2d4e655,
+    0 0 0 2px #9db4cb,
+    0 0 0 5px #091118,
+    0 18px 36px #0009;
+}
+
+body:not(.survival-run, .daily-run)[data-board='amber'] .frame {
+  background:
+    repeating-linear-gradient(92deg, #fff2c20f 0 3px, transparent 3px 9px),
+    linear-gradient(155deg, #c77b24, #824412 56%, #54280a);
+  box-shadow:
+    inset 0 0 0 2px #ffe08a66,
+    0 0 0 2px #f5b942,
+    0 0 0 5px #091118,
+    0 18px 36px #0009;
+}
+
+body:not(.survival-run, .daily-run)[data-board='sapphire'] .frame {
+  background:
+    linear-gradient(135deg, #93c5fd24 0%, transparent 40%, #60a5fa1c 100%),
+    linear-gradient(155deg, #2b60b0, #193b75 56%, #0f244a);
+  box-shadow:
+    inset 0 0 0 2px #93c5fd66,
+    0 0 0 2px #60a5fa,
+    0 0 0 5px #091118,
+    0 18px 36px #000a;
+}
+
+body:not(.survival-run, .daily-run)[data-board='marble'] .frame {
+  background:
+    linear-gradient(125deg, #ffffff44 0%, transparent 45%, #b5a78e33 100%),
+    linear-gradient(155deg, #e8dfd0, #c8bc9e 58%, #aba086);
+  box-shadow:
+    inset 0 0 0 2px #fff8e8aa,
+    0 0 0 2px #d9b25f,
+    0 0 0 5px #091118,
+    0 18px 36px #0009;
+}
+
+body:not(.survival-run, .daily-run)[data-board='jade'] .frame {
+  background:
+    repeating-linear-gradient(92deg, #ffffff09 0 3px, transparent 3px 10px),
+    linear-gradient(155deg, #35836a, #1d5444 55%, #12362c);
+  box-shadow:
+    inset 0 0 0 2px #86efac44,
+    0 0 0 2px #d8b56c,
+    0 0 0 5px #091118,
+    0 18px 36px #0009;
+}
+
+body:not(.survival-run, .daily-run)[data-board='crimson'] .frame {
+  background:
+    repeating-linear-gradient(45deg, #ff9a3d10 0 2px, transparent 2px 8px),
+    linear-gradient(155deg, #6e2729, #3c1419 55%, #230c10);
+  box-shadow:
+    inset 0 0 0 2px #ff9c5455,
+    0 0 0 2px #e67e3c,
+    0 0 0 5px #091118,
+    0 18px 36px #000a;
+}
+
+body:not(.survival-run, .daily-run)[data-board='ivory'] .frame {
+  background: var(--hatch), linear-gradient(155deg, #d8be89, #a6864f 56%, #7d6235);
+  box-shadow:
+    inset 0 0 0 2px #fff2cc66,
+    0 0 0 2px #f2d58b,
+    0 0 0 5px #091118,
+    0 18px 36px #0009;
+}
+
+body:not(.survival-run, .daily-run)[data-board='celestial'] .frame {
+  background:
+    linear-gradient(135deg, #f3cd7a22 0%, transparent 30%, #7dd3fc22 100%),
+    linear-gradient(155deg, #2d3e61, #192440 55%, #0f172b);
+  box-shadow:
+    inset 0 0 0 2px #e6c37388,
+    0 0 0 2px #d9b25f,
+    0 0 0 5px #091118,
+    0 18px 36px #000a;
+}
+
+body:not(.survival-run, .daily-run)[data-board='obsidian'] .frame {
+  background:
+    linear-gradient(135deg, #c084fc24 0%, transparent 45%, #ffd24a18 100%),
+    linear-gradient(155deg, #2a2238, #141020 55%, #0a0812);
+  box-shadow:
+    inset 0 0 0 2px #c084fc66,
+    0 0 0 2px #d8b4fe,
+    0 0 0 5px #091118,
+    0 18px 40px #000c;
+}
+
+/* Nuevos estilos de fichas: muestras + en vivo */
+.sw-piece[data-pieces='ceramic'] {
+  background: linear-gradient(150deg, #d8f1ff, #7eb6d9);
+  box-shadow:
+    inset 0 2px 0 #ffffffcc,
+    inset 0 -3px 0 #3f6e8f;
+}
+
+.sw-piece[data-pieces='brass'] {
+  background: linear-gradient(135deg, #e7c57a, #a67c37 55%, #6e4e1d);
+  box-shadow: inset 0 1px 0 #fff3c4aa;
+}
+
+.sw-piece[data-pieces='lacquer'] {
+  background: linear-gradient(155deg, #32243a, #17101f);
+  box-shadow: inset 0 0 0 2px #e7b963aa;
+}
+
+body[data-pieces='ceramic'] .piece:not(.red) .face {
+  filter: saturate(0.85) brightness(1.12);
+  box-shadow:
+    0 5px 0 #150e0c,
+    inset 0 3px 0 #ffffff99,
+    inset 0 -4px 0 var(--d),
+    inset 0 0 0 1.5px #ffffff55;
+}
+
+body[data-pieces='brass'] .piece:not(.red) .face {
+  background:
+    repeating-linear-gradient(90deg, #ffffff12 0 1px, transparent 1px 4px), linear-gradient(155deg, var(--a), var(--b));
+  box-shadow:
+    0 5px 0 #150e0c,
+    inset 0 2px 0 #fff3c477,
+    inset 0 -5px 0 var(--d),
+    inset 0 0 0 2px #e7c57a66;
+}
+
+body[data-pieces='lacquer'] .piece:not(.red) .face {
+  filter: contrast(1.16) saturate(1.08);
+  box-shadow:
+    0 5px 0 #091118,
+    inset 0 2px 0 #ffffff66,
+    inset 0 -5px 0 var(--d),
+    inset 0 0 0 2px #e7b96388;
+}
+
+/* Nuevas llaves: zafiro y coral */
+.sw-key[data-key='sapphire'] {
+  background: linear-gradient(150deg, #59a8ff, #1d57b8);
+}
+
+.sw-key[data-key='rose'] {
+  background: linear-gradient(150deg, #ff99ac, #cf4669);
+}
+
+body[data-key='sapphire'] .piece.red .face {
+  background: linear-gradient(155deg, #6cb6ff, #2665c9 65%, #163d82);
+  box-shadow:
+    0 5px 0 #0c1f45,
+    inset 0 2px 0 #d9eeffaa,
+    inset 0 -4px 0 #12316b;
+}
+
+body[data-key='rose'] .piece.red .face {
+  background: linear-gradient(155deg, #ffa3b5, #d64c70 65%, #8f2644);
+  box-shadow:
+    0 5px 0 #3d0f1e,
+    inset 0 2px 0 #ffe0e8aa,
+    inset 0 -4px 0 #7a1e39;
+}
+
+body[data-key='sapphire'] .piece.red,
+body[data-key='rose'] .piece.red {
+  --a: #fff0cf;
+}
+
+/* Nuevas muestras de celebración */
+.sw-fx[data-fx='frost'] {
+  background: radial-gradient(circle at 35% 35%, #ffffff, #5fd6ff 55%, #1a3552);
+}
+
+.sw-fx[data-fx='prism'] {
+  background: conic-gradient(from 45deg, #ff8a65, #ffd54f, #4dd0e1, #ce93d8, #ff8a65);
+}

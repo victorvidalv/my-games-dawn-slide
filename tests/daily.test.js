@@ -32,7 +32,6 @@ import {
   progressOf,
   rewardUnlocked,
   setLook,
-  sourceOf,
   statsOf,
 } from '../src/game/achievements.js';
 import { mergeSaves } from '../src/game/save-merge.js';
@@ -233,17 +232,17 @@ describe('logros y recompensas', () => {
     for (const a of ACHIEVEMENTS) {
       expect(a.stat in stats, a.id).toBe(true);
       expect(a.goal).toBeGreaterThan(0);
-      expect(['adventure', 'mastery', 'daily']).toContain(a.group);
+      expect(['adventure', 'mastery', 'challenge', 'daily', 'collection']).toContain(a.group);
       if (a.reward)
         expect(
           REWARDS[a.reward[0]].some((r) => r.id === a.reward[1]),
           a.id,
         ).toBe(true);
     }
-    // toda recompensa que no es de serie se consigue con algún logro
+    // toda recompensa que no es de serie tiene un precio positivo en la tienda Canjear
     for (const type of REWARD_TYPES)
       for (const r of REWARDS[type])
-        if (DEFAULT_LOOK[type] !== r.id) expect(sourceOf(type, r.id), `${type}:${r.id}`).not.toBeNull();
+        if (DEFAULT_LOOK[type] !== r.id) expect(r.price, `${type}:${r.id}`).toBeGreaterThan(0);
     expect(ACHIEVEMENTS.filter((a) => a.group === 'daily').length).toBeGreaterThanOrEqual(5);
     expect(ACHIEVEMENTS.filter((a) => a.group === 'adventure').length).toBeGreaterThanOrEqual(8);
   });
@@ -257,25 +256,35 @@ describe('logros y recompensas', () => {
     expect(stats).toMatchObject({ maxLevel: 26, perfects: 4, dailySolved: 1, bestStreak: 2 });
     const perf = ACHIEVEMENTS.find((a) => a.id === 'perf10');
     expect([progressOf(perf, stats), perf.goal, isDone(perf, stats)]).toEqual([4, 10, false]);
-    expect(claimAchievements(store, 1).map((a) => a.id)).toEqual(['city1', 'lv25', 'day1']);
+    expect(claimAchievements(store, 1).map((a) => a.id)).toEqual([
+      'lv5',
+      'city1',
+      'lv20',
+      'lv25',
+      'perf1',
+      'day1',
+      'streak2',
+    ]);
     expect(claimAchievements(store, 2)).toEqual([]); // ya anotados
     store.paths = {};
     expect(claimAchievements(store, 3)).toEqual([]);
     expect(store.ach.lv25).toBe(1); // sigue ganado
   });
   it('las recompensas se activan solo si están desbloqueadas y un aspecto guardado inválido vuelve al de serie', () => {
-    const store = { ach: { lv25: 1 } };
+    const store = { shopOwned: { 'key:amber': 1 } };
     expect(lookOf(store)).toEqual(DEFAULT_LOOK);
     expect(rewardUnlocked('key', 'red', {})).toBe(true);
-    expect(rewardUnlocked('key', 'amber', store.ach)).toBe(true);
-    expect(rewardUnlocked('key', 'gold', store.ach)).toBe(false);
+    expect(rewardUnlocked('key', 'amber', store)).toBe(true);
+    expect(rewardUnlocked('key', 'gold', store)).toBe(false);
     expect(setLook(store, 'key', 'gold')).toBe(false);
     expect(setLook(store, 'key', 'amber')).toBe(true);
     expect(setLook(store, 'key', 'nope')).toBe(false);
     expect(setLook(store, 'nope', 'red')).toBe(false);
     expect(lookOf(store)).toEqual({ ...DEFAULT_LOOK, key: 'amber' });
-    expect(lookOf({ look: { key: 'gold', music: 'z9', fx: 'zzz', pieces: 'glass' }, ach: {} })).toEqual(DEFAULT_LOOK);
-    expect(REWARD_TYPES).toEqual(['music', 'key', 'pieces', 'fx']);
+    expect(lookOf({ look: { key: 'gold', music: 'z9', fx: 'zzz', pieces: 'glass' }, shopOwned: {} })).toEqual(
+      DEFAULT_LOOK,
+    );
+    expect(REWARD_TYPES).toEqual(['board', 'pieces', 'key', 'fx', 'music']);
     for (const type of REWARD_TYPES) expect(REWARDS[type][0].id).toBe(DEFAULT_LOOK[type]);
     expect(setLook(store, 'key', 'red')).toBe(true);
     expect(lookOf(store).key).toBe('red');

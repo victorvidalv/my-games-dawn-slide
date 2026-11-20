@@ -107,6 +107,8 @@ export function mergeSaves(mine = {}, disk = {}) {
     ...mine,
     paths: mergePaths(mine.paths, disk?.paths),
     ach: mergeAch(mine.ach, disk?.ach),
+    achClaimed: mergeAch(mine.achClaimed, disk?.achClaimed),
+    shopOwned: mergeAch(mine.shopOwned, disk?.shopOwned),
     stats: mergeStats(mine.stats, disk?.stats),
   };
   const daily = mergeDaily(mine.daily, disk?.daily);

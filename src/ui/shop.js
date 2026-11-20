@@ -8,6 +8,7 @@ import { S, holdBusy } from '../state.js';
 import { shopDiscount } from '../game/routes.js';
 import { layout, recLine, updateHud } from './board.js';
 import { updateHeroHud } from './heroes.js';
+import { countStat } from './achievements.js';
 import { ask } from './menu.js';
 import { icon } from './icons.js';
 import { playBuyEffect, playRewindEffect } from './turns.js';
@@ -154,6 +155,7 @@ export function openShop() {
       return;
     }
     sfx.merchantCoin();
+    countStat('shopBuys');
     say(merchantLine('bought'), 'happy');
     if (id === 'skip') {
       close();

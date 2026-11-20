@@ -98,7 +98,7 @@ export function renderSurvival() {
     };
   });
 
-  $('survivalPlay').textContent = active ? 'Empezar de nuevo' : 'Empezar desafío';
+  $('survivalPlay').textContent = progress ? 'Empezar de nuevo' : 'Empezar desafío';
 }
 
 export function setSurvivalMode(on) {
@@ -158,7 +158,7 @@ $('survivalPlay').onclick = async () => {
       ico: 'hourglass',
       title: '¿Empezar un nuevo desafío?',
       text: 'Se reemplazará la partida guardada actual.',
-      yes: 'Empezar nuevo',
+      yes: 'Empezar de nuevo',
       danger: true,
     });
     if (!confirmed) return;

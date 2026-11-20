@@ -4,7 +4,7 @@ import { zoneIdx } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
 import { leaveDaily, leaveSurvival, recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
 import { challengeById } from '../game/daily.js';
-import { renderAchievements } from './achievements.js';
+import { paintAchBadge, renderAchievements } from './achievements.js';
 import { paintDailyHome, renderDaily } from './daily.js';
 import { routeById } from '../game/survival.js';
 import { paintSurvivalHome, renderSurvival } from './survival.js';
@@ -264,6 +264,7 @@ function paintHome() {
   $('homeAdvSaved').textContent = hasSaved ? `Partida guardada · nivel ${sr.level}` : '';
   paintDailyHome();
   paintSurvivalHome();
+  paintAchBadge();
 }
 function showView(view, { focus = false } = {}) {
   viewNow = VIEWS[view] ? view : 'home';

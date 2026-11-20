@@ -671,7 +671,7 @@ export const Music = (() => {
       if (survivalQueue && step >= SURVIVAL_TRACK_BARS * 16) nextSurvivalTrack();
       const sd = 60 / bpm() / 4,
         sw = step % 4 >= 2 ? (theme.swing || 0) * sd * 2 : 0; // swing: las corcheas de contratiempo llegan tarde
-      if (survivalQueue) playSurvival(step, next);
+      if (survivalQueue || theme.kicks) playSurvival(step % (SURVIVAL_TRACK_BARS * 16), next);
       else play(step, next + sw);
       next += sd;
       step++;

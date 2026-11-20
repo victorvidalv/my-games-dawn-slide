@@ -7,6 +7,7 @@ import { afterMove, cancelDrag, layout, updateHud } from './board.js';
 import { processSealMove } from './seals.js';
 import { motes, warmMotes } from './fx.js';
 import { openPowerStage } from './power-stage.js';
+import { countStat } from './achievements.js';
 import { watchFrames } from './perf.js';
 
 /** Chispas del color del hechizo sobre la pieza que el poder mueve, y una onda que cruza el tablero. */
@@ -49,6 +50,7 @@ export async function activatePower() {
   const stage = reduced ? null : openPowerStage(h.id, action.kind, `Poder de ${h.name}`, name);
   if (!reduced) watchFrames(POWER_CHARGE_MS + 300 + action.steps.length * 360); // ¿va justo el móvil? (modo ligero)
   setBusy(true);
+  countStat('powersUsed');
   saveRun();
   updateHud();
   $('bShop').disabled = true;
