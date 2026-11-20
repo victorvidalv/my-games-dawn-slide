@@ -464,7 +464,10 @@ export const Music = (() => {
     if (theme.kicks.includes(st)) kick(t, full ? 0.095 : 0.065);
     if (theme.snares.includes(st)) snare(t, full ? 0.052 : 0.027);
     if (st % 2 === 0 || (full && st % 4 === 3)) noise(t, 0.035, st % 4 ? 0.012 : 0.021, 7200);
-    if (st === 0) voice('strings', noteOf(theme, chord), t, sd * 13, 0.024);
+    if (st === 0) {
+      voice('strings', noteOf(theme, chord), t, sd * 13, 0.024);
+      if (full) voice('strings', noteOf(theme, chord + 2), t, sd * 12, 0.015);
+    }
     if (st === 0 || st === 8 || (full && (st === 3 || st === 11))) {
       const degree = st === 11 ? chord + 4 : chord;
       voice('synth', noteOf(theme, degree) - 12, t, sd * 1.7, 0.084);
@@ -473,8 +476,11 @@ export const Music = (() => {
     for (const [at, degree, len] of phrase) {
       if (at !== st) continue;
       const pitch = noteOf(theme, degree + (bar % 2 ? chord : 0));
-      voice(theme.lead, pitch, t, sd * len * 0.8, 0.075);
-      if (bar >= 16 && full) voice('synth', pitch - 12, t, sd * len * 0.65, 0.033);
+      voice(theme.lead, pitch, t, sd * len * 0.82, 0.078);
+      if (bar >= 16 && full) {
+        voice('synth', pitch - 12, t, sd * len * 0.65, 0.033);
+        if (len >= 2) voice('horn', noteOf(theme, degree + (bar % 2 ? chord : 0) - 2), t, sd * len * 0.7, 0.026);
+      }
     }
   }
 
@@ -781,7 +787,7 @@ export const Music = (() => {
       this.start();
     },
     survival() {
-      survivalQueue = shuffleSurvivalTracks();
+      survivalQueue = shuffleSurvivalTracks(theme);
       nextSurvivalTrack();
       this.duck(1);
       this.muffle(false);

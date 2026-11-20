@@ -61,7 +61,7 @@
   <div class="top">
     <div class="lv" title="Nivel" aria-label="Nivel"><i class="bi level-ico" data-icon="flag" aria-hidden="true"></i><b id="lvl">1</b></div>
     <div class="scores"><div class="sc" title="Puntaje"><i class="bi score-ico" data-icon="trophy" aria-hidden="true"></i><b id="score" aria-label="Puntaje">0</b></div></div>
-    <div class="survival-reserve"><span>Turnos restantes</span><b id="survivalTurns"></b></div>
+    <div class="survival-reserve"><em id="survivalRouteTag"></em><span>Turnos restantes</span><b id="survivalTurns"></b></div>
     <button class="snd-btn snd-hud" type="button"></button>
     <button class="menubtn" id="bMenu" aria-label="Menú y opciones"><span>☰</span><em>Menú</em></button>
   </div>
@@ -97,6 +97,16 @@
   </div>
 
   <div class="hint-text" id="msg" role="status" aria-live="polite"></div>
+  <div class="survival-relic-bar" id="survivalRelicBar">
+    <button type="button" class="challenge-relic-btn" id="bChallengeRelic">
+      <span class="challenge-relic-art" id="challengeRelicArt" aria-hidden="true"></span>
+      <span class="challenge-relic-copy">
+        <b id="challengeRelicAction"></b>
+        <small id="challengeRelicRule"></small>
+      </span>
+      <span class="badge challenge-relic-badge" id="challengeRelicState"></span>
+    </button>
+  </div>
   <div class="legend" id="legend"></div>
 
   <div class="controls">
@@ -248,7 +258,7 @@
   <div class="card" id="menuCard" data-view="home">
     <nav class="menu-home" id="menuHome" aria-label="Modos de juego">
       <button type="button" class="home-btn hb-adv" id="tabAdv" data-view="adv"><i class="hb-ico bi" data-icon="flag" aria-hidden="true"></i><span class="hb-copy"><b>Aventura</b><small>Puzles con elementos roguelite</small><small id="homeAdvSaved" hidden></small><span class="home-record" id="homeRecord" hidden><span class="record-pill"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Récord</span><strong id="homeRecordScore"></strong></span><time id="homeRecordAge" hidden></time></span></span><i class="hb-go" aria-hidden="true">›</i></button>
-      <button type="button" class="home-btn hb-survival" id="tabSurvival" data-view="survival"><i class="hb-ico bi" data-icon="hourglass" aria-hidden="true"></i><span class="hb-copy"><b>Supervivencia</b><small id="homeSurvivalSub"></small><span class="home-record" id="homeSurvivalRecord" hidden><span class="record-pill"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Récord de nivel</span><strong id="homeSurvivalBest"></strong></span></span></span><i class="hb-go" aria-hidden="true">›</i></button>
+      <button type="button" class="home-btn hb-survival" id="tabSurvival" data-view="survival"><i class="hb-ico bi" data-icon="hourglass" aria-hidden="true"></i><span class="hb-copy"><b>Desafío</b><small id="homeSurvivalSub"></small><span class="home-record" id="homeSurvivalRecord" hidden><span class="record-pill"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span id="homeSurvivalRecordLbl">Récord de nivel</span><strong id="homeSurvivalBest"></strong></span></span></span><i class="hb-go" aria-hidden="true">›</i></button>
       <button type="button" class="home-btn hb-daily" id="tabDaily" data-view="daily"><i class="hb-ico bi" data-icon="flame" aria-hidden="true"></i><span class="hb-copy"><b>Retos diarios</b><small id="homeDailySub"></small><span class="home-record"><span class="record-pill"><span>Racha actual</span><strong id="homeDailyStreak"></strong></span></span></span><i class="hb-go" aria-hidden="true">›</i></button>
     </nav>
     <div class="home-shortcuts" id="homeShortcuts">
@@ -273,9 +283,25 @@
     </div>
     <div class="menu-panel survival-panel" id="panelSurvival" hidden>
       <p id="survivalIntro"></p>
-      <p id="survivalStatus" hidden></p>
-      <button type="button" class="primary" id="survivalPlay">Empezar</button>
-      <button type="button" id="survivalRestart" hidden>Reiniciar partida</button>
+      <div class="survival-saved" id="survivalSaved" hidden>
+        <div class="survival-saved-info">
+          <span class="survival-saved-art challenge-relic-art" id="survivalSavedArt" aria-hidden="true"></span>
+          <div>
+            <b id="survivalSavedTitle"></b>
+            <small id="survivalStatus"></small>
+          </div>
+        </div>
+        <button type="button" class="primary" id="survivalContinue">Continuar partida</button>
+      </div>
+      <div class="survival-step">
+        <span class="survival-step-label">1. Elige la ruta</span>
+        <div class="survival-routes" id="survivalRoutes" role="radiogroup" aria-label="Rutas de desafío"></div>
+      </div>
+      <div class="survival-step">
+        <span class="survival-step-label">2. Elige una reliquia</span>
+        <div class="relic-options challenge-relic-options" id="survivalRelics" role="radiogroup" aria-label="Reliquias de desafío"></div>
+      </div>
+      <button type="button" class="primary" id="survivalPlay">Empezar desafío</button>
     </div>
     <div class="menu-panel" id="panelDaily" hidden></div>
     <div class="menu-panel" id="panelAch" hidden></div>
@@ -431,9 +457,10 @@
 <!-- Resultado de un reto diario -->
 <div class="modal" id="survivalEnd" role="dialog" aria-modal="true" aria-labelledby="survivalEndTitle">
  <div class="card survival-end">
+  <div class="tag" id="survivalEndTag"></div>
   <h2 id="survivalEndTitle"></h2>
   <p id="survivalEndSummary"></p>
-  <button type="button" class="primary" id="survivalBack">Volver a Supervivencia</button>
+  <button type="button" class="primary" id="survivalBack">Volver a Desafío</button>
  </div>
 </div>
 

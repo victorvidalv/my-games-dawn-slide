@@ -6,6 +6,7 @@ import { leaveDaily, leaveSurvival, recordBest, resumeAdventure, saveRun, startR
 import { challengeById } from '../game/daily.js';
 import { renderAchievements } from './achievements.js';
 import { paintDailyHome, renderDaily } from './daily.js';
+import { routeById } from '../game/survival.js';
 import { paintSurvivalHome, renderSurvival } from './survival.js';
 import { PATHS, S, closeRun, discardRun, heroOf, holdBusy, pathOf, persist, setRun, store } from '../state.js';
 import { restoreRun } from '../game/run-logic.js';
@@ -112,7 +113,7 @@ function openPause() {
   if (!S.run || !S.G || S.G.done) return;
   const { daily, survival } = S.run;
   $('pauseContext').textContent = survival
-    ? `Supervivencia · Nivel ${S.run.level}`
+    ? `Desafío · ${routeById(survival.route).name} · Nivel ${S.run.level}`
     : daily
       ? `Reto diario · ${challengeById(daily.id).name}`
       : `${heroOf().name} · Nivel ${S.run.level} de 100`;
@@ -122,7 +123,10 @@ function openPause() {
   $('pauseSaveError').hidden = true;
   $('pQuit').firstElementChild.textContent = daily ? 'Salir del reto' : 'Terminar';
   $('pauseHero').src = heroArt(heroOf().id, 'story');
-  $('pause').style.setProperty('--pause-scene', cssUrl(`backgrounds/zone-${zoneIdx(S.run.level) + 1}.webp`));
+  $('pause').style.setProperty(
+    '--pause-scene',
+    cssUrl(survival ? 'backgrounds/challenge-dawn.jpg' : `backgrounds/zone-${zoneIdx(S.run.level) + 1}.webp`),
+  );
   soundLabel();
   $('pause').classList.add('show');
   Music.muffle(true);
@@ -209,7 +213,7 @@ const continueLabel = (sr) =>
 /* Cada entrada del menú abre su sección con «Volver». */
 const VIEWS = {
   adv: { title: 'Aventura', panel: 'panelAdv' },
-  survival: { title: 'Supervivencia', panel: 'panelSurvival' },
+  survival: { title: 'Desafío', panel: 'panelSurvival' },
   daily: { title: 'Retos diarios', panel: 'panelDaily' },
   ach: { title: 'Logros', panel: 'panelAch' },
 };

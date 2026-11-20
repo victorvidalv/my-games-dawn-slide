@@ -20,7 +20,19 @@ import {
   writeDailyProgress,
 } from './daily.js';
 import { boardStats } from './achievements.js';
-import { buildSurvival, newSurvival, spendSurvivalTurn, survivalProgress, writeSurvival } from './survival.js';
+import { hintMove } from '../engine/solver.js';
+import {
+  buildSurvival,
+  canUseChallengeRelic,
+  newSurvival,
+  routeById,
+  spendSurvivalTurn,
+  survivalProgress,
+  useChallengeHint,
+  useChallengeReset,
+  useChallengeUndo,
+  writeSurvival,
+} from './survival.js';
 import { canPaidRevive, payRevive } from './shop.js';
 import {
   advanceRun,
@@ -55,7 +67,8 @@ import { onBossTimeUp, preloadBossArt, syncBossPhase, syncBossTimer } from '../u
 import { endRun } from '../ui/finale.js';
 import { showResult } from '../ui/result.js';
 import { chooseHero, showRescue, showReviveOffer, syncHero } from '../ui/heroes.js';
-import { applyZone, renderStage, showMap } from '../ui/map.js';
+import { burst } from '../ui/fx.js';
+import { applyChallengeScenery, applyZone, renderStage, showMap } from '../ui/map.js';
 import { openMenu } from '../ui/menu.js';
 import { flashSurvivalTurns, setSurvivalMode, showSurvivalResult, updateSurvivalHud } from '../ui/survival.js';
 import { $ } from '../dom.js';
@@ -160,16 +173,19 @@ export function leaveDaily() {
   setTensionFx(0, false);
 }
 
-/* ---------- Supervivencia ---------- */
-export function startSurvival({ restart = false } = {}) {
+/* ---------- Desafío ---------- */
+export function startSurvival({ restart = false, route, relic } = {}) {
   if (S.run?.survival) return;
   if (S.run) saveRun();
   closeRun();
   const previous = survivalProgress(store);
-  const progress =
-    !restart && previous?.status === 'active'
-      ? previous
-      : writeSurvival(store, { ...newSurvival(), updatedAt: store.survival?.updatedAt });
+  const resume = !restart && !route && !relic && previous?.status === 'active';
+  const progress = resume
+    ? previous
+    : writeSurvival(store, {
+        ...newSurvival(route || previous?.route || '150', relic || previous?.relic || 'hint'),
+        updatedAt: store.survival?.updatedAt,
+      });
   setRun({ survival: progress, level: progress.cleared + 1 });
   persist();
   setDailyMode(false);
@@ -188,21 +204,84 @@ export function leaveSurvival() {
 function showSurvivalBoard() {
   const run = S.run;
   const G = buildSurvival(run.survival);
+  const route = routeById(run.survival.route);
   G.colors = Array.from({ length: 8 }, (_, i) => (i + G.n - 1) % 8);
   run.level = G.n;
   setBoard(G);
-  $('lvl').textContent = G.n;
+  $('lvl').textContent = `${G.n}/${G.total}`;
   updateSurvivalHud(run.survival);
-  applyZone(zoneIdx(G.n));
+  applyChallengeScenery();
   syncBossPhase();
   buildPieces();
+  setMessage(
+    G.n === 1
+      ? `Desafío ${route.turns} turnos: saca la llave roja. Cada movimiento gasta 1 turno.`
+      : `Tablero ${G.n} de ${G.total} · mínimo ${G.opt} movimientos.`,
+  );
   setBusy(false);
   fitBoard();
 }
 
+export function activateChallengeRelic() {
+  const { run, G } = S;
+  if (!run?.survival || !G || G.done || S.busy) return;
+  if (!canUseChallengeRelic(run.survival).ok) return;
+  const kind = run.survival.relic;
+  if (kind === 'hint') {
+    const h = hintMove(G.pieces, G.pos, G.walls);
+    if (!h) {
+      setMessage('No encuentro pista desde aquí.');
+      return;
+    }
+    run.survival = writeSurvival(store, useChallengeHint(run.survival));
+    persist();
+    updateSurvivalHud(run.survival);
+    const p = G.pieces[h.i];
+    const n = Math.abs(h.to - h.from);
+    const dir = p.o === 'h' ? (h.to > h.from ? 'derecha' : 'izquierda') : h.to > h.from ? 'abajo' : 'arriba';
+    setMessage(`Mueve la pieza brillante ${n} casilla${n > 1 ? 's' : ''} hacia ${dir}. Quedan ${h.left} movimientos.`);
+    const el = G.els[h.i];
+    el.classList.remove('hint');
+    void el.offsetWidth;
+    el.classList.add('hint');
+    sfx.hint();
+    const r = el.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, 14, ['#fff', '#ffcf6b'], 3);
+    return;
+  }
+  if (kind === 'reset') {
+    run.survival = writeSurvival(store, useChallengeReset(run.survival));
+    G.pos = G.start.slice();
+    G.moves = 0;
+    G.hist = [];
+    persist();
+    layout();
+    updateSurvivalHud(run.survival);
+    sfx.hint();
+    boardEl.classList.remove('survival-clear');
+    void boardEl.offsetWidth;
+    boardEl.classList.add('survival-clear');
+    setTimeout(() => boardEl.classList.remove('survival-clear'), 240);
+    setMessage('Tablero reiniciado. Recuperaste los turnos de este tablero.');
+    return;
+  }
+  if (kind === 'undo') {
+    run.survival = writeSurvival(store, useChallengeUndo(run.survival));
+    G.pos = run.survival.pos.slice();
+    G.moves = Math.max(0, G.moves - 1);
+    G.hist.pop();
+    persist();
+    layout();
+    updateSurvivalHud(run.survival);
+    sfx.move();
+    setMessage('Último movimiento deshecho (+1 turno).');
+  }
+}
+
 export function playSurvivalTurn(won) {
   const { run, G } = S;
-  run.survival = writeSurvival(store, spendSurvivalTurn(run.survival, G.pos, won));
+  const prevPos = G.hist.at(-1) || null;
+  run.survival = writeSurvival(store, spendSurvivalTurn(run.survival, G.pos, won, prevPos));
   persist();
   updateSurvivalHud(run.survival);
   if (!won && run.survival.status === 'active') return;

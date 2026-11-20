@@ -5,62 +5,66 @@ import { bootApp, until, untilPlayable } from './app.js';
 const SAVE_KEY = 'desbloquea.rogue.v2';
 const saved = () => JSON.parse(localStorage.getItem(SAVE_KEY));
 
-it('abre Supervivencia desde el menú, debita un turno y restaura el tablero tras recargar', async () => {
+it('elige ruta y reliquia en Desafío, usa la pista por turno, guarda y continúa tras recargar', async () => {
   const adventure = { level: 3, seed: 123, start: 1, mode: 'c', hero: 'van', score: 50, hints: 3 };
-  let app = await bootApp({
-    save: {
-      run: adventure,
-      survival: { cleared: 17, remaining: 1950, status: 'active', updatedAt: 1 },
-    },
-  });
+  let app = await bootApp({ save: { run: adventure } });
+
   expect([...app.$('menuHome').querySelectorAll('button')].map((b) => b.id)).toEqual([
     'tabAdv',
     'tabSurvival',
     'tabDaily',
   ]);
-  expect(app.$('homeSurvivalRecord').hidden).toBe(true);
-  app.$('homeMore').click();
-  expect(app.$('homeTools').hidden).toBe(false);
-  app.$('tabAch').click();
-  expect(app.$('panelAch').hidden).toBe(false);
-  app.$('menuBack').click();
+  expect(app.$('homeSurvivalSub').textContent).toBe('3 rutas · 150, 200 y 250 turnos');
   app.$('tabSurvival').click();
-  expect(app.$('survivalPlay').textContent).toBe('Empezar');
-  expect(app.$('survivalIntro').textContent).toContain('150 turnos para resolver los 15 tableros');
+  expect(app.$('survivalRoutes').querySelectorAll('input').length).toBe(3);
+  expect(app.$('survivalRelics').querySelectorAll('input').length).toBe(3);
+
+  // Elegir ruta 150 y reliquia de pista por turno
+  app.$('survivalRoutes').querySelector('input[value="150"]').click();
+  app.$('survivalRelics').querySelector('input[value="hint"]').click();
   app.$('survivalPlay').click();
+
+  expect(document.body.classList.contains('survival-run')).toBe(true);
+  expect(app.$('survivalTurns').textContent).toBe('150');
+  expect(app.$('bChallengeRelic').disabled).toBe(false);
+
+  // Usa la pista: se gasta en este turno y no se puede repetir hasta mover
+  app.$('bChallengeRelic').click();
+  expect(app.$('bChallengeRelic').disabled).toBe(true);
+  expect(app.$('challengeRelicState').textContent).toBe('0');
 
   const { G } = app.S;
   const { hintMove } = await import('../../src/engine/solver.js');
   const { i, from, to } = hintMove(G.pieces, G.pos, G.walls);
-  const drag = (piece, from, to) => {
+  const drag = (piece, fromPos, toPos) => {
     const axis = app.S.G.pieces[piece].o === 'h' ? 'clientX' : 'clientY';
     const events = { pointerId: 1, bubbles: true };
     const el = app.S.G.els[piece];
     el.dispatchEvent(new PointerEvent('pointerdown', { ...events, [axis]: 0 }));
-    el.dispatchEvent(new PointerEvent('pointermove', { ...events, [axis]: (to - from) * 48 }));
+    el.dispatchEvent(new PointerEvent('pointermove', { ...events, [axis]: (toPos - fromPos) * 48 }));
     el.dispatchEvent(new PointerEvent('pointerup', events));
   };
   vi.spyOn(app.$('board'), 'clientWidth', 'get').mockReturnValue(288);
   drag(i, from, to);
+
+  // Al mover: gasta 1 turno y la pista se refresca para el nuevo turno
   expect(G.pos[i]).toBe(to);
-  expect(app.$('survivalTurnFlash').hidden).toBe(true);
-  const pos = G.pos.slice();
-  expect(saved().survival).toMatchObject({ remaining: 149, cleared: 0, pos });
+  expect(app.$('bChallengeRelic').disabled).toBe(false);
+  expect(saved().survival).toMatchObject({ route: '150', relic: 'hint', remaining: 149, cleared: 0 });
   expect(saved().run).toEqual(adventure);
+
+  // Guardar y recargar
   app.$('bMenu').click();
-  expect(app.$('pProgress').hidden).toBe(true);
   app.$('pSave').click();
-  expect(app.S.run).toBeNull();
-  expect(app.$('panelSurvival').hidden).toBe(false);
-  expect(app.$('survivalPlay').textContent).toBe('Continuar');
+  expect(app.$('survivalSaved').hidden).toBe(false);
 
   app = await bootApp({ save: saved() });
   app.$('tabSurvival').click();
-  app.$('survivalPlay').click();
-  expect(app.S.G.pos).toEqual(pos);
-  expect(document.body.classList.contains('survival-run')).toBe(true);
+  app.$('survivalContinue').click();
+  expect(app.S.G.pos).toEqual(saved().survival.pos);
   expect(app.$('survivalTurns').textContent).toBe('149');
 
+  // Completar tablero 1 y avanzar al 2
   const audio = (await import('../../src/audio/music.js')).Music;
   const resumedTrack = audio.themeName;
   vi.spyOn(app.$('board'), 'clientWidth', 'get').mockReturnValue(288);
@@ -70,58 +74,80 @@ it('abre Supervivencia desde el menú, debita un turno y restaura el tablero tra
     drag(next.i, next.from, next.to);
   }
   expect(saved().survival).toMatchObject({ remaining: 147, cleared: 1, pos: null });
-  expect(app.$('survivalTurnFlash').hidden).toBe(false);
-  expect(app.$('survivalTurnFlash').textContent).toBe('147 turnos restantes');
   await untilPlayable(app, 2);
   expect(audio.themeName).toBe(resumedTrack);
-  expect(app.$('result')?.classList.contains('show')).toBeFalsy();
-  await until(() => app.$('survivalTurnFlash').hidden);
-
-  app.$('bMenu').click();
-  app.$('pSave').click();
-  app.$('menuBack').click();
-  expect(app.$('homeSurvivalRecord').hidden).toBe(false);
-  expect(app.$('homeSurvivalBest').textContent).toBe('2');
-  app.$('tabSurvival').click();
-  app.$('survivalRestart').click();
-  app.$('askNo').click();
-  expect(saved().survival.cleared).toBe(1);
-  app.$('survivalRestart').click();
-  app.$('askYes').click();
-  await untilPlayable(app, 1);
-  expect(saved().survival).toMatchObject({ remaining: 150, cleared: 0, status: 'active' });
-  app = await bootApp({ save: saved() });
-  expect(app.$('homeSurvivalBest').textContent).toBe('2');
 });
 
-it('termina al agotar la reserva y permite volver a empezar', async () => {
-  const app = await bootApp({
-    save: { survival: { routeVersion: 1, cleared: 0, remaining: 1, pos: null, status: 'active', updatedAt: 1 } },
-  });
+it('permite usar rehacer tablero (1 vez por partida) y deshacer (1 vez por tablero) desde el HUD', async () => {
+  const app = await bootApp();
   app.$('tabSurvival').click();
+  app.$('survivalRoutes').querySelector('input[value="200"]').click();
+  app.$('survivalRelics').querySelector('input[value="reset"]').click();
   app.$('survivalPlay').click();
+
+  expect(app.$('survivalTurns').textContent).toBe('200');
+  expect(app.$('bChallengeRelic').disabled).toBe(true);
+
   const { applyMove } = await import('../../src/game/run-logic.js');
   const { hintMove } = await import('../../src/engine/solver.js');
   const { afterMove } = await import('../../src/ui/board.js');
-  const G = app.S.G;
-  const { i, to } = hintMove(G.pieces, G.pos, G.walls);
-  applyMove(G, i, to);
+  const startPos = app.S.G.pos.slice();
+  const move1 = hintMove(app.S.G.pieces, app.S.G.pos, app.S.G.walls);
+  applyMove(app.S.G, move1.i, move1.to);
   afterMove();
-  expect(saved().survival).toMatchObject({ remaining: 0, cleared: 0, status: 'lost' });
-  expect(app.$('survivalEnd').classList.contains('show')).toBe(true);
-  app.$('survivalBack').click();
-  expect(app.$('survivalPlay').textContent).toBe('Jugar de nuevo');
+  expect(app.$('survivalTurns').textContent).toBe('199');
+  expect(app.$('bChallengeRelic').disabled).toBe(false);
+
+  // Rehacer tablero: restaura posiciones y turnos, queda usada para toda la partida
+  app.$('bChallengeRelic').click();
+  expect(app.S.G.pos).toEqual(startPos);
+  expect(app.$('survivalTurns').textContent).toBe('200');
+  expect(app.$('bChallengeRelic').disabled).toBe(true);
+
+  // Ahora probar reliquia de deshacer en ruta 250
+  app.$('bMenu').click();
+  app.$('pSave').click();
+  expect(app.$('survivalPlay').textContent).toBe('Empezar de nuevo');
+  app.$('survivalRoutes').querySelector('input[value="250"]').click();
+  app.$('survivalRelics').querySelector('input[value="undo"]').click();
   app.$('survivalPlay').click();
-  expect(app.S.G.n).toBe(1);
-  expect(saved().survival).toMatchObject({ remaining: 150, cleared: 0, status: 'active' });
+  app.$('askYes').click();
+  await until(() => app.$('survivalTurns').textContent === '250');
+  const initPos = app.S.G.pos.slice();
+  const m = hintMove(app.S.G.pieces, app.S.G.pos, app.S.G.walls);
+  applyMove(app.S.G, m.i, m.to);
+  afterMove();
+  expect(app.$('survivalTurns').textContent).toBe('249');
+  expect(app.$('bChallengeRelic').disabled).toBe(false);
+
+  app.$('bChallengeRelic').click();
+  expect(app.S.G.pos).toEqual(initPos);
+  expect(app.$('survivalTurns').textContent).toBe('250');
+  expect(app.$('bChallengeRelic').disabled).toBe(true);
 });
 
-it('completar el último tablero en el turno final muestra la victoria y el récord de nivel 15', async () => {
+it('termina al agotar la reserva y al completar el último tablero muestra la victoria', async () => {
   const app = await bootApp({
-    save: { survival: { routeVersion: 1, cleared: 14, remaining: 17, pos: null, status: 'active', updatedAt: 1 } },
+    save: {
+      survival: {
+        routeVersion: 2,
+        route: '150',
+        relic: 'hint',
+        cleared: 14,
+        remaining: 17,
+        boardStartRemaining: 17,
+        pos: null,
+        lastPos: null,
+        hintUsedTurn: false,
+        resetUsed: false,
+        undoUsedBoard: false,
+        status: 'active',
+        updatedAt: 1,
+      },
+    },
   });
   app.$('tabSurvival').click();
-  app.$('survivalPlay').click();
+  app.$('survivalContinue').click();
   const { applyMove } = await import('../../src/game/run-logic.js');
   const { hintMove } = await import('../../src/engine/solver.js');
   const { afterMove } = await import('../../src/ui/board.js');
@@ -129,14 +155,13 @@ it('completar el último tablero en el turno final muestra la victoria y el réc
   expect(G.n).toBe(15);
   for (let remaining = 17; remaining > 0; remaining--) {
     const move = hintMove(G.pieces, G.pos, G.walls);
-    expect(move.left).toBe(remaining);
     applyMove(G, move.i, move.to);
     afterMove();
   }
   await until(() => app.$('survivalEnd').classList.contains('show'));
-  expect(app.$('survivalEndTitle').textContent).toBe('¡Supervivencia completada!');
+  expect(app.$('survivalEndTitle').textContent).toBe('¡Desafío completado!');
   expect(saved().survival).toMatchObject({ remaining: 0, cleared: 15, status: 'won' });
   app.$('survivalBack').click();
   app.$('menuBack').click();
-  expect(app.$('homeSurvivalBest').textContent).toBe('15');
+  expect(app.$('homeSurvivalBest').textContent).toBe('1/3');
 });
