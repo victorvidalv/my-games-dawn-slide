@@ -1,9 +1,11 @@
 /* Arranca el juego completo dentro de happy-dom con el HTML real (index.html), para probar la interfaz sin navegador. */
 import fs from 'node:fs';
 import path from 'node:path';
-import { vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
 
 const html = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf8');
+let music;
+afterEach(() => music?.background());
 
 /** happy-dom no dibuja: un contexto 2D que acepta cualquier llamada basta para los efectos visuales. */
 const noop = () => {};
@@ -44,6 +46,7 @@ globalThis.Worker = undefined; // los tableros se generan en el mismo hilo
 window.fetch = globalThis.fetch = async () => new Response(null, { status: 404 });
 
 export async function bootApp({ save } = {}) {
+  music?.background();
   vi.resetModules();
   localStorage.clear();
   localStorage.setItem('slideslay.lang', 'es'); // textos de origen: los tests no dependen de las traducciones
@@ -54,6 +57,7 @@ export async function bootApp({ save } = {}) {
     .replace(/^[\s\S]*?<html[^>]*>/i, '')
     .replace(/<\/html>[\s\S]*$/i, '');
   await import('../../src/main.js');
+  ({ Music: music } = await import('../../src/audio/music.js'));
   const state = await import('../../src/state.js');
   const session = await import('../../src/game/session.js');
   return { ...state, session, $: (id) => document.getElementById(id) };

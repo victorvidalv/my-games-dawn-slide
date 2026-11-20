@@ -433,7 +433,7 @@ export function toggleSound() {
   if (muted) Music.stop(0.2);
   else {
     unlockAudio();
-    if (S.G && !S.G.done) {
+    if (S.run?.survival?.status === 'active' || (S.G && !S.G.done)) {
       Music.start();
       Music.muffle($('menu').classList.contains('show') || $('pause').classList.contains('show'));
     } else Music.scene($('heroSelect')?.classList.contains('show') ? 'heroes' : 'menu'); // sin partida: vuelve la música del menú

@@ -1,5 +1,5 @@
 /*
- * Pantalla de inicio: tres entradas grandes (Aventura · Retos diarios · Logros). Cada una abre su sección con cabecera fija
+ * Pantalla de inicio: tres entradas grandes para los modos de juego. Cada una abre su sección con cabecera fija
  * («Volver» + título) y contenido que se desplaza hacia abajo dentro de la placa. Móvil en vertical y pantallas apaisadas (PC).
  */
 /* ---------- inicio: tres placas grandes ---------- */
@@ -53,10 +53,10 @@
   --hb2: #244a62;
   --hbg: #65c3c6;
 }
-#menu .hb-ach {
-  --hb1: #836131;
-  --hb2: #584336;
-  --hbg: #e8b963;
+#menu .hb-survival {
+  --hb1: #813c66;
+  --hb2: #5a2a50;
+  --hbg: #e19bcd;
 }
 #menu .home-btn:hover {
   transform: translate(-1px, -2px);
@@ -407,7 +407,7 @@
   }
 }
 
-/* El récord vive en la tarjeta de Aventura para dejar sitio a la ilustración. */
+/* Los récords se muestran dentro de sus respectivas tarjetas. */
 #menu .home-record {
   display: flex;
   flex-wrap: wrap;
@@ -452,25 +452,36 @@
 }
 
 /* ---------- Inicio: herramientas dentro de la placa (sonido, pasar partida, guía, compartir) ---------- */
-#menu .home-more {
-  display: flex;
-  flex-direction: column;
+#menu .home-shortcuts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
+  justify-items: center;
+  gap: 8px 12px;
+  width: min(100%, 230px);
+  margin-inline: auto;
   margin-top: 12px;
 }
-#menuCard:not([data-view='home']) .home-more {
+#menu .home-shortcuts[hidden] {
   display: none;
 }
-#menu .home-more > summary {
-  display: grid;
-  place-items: center;
-  min-height: 28px;
+#menu .home-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 36px;
+  margin: 0;
   padding: 2px 16px;
   font: 750 12px/1 var(--font-ui);
   letter-spacing: 0.04em;
   border: 1.5px solid #e0b04f55;
   border-radius: 99px;
   color: #ffe7b5;
+  background: transparent;
+  box-shadow: none;
   cursor: pointer;
   list-style: none;
   opacity: 0.8;
@@ -478,27 +489,42 @@
     opacity 0.15s,
     background 0.15s;
 }
-#menu .home-more > summary::-webkit-details-marker {
-  display: none;
+#menu .home-pill .ic {
+  width: 17px;
+  height: 17px;
 }
-#menu .home-more > summary:hover,
-#menu .home-more[open] > summary {
+#menu .home-pill.has-news::after {
+  position: absolute;
+  top: 0;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffd24a;
+  content: '';
+}
+#menu .home-pill:hover,
+#menu .home-pill[aria-expanded='true'] {
   opacity: 1;
   background: #ffffff14;
 }
-#menu .home-more > summary:focus-visible {
+#menu .home-pill:focus-visible {
   outline: 3px solid #ffdb8f;
   outline-offset: 2px;
 }
 #menu .home-tools {
   display: grid;
+  grid-column: 1 / -1;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   justify-items: center;
   gap: 10px;
   width: 100%;
-  margin-top: 10px;
+  margin: 2px 0 0;
 }
-#menu .home-more[open] .home-tools {
+#menu .home-tools[hidden] {
+  display: none;
+}
+#menu .home-tools:not([hidden]) {
   animation: homeToolsIn 0.18s ease-out;
 }
 @keyframes homeToolsIn {
@@ -508,7 +534,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  #menu .home-more[open] .home-tools {
+  #menu .home-tools:not([hidden]) {
     animation: none;
   }
 }
@@ -620,7 +646,7 @@
   #menu .home-btn {
     min-height: 78px;
   }
-  #menu .home-more {
+  #menu .home-shortcuts {
     margin-top: 10px;
   }
   #menu .tool-btn {
@@ -660,7 +686,7 @@
   }
 }
 @media (min-aspect-ratio: 13/10) and (max-height: 520px) {
-  #menu .home-more {
+  #menu .home-shortcuts {
     margin-top: 8px;
   }
   #menu .tool-btn {
@@ -697,7 +723,7 @@
     width: 19px;
     height: 19px;
   }
-  #menu .home-more {
+  #menu .home-shortcuts {
     margin-top: 5px;
   }
   #menu[data-view='home'] .home-credit {

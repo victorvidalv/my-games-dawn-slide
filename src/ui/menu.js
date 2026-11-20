@@ -2,11 +2,11 @@ import { Music, setTensionFx } from '../audio/music.js';
 import { soundLabel, toggleSound } from '../audio/sound.js';
 import { zoneIdx } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
-import { leaveDaily, recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
-import { challengeById, currentStreak, dayNumber, streakEarned } from '../game/daily.js';
-import { ACHIEVEMENTS } from '../game/achievements.js';
+import { leaveDaily, leaveSurvival, recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
+import { challengeById } from '../game/daily.js';
 import { renderAchievements } from './achievements.js';
-import { renderDaily } from './daily.js';
+import { paintDailyHome, renderDaily } from './daily.js';
+import { paintSurvivalHome, renderSurvival } from './survival.js';
 import { PATHS, S, closeRun, discardRun, heroOf, holdBusy, pathOf, persist, setRun, store } from '../state.js';
 import { restoreRun } from '../game/run-logic.js';
 import { bestAdventureRecord } from '../game/save-merge.js';
@@ -110,12 +110,16 @@ async function pickPath(s, mode) {
 /* ---------- Opciones (pausa) ---------- */
 function openPause() {
   if (!S.run || !S.G || S.G.done) return;
-  const daily = S.run.daily;
-  $('pauseContext').textContent = daily
-    ? `Reto diario · ${challengeById(daily.id).name}`
-    : `${heroOf().name} · Nivel ${S.run.level} de 100`;
-  $('pauseHero').hidden = !!daily;
-  $('pProgress').hidden = $('pSave').hidden = !!daily;
+  const { daily, survival } = S.run;
+  $('pauseContext').textContent = survival
+    ? `Supervivencia · Nivel ${S.run.level}`
+    : daily
+      ? `Reto diario · ${challengeById(daily.id).name}`
+      : `${heroOf().name} · Nivel ${S.run.level} de 100`;
+  $('pauseHero').hidden = $('pProgress').hidden = !!(daily || survival);
+  $('pSave').hidden = !!daily;
+  $('pQuit').hidden = !!survival;
+  $('pauseSaveError').hidden = true;
   $('pQuit').firstElementChild.textContent = daily ? 'Salir del reto' : 'Terminar';
   $('pauseHero').src = heroArt(heroOf().id, 'story');
   $('pause').style.setProperty('--pause-scene', cssUrl(`backgrounds/zone-${zoneIdx(S.run.level) + 1}.webp`));
@@ -141,7 +145,7 @@ $('pause').addEventListener('keydown', (e) => {
     return;
   }
   if (e.key !== 'Tab') return;
-  const buttons = [...$('pause').querySelectorAll('button')],
+  const buttons = [...$('pause').querySelectorAll('button:not([hidden])')],
     first = buttons[0],
     last = buttons.at(-1);
   if (e.shiftKey && document.activeElement === first) {
@@ -164,6 +168,16 @@ $('pProgress').onclick = async () => {
 };
 $('pSave').onclick = () => {
   if (!S.run || !S.G || S.G.done) return;
+  if (S.run.survival) {
+    if (!saveRun()) {
+      $('pauseSaveError').hidden = false;
+      return;
+    }
+    leaveSurvival();
+    $('pause').classList.remove('show');
+    openMenu('survival');
+    return;
+  }
   saveRun();
   closeRun();
   $('pause').classList.remove('show');
@@ -172,7 +186,7 @@ $('pSave').onclick = () => {
   openMenu();
 };
 $('pQuit').onclick = () => {
-  if (!S.run) return;
+  if (!S.run || S.run.survival) return;
   if (S.run.daily) {
     leaveDaily();
     $('pause').classList.remove('show');
@@ -192,9 +206,10 @@ const continueLabel = (sr) =>
   `▶ Continuar<small>${pathOf(sr.start || 1).n} · Nivel ${sr.level}` +
   (sr.mode === 'p' ? ' · Práctica' : ` · ${sr.score.toLocaleString(numLocale())} pts`) +
   '</small>';
-/* Menú de inicio: primero las tres entradas (Aventura · Retos diarios · Logros); al tocar una se abre su sección con «Volver» */
+/* Cada entrada del menú abre su sección con «Volver». */
 const VIEWS = {
   adv: { title: 'Aventura', panel: 'panelAdv' },
+  survival: { title: 'Supervivencia', panel: 'panelSurvival' },
   daily: { title: 'Retos diarios', panel: 'panelDaily' },
   ach: { title: 'Logros', panel: 'panelAch' },
 };
@@ -243,12 +258,8 @@ function paintHome() {
   paintHomeRecord();
   $('homeAdvSaved').hidden = !hasSaved;
   $('homeAdvSaved').textContent = hasSaved ? `Partida guardada · nivel ${sr.level}` : '';
-  const d = store.daily,
-    day = dayNumber(),
-    streak = d ? currentStreak(d, day) : 0;
-  $('homeDailySub').textContent = streakEarned(d, day) ? `Hecho hoy · racha de ${streak}` : 'Reto de hoy pendiente';
-  $('homeAchSub').textContent =
-    `${ACHIEVEMENTS.filter((a) => store.ach?.[a.id]).length} de ${ACHIEVEMENTS.length} conseguidos`;
+  paintDailyHome();
+  paintSurvivalHome();
 }
 function showView(view, { focus = false } = {}) {
   viewNow = VIEWS[view] ? view : 'home';
@@ -256,14 +267,17 @@ function showView(view, { focus = false } = {}) {
   $('menuCard').dataset.view = viewNow;
   $('menu').dataset.view = viewNow;
   $('menuHome').hidden = !home;
+  $('homeShortcuts').hidden = !home;
   $('menuHead').hidden = home;
   Object.entries(VIEWS).forEach(([k, v]) => {
     $(v.panel).hidden = k !== viewNow;
   });
   if (home) paintHome();
   else {
+    toggleHomeTools(false);
     $('menuTitle').textContent = VIEWS[viewNow].title;
     if (viewNow === 'daily') renderDaily();
+    else if (viewNow === 'survival') renderSurvival();
     else if (viewNow === 'ach') renderAchievements();
   }
   $('menuCard').scrollTop = 0;
@@ -276,13 +290,13 @@ setInterval(() => {
   if (viewNow === 'home' && !document.hidden && $('menu').classList.contains('show')) paintHomeRecord();
 }, 30000);
 
-document.querySelectorAll('.home-btn').forEach((b) => {
+document.querySelectorAll('#menuHome [data-view], #homeShortcuts [data-view]').forEach((b) => {
   b.onclick = () => showView(b.dataset.view, { focus: true });
 });
 $('menuBack').onclick = () => {
   const from = viewNow;
   showView('home');
-  document.querySelector(`.home-btn[data-view="${from}"]`)?.focus();
+  document.querySelector(`button[data-view="${from}"]`)?.focus();
 };
 $('menu').addEventListener('keydown', (e) => {
   if (e.key !== 'Escape' || viewNow === 'home' || !$('menu').classList.contains('show')) return;
@@ -348,13 +362,19 @@ document.addEventListener('langchange', () => {
 });
 
 /* «Más opciones» del inicio: se pliega al tocar fuera o con Escape. */
-const homeMore = $('homeMore');
+function toggleHomeTools(open) {
+  $('homeMore').setAttribute('aria-expanded', String(open));
+  $('homeTools').hidden = !open;
+}
+$('homeMore').onclick = () => toggleHomeTools($('homeTools').hidden);
 document.addEventListener('click', (e) => {
-  if (homeMore.open && !homeMore.contains(e.target)) homeMore.open = false;
+  if (!$('homeTools').hidden && e.target !== $('homeMore') && !$('homeTools').contains(e.target)) {
+    toggleHomeTools(false);
+  }
 });
-homeMore.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && homeMore.open) {
-    homeMore.open = false;
-    homeMore.querySelector('summary').focus();
+$('homeShortcuts').addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('homeTools').hidden) {
+    toggleHomeTools(false);
+    $('homeMore').focus();
   }
 });

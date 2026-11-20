@@ -1,5 +1,25 @@
 /* Diccionario español → chino simplificado (ui). Mismas claves y mismo orden que en-ui.js. */
 export const ZH_UI = {
+  'Reiniciar partida': '重新开始',
+  '¿Reiniciar Supervivencia?': '重新开始生存模式？',
+  'Se reemplazará la partida guardada. Volverás al nivel 1 con la reserva completa.':
+    '当前存档将被覆盖。你将带着完整步数回到第 1 关。',
+  Supervivencia: '生存模式',
+  '{total} tableros · {turns} turnos': '{total} 个棋盘 · {turns} 步',
+  'Turnos restantes': '剩余步数',
+  'Tienes {n} turnos para resolver los {total} tableros. Cada movimiento gasta un turno. Para llegar al final, todos deben salir perfectos.':
+    '你有 {n} 步来解开全部 {total} 个棋盘。每移动一次就消耗一步。要通关，每关都必须用最少步数完成。',
+  '{n} de {total} tableros superados': '已完成 {n} / {total} 个棋盘',
+  '{turns} turnos restantes': '剩余 {turns} 步',
+  'Nivel {n} · {turns} turnos restantes': '第 {n} 关 · 剩余 {turns} 步',
+  'Supervivencia · Nivel {n}': '生存模式 · 第 {n} 关',
+  Empezar: '开始',
+  'Jugar de nuevo': '再玩一次',
+  '¡Supervivencia completada!': '生存模式通关！',
+  'Se acabaron los turnos': '步数已用完',
+  'Volver a Supervivencia': '返回生存模式',
+  'No se pudo guardar la partida.': '无法保存游戏。',
+  'Récord de nivel': '最高关卡',
   Récord: '最高纪录',
   Menú: '菜单',
   'Escoge el nivel': '选择难度',

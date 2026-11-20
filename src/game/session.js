@@ -20,6 +20,7 @@ import {
   writeDailyProgress,
 } from './daily.js';
 import { boardStats } from './achievements.js';
+import { buildSurvival, newSurvival, spendSurvivalTurn, survivalProgress, writeSurvival } from './survival.js';
 import { canPaidRevive, payRevive } from './shop.js';
 import {
   advanceRun,
@@ -47,7 +48,7 @@ import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { showDailyResult } from '../ui/daily.js';
 import { countStat, markStat, pauseAchievementToasts } from '../ui/achievements.js';
-import { buildPieces, fitBoard, layout, syncRouteStyle, updateHud } from '../ui/board.js';
+import { boardEl, buildPieces, fitBoard, layout, syncRouteStyle, updateHud } from '../ui/board.js';
 import { isBonusLevel, showBonus } from '../ui/bonus.js';
 import { showBossIntro } from '../ui/boss.js';
 import { onBossTimeUp, preloadBossArt, syncBossPhase, syncBossTimer } from '../ui/boss-phase.js';
@@ -56,6 +57,8 @@ import { showResult } from '../ui/result.js';
 import { chooseHero, showRescue, showReviveOffer, syncHero } from '../ui/heroes.js';
 import { applyZone, renderStage, showMap } from '../ui/map.js';
 import { openMenu } from '../ui/menu.js';
+import { flashSurvivalTurns, setSurvivalMode, showSurvivalResult, updateSurvivalHud } from '../ui/survival.js';
+import { $ } from '../dom.js';
 import {
   dimBoard,
   levelBannerText,
@@ -77,6 +80,7 @@ import { boardSwapDone, boardSwapOut, levelBanner, playLevelScenery, wipeIn, wip
 export function saveRun() {
   const run = S.run,
     G = S.G;
+  if (run?.survival) return persist();
   if (run?.daily) {
     const d = run.daily;
     if (G && !G.done && d.day === dayNumber()) {
@@ -91,7 +95,7 @@ export function saveRun() {
   persist();
 }
 export function recordBest(final) {
-  if (!S.run || S.run.daily) return;
+  if (!S.run || S.run.daily || S.run.survival) return;
   updateBest(store.paths, rkey(), S.run, { final });
   persist();
 }
@@ -156,6 +160,75 @@ export function leaveDaily() {
   setTensionFx(0, false);
 }
 
+/* ---------- Supervivencia ---------- */
+export function startSurvival({ restart = false } = {}) {
+  if (S.run?.survival) return;
+  if (S.run) saveRun();
+  closeRun();
+  const previous = survivalProgress(store);
+  const progress =
+    !restart && previous?.status === 'active'
+      ? previous
+      : writeSurvival(store, { ...newSurvival(), updatedAt: store.survival?.updatedAt });
+  setRun({ survival: progress, level: progress.cleared + 1 });
+  persist();
+  setDailyMode(false);
+  setSurvivalMode(true);
+  setTensionFx(0, false);
+  Music.survival();
+  showSurvivalBoard();
+}
+
+export function leaveSurvival() {
+  closeRun();
+  setSurvivalMode(false);
+  Music.stop(0.2);
+}
+
+function showSurvivalBoard() {
+  const run = S.run;
+  const G = buildSurvival(run.survival);
+  G.colors = Array.from({ length: 8 }, (_, i) => (i + G.n - 1) % 8);
+  run.level = G.n;
+  setBoard(G);
+  $('lvl').textContent = G.n;
+  updateSurvivalHud(run.survival);
+  applyZone(zoneIdx(G.n));
+  syncBossPhase();
+  buildPieces();
+  setBusy(false);
+  fitBoard();
+}
+
+export function playSurvivalTurn(won) {
+  const { run, G } = S;
+  run.survival = writeSurvival(store, spendSurvivalTurn(run.survival, G.pos, won));
+  persist();
+  updateSurvivalHud(run.survival);
+  if (!won && run.survival.status === 'active') return;
+
+  haltBoard();
+  lockBoard();
+  if (won) {
+    sfx.success();
+    playKeyExit(G, { party: false });
+    boardEl.classList.add('survival-clear');
+    if (run.survival.status === 'active') flashSurvivalTurns(run.survival.remaining);
+  }
+  const next = () => {
+    boardEl.classList.remove('survival-clear');
+    if (S.run !== run) return;
+    if (run.survival.status === 'active') showSurvivalBoard();
+    else {
+      Music.stop(0.25);
+      showSurvivalResult(run.survival);
+      setBusy(false);
+    }
+  };
+  if (won && !reducedMotion()) setTimeout(next, 220);
+  else next();
+}
+
 /* ---------- Tablero ---------- */
 async function startLevel() {
   setBusy(true);
@@ -163,6 +236,7 @@ async function startLevel() {
   const G = await buildLevelAsync(run, store.tips || {});
   if (S.run !== run) return; // se salió mientras se preparaba
   restoreDailyAttempt(G, run.daily);
+  setSurvivalMode(false);
   setDailyMode(!!run.daily);
   // El telón dorado abre la presentación; entre tableros las piezas se disuelven en su sitio.
   if (needsBossIntro(run, G)) await wipeIn('gold');

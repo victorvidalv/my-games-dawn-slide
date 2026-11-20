@@ -1,5 +1,25 @@
 /* Diccionario español → japonés (ui). Mismas claves y mismo orden que en-ui.js. */
 export const JA_UI = {
+  'Reiniciar partida': '最初からやり直す',
+  '¿Reiniciar Supervivencia?': 'サバイバルをやり直しますか？',
+  'Se reemplazará la partida guardada. Volverás al nivel 1 con la reserva completa.':
+    'セーブデータは上書きされます。残り手数が初期値に戻り、レベル1から始まります。',
+  Supervivencia: 'サバイバル',
+  '{total} tableros · {turns} turnos': '{total} 面 · {turns} 手',
+  'Turnos restantes': '残り手数',
+  'Tienes {n} turnos para resolver los {total} tableros. Cada movimiento gasta un turno. Para llegar al final, todos deben salir perfectos.':
+    '{total} 面を解くために {n} 手あります。ピースを動かすたびに1手消費します。最後まで進むには全ての面を最少手数でクリアしてください。',
+  '{n} de {total} tableros superados': '{total} 面中 {n} 面クリア',
+  '{turns} turnos restantes': '残り {turns} 手',
+  'Nivel {n} · {turns} turnos restantes': 'レベル {n} · 残り {turns} 手',
+  'Supervivencia · Nivel {n}': 'サバイバル · レベル {n}',
+  Empezar: '始める',
+  'Jugar de nuevo': 'もう一度遊ぶ',
+  '¡Supervivencia completada!': 'サバイバルクリア！',
+  'Se acabaron los turnos': '手数を使い切りました',
+  'Volver a Supervivencia': 'サバイバルに戻る',
+  'No se pudo guardar la partida.': 'ゲームを保存できませんでした。',
+  'Récord de nivel': '到達レベル記録',
   Récord: '最高記録',
   Menú: 'メニュー',
   'Escoge el nivel': '難易度を選ぶ',

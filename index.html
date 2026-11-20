@@ -61,6 +61,7 @@
   <div class="top">
     <div class="lv" title="Nivel" aria-label="Nivel"><i class="bi level-ico" data-icon="flag" aria-hidden="true"></i><b id="lvl">1</b></div>
     <div class="scores"><div class="sc" title="Puntaje"><i class="bi score-ico" data-icon="trophy" aria-hidden="true"></i><b id="score" aria-label="Puntaje">0</b></div></div>
+    <div class="survival-reserve"><span>Turnos restantes</span><b id="survivalTurns"></b></div>
     <button class="snd-btn snd-hud" type="button"></button>
     <button class="menubtn" id="bMenu" aria-label="Menú y opciones"><span>☰</span><em>Menú</em></button>
   </div>
@@ -92,6 +93,7 @@
   <div class="frame">
     <div class="exit-arrow">➜</div>
     <div id="board"><div class="slot-row"></div></div>
+    <div id="survivalTurnFlash" class="survival-turn-flash" role="status" hidden></div>
   </div>
 
   <div class="hint-text" id="msg" role="status" aria-live="polite"></div>
@@ -246,18 +248,19 @@
   <div class="card" id="menuCard" data-view="home">
     <nav class="menu-home" id="menuHome" aria-label="Modos de juego">
       <button type="button" class="home-btn hb-adv" id="tabAdv" data-view="adv"><i class="hb-ico bi" data-icon="flag" aria-hidden="true"></i><span class="hb-copy"><b>Aventura</b><small>Puzles con elementos roguelite</small><small id="homeAdvSaved" hidden></small><span class="home-record" id="homeRecord" hidden><span class="record-pill"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Récord</span><strong id="homeRecordScore"></strong></span><time id="homeRecordAge" hidden></time></span></span><i class="hb-go" aria-hidden="true">›</i></button>
-      <button type="button" class="home-btn hb-daily" id="tabDaily" data-view="daily"><i class="hb-ico bi" data-icon="flame" aria-hidden="true"></i><span class="hb-copy"><b>Retos diarios</b><small id="homeDailySub"></small></span><i class="hb-go" aria-hidden="true">›</i></button>
-      <button type="button" class="home-btn hb-ach" id="tabAch" data-view="ach"><i class="hb-ico bi" data-icon="trophy" aria-hidden="true"></i><span class="hb-copy"><b>Logros</b><small id="homeAchSub"></small></span><i class="hb-go" aria-hidden="true">›</i></button>
+      <button type="button" class="home-btn hb-survival" id="tabSurvival" data-view="survival"><i class="hb-ico bi" data-icon="hourglass" aria-hidden="true"></i><span class="hb-copy"><b>Supervivencia</b><small id="homeSurvivalSub"></small><span class="home-record" id="homeSurvivalRecord" hidden><span class="record-pill"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Récord de nivel</span><strong id="homeSurvivalBest"></strong></span></span></span><i class="hb-go" aria-hidden="true">›</i></button>
+      <button type="button" class="home-btn hb-daily" id="tabDaily" data-view="daily"><i class="hb-ico bi" data-icon="flame" aria-hidden="true"></i><span class="hb-copy"><b>Retos diarios</b><small id="homeDailySub"></small><span class="home-record"><span class="record-pill"><span>Racha actual</span><strong id="homeDailyStreak"></strong></span></span></span><i class="hb-go" aria-hidden="true">›</i></button>
     </nav>
-    <details class="home-more" id="homeMore">
-      <summary title="Más opciones">Más</summary>
-      <div class="home-tools" id="homeTools">
+    <div class="home-shortcuts" id="homeShortcuts">
+      <button type="button" class="home-pill" id="tabAch" data-view="ach"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Logros</span></button>
+      <button type="button" class="home-pill" id="homeMore" aria-expanded="false" aria-controls="homeTools" title="Más opciones">Más</button>
+      <div class="home-tools" id="homeTools" hidden>
         <button class="snd-btn snd-menu tool-btn" type="button"></button>
         <button class="tool-btn" id="bTransfer" type="button" aria-label="Pasar partida" title="Pasar partida"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3.5 13.2 24.5 4.5l-6.6 19.8-4.4-8.4z"/><path d="m13.5 15.9 11-11.4"/></svg></button>
         <a class="tool-btn" id="homeGuide" href="./guia/" aria-label="Guía del juego" title="Guía del juego"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 8c-3-2.2-6.8-2.8-10.5-2.2v15.6c3.7-.6 7.5 0 10.5 2.2 3-2.2 6.8-2.8 10.5-2.2V5.8C20.8 5.2 17 5.8 14 8z"/><path d="M14 8v15.6"/></svg></a>
         <button class="share-btn tool-btn" id="bShare" type="button" aria-label="Compartir y jugar en el móvil" title="Compartir y jugar en el móvil"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="21" cy="6" r="3.2"/><circle cx="7" cy="14" r="3.2"/><circle cx="21" cy="22" r="3.2"/><path d="m9.8 12.4 8.4-4.8m-8.4 8 8.4 4.8"/></svg></button>
       </div>
-    </details>
+    </div>
     <div class="menu-head" id="menuHead" hidden>
       <button type="button" class="menu-back" id="menuBack"><span aria-hidden="true">‹</span> Volver</button>
       <h2 class="menu-title" id="menuTitle"></h2>
@@ -267,6 +270,12 @@
       <p class="menu-pick">Escoge el nivel</p>
       <p class="modeinfo" id="modeInfo" hidden></p>
       <div class="paths" id="paths"></div>
+    </div>
+    <div class="menu-panel survival-panel" id="panelSurvival" hidden>
+      <p id="survivalIntro"></p>
+      <p id="survivalStatus" hidden></p>
+      <button type="button" class="primary" id="survivalPlay">Empezar</button>
+      <button type="button" id="survivalRestart" hidden>Reiniciar partida</button>
     </div>
     <div class="menu-panel" id="panelDaily" hidden></div>
     <div class="menu-panel" id="panelAch" hidden></div>
@@ -358,6 +367,7 @@
    <button id="pSave"><span>Guardar y salir</span><svg class="pause-icon" viewBox="0 0 28 28" aria-hidden="true"><path d="M6 4h13l4 4v16H5V4h1Zm3 0v8h10V4M9 24v-9h10v9"/></svg></button>
    <button class="pause-end" id="pQuit"><span>Terminar</span><svg class="pause-icon" viewBox="0 0 28 28" aria-hidden="true"><path d="M5 13L14 5l9 8v11H5V13Zm6 11v-8h6v8"/></svg></button>
   </div>
+  <p id="pauseSaveError" role="status" hidden>No se pudo guardar la partida.</p>
  </div>
 </div>
 
@@ -419,6 +429,14 @@
 </div>
 
 <!-- Resultado de un reto diario -->
+<div class="modal" id="survivalEnd" role="dialog" aria-modal="true" aria-labelledby="survivalEndTitle">
+ <div class="card survival-end">
+  <h2 id="survivalEndTitle"></h2>
+  <p id="survivalEndSummary"></p>
+  <button type="button" class="primary" id="survivalBack">Volver a Supervivencia</button>
+ </div>
+</div>
+
 <div class="modal" id="dailyEnd" role="dialog" aria-modal="true" aria-labelledby="dailyEndTitle">
  <div class="card daily-end">
   <div class="tag" id="dailyEndTag"></div>

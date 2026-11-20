@@ -18,6 +18,7 @@ import {
   shiftEntry,
 } from './themes.js';
 import { isBossLevel } from '../game/mechanics.js';
+import { SURVIVAL_TRACK_BARS, shuffleSurvivalTracks } from './themes-survival.js';
 
 /* ============================ Música procedural ============================
    Secuenciador por pasos de 1/16 que toca los temas de themes.js como CANCIONES con forma (intro, estrofas, coro, puente,
@@ -40,6 +41,7 @@ export const Music = (() => {
     audioOwner = null,
     muffled = false;
   let menuTheme = MENU_THEME; // tema del menú principal: el de serie u otro que el jugador haya ganado (logros)
+  let survivalQueue = null;
   let theme = ZONE_THEMES[0],
     baseBpm = 96,
     tempoNow = 96,
@@ -452,6 +454,30 @@ export const Music = (() => {
   /** Compás (absoluto) en el que empieza una sección de la forma: la música entra por ahí al cambiar de tema. */
   let songBar = 0;
 
+  function playSurvival(s, t) {
+    const bar = Math.floor(s / 16);
+    const st = s % 16;
+    const sd = 60 / bpm() / 4;
+    const chord = theme.prog[bar % theme.prog.length];
+    const full = bar >= 8 && bar < SURVIVAL_TRACK_BARS - 2;
+    songBar = bar;
+    if (theme.kicks.includes(st)) kick(t, full ? 0.095 : 0.065);
+    if (theme.snares.includes(st)) snare(t, full ? 0.052 : 0.027);
+    if (st % 2 === 0 || (full && st % 4 === 3)) noise(t, 0.035, st % 4 ? 0.012 : 0.021, 7200);
+    if (st === 0) voice('strings', noteOf(theme, chord), t, sd * 13, 0.024);
+    if (st === 0 || st === 8 || (full && (st === 3 || st === 11))) {
+      const degree = st === 11 ? chord + 4 : chord;
+      voice('synth', noteOf(theme, degree) - 12, t, sd * 1.7, 0.084);
+    }
+    const phrase = theme.tune[Math.floor(bar / 2) % theme.tune.length];
+    for (const [at, degree, len] of phrase) {
+      if (at !== st) continue;
+      const pitch = noteOf(theme, degree + (bar % 2 ? chord : 0));
+      voice(theme.lead, pitch, t, sd * len * 0.8, 0.075);
+      if (bar >= 16 && full) voice('synth', pitch - 12, t, sd * len * 0.65, 0.033);
+    }
+  }
+
   function play(s, t) {
     if (s % 16 === 0) layerNow = layerNext; // las capas entran siempre al empezar un compás
     const bar = Math.floor(s / 16),
@@ -636,9 +662,11 @@ export const Music = (() => {
     const lookahead = 0.14;
     if (next < AC.currentTime) next = AC.currentTime + 0.05;
     while (next < AC.currentTime + lookahead) {
+      if (survivalQueue && step >= SURVIVAL_TRACK_BARS * 16) nextSurvivalTrack();
       const sd = 60 / bpm() / 4,
         sw = step % 4 >= 2 ? (theme.swing || 0) * sd * 2 : 0; // swing: las corcheas de contratiempo llegan tarde
-      play(step, next + sw);
+      if (survivalQueue) playSurvival(step, next);
+      else play(step, next + sw);
       next += sd;
       step++;
     }
@@ -661,6 +689,12 @@ export const Music = (() => {
     baseBpm = nt.bpm;
     if (!playing) tempoNow = baseBpm;
   }
+  function nextSurvivalTrack() {
+    if (!survivalQueue.length) survivalQueue = shuffleSurvivalTracks(theme);
+    useTheme(survivalQueue.shift());
+    step = 0;
+    tempoNow = baseBpm;
+  }
   return {
     start() {
       if (muted) return;
@@ -672,7 +706,7 @@ export const Music = (() => {
       }
       tempoNow = targetBpm();
       playing = true;
-      step = 0;
+      if (!survivalQueue) step = 0;
       armSequencer();
     },
     stop(fade = 0.5) {
@@ -710,6 +744,7 @@ export const Music = (() => {
     },
     /** Tema de la ciudad del nivel `n` y la capa que le toca (1 = solo lo básico … 10 = todo). */
     setLevel(n, hero) {
+      survivalQueue = null;
       const city = zoneIdx(n);
       useTheme(isBossLevel(n) ? bossThemeFor(city) : cityThemeFor(city, hero));
       layerNext = layerOfLevel(n);
@@ -717,6 +752,7 @@ export const Music = (() => {
     },
     /** Toca un tema concreto desde el principio (lo usa melodies.html). */
     playTheme(th, layer = LAYERS_PER_CITY) {
+      survivalQueue = null;
       duckLv = 1;
       muffled = false;
       theme = th;
@@ -734,6 +770,7 @@ export const Music = (() => {
     },
     /** Música fuera de partida: 'menu' (menú principal) o 'heroes' (elección de héroe). Arranca si hace falta. */
     scene(name) {
+      survivalQueue = null;
       useTheme(name === 'heroes' ? HEROES_THEME : menuTheme);
       layerNext = LAYERS_PER_CITY;
       if (!playing) layerNow = layerNext;
@@ -741,6 +778,13 @@ export const Music = (() => {
       duckLv = 1;
       muffled = false;
       if (flt) flt.frequency.setTargetAtTime(9000, AC.currentTime, 0.15);
+      this.start();
+    },
+    survival() {
+      survivalQueue = shuffleSurvivalTracks();
+      nextSurvivalTrack();
+      this.duck(1);
+      this.muffle(false);
       this.start();
     },
     /** Cambia el tema que suena en el menú principal (recompensa de logros). `null` = el de serie. */

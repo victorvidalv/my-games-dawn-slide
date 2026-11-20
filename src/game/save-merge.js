@@ -9,6 +9,8 @@
  *            resultados de cada día: el mejor.
  * Lo demás (partida en curso, aspecto elegido, avisos vistos…) es de la pestaña que guarda. Lógica pura (sin DOM).
  */
+import { survivalBestLevel } from './survival.js';
+
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 const obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
 
@@ -109,6 +111,11 @@ export function mergeSaves(mine = {}, disk = {}) {
   };
   const daily = mergeDaily(mine.daily, disk?.daily);
   if (daily) out.daily = daily;
+  if (disk?.survival && (!mine.survival || disk.survival.updatedAt > mine.survival.updatedAt)) {
+    out.survival = disk.survival;
+  }
+  const survivalBest = Math.max(survivalBestLevel(mine), disk ? survivalBestLevel(disk) : 0);
+  if (survivalBest) out.survivalBest = survivalBest;
   const a = mine.dailyPlay,
     b = disk?.dailyPlay;
   if (!a || (b && b.day > a.day)) {

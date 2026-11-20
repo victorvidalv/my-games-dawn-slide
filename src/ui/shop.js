@@ -100,7 +100,7 @@ function render() {
 
 /** Abre la tienda (botón 🛒). Bloquea el tablero mientras está abierta. */
 export function openShop() {
-  if (!S.G || S.G.done || S.busy || !S.run) return;
+  if (!S.G || S.G.done || S.busy || !S.run || S.run.survival) return;
   const release = holdBusy();
   const modal = $('shop');
   const persona = shopPersona(S.run.hero);

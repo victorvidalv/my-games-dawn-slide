@@ -3,7 +3,7 @@ import { sfx, vib } from '../audio/sound.js';
 import { isLocked, slideRange, snapDrag } from '../engine/board.js';
 import { isLow, isWon, moveStatus, movesLeft } from '../engine/rules.js';
 import { $ } from '../dom.js';
-import { fail, saveRun, win } from '../game/session.js';
+import { fail, playSurvivalTurn, saveRun, win } from '../game/session.js';
 import { S, gainNow, pathOf, rkey, store } from '../state.js';
 import { applyMove } from '../game/run-logic.js';
 import { heroicPath, isHeroic } from '../game/routes.js';
@@ -67,7 +67,7 @@ export function buildPieces() {
   boardEl.querySelectorAll('.piece,.wall,.plate,.links,.seal-floor').forEach((e) => e.remove());
   boardEl.dataset.city = zoneIdx(S.G.n);
   boardEl.classList.remove('board-win');
-  S.G.rot = boardRotation(S.run?.seed, S.G.n, S.G.tutorial || false); // la salida cambia de lado (derecha, abajo, izquierda, arriba)
+  S.G.rot = S.run?.survival ? 0 : boardRotation(S.run?.seed, S.G.n, S.G.tutorial || false);
   boardEl.parentElement.style.setProperty('--rot', S.G.rot + 'deg');
   boardEl.parentElement.dataset.rot = S.G.rot;
   if (S.G.rot && !S.G.moves) showCurse(S.G.rot);
@@ -217,10 +217,11 @@ function syncSpecials(animate = true) {
         vib([15, 20, 15]);
         flashEl(el, 'just-open', 900);
         flashEl(plate, 'pulse', 900);
-        $('msg').textContent = '¡Candado abierto! Ya puedes moverla mientras la placa siga cubierta.';
+        if (!S.run.survival)
+          $('msg').textContent = '¡Candado abierto! Ya puedes moverla mientras la placa siga cubierta.';
       } else {
         sfx.plate();
-        $('msg').textContent = 'Sin nadie sobre la placa, el candado se cierra otra vez.';
+        if (!S.run.survival) $('msg').textContent = 'Sin nadie sobre la placa, el candado se cierra otra vez.';
       }
     }
   });
@@ -290,10 +291,12 @@ function attach(el, i) {
       // candado cerrado: sacude, avisa y señala la placa
       flashEl(el, 'deny', 450);
       flashEl(boardEl.parentElement, 'board-shake', 260);
-      flashEl(S.G.plateEls[i], 'hint', 1500);
+      if (!S.run.survival) {
+        flashEl(S.G.plateEls[i], 'hint', 1500);
+        $('msg').textContent = 'Está atrapada. Cubre la placa 🔒 con otra pieza para abrirla.';
+      }
       sfx.locked();
       vib([30, 30, 30]);
-      $('msg').textContent = 'Está atrapada. Cubre la placa 🔒 con otra pieza para abrirla.';
       return;
     }
     el.classList.remove('hint');
@@ -381,13 +384,18 @@ function attach(el, i) {
 }
 export function afterMove() {
   if (!S.run || !S.G || S.G.done) return;
+  const won = isWon(S.G.pos);
+  if (S.run.survival) {
+    playSurvivalTurn(won);
+    return;
+  }
   processSealMove();
   updateHud();
   if (!S.run.daily) saveRun();
   coachOnMove();
   const prac = S.run.mode === 'p';
   const status = prac ? 'ok' : moveStatus(S.G.moves, S.G.limit);
-  if (isWon(S.G.pos)) {
+  if (won) {
     win();
     return;
   } // ganar en el último turno vale

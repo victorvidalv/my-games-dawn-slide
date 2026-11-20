@@ -129,6 +129,22 @@ describe('interfaz: aventura', () => {
 });
 
 describe('interfaz: reto diario', () => {
+  it('muestra la racha vigente en el inicio aunque el reto de hoy esté pendiente', async () => {
+    const { dayNumber, emptyDaily } = await import('../../src/game/daily.js');
+    const day = dayNumber();
+    const app = await bootApp({ save: { daily: { ...emptyDaily(), last: day - 1, streak: 3, best: 8 } } });
+    expect(app.$('homeDailyStreak').textContent).toBe('3 días');
+    expect(app.$('homeDailySub').textContent).toBe('Reto de hoy pendiente');
+
+    const { paintDailyHome } = await import('../../src/ui/daily.js');
+    paintDailyHome(day - 1);
+    expect(app.$('homeDailyStreak').textContent).toBe('3 días');
+    expect(app.$('homeDailySub').textContent).toBe('Hecho hoy');
+    paintDailyHome(day + 1);
+    expect(app.$('homeDailyStreak').textContent).toBe('0 días');
+    expect(app.$('homeDailySub').textContent).toBe('Reto de hoy pendiente');
+  });
+
   it('abre el primer tablero, se puede repetir al perder y salir no toca la aventura', async () => {
     const app = await bootApp({ save: savedRun });
     const { CHALLENGES } = await import('../../src/game/daily.js');

@@ -38,6 +38,7 @@ import './styles/31-polish.css';
 import './styles/32-menus.css';
 import './styles/33-daily.css';
 import './styles/34-menu-home.css';
+import './styles/36-survival.css';
 import './styles/35-lite.css'; // modo ligero automático (src/ui/perf.js): siempre la última
 import './ui/transitions.js';
 import './ui/achievements.js';

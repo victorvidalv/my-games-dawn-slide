@@ -37,6 +37,14 @@ const state = () => (store.daily ||= emptyDaily());
 let ticker = 0,
   shownDay = -1;
 
+export function paintDailyHome(day = dayNumber()) {
+  const done = streakEarned(store.daily, day);
+  const streak = currentStreak(store.daily, day);
+  $('homeDailyStreak').textContent = `${streak.toLocaleString(numLocale())} ${streak === 1 ? 'día' : 'días'}`;
+  $('homeDailySub').textContent = done ? 'Hecho hoy' : 'Reto de hoy pendiente';
+  $('tabDaily').classList.toggle('has-news', !done);
+}
+
 function paintReset() {
   const el = $('dailyReset');
   if (el) el.textContent = resetText(msToReset());
@@ -108,7 +116,7 @@ export function renderDaily() {
       startDaily(c.id);
     };
   });
-  $('tabDaily')?.classList.toggle('has-news', !streakEarned(d, day));
+  paintDailyHome(day);
   clearInterval(ticker);
   ticker = setInterval(paintReset, 20000);
 }

@@ -1,5 +1,25 @@
 /* Inglés: interfaz (menús, HUD, ventanas, avisos y accesibilidad). */
 export const EN_UI = {
+  'Reiniciar partida': 'Restart run',
+  '¿Reiniciar Supervivencia?': 'Restart Survival?',
+  'Se reemplazará la partida guardada. Volverás al nivel 1 con la reserva completa.':
+    'Your saved run will be replaced. You will return to level 1 with a full reserve.',
+  Supervivencia: 'Survival',
+  '{total} tableros · {turns} turnos': '{total} boards · {turns} turns',
+  'Turnos restantes': 'Turns left',
+  'Tienes {n} turnos para resolver los {total} tableros. Cada movimiento gasta un turno. Para llegar al final, todos deben salir perfectos.':
+    'You have {n} turns to solve all {total} boards. Each move costs one turn. To reach the end, you need a perfect solve on every board.',
+  '{n} de {total} tableros superados': '{n} of {total} boards cleared',
+  '{turns} turnos restantes': '{turns} turns left',
+  'Nivel {n} · {turns} turnos restantes': 'Level {n} · {turns} turns left',
+  'Supervivencia · Nivel {n}': 'Survival · Level {n}',
+  Empezar: 'Start',
+  'Jugar de nuevo': 'Play again',
+  '¡Supervivencia completada!': 'Survival completed!',
+  'Se acabaron los turnos': 'No turns left',
+  'Volver a Supervivencia': 'Back to Survival',
+  'No se pudo guardar la partida.': 'Could not save the game.',
+  'Récord de nivel': 'Best level',
   Récord: 'Best score',
   /* menú principal */
   Menú: 'Menu',

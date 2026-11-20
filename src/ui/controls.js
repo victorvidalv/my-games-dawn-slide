@@ -19,7 +19,7 @@ $('bToMenu').onclick = () => {
 /* ---------- Botones del juego ---------- */
 $('bShop').onclick = openShop;
 $('bHint').onclick = () => {
-  if (!S.G || S.G.done || S.busy || !canHint(S.run, S.run.mode, S.G.n)) return;
+  if (!S.run || S.run.survival || !S.G || S.G.done || S.busy || !canHint(S.run, S.run.mode, S.G.n)) return;
   const h = hintMove(S.G.pieces, S.G.pos, S.G.walls);
   if (!h) {
     $('msg').textContent = 'No encuentro pista desde aquí.';
