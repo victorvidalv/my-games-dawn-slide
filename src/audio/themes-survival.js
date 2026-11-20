@@ -125,7 +125,7 @@ const songs = [
     'r:3 4:1 7:2 11:2 12:3 11:1 8:2 7:2',
   ],
   [
-    'Alba de acero',
+    'Amanecer de acero',
     146,
     47,
     'dor',

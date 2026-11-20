@@ -68,7 +68,7 @@ const RARITY_FX = {
 };
 const SURVIVAL_BY_ID = {
   s0: SURVIVAL_TRACKS[0],
-  s1: SURVIVAL_TRACKS.find((t) => t.name === 'Alba de acero') || SURVIVAL_TRACKS[1],
+  s1: SURVIVAL_TRACKS.find((t) => t.name === 'Amanecer de acero') || SURVIVAL_TRACKS[1],
   s2: SURVIVAL_TRACKS.find((t) => t.name === 'Cumbre astral') || SURVIVAL_TRACKS[2],
 };
 
@@ -243,8 +243,11 @@ function pulseWallet(from) {
 /* ---------- muestras de la Tienda ---------- */
 const swatch = (type, id) => {
   if (type === 'board') return `<i class="sw sw-board" data-board="${id}"></i>`;
-  if (type === 'key') return `<i class="sw sw-key" data-key="${id}"></i>`;
-  if (type === 'pieces') return `<i class="sw sw-piece" data-pieces="${id}"></i>`;
+  // Fichas y llave de verdad en miniatura: usan el mismo diseño que el tablero (src/styles/40-piece-key-skins.css)
+  if (type === 'key')
+    return `<i class="sw sw-real" data-key="${id}"><i class="piece h red"><i class="face"></i></i></i>`;
+  if (type === 'pieces')
+    return `<i class="sw sw-real" data-pieces="${id}"><i class="piece h c4"><i class="face"></i></i><i class="piece h c1"><i class="face"></i></i><i class="piece v c2"><i class="face"></i></i></i>`;
   if (type === 'fx') return `<i class="sw sw-fx" data-fx="${id}"></i>`;
   if (type === 'cover') {
     const src = rewardById('cover', id)?.src || 'backgrounds/cover-heroes.webp';

@@ -1,4 +1,4 @@
-/* Thyes, año 4133: la Noche Larga de Vhorn y el viaje de tres luces para encender de nuevo el Faro del Alba. Nombres y trama: src/data/lore.js */
+/* Thyes, año 4133: la Noche Larga de Vhorn y el viaje de tres luces para encender de nuevo el Faro del Amanecer. Nombres y trama: src/data/lore.js */
 import { INSCRIPTIONS } from './lore.js';
 
 /**
@@ -13,11 +13,11 @@ export const CHAPTERS = [
     seal: 'Corazón',
     title: 'La brasa sale del valle',
     opening:
-      'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Alba y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.',
+      'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Amanecer y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.',
     cityLines: [
       'El Valle Esmeralda duerme bajo una niebla que nunca se va.',
       'Cada tablero se gana sacando la llave roja y cada sello se rompe al terminar el reino.',
-      'Diez reinos, diez sellos: al final te espera el Faro del Alba.',
+      'Diez reinos, diez sellos: al final te espera el Faro del Amanecer.',
     ],
     end: 'El sello del Corazón se rompe. La niebla se abre y la brasa late más fuerte: el viaje ha empezado.',
   },
@@ -121,14 +121,14 @@ export const CHAPTERS = [
     end: 'El sello del Cielo se rompe. El último puente de luz llega hasta el Castillo Dorado.',
   },
   {
-    seal: 'Alba',
+    seal: 'Amanecer',
     title: 'El trono vacío',
     opening:
-      'Aquí espera el Faro del Alba y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.',
+      'Aquí espera el Faro del Amanecer y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.',
     cityLines: [
       'Murallas de oro guardan la última cámara.',
       'La brasa, la hora y la palabra deben actuar juntas.',
-      'Abre el último sello y devuelve el alba a Thyes.',
+      'Abre el último sello y devuelve el amanecer a Thyes.',
     ],
     vhorn: 'Si me nombráis… ¿dejaréis de olvidarme?',
     end: 'El último sello se rompe. Las tres luces encienden el Faro, nombran a Vhorn y su sombra se calma. Tri abre los ojos: amanece.',
@@ -137,7 +137,7 @@ export const CHAPTERS = [
 
 /**
  * Cada héroe tiene un objetivo propio, además del común (encender el Faro):
- *   Lía  → prometió volver a su valle con el alba (valentía contra el miedo).
+ *   Lía  → prometió volver a su valle con el amanecer (valentía contra el miedo).
  *   Jean → estaba de guardia la noche de Vhorn y se siente culpable (aprende a corregir el próximo paso, no a deshacer el pasado).
  *   Juth → falta una página en su códice, la del nombre olvidado (al final lo pronuncia: el de Vhorn).
  * `chapterLines` es lo que dice el héroe al llegar a cada ciudad .
@@ -145,7 +145,7 @@ export const CHAPTERS = [
 export const HERO_LORE = {
   lia: {
     chapterLines: [
-      'Prometí volver con el alba. Primer sello: la niebla no me va a frenar.',
+      'Prometí volver con el amanecer. Primer sello: la niebla no me va a frenar.',
       'Los Kogn dejaron velas para guiarnos. No estoy sola; seguiré.',
       'Sed y arena. Pero mi brasa no se apaga, y yo tampoco.',
       'Tantos nombres perdidos… prometo recordar el de cada uno.',
@@ -158,8 +158,8 @@ export const HERO_LORE = {
     ],
     quote: '«Incluso la ceniza recuerda el calor.»',
     endingLore:
-      'Lía enciende el Faro del Alba con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.',
-    thanksWin: '«Mi llama resistió porque no me soltaste. Prometí volver con el alba, y aquí está.»',
+      'Lía enciende el Faro del Amanecer con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.',
+    thanksWin: '«Mi llama resistió porque no me soltaste. Prometí volver con el amanecer, y aquí está.»',
     thanksLoss: '«La brasa se apaga por hoy, viajero. Cuando vuelvas a llamarla, volverá a arder.»',
   },
   jean: {
@@ -173,11 +173,11 @@ export const HERO_LORE = {
       'Cada pétalo suspendido es un mañana pendiente. Vamos a saldarlo.',
       'La fragua cuenta golpes. Marcaré el nuestro con calma; Vhorn no me apura.',
       'Vhorn fue vigía, como yo. Su soledad me pesa, pero no lo disculpa.',
-      'Es la hora final. Esta vez llego a tiempo: el Faro volverá a marcar el alba.',
+      'Es la hora final. Esta vez llego a tiempo: el Faro volverá a marcar el amanecer.',
     ],
     quote: '«Todo error deja una grieta por donde volver.»',
     endingLore:
-      'Jean ajusta la última aguja del Faro del Alba. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.',
+      'Jean ajusta la última aguja del Faro del Amanecer. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.',
     thanksWin: '«Cada paso atrás valió la pena. Hoy llegamos a tiempo: el mañana vuelve a empezar.»',
     thanksLoss: '«El péndulo se detiene aquí. Descansa; otra hora nos espera.»',
   },
@@ -196,7 +196,7 @@ export const HERO_LORE = {
     ],
     quote: '«Lo que no se nombra sigue buscando salida.»',
     endingLore:
-      'Juth traza el último signo sobre el Faro del Alba y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.',
+      'Juth traza el último signo sobre el Faro del Amanecer y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.',
     thanksWin: '«Cerramos el códice con luz limpia. Ya nadie olvidará esos nombres.»',
     thanksLoss: '«Faltó una línea en esta página, compañero. Volveremos a abrir el libro.»',
   },

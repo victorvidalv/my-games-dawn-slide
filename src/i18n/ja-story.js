@@ -30,9 +30,9 @@ export const JA_STORY = {
   Vida: '命',
   Fuego: '炎',
   Cielo: '空',
-  Alba: '夜明け',
+  Amanecer: '夜明け',
   'Sello de {s}': '{s}の封印',
-  'el Faro del Alba': '夜明けの灯台',
+  'el Faro del Amanecer': '夜明けの灯台',
   'la llave roja': '赤い鍵',
   'navegantes de las mareas antiguas': 'いにしえの潮を渡る航海者',
   'caravaneros que cuentan pozos como quien cuenta años': '年を数えるように井戸を数える隊商の民',
@@ -47,7 +47,7 @@ export const JA_STORY = {
   'Caravaneros que cuentan pozos como años': '年のように井戸を数える隊商の民',
   'Escribas que escriben a sus muertos en la corteza': '亡き人を樹皮に記す書記',
   'Tejedores de puentes bajo las estrellas': '星空の下で橋を編む人々',
-  'La sombra que apagó el Faro del Alba': '夜明けの灯台を消した影',
+  'La sombra que apagó el Faro del Amanecer': '夜明けの灯台を消した影',
   'Tri cerró las puertas.': 'Tri は扉を閉ざした。',
   'No por miedo a lo que entra,': '入ってくるものを恐れたからではなく、',
   'sino por lo que aún respiraba dentro.': '中でまだ息づいているもののために。',
@@ -62,13 +62,13 @@ export const JA_STORY = {
   'Thyes, año {y} · Nivel {l} de 100 · Diez reinos, diez sellos':
     'Thyes、{y} 年 · レベル {l} / 100 · 十の王国、十の封印',
   'La brasa sale del valle': '残り火、谷を出る',
-  'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Alba y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.':
+  'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Amanecer y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.':
     'Thyes、4133年。忘却を糧とする影 Vhorn が夜明けの灯台を消し、長い夜が訪れた。Tri は十の王国を守るために封印した。あなたの使命は、十の封印を破り、灯台にもう一度火をともすこと。',
   'El Valle Esmeralda duerme bajo una niebla que nunca se va.':
     'エメラルドの谷は、晴れることのない霧の下で眠っている。',
   'Cada tablero se gana sacando la llave roja y cada sello se rompe al terminar el reino.':
     '赤い鍵を出せばボードはクリア。王国を最後まで進めば封印がひとつ破れる。',
-  'Diez reinos, diez sellos: al final te espera el Faro del Alba.':
+  'Diez reinos, diez sellos: al final te espera el Faro del Amanecer.':
     '十の王国、十の封印。その先に夜明けの灯台が待っている。',
   'El sello del Corazón se rompe. La niebla se abre y la brasa late más fuerte: el viaje ha empezado.':
     '心の封印が破れた。霧が晴れ、残り火は力強く脈打つ。旅が始まった。',
@@ -146,15 +146,15 @@ export const JA_STORY = {
   'El sello del Cielo se rompe. El último puente de luz llega hasta el Castillo Dorado.':
     '空の封印が破れた。最後の光の橋が黄金の城まで届く。',
   'El trono vacío': '空の玉座',
-  'Aquí espera el Faro del Alba y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.':
+  'Aquí espera el Faro del Amanecer y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.':
     'ここに夜明けの灯台が待ち、空の玉座には Vhorn の影がいる。力だけでは勝てない。灯台をともし、その名を呼ばなければならない。',
   'Murallas de oro guardan la última cámara.': '黄金の城壁が最後の間を守っている。',
   'La brasa, la hora y la palabra deben actuar juntas.': '残り火、時、言葉。三つがともに動かなければならない。',
-  'Abre el último sello y devuelve el alba a Thyes.': '最後の封印を開き、Thyes に夜明けを取り戻そう。',
+  'Abre el último sello y devuelve el amanecer a Thyes.': '最後の封印を開き、Thyes に夜明けを取り戻そう。',
   'Si me nombráis… ¿dejaréis de olvidarme?': '名を呼んでくれたら……もうわたしを忘れないでいてくれるか？',
   'El último sello se rompe. Las tres luces encienden el Faro, nombran a Vhorn y su sombra se calma. Tri abre los ojos: amanece.':
     '最後の封印が破れた。三つの光が灯台をともし、Vhorn の名を呼ぶと、その影は静まった。Tri が目を開く。夜が明ける。',
-  'Prometí volver con el alba. Primer sello: la niebla no me va a frenar.':
+  'Prometí volver con el amanecer. Primer sello: la niebla no me va a frenar.':
     '夜明けとともに戻ると約束した。最初の封印だ。霧なんかに止められない。',
   'Los Kogn dejaron velas para guiarnos. No estoy sola; seguiré.':
     'Kogn の民が道しるべのろうそくを残してくれた。ひとりじゃない。進もう。',
@@ -174,9 +174,9 @@ export const JA_STORY = {
   'Llegamos. Hoy encendemos el Faro, por mi valle y por todos los reinos.':
     '着いた。今日、灯台をともそう。わたしの谷のために、すべての王国のために。',
   '«Incluso la ceniza recuerda el calor.»': '「灰でさえ、ぬくもりを覚えている。」',
-  'Lía enciende el Faro del Alba con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.':
+  'Lía enciende el Faro del Amanecer con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.':
     'Lía は最後の残り火で夜明けの灯台をともした。ついに名を呼ばれた Vhorn は静まり、Thyes に朝が来る。彼女は谷との約束を果たした。',
-  '«Mi llama resistió porque no me soltaste. Prometí volver con el alba, y aquí está.»':
+  '«Mi llama resistió porque no me soltaste. Prometí volver con el amanecer, y aquí está.»':
     '「あなたが手を離さなかったから、わたしの炎は消えなかった。夜明けとともに戻ると約束した。ほら、朝だよ。」',
   '«La brasa se apaga por hoy, viajero. Cuando vuelvas a llamarla, volverá a arder.»':
     '「旅人よ、残り火は今日はここまで。また呼んでくれたら、もう一度燃えるから。」',
@@ -198,10 +198,10 @@ export const JA_STORY = {
     '鍛冶場は打つ数を数える。わたしたちの一打は落ち着いて刻もう。Vhorn に急かされはしない。',
   'Vhorn fue vigía, como yo. Su soledad me pesa, pero no lo disculpa.':
     'Vhorn もわたしと同じ見張りだった。その孤独は胸に重いが、許す理由にはならない。',
-  'Es la hora final. Esta vez llego a tiempo: el Faro volverá a marcar el alba.':
+  'Es la hora final. Esta vez llego a tiempo: el Faro volverá a marcar el amanecer.':
     '最後の時だ。今度は間に合う。灯台はふたたび夜明けを告げる。',
   '«Todo error deja una grieta por donde volver.»': '「どんなあやまちも、戻るためのすき間を残す。」',
-  'Jean ajusta la última aguja del Faro del Alba. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.':
+  'Jean ajusta la última aguja del Faro del Amanecer. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.':
     'Jean は夜明けの灯台の最後の針を合わせた。4133年から止まっていた時がふたたび流れ出し、あの夜の見張りはようやく許された。',
   '«Cada paso atrás valió la pena. Hoy llegamos a tiempo: el mañana vuelve a empezar.»':
     '「一歩ずつ戻ったことには意味があった。今日は間に合った。明日がまた始まる。」',
@@ -228,7 +228,7 @@ export const JA_STORY = {
   'La última hoja está en blanco. Hoy digo el nombre que falta y cierro el libro.':
     '最後のページは白紙。今日、足りない名前を口にして、本を閉じる。',
   '«Lo que no se nombra sigue buscando salida.»': '「名づけられないものは、出口を探しつづける。」',
-  'Juth traza el último signo sobre el Faro del Alba y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.':
+  'Juth traza el último signo sobre el Faro del Amanecer y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.':
     'Juth は夜明けの灯台に最後のしるしを記し、足りなかった名前を口にした。Thyes は思い出し、Vhorn にはもう消すものがない。',
   '«Cerramos el códice con luz limpia. Ya nadie olvidará esos nombres.»':
     '「澄んだ光で写本を閉じよう。もう誰もあの名前を忘れない。」',
@@ -327,7 +327,7 @@ export const JA_STORY = {
   'Guardián del Último Umbral': '最後の関門の守護者',
   'Duelo final · Todas las piezas': '最終対決 · すべてのブロック',
   '¡Los sellos ceden!': '封印がゆらいだ！',
-  'Rompiste los diez sellos y el Faro del Alba parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
+  'Rompiste los diez sellos y el Faro del Amanecer parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
     '十の封印を破り、夜明けの灯台が薄闇の中でまたたいている。しかし Vhorn はまだそこにいる。忘れられ、怒りに燃えて。そして Tri はまだ眠っている。',
   'En la senda ': '次の',
   Difícil: 'ハード',
@@ -343,7 +343,7 @@ export const JA_STORY = {
   ', hasta el trono vacío.': 'の道。空の玉座まで。',
   '🔥 Ir al camino Experto': '🔥 エキスパートの道へ',
   '¡Thyes amanece!': 'Thyes に朝が来た！',
-  'La brasa, la hora y la palabra encienden el Faro del Alba y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.':
+  'La brasa, la hora y la palabra encienden el Faro del Amanecer y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.':
     '残り火、時、言葉が夜明けの灯台をともし、Vhorn の名を呼ぶ。その影は静まり、Tri はついに目を開く。4134年、Thyes が目を覚ます。',
   'Tu nombre queda grabado en los diez sellos.': 'あなたの名は十の封印に刻まれた。',
   '¡Felicidades!': 'おめでとう！',
@@ -360,7 +360,7 @@ export const JA_STORY = {
   'Hasta pronto, {z}': 'またね、{z}',
   'LAS CRÓNICAS DE LA LLAVE ROJA': '赤い鍵の年代記',
   'El Faro': '夜明けの',
-  'del Alba': '灯台',
+  'del Amanecer': '灯台',
   'LA SOMBRA DE VHORN · THYES, AÑO 4133': 'VHORN の影 · THYES、4133年',
   'Abrir el camino ➜': '道を開く ➜',
   '{h}: «{q}»': '{h}：「{q}」',

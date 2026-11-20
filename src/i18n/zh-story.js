@@ -30,9 +30,9 @@ export const ZH_STORY = {
   Vida: '生命',
   Fuego: '火焰',
   Cielo: '天空',
-  Alba: '黎明',
+  Amanecer: '黎明',
   'Sello de {s}': '{s}之印',
-  'el Faro del Alba': '黎明灯塔',
+  'el Faro del Amanecer': '黎明灯塔',
   'la llave roja': '红钥匙',
   'navegantes de las mareas antiguas': '古老潮汐的航海者',
   'caravaneros que cuentan pozos como quien cuenta años': '像数年岁一样数水井的商队旅人',
@@ -47,7 +47,7 @@ export const ZH_STORY = {
   'Caravaneros que cuentan pozos como años': '像数年岁一样数水井的商队旅人',
   'Escribas que escriben a sus muertos en la corteza': '把逝者写在树皮上的书记',
   'Tejedores de puentes bajo las estrellas': '在星空下编织桥梁的人',
-  'La sombra que apagó el Faro del Alba': '熄灭黎明灯塔的阴影',
+  'La sombra que apagó el Faro del Amanecer': '熄灭黎明灯塔的阴影',
   'Tri cerró las puertas.': 'Tri 关上了大门。',
   'No por miedo a lo que entra,': '不是因为害怕进来的东西，',
   'sino por lo que aún respiraba dentro.': '而是为了门内仍在呼吸的一切。',
@@ -62,12 +62,12 @@ export const ZH_STORY = {
   'Thyes, año {y} · Nivel {l} de 100 · Diez reinos, diez sellos':
     'Thyes，{y} 年 · 第 {l} 关 / 共 100 关 · 十个王国，十道封印',
   'La brasa sale del valle': '余烬走出山谷',
-  'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Alba y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.':
+  'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Amanecer y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.':
     'Thyes，4133 年。以遗忘为食的阴影 Vhorn 熄灭了黎明灯塔，漫漫长夜降临。Tri 封印了十个王国来保护它们。你的使命：打破十道封印，重新点亮灯塔。',
   'El Valle Esmeralda duerme bajo una niebla que nunca se va.': '翡翠谷沉睡在一片永不散去的雾中。',
   'Cada tablero se gana sacando la llave roja y cada sello se rompe al terminar el reino.':
     '取出红钥匙就能赢下一块棋盘；走完一个王国，就能打破一道封印。',
-  'Diez reinos, diez sellos: al final te espera el Faro del Alba.': '十个王国，十道封印：黎明灯塔在终点等着你。',
+  'Diez reinos, diez sellos: al final te espera el Faro del Amanecer.': '十个王国，十道封印：黎明灯塔在终点等着你。',
   'El sello del Corazón se rompe. La niebla se abre y la brasa late más fuerte: el viaje ha empezado.':
     '心之印破碎了。雾气散开，余烬跳动得更有力：旅程开始了。',
   'Las velas de los Kogn': 'Kogn 族的烛火',
@@ -138,15 +138,15 @@ export const ZH_STORY = {
   'El sello del Cielo se rompe. El último puente de luz llega hasta el Castillo Dorado.':
     '天空之印破碎了。最后一座光之桥一直通到黄金城堡。',
   'El trono vacío': '空王座',
-  'Aquí espera el Faro del Alba y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.':
+  'Aquí espera el Faro del Amanecer y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.':
     '黎明灯塔在这里等待，而空王座上是 Vhorn 的阴影。要战胜它，只靠力量是不够的：必须点亮灯塔，并说出它的名字。',
   'Murallas de oro guardan la última cámara.': '黄金的城墙守护着最后的房间。',
   'La brasa, la hora y la palabra deben actuar juntas.': '余烬、时辰和话语必须一同行动。',
-  'Abre el último sello y devuelve el alba a Thyes.': '打开最后一道封印，把黎明还给 Thyes。',
+  'Abre el último sello y devuelve el amanecer a Thyes.': '打开最后一道封印，把黎明还给 Thyes。',
   'Si me nombráis… ¿dejaréis de olvidarme?': '如果你们叫出我的名字……就不会再忘记我了吗？',
   'El último sello se rompe. Las tres luces encienden el Faro, nombran a Vhorn y su sombra se calma. Tri abre los ojos: amanece.':
     '最后一道封印破碎了。三道光点亮了灯塔，叫出了 Vhorn 的名字，它的阴影平静下来。Tri 睁开双眼：天亮了。',
-  'Prometí volver con el alba. Primer sello: la niebla no me va a frenar.':
+  'Prometí volver con el amanecer. Primer sello: la niebla no me va a frenar.':
     '我答应过要和黎明一起回来。第一道封印：雾拦不住我。',
   'Los Kogn dejaron velas para guiarnos. No estoy sola; seguiré.':
     'Kogn 族留下蜡烛为我们引路。我不是一个人；我会继续走。',
@@ -162,9 +162,9 @@ export const ZH_STORY = {
   'Llegamos. Hoy encendemos el Faro, por mi valle y por todos los reinos.':
     '我们到了。今天我们点亮灯塔，为了我的山谷，也为了所有王国。',
   '«Incluso la ceniza recuerda el calor.»': '「就连灰烬也记得温暖。」',
-  'Lía enciende el Faro del Alba con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.':
+  'Lía enciende el Faro del Amanecer con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.':
     'Lía 用最后一点余烬点亮了黎明灯塔。Vhorn 终于被叫出名字，平静了下来，Thyes 迎来了黎明：她兑现了对山谷的承诺。',
-  '«Mi llama resistió porque no me soltaste. Prometí volver con el alba, y aquí está.»':
+  '«Mi llama resistió porque no me soltaste. Prometí volver con el amanecer, y aquí está.»':
     '「我的火焰撑了下来，因为你没有放开我。我答应过要和黎明一起回来，现在它来了。」',
   '«La brasa se apaga por hoy, viajero. Cuando vuelvas a llamarla, volverá a arder.»':
     '「旅人，余烬今天先熄了。等你再次呼唤它，它会重新燃起。」',
@@ -183,10 +183,10 @@ export const ZH_STORY = {
     '锻炉数着锤击。我会从容地敲下我们的那一锤；Vhorn 催不动我。',
   'Vhorn fue vigía, como yo. Su soledad me pesa, pero no lo disculpa.':
     'Vhorn 和我一样，曾是守望者。它的孤独让我沉重，却不能为它开脱。',
-  'Es la hora final. Esta vez llego a tiempo: el Faro volverá a marcar el alba.':
+  'Es la hora final. Esta vez llego a tiempo: el Faro volverá a marcar el amanecer.':
     '最后的时辰到了。这一次我赶上了：灯塔会再次宣告黎明。',
   '«Todo error deja una grieta por donde volver.»': '「每个错误都会留下一道可以回去的裂缝。」',
-  'Jean ajusta la última aguja del Faro del Alba. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.':
+  'Jean ajusta la última aguja del Faro del Amanecer. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.':
     'Jean 调好了黎明灯塔的最后一根指针。从 4133 年起停住的时辰重新流动，他终于原谅了自己的那一夜值守。',
   '«Cada paso atrás valió la pena. Hoy llegamos a tiempo: el mañana vuelve a empezar.»':
     '「每一步后退都是值得的。今天我们赶上了：明天重新开始。」',
@@ -212,7 +212,7 @@ export const ZH_STORY = {
   'La última hoja está en blanco. Hoy digo el nombre que falta y cierro el libro.':
     '最后一页是空白的。今天我说出缺少的名字，合上这本书。',
   '«Lo que no se nombra sigue buscando salida.»': '「没有被命名的东西，会一直寻找出口。」',
-  'Juth traza el último signo sobre el Faro del Alba y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.':
+  'Juth traza el último signo sobre el Faro del Amanecer y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.':
     'Juth 在黎明灯塔上写下最后一个符号，说出了缺少的名字。Thyes 想起来了，Vhorn 再也没有什么可以熄灭。',
   '«Cerramos el códice con luz limpia. Ya nadie olvidará esos nombres.»':
     '「我们用纯净的光合上法典。再也没有人会忘记这些名字。」',
@@ -305,7 +305,7 @@ export const ZH_STORY = {
   'Guardián del Último Umbral': '最后一道门槛的守卫',
   'Duelo final · Todas las piezas': '最终对决 · 所有方块',
   '¡Los sellos ceden!': '封印松动了！',
-  'Rompiste los diez sellos y el Faro del Alba parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
+  'Rompiste los diez sellos y el Faro del Amanecer parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
     '你打破了十道封印，黎明灯塔在昏暗中闪烁。但 Vhorn 还在那里，被遗忘而愤怒，Tri 也仍在沉睡。',
   'En la senda ': '在',
   Difícil: '困难',
@@ -320,7 +320,7 @@ export const ZH_STORY = {
   ', hasta el trono vacío.': '之路，直通空王座。',
   '🔥 Ir al camino Experto': '🔥 前往专家之路',
   '¡Thyes amanece!': 'Thyes 天亮了！',
-  'La brasa, la hora y la palabra encienden el Faro del Alba y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.':
+  'La brasa, la hora y la palabra encienden el Faro del Amanecer y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.':
     '余烬、时辰和话语点亮了黎明灯塔，叫出了 Vhorn 的名字。它的阴影平静下来，Tri 终于睁开双眼：4134 年，Thyes 醒来了。',
   'Tu nombre queda grabado en los diez sellos.': '你的名字被刻在了十道封印上。',
   '¡Felicidades!': '恭喜！',
@@ -338,7 +338,7 @@ export const ZH_STORY = {
   'Hasta pronto, {z}': '再见，{z}',
   'LAS CRÓNICAS DE LA LLAVE ROJA': '红钥匙编年史',
   'El Faro': '黎明',
-  'del Alba': '灯塔',
+  'del Amanecer': '灯塔',
   'LA SOMBRA DE VHORN · THYES, AÑO 4133': 'VHORN 之影 · THYES，4133 年',
   'Abrir el camino ➜': '开辟道路 ➜',
   '{h}: «{q}»': '{h}：「{q}」',

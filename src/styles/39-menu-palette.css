@@ -1,7 +1,8 @@
 /*
  * Paleta del menú a juego con las ilustraciones de los héroes: entintado grueso y tonos de joya.
  *   índigo medianoche (abrigo de Van) · amatista (túnica) · jade verdín (capa de Lía) · carmesí lacado (llave y pañuelo)
- *   · filetes de oro viejo y texto pergamino. Solo afecta al menú (#menu); el juego y el paisaje no cambian.
+ *   · filetes de oro viejo y texto pergamino. Se aplica al menú principal y a todas las ventanas del juego (pausa,
+ *   héroe, caminos, resultados…). Los paisajes no cambian.
  */
 #menu {
   --mp-ink: #0d0a14;
@@ -194,4 +195,158 @@
 #menu .ach-wallet {
   border-color: var(--mp-gold);
   background: linear-gradient(155deg, #3a1f58, #1a1036);
+}
+
+/* ======================= Todas las ventanas del juego con la misma paleta ======================= */
+/* Tokens comunes: el panel de tinta pasa a laca índigo y los remaches a oro viejo (los usan .card, .path, la pausa…). */
+:root {
+  --ink-panel: linear-gradient(160deg, #262d63 0 28%, #1a1f47 28.5% 72%, #11142f 72.5%);
+  --rivet: radial-gradient(circle at 35% 30%, #fff3c9 0 1.4px, #c99a3a 2.4px, #5a3d10 3.6px, #0000 4.2px) no-repeat;
+  --btn-jade: var(--hatch), linear-gradient(175deg, #2f8a78, #1c5f56 70%, #134640);
+  --btn-jade-hi: var(--hatch), linear-gradient(175deg, #369784, #216a60 70%, #174f48);
+  --btn-crimson: var(--hatch), linear-gradient(175deg, #c23a30, #951f24 70%, #6f141b);
+  --btn-crimson-hi: var(--hatch), linear-gradient(175deg, #cd463a, #a1272b 70%, #7a1820);
+  --btn-amethyst: var(--hatch), linear-gradient(175deg, #6e3796, #4a2270 70%, #351854);
+  --gold-rim: inset 0 0 0 1.5px #f6d68a80;
+}
+
+/* Botón secundario de serie (Pista, Tienda, opciones…): jade lacado con filete dorado en vez del turquesa */
+button {
+  background: var(--btn-jade);
+}
+.pause-actions button,
+.opt,
+.map-close,
+.snd-btn {
+  background: var(--btn-jade);
+  box-shadow:
+    var(--gold-rim),
+    inset 0 2px 0 #ffffff26,
+    inset 0 -4px 0 #0005,
+    3px 5px 0 #0d0a14;
+}
+.pause-actions button:hover {
+  background: var(--btn-jade-hi);
+}
+.pause-actions button.primary,
+button.primary,
+button.danger {
+  background: var(--btn-crimson);
+}
+.pause-actions button.primary:hover {
+  background: var(--btn-crimson-hi);
+}
+.pause-actions .pause-end {
+  background: var(--btn-amethyst);
+  color: #f3e3ff;
+}
+
+/* Elegir camino: el normal en jade, el heroico en carmesí (como Aventura) */
+#travel .route-option {
+  --route-paint: linear-gradient(150deg, #2f8a78 0 24%, #1c5f56 24.75% 83%, #0f3833 84%);
+}
+#travel .route-option.brave {
+  --route-paint: linear-gradient(150deg, #c23a30 0 24%, #8a1c22 24.75% 83%, #4a0d14 84%);
+}
+#travel .route-option small::after {
+  color: #9fe8d4;
+}
+
+/* Elegir héroe: el tono del héroe se mezcla con el índigo (antes con pizarra) */
+.hero-selector {
+  --portrait-tone: color-mix(in srgb, var(--chosen, #e0b04f) 22%, #1a1f47);
+  background:
+    var(--rivets), var(--hatch), linear-gradient(152deg, var(--portrait-tone) 0 34%, #1a1f47 34.5% 76%, #11142f 76.5%) !important;
+}
+.hero-selector .hero-power,
+.hero-selector .hero-route-info {
+  background: var(--hatch), linear-gradient(153deg, var(--portrait-tone) 0 68%, #1a1f47 68.5%) !important;
+}
+
+/* Caminos de Aventura: placas algo más claras que la placa del menú, con filete de oro */
+#menu .path {
+  background: var(--hatch), linear-gradient(165deg, #2f3775, #1d2252 70%, #161a40);
+}
+#menu .path:hover {
+  background: var(--hatch), linear-gradient(165deg, #384085, #232a5e 70%, #1a1f47);
+}
+
+/* Nivel superado */
+.res-card {
+  background:
+    var(--rivets, none), repeating-linear-gradient(118deg, #fff3d409 0 1px, #0000 1px 7px),
+    radial-gradient(ellipse at 50% 0%, #f1ce8226, #0000 60%), linear-gradient(170deg, #262d63, #1a1f47 60%, #11142f);
+}
+
+/* ======================= Anchos del menú alineados en todas las pantallas ======================= */
+/* Vertical: la fila de idiomas mide lo mismo que la placa (antes, en tablets, sobresalía por los lados). */
+@media (max-aspect-ratio: 13/10) {
+  #menu[data-view='home'] .lang-switch {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    max-width: 420px;
+    margin-inline: auto;
+    gap: 8px;
+  }
+  #menu[data-view='home'] .lang-btn {
+    min-width: 0;
+    justify-content: center;
+  }
+}
+/* Móviles muy bajos (320×568): sin scroll por unos píxeles */
+@media (max-aspect-ratio: 13/10) and (max-height: 600px) {
+  #menu .home-credit a {
+    min-height: 24px;
+    padding-block: 2px;
+  }
+}
+/* Horizontal: el crédito va en la columna de la placa, bajo los idiomas (antes quedaba centrado en toda la pantalla). */
+@media (min-aspect-ratio: 13/10) {
+  #menu[data-view='home'].show {
+    grid-template-areas: '. lockup' '. card' '. lang' '. credit';
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+  #menu[data-view='home'] .home-credit {
+    position: static;
+    grid-area: credit;
+    margin-top: -6px;
+  }
+}
+
+/* Elegir héroe: niveles de inicio en índigo (antes pizarra) y legibles en móviles estrechos */
+.start-chip {
+  background: var(--hatch), linear-gradient(#2f3775, #1d2252);
+  box-shadow:
+    0 3px 0 #0d0a14,
+    inset 0 0 0 1px #f6d68a40,
+    inset 0 1px 0 #ffffff26;
+}
+.start-chip.selected {
+  border-color: #f6d68a;
+  background: var(--hatch), linear-gradient(#a8782a, #6b4a12);
+}
+.start-chip.locked {
+  background: #141836;
+  border-color: #4a4f7a;
+  color: #a9acc8;
+}
+@media (max-width: 380px) {
+  .start-chip {
+    padding-top: 12px;
+  }
+  .start-chip .ic {
+    width: 11px;
+    height: 11px;
+    top: 3px;
+    right: 3px;
+  }
+  .start-chip b {
+    font-size: 11.5px;
+    white-space: nowrap;
+  }
+  #heroSelect h2 {
+    font-size: 18px;
+    letter-spacing: 0.04em;
+  }
 }

@@ -13,7 +13,7 @@ export const EN_UI = {
   'Senda Breve': 'Brief Path',
   'Senda Firme': 'Steady Path',
   'Senda Eterna': 'Eternal Path',
-  'Brújula del Alba': 'Dawn Compass',
+  'Brújula del Amanecer': 'Dawn Compass',
   '1 pista por tablero (no acumulable)': '1 hint per board (does not stack)',
   '1 por turno': '1 per turn',
   'Reloj de Arena': 'Hourglass',
@@ -351,7 +351,7 @@ export const EN_UI = {
   '«Aún queda luz. Puedes volver a intentarlo.»': '“There is still light. You can try again.”',
   'Repite el tablero desde cero a cambio del {n} % de tus puntos.':
     'Restart the board from scratch for {n}% of your points.',
-  'La Guardiana del Alba sonríe y ofrece una luz dorada': 'The Guardian of Dawn smiles and offers a golden light',
+  'La Guardiana del Amanecer sonríe y ofrece una luz dorada': 'The Guardian of Dawn smiles and offers a golden light',
   Revivir: 'Revive',
   ', repites este tablero desde': ', you replay this board from',
   '0 movimientos': '0 moves',

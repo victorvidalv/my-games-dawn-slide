@@ -1,6 +1,6 @@
 export const extraChapters = {
   es: {
-    story: 'Historia', storyTitle: 'El Faro del Alba se apagó',
+    story: 'Historia', storyTitle: 'El Faro del Amanecer se apagó',
     storyIntro: 'La sombra de Vhorn cubrió Thyes. Tri, guardiana del Faro, selló las diez ciudades. Lía, Jean y Juth emprenden el viaje con la llave roja.',
     storySeals: 'Las inscripciones de los sellos cuentan qué pasó. Al cruzar cada ciudad descubres un nuevo fragmento de la historia.',
     sound: 'Banda sonora', soundIntro: 'Cada héroe tiene su propia melodía en cada ciudad. Mientras avanzas, se suman instrumentos y ritmos. Estas son las tres versiones del Valle Esmeralda.',
@@ -10,7 +10,7 @@ export const extraChapters = {
     hints: 'Pistas', earnHints: 'Ganas pistas al superar niveles y en los minijuegos de descanso. Al empezar una Aventura nueva se suman los premios de la racha diaria y, si lo eliges, el Farol de pistas.',
     hintTip: 'Si te atascas, pulsa Pista para ver una jugada. Antes de mover, mira qué casilla dejará libre ese bloque.',
     heroPaths: ['Menos turnos para resolver.', 'Una solución más larga.', 'Más mecanismos por tablero.'],
-    bonusPoints: 'Puntos extra', storyArt: 'Lía, Jean y Juth estudian un mapa junto a la llave roja, con el Faro del Alba a lo lejos.',
+    bonusPoints: 'Puntos extra', storyArt: 'Lía, Jean y Juth estudian un mapa junto a la llave roja, con el Faro del Amanecer a lo lejos.',
     shopShot: ['La tienda en Aventura', 'La tienda muestra las ayudas, sus precios y los puntos disponibles.'],
     shopLimit: 'Puedes comprar una pista, un paquete de turnos y un reinicio por tablero. Puedes saltar un nivel por ciudad, excepto los jefes. El salto no da puntos.',
     heroicTitle: 'Caminos heroicos',

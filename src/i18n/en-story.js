@@ -33,11 +33,11 @@ export const EN_STORY = {
   Vida: 'Life',
   Fuego: 'Fire',
   Cielo: 'Sky',
-  Alba: 'Dawn',
+  Amanecer: 'Dawn',
   'Sello de {s}': '{s} Seal',
 
   /* mundo */
-  'el Faro del Alba': 'the Dawn Beacon',
+  'el Faro del Amanecer': 'the Dawn Beacon',
   'la llave roja': 'the red key',
   'navegantes de las mareas antiguas': 'sailors of the ancient tides',
   'caravaneros que cuentan pozos como quien cuenta años': 'caravaneers who count wells the way others count years',
@@ -53,7 +53,7 @@ export const EN_STORY = {
   'Caravaneros que cuentan pozos como años': 'Caravaneers who count wells like years',
   'Escribas que escriben a sus muertos en la corteza': 'Scribes who write their dead on the bark',
   'Tejedores de puentes bajo las estrellas': 'Weavers of bridges beneath the stars',
-  'La sombra que apagó el Faro del Alba': 'The shadow that put out the Dawn Beacon',
+  'La sombra que apagó el Faro del Amanecer': 'The shadow that put out the Dawn Beacon',
   'Tri cerró las puertas.': 'Tri closed the doors.',
   'No por miedo a lo que entra,': 'Not for fear of what comes in,',
   'sino por lo que aún respiraba dentro.': 'but for what still breathed within.',
@@ -70,13 +70,13 @@ export const EN_STORY = {
 
   /* capítulos */
   'La brasa sale del valle': 'The ember leaves the valley',
-  'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Alba y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.':
+  'Thyes, año 4133. Vhorn, la sombra que se alimenta del olvido, apagó el Faro del Amanecer y llegó la Noche Larga. Tri selló los diez reinos para protegerlos. Tu misión: romper los diez sellos y encender de nuevo el Faro.':
     'Thyes, year 4133. Vhorn, the shadow that feeds on forgetting, put out the Dawn Beacon and the Long Night fell. Tri sealed the ten kingdoms to protect them. Your mission: break the ten seals and light the Beacon again.',
   'El Valle Esmeralda duerme bajo una niebla que nunca se va.':
     'Emerald Valley sleeps beneath a mist that never lifts.',
   'Cada tablero se gana sacando la llave roja y cada sello se rompe al terminar el reino.':
     'Every board is won by getting the red key out, and every seal breaks when you finish the kingdom.',
-  'Diez reinos, diez sellos: al final te espera el Faro del Alba.':
+  'Diez reinos, diez sellos: al final te espera el Faro del Amanecer.':
     'Ten kingdoms, ten seals: the Dawn Beacon awaits you at the end.',
   'El sello del Corazón se rompe. La niebla se abre y la brasa late más fuerte: el viaje ha empezado.':
     'The Heart seal breaks. The mist parts and the ember beats stronger: the journey has begun.',
@@ -164,17 +164,17 @@ export const EN_STORY = {
     'The Sky seal breaks. The last bridge of light reaches the Golden Castle.',
 
   'El trono vacío': 'The empty throne',
-  'Aquí espera el Faro del Alba y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.':
+  'Aquí espera el Faro del Amanecer y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.':
     'Here the Dawn Beacon waits and, on the empty throne, the shadow of Vhorn. Strength is not enough to defeat him: you must light the Beacon and speak his name.',
   'Murallas de oro guardan la última cámara.': 'Golden walls guard the last chamber.',
   'La brasa, la hora y la palabra deben actuar juntas.': 'The ember, the hour and the word must act together.',
-  'Abre el último sello y devuelve el alba a Thyes.': 'Open the last seal and bring the dawn back to Thyes.',
+  'Abre el último sello y devuelve el amanecer a Thyes.': 'Open the last seal and bring the dawn back to Thyes.',
   'Si me nombráis… ¿dejaréis de olvidarme?': 'If you name me… will you stop forgetting me?',
   'El último sello se rompe. Las tres luces encienden el Faro, nombran a Vhorn y su sombra se calma. Tri abre los ojos: amanece.':
     'The last seal breaks. The three lights kindle the Beacon, name Vhorn, and his shadow calms. Tri opens her eyes: it is dawn.',
 
   /* Lía */
-  'Prometí volver con el alba. Primer sello: la niebla no me va a frenar.':
+  'Prometí volver con el amanecer. Primer sello: la niebla no me va a frenar.':
     'I promised to return with the dawn. First seal: the mist will not stop me.',
   'Los Kogn dejaron velas para guiarnos. No estoy sola; seguiré.':
     'The Kogn left candles to guide us. I am not alone; I will go on.',
@@ -194,9 +194,9 @@ export const EN_STORY = {
   'Llegamos. Hoy encendemos el Faro, por mi valle y por todos los reinos.':
     'We made it. Today we light the Beacon, for my valley and for every kingdom.',
   '«Incluso la ceniza recuerda el calor.»': '“Even ash remembers the warmth.”',
-  'Lía enciende el Faro del Alba con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.':
+  'Lía enciende el Faro del Amanecer con su última brasa. Vhorn, por fin nombrado, se calma, y Thyes ve amanecer: cumplió su promesa al Valle.':
     'Lía lights the Dawn Beacon with her last ember. Vhorn, finally named, grows calm, and Thyes sees the sunrise: she kept her promise to the Valley.',
-  '«Mi llama resistió porque no me soltaste. Prometí volver con el alba, y aquí está.»':
+  '«Mi llama resistió porque no me soltaste. Prometí volver con el amanecer, y aquí está.»':
     '“My flame held because you never let go. I promised to return with the dawn, and here it is.”',
   '«La brasa se apaga por hoy, viajero. Cuando vuelvas a llamarla, volverá a arder.»':
     '“The ember goes out for today, traveler. When you call it again, it will burn again.”',
@@ -219,10 +219,10 @@ export const EN_STORY = {
     'The forge counts blows. I will set our pace calmly; Vhorn does not rush me.',
   'Vhorn fue vigía, como yo. Su soledad me pesa, pero no lo disculpa.':
     'Vhorn was a watcher, like me. His loneliness weighs on me, but it does not excuse him.',
-  'Es la hora final. Esta vez llego a tiempo: el Faro volverá a marcar el alba.':
+  'Es la hora final. Esta vez llego a tiempo: el Faro volverá a marcar el amanecer.':
     'It is the final hour. This time I arrive on time: the Beacon will mark the dawn again.',
   '«Todo error deja una grieta por donde volver.»': '“Every mistake leaves a crack to come back through.”',
-  'Jean ajusta la última aguja del Faro del Alba. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.':
+  'Jean ajusta la última aguja del Faro del Amanecer. La hora detenida desde el año 4133 vuelve a correr y, por fin, se perdona su guardia.':
     'Jean sets the last hand of the Dawn Beacon. The hour stopped since the year 4133 runs again and, at last, he forgives his watch.',
   '«Cada paso atrás valió la pena. Hoy llegamos a tiempo: el mañana vuelve a empezar.»':
     '“Every step back was worth it. Today we arrived on time: tomorrow begins again.”',
@@ -251,7 +251,7 @@ export const EN_STORY = {
   'La última hoja está en blanco. Hoy digo el nombre que falta y cierro el libro.':
     'The last leaf is blank. Today I speak the missing name and close the book.',
   '«Lo que no se nombra sigue buscando salida.»': '“What is not named keeps looking for a way out.”',
-  'Juth traza el último signo sobre el Faro del Alba y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.':
+  'Juth traza el último signo sobre el Faro del Amanecer y pronuncia el nombre que faltaba. Thyes recuerda, y Vhorn ya no tiene nada que apagar.':
     'Juth traces the last sign over the Dawn Beacon and speaks the missing name. Thyes remembers, and Vhorn has nothing left to put out.',
   '«Cerramos el códice con luz limpia. Ya nadie olvidará esos nombres.»':
     '“We close the codex with clean light. No one will forget those names now.”',
@@ -358,7 +358,7 @@ export const EN_STORY = {
 
   /* finales y derrota */
   '¡Los sellos ceden!': 'The seals give way!',
-  'Rompiste los diez sellos y el Faro del Alba parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
+  'Rompiste los diez sellos y el Faro del Amanecer parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
     'You broke the ten seals and the Dawn Beacon flickers in the gloom. But Vhorn is still there, forgotten and furious, and Tri still sleeps.',
   'En la senda ': 'On the ',
   Difícil: 'Hard',
@@ -374,7 +374,7 @@ export const EN_STORY = {
   ', hasta el trono vacío.': ' path, up to the empty throne.',
   '🔥 Ir al camino Experto': '🔥 Go to the Expert path',
   '¡Thyes amanece!': 'Thyes awakens!',
-  'La brasa, la hora y la palabra encienden el Faro del Alba y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.':
+  'La brasa, la hora y la palabra encienden el Faro del Amanecer y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.':
     'The ember, the hour and the word kindle the Dawn Beacon and name Vhorn. His shadow calms and Tri, at last, opens her eyes: year 4134, Thyes awakens.',
   'Tu nombre queda grabado en los diez sellos.': 'Your name is carved on the ten seals.',
   '¡Felicidades!': 'Congratulations!',
@@ -392,7 +392,7 @@ export const EN_STORY = {
   'Hasta pronto, {z}': 'Farewell, {z}',
   'LAS CRÓNICAS DE LA LLAVE ROJA': 'THE CHRONICLES OF THE RED KEY',
   'El Faro': 'The Beacon',
-  'del Alba': 'of Dawn',
+  'del Amanecer': 'of Dawn',
   'LA SOMBRA DE VHORN · THYES, AÑO 4133': 'THE SHADOW OF VHORN · THYES, YEAR 4133',
   'Abrir el camino ➜': 'Open the path ➜',
   '{h}: «{q}»': '{h}: “{q}”',

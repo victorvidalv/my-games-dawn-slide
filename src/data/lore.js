@@ -3,7 +3,7 @@
  * (capítulos, héroes, tienda, revivir, finales…) y que los tests comprueban.
  *
  * Trama (críptica, se revela por capas):
- *  - Thyes tiene diez reinos. En el año 4133 la sombra de VHORN apagó el Faro del Alba y llegó la Noche Larga.
+ *  - Thyes tiene diez reinos. En el año 4133 la sombra de VHORN apagó el Faro del Amanecer y llegó la Noche Larga.
  *  - TRI, guardiana del Faro, selló los diez reinos. Todos creen que fue ella quien los encerró…
  *  - …pero los diez sellos llevan grabada una sola frase (INSCRIPTIONS), que se lee en orden: Tri cerró para proteger.
  *  - Vhorn se alimenta del olvido: fue el primer vigía del Faro y el mundo lo olvidó. Se revela en Ciudad Celeste y se resuelve
@@ -15,7 +15,7 @@ export const WORLD = {
   name: 'Thyes',
   year: 4133,
   nextYear: 4134,
-  beacon: 'el Faro del Alba',
+  beacon: 'el Faro del Amanecer',
   guardian: 'Tri',
   villain: 'Vhorn',
   key: 'la llave roja',
@@ -57,6 +57,6 @@ export const LORE_PORTRAITS = {
   2: { id: 'sahrim', name: 'Los Sahrim', caption: 'Caravaneros que cuentan pozos como años' },
   3: { id: 'ennari', name: 'Los Ennari', caption: 'Escribas que escriben a sus muertos en la corteza' },
   8: { id: 'aluen', name: 'Los Aluen', caption: 'Tejedores de puentes bajo las estrellas' },
-  9: { id: 'vhorn', name: 'Vhorn, el Apagador', caption: 'La sombra que apagó el Faro del Alba' },
+  9: { id: 'vhorn', name: 'Vhorn, el Apagador', caption: 'La sombra que apagó el Faro del Amanecer' },
 };
 export const lorePortraitSrc = (id) => `historia/${id}.webp`;

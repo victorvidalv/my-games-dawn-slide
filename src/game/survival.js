@@ -10,7 +10,7 @@ export const CHALLENGE_ROUTES = [
 export const CHALLENGE_RELICS = [
   {
     id: 'hint',
-    name: 'Brújula del Alba',
+    name: 'Brújula del Amanecer',
     label: '1 pista por tablero (no acumulable)',
     action: 'Pista',
     rule: '1 por tablero',

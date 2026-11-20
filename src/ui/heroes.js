@@ -231,7 +231,7 @@ export function showRescue(kind = S.run?.rescue?.kind || 'lia') {
   };
 }
 
-/** Oferta de la Guardiana del Alba tras perder. */
+/** Oferta de la Guardiana del Amanecer tras perder. */
 export function showReviveOffer() {
   const modal = $('reviveOffer'),
     accept = $('reviveAccept'),

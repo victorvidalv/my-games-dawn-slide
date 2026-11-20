@@ -51,7 +51,7 @@ describe('mundo e historia: Thyes, año 4133', () => {
     expect(CHAPTERS[0].opening).toContain('Vhorn');
     expect(CHAPTERS[9].opening).toContain('Vhorn');
     expect(CHAPTERS[9].end).toContain('Vhorn');
-    for (const h of Object.values(HERO_LORE)) expect(h.endingLore).toMatch(/Faro del Alba/);
+    for (const h of Object.values(HERO_LORE)) expect(h.endingLore).toMatch(/Faro del Amanecer/);
     expect(read('index.html')).toContain('VHORN');
     expect(read('src/ui/finale.js')).toContain('Vhorn');
   });
@@ -67,7 +67,7 @@ describe('mundo e historia: Thyes, año 4133', () => {
   it('la tienda, el revivir y la pantalla de derrota hablan el mismo idioma del mundo', () => {
     expect(read('src/data/merchant.js')).toMatch(/Thyes/);
     expect(read('src/data/merchant.js')).toMatch(/Kogn/);
-    expect(read('index.html')).toMatch(/Guardiana del Alba/);
+    expect(read('index.html')).toMatch(/Guardiana del Amanecer/);
     expect(read('src/ui/finale.js')).toMatch(/LA NOCHE SE CIERRA/);
   });
 

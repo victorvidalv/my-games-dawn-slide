@@ -1,7 +1,7 @@
 # DAWNSLIDE
 
 Un puzle de bloques con tres héroes y cien niveles. Abre el camino entre los diez reinos de Thyes (año 4133)
-y devuelve la luz al Faro del Alba. Funciona en el navegador y se puede instalar como app (PWA, también sin conexión).
+y devuelve la luz al Faro del Amanecer. Funciona en el navegador y se puede instalar como app (PWA, también sin conexión).
 
 - **Objetivo:** desliza los bloques y saca la llave roja por la derecha en el menor número de movimientos.
   Un arrastre largo cuenta como **1** movimiento.
@@ -227,7 +227,7 @@ a recargar la página y a las partidas guardadas antiguas.
 
 ## Mundo e historia
 
-El juego transcurre en **Thyes, año 4133**, un mundo de diez reinos (las diez ciudades). La sombra de **Vhorn** apagó el Faro del Alba y **Tri**, guardiana del Faro, selló los reinos: todos creen que fue ella quien los encerró. Cada sello lleva grabada una frase; leídas en orden revelan por qué cerró Tri. Tres luces pueden despertar lo sellado —la Brasa (Lía), la Hora (Jean) y la Palabra (Juth)— y la llave roja abre cada cerrojo. Cuatro pueblos antiguos guardan pedazos de la historia: los **Kogn** (navegantes, en el Puerto), los **Sahrim** (caravaneros, en el Oasis), los **Ennari** (escribas de la corteza, en la Aldea) y los **Aluen** (tejedores de puentes bajo las estrellas, en la Ciudad Celeste).
+El juego transcurre en **Thyes, año 4133**, un mundo de diez reinos (las diez ciudades). La sombra de **Vhorn** apagó el Faro del Amanecer y **Tri**, guardiana del Faro, selló los reinos: todos creen que fue ella quien los encerró. Cada sello lleva grabada una frase; leídas en orden revelan por qué cerró Tri. Tres luces pueden despertar lo sellado —la Brasa (Lía), la Hora (Jean) y la Palabra (Juth)— y la llave roja abre cada cerrojo. Cuatro pueblos antiguos guardan pedazos de la historia: los **Kogn** (navegantes, en el Puerto), los **Sahrim** (caravaneros, en el Oasis), los **Ennari** (escribas de la corteza, en la Aldea) y los **Aluen** (tejedores de puentes bajo las estrellas, en la Ciudad Celeste).
 Los nombres y la trama están en [`src/data/lore.js`](src/data/lore.js) y los textos de cada capítulo y héroe en [`src/data/story.js`](src/data/story.js); `tests/lore.test.js` vigila que todo calce.
 
 ## Modos: Aventura, Retos diarios y Logros

@@ -398,7 +398,7 @@ const JEAN_THEME_DATA = [
   },
   {
     // 9 Castillo Dorado · Si bemol mayor, big band con metales y platillo
-    name: 'El regreso del alba',
+    name: 'El regreso del amanecer',
     choir: { vowel: 'ah', chant: [0, 6, 8], clap: [4, 10, 12, 14] },
     hook: { s: [0, 3, 6, 8, 11, 14], n: [0, 2, 3, 0, 2, 1], voice: 'guitar' },
     epic: 2,
