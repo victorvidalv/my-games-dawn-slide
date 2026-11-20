@@ -125,10 +125,18 @@ export const REWARDS = {
     { id: 'z9', name: 'El regreso del alba', price: 85 },
     { id: 's2', name: 'Cumbre astral', price: 95 },
   ],
+  cover: [
+    { id: 'classic', name: 'Trío del alba', price: 0, src: 'backgrounds/cover-heroes.webp' },
+    { id: 'lia', name: 'Lía en solitario', price: 50, src: 'backgrounds/cover-heroes-lia.png' },
+    { id: 'van', name: 'Van en solitario', price: 50, src: 'backgrounds/cover-heroes-van.png' },
+    { id: 'jean', name: 'Jean en solitario', price: 50, src: 'backgrounds/cover-heroes-jean.png' },
+    { id: 'battle', name: 'En guardia', price: 75, src: 'backgrounds/cover-heroes-battle.png' },
+    { id: 'victory', name: 'Alba victoriosa', price: 90, src: 'backgrounds/cover-heroes-victory.png' },
+  ],
 };
 
 export const REWARD_TYPES = Object.keys(REWARDS);
-export const DEFAULT_LOOK = { board: 'wood', pieces: 'paint', key: 'red', fx: 'none', music: 'menu' };
+export const DEFAULT_LOOK = { board: 'wood', pieces: 'paint', key: 'red', fx: 'none', music: 'menu', cover: 'classic' };
 
 export const rewardKey = (type, id) => `${type}:${id}`;
 export const rewardById = (type, id) => REWARDS[type]?.find((r) => r.id === id) || null;

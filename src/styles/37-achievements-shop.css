@@ -706,3 +706,15 @@ body[data-key='rose'] .piece.red {
 .sw-fx[data-fx='prism'] {
   background: conic-gradient(from 45deg, #ff8a65, #ffd54f, #4dd0e1, #ce93d8, #ff8a65);
 }
+
+/* Muestras de Portada en Canjear */
+.ach-shop-art .sw-cover {
+  width: 100%;
+  height: 70px;
+  object-fit: contain;
+  object-position: center bottom;
+  border-radius: 10px;
+  border: 1.5px solid #091118;
+  background: radial-gradient(circle at 50% 62%, #314969, #121c2c);
+  padding: 4px 4px 0;
+}

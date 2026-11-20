@@ -284,7 +284,7 @@ describe('logros y recompensas', () => {
     expect(lookOf({ look: { key: 'gold', music: 'z9', fx: 'zzz', pieces: 'glass' }, shopOwned: {} })).toEqual(
       DEFAULT_LOOK,
     );
-    expect(REWARD_TYPES).toEqual(['board', 'pieces', 'key', 'fx', 'music']);
+    expect(REWARD_TYPES).toEqual(['board', 'pieces', 'key', 'fx', 'music', 'cover']);
     for (const type of REWARD_TYPES) expect(REWARDS[type][0].id).toBe(DEFAULT_LOOK[type]);
     expect(setLook(store, 'key', 'red')).toBe(true);
     expect(lookOf(store).key).toBe('red');

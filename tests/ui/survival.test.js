@@ -47,9 +47,9 @@ it('elige ruta y reliquia en Desafío, usa la pista por turno, guarda y continú
   vi.spyOn(app.$('board'), 'clientWidth', 'get').mockReturnValue(288);
   drag(i, from, to);
 
-  // Al mover: gasta 1 turno y la pista se refresca para el nuevo turno
+  // Al mover: gasta 1 turno y la pista sigue usada en este mismo tablero
   expect(G.pos[i]).toBe(to);
-  expect(app.$('bChallengeRelic').disabled).toBe(false);
+  expect(app.$('bChallengeRelic').disabled).toBe(true);
   expect(saved().survival).toMatchObject({ route: '150', relic: 'hint', remaining: 149, cleared: 0 });
   expect(saved().run).toEqual(adventure);
 
@@ -64,7 +64,7 @@ it('elige ruta y reliquia en Desafío, usa la pista por turno, guarda y continú
   expect(app.S.G.pos).toEqual(saved().survival.pos);
   expect(app.$('survivalTurns').textContent).toBe('149');
 
-  // Completar tablero 1 y avanzar al 2
+  // Completar tablero 1 y avanzar al 2: la pista vuelve a estar disponible
   const audio = (await import('../../src/audio/music.js')).Music;
   const resumedTrack = audio.themeName;
   vi.spyOn(app.$('board'), 'clientWidth', 'get').mockReturnValue(288);
@@ -75,6 +75,7 @@ it('elige ruta y reliquia en Desafío, usa la pista por turno, guarda y continú
   }
   expect(saved().survival).toMatchObject({ remaining: 147, cleared: 1, pos: null });
   await untilPlayable(app, 2);
+  expect(app.$('bChallengeRelic').disabled).toBe(false);
   expect(audio.themeName).toBe(resumedTrack);
 });
 

@@ -48,7 +48,7 @@ describe('registro de logros y tienda', () => {
     }
     for (const g of groups) expect(ACHIEVEMENTS.filter((a) => a.group === g).length, g).toBe(20);
     // La tienda tiene 5 categorías, cada una con un elemento de serie gratis y premios con precio > 0
-    expect(REWARD_TYPES).toEqual(['board', 'pieces', 'key', 'fx', 'music']);
+    expect(REWARD_TYPES).toEqual(['board', 'pieces', 'key', 'fx', 'music', 'cover']);
     let buyable = 0;
     for (const type of REWARD_TYPES) {
       expect(REWARDS[type][0].id).toBe(DEFAULT_LOOK[type]);

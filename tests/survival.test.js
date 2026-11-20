@@ -74,16 +74,18 @@ describe('modo desafío', () => {
     expect(progress).toMatchObject({ cleared: 14, status: 'lost', remaining: 0, pos: null });
   });
 
-  it('las tres reliquias aplican sus reglas exactas: pista por turno, rehacer 1 tablero por partida y deshacer 1 vez por tablero', () => {
+  it('las tres reliquias aplican sus reglas exactas: pista por tablero, rehacer 1 tablero por partida y deshacer 1 vez por tablero', () => {
     expect(CHALLENGE_RELICS.map((r) => r.id)).toEqual(['hint', 'reset', 'undo']);
 
-    // 1. Pista por turno (no acumulable)
+    // 1. Pista por tablero (no acumulable)
     let pHint = newSurvival('150', 'hint');
     expect(canUseChallengeRelic(pHint).ok).toBe(true);
     pHint = useChallengeHint(pHint);
     expect(canUseChallengeRelic(pHint).ok).toBe(false);
     pHint = spendSurvivalTurn(pHint, [1], false, [0]);
-    expect(canUseChallengeRelic(pHint).ok).toBe(true);
+    expect(canUseChallengeRelic(pHint).ok).toBe(false); // sigue usada en el mismo tablero
+    pHint = spendSurvivalTurn(pHint, [4], true, [1]); // supera tablero
+    expect(canUseChallengeRelic(pHint).ok).toBe(true); // vuelve a estar disponible en el tablero siguiente
 
     // 2. Rehacer tablero completo una vez por partida
     let pReset = newSurvival('200', 'reset');

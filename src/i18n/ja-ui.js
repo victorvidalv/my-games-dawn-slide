@@ -14,7 +14,7 @@ export const JA_UI = {
   'Senda Firme': '堅き道',
   'Senda Eterna': '永き道',
   'Brújula del Alba': '暁の羅針盤',
-  '1 pista por turno (no acumulable)': '毎手1回ヒント（累積なし）',
+  '1 pista por tablero (no acumulable)': '各盤面1回ヒント（累積なし）',
   '1 por turno': '毎手1回',
   'Reloj de Arena': '時の砂時計',
   'Rehace 1 tablero completo por partida': '1プレイにつき1回盤面をやり直す',

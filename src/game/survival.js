@@ -11,9 +11,9 @@ export const CHALLENGE_RELICS = [
   {
     id: 'hint',
     name: 'Brújula del Alba',
-    label: '1 pista por turno (no acumulable)',
+    label: '1 pista por tablero (no acumulable)',
     action: 'Pista',
-    rule: '1 por turno',
+    rule: '1 por tablero',
   },
   {
     id: 'reset',
@@ -141,7 +141,7 @@ export function spendSurvivalTurn(progress, pos, won, prevPos = null) {
     remaining,
     pos: !remaining ? null : pos.slice(),
     lastPos: !remaining || !Array.isArray(prevPos) ? null : prevPos.slice(),
-    hintUsedTurn: false,
+    hintUsedTurn: !remaining ? false : Boolean(progress.hintUsedTurn),
     status,
   };
 }
@@ -151,8 +151,8 @@ export function canUseChallengeRelic(progress) {
   switch (progress.relic) {
     case 'hint':
       return progress.hintUsedTurn
-        ? { ok: false, reason: 'Usada en este turno' }
-        : { ok: true, reason: 'Disponible en este turno' };
+        ? { ok: false, reason: 'Usada en este tablero' }
+        : { ok: true, reason: '1 uso en este tablero' };
     case 'reset':
       if (progress.resetUsed) return { ok: false, reason: 'Ya usada en esta partida' };
       if (!progress.pos || progress.remaining >= (progress.boardStartRemaining ?? progress.remaining)) {

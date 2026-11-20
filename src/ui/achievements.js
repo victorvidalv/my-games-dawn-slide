@@ -38,8 +38,9 @@ const TYPE_NAME = {
   key: 'Llaves',
   fx: 'Celebraciones',
   music: 'Melodías',
+  cover: 'Portada',
 };
-const TYPE_ICON = { board: 'flag', pieces: 'rock', key: 'unlock', fx: 'crown', music: 'stars' };
+const TYPE_ICON = { board: 'flag', pieces: 'rock', key: 'unlock', fx: 'crown', music: 'stars', cover: 'heart' };
 const SURVIVAL_BY_ID = {
   s0: SURVIVAL_TRACKS[0],
   s1: SURVIVAL_TRACKS.find((t) => t.name === 'Alba de acero') || SURVIVAL_TRACKS[1],
@@ -68,6 +69,9 @@ export function applyLook() {
   document.body.dataset.board = look.board;
   document.body.dataset.pieces = look.pieces;
   document.body.dataset.key = look.key;
+  const cover = rewardById('cover', look.cover);
+  const coverImg = document.querySelector('#menu .cover-heroes');
+  if (coverImg && cover?.src) coverImg.src = `/${cover.src}`;
   Music.setMenuTheme(themeOf(look.music));
   return look;
 }
@@ -185,6 +189,10 @@ const swatch = (type, id) => {
   if (type === 'key') return `<i class="sw sw-key" data-key="${id}"></i>`;
   if (type === 'pieces') return `<i class="sw sw-piece" data-pieces="${id}"></i>`;
   if (type === 'fx') return `<i class="sw sw-fx" data-fx="${id}"></i>`;
+  if (type === 'cover') {
+    const src = rewardById('cover', id)?.src || 'backgrounds/cover-heroes.webp';
+    return `<img class="sw sw-cover" src="/${src}" alt="" loading="lazy">`;
+  }
   return `<i class="sw sw-music">${icon('stars')}</i>`;
 };
 

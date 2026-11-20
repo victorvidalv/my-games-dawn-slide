@@ -14,7 +14,7 @@ export const EN_UI = {
   'Senda Firme': 'Steady Path',
   'Senda Eterna': 'Eternal Path',
   'Brújula del Alba': 'Dawn Compass',
-  '1 pista por turno (no acumulable)': '1 hint per turn (does not stack)',
+  '1 pista por tablero (no acumulable)': '1 hint per board (does not stack)',
   '1 por turno': '1 per turn',
   'Reloj de Arena': 'Hourglass',
   'Rehace 1 tablero completo por partida': 'Reset 1 full board per run',

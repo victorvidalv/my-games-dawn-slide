@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { ACHIEVEMENTS } from '../src/game/achievements.js';
 import { dayNumber } from '../src/game/daily.js';
 import { exportSaveLink, readSaveHash, readSaveLink } from '../src/game/save-transfer.js';
 import { QR_MAX_BYTES, qrMatrix } from '../src/qr.js';
@@ -27,22 +28,58 @@ const snapshot = {
     c50: { score: 4200000000, level: 90, runs: 320 },
     c75: { score: 123456, level: 40, runs: 1 },
   },
-  ach: { perf10: recordAt, perf50: recordAt, lv50: recordAt, day7: recordAt },
-  stats: { perfects: 55555, heroes: ['lia', 'van'], paths: [1, 75], mini5Kinds: ['catch', 'shell'] },
+  ach: { perf10: recordAt, perf50: recordAt, lv50: recordAt, day7: recordAt, ch250: recordAt, cosmetic30: recordAt },
+  achClaimed: { perf10: recordAt, lv50: recordAt, ch250: recordAt },
+  shopOwned: {
+    'board:celestial': recordAt,
+    'music:s2': recordAt,
+    'key:crystal': recordAt,
+    'pieces:brass': recordAt,
+    'fx:prism': recordAt,
+    'cover:battle': recordAt,
+  },
+  stats: {
+    perfects: 55555,
+    boardsSolved: 180,
+    challengeBoards: 42,
+    challengeRelicsUsed: 12,
+    heroes: ['lia', 'van'],
+    paths: [1, 75],
+    mini5Kinds: ['catch', 'shell'],
+    challengeRelics: ['hint', 'undo'],
+    challengeRoutesPlayed: ['150', '250'],
+  },
   daily: { last: dayNumber(now), streak: 5, best: 7, solved: 25, gold: 12, by: { classic: 13, all: 12 } },
-  look: { music: 'z4', key: 'crystal', pieces: 'stone', fx: 'sparks' },
+  look: { board: 'celestial', music: 's2', key: 'crystal', pieces: 'brass', fx: 'prism', cover: 'battle' },
   tips: { tut_heavy: true },
+  survivalBests: { 150: 15, 200: 9, 250: 20 },
+  survivalWon: { 150: true, 250: true },
+  survival: {
+    routeVersion: 2,
+    route: '200',
+    relic: 'reset',
+    cleared: 8,
+    remaining: 112,
+    boardStartRemaining: 112,
+    pos: null,
+    lastPos: null,
+    hintUsedTurn: false,
+    resetUsed: true,
+    undoUsedBoard: false,
+    status: 'active',
+    updatedAt: recordAt,
+  },
   run,
 };
 
-describe('enlaces de transferencia', () => {
+describe('enlaces de transferencia v3', () => {
   it.each(['sun', 'purse', 'lantern'])('transfiere la reliquia %s con las pistas restantes', (relic) => {
     const link = exportSaveLink({ ...snapshot, run: { ...run, relic, hints: 4 } });
     expect(new TextEncoder().encode(link).length).toBeLessThan(QR_MAX_BYTES);
     expect(readSaveLink(link, now).run).toMatchObject({ relic, hints: 4 });
   });
 
-  it('conserva Aventura, logros, aspecto y retos dentro del límite del QR', () => {
+  it('conserva Aventura, los 100 logros, reclamos, tienda Canjear, Desafío y retos dentro del límite del QR', () => {
     const link = exportSaveLink(snapshot);
     expect(new TextEncoder().encode(link).length).toBeLessThan(QR_MAX_BYTES);
     expect(qrMatrix(link).length).toBeGreaterThan(21);
@@ -52,8 +89,25 @@ describe('enlaces de transferencia', () => {
     expect(readSaveHash(new URL(link).hash, now)).toEqual(imported);
   });
 
+  it('soporta todos los 100 logros (pendientes y reclamados) sin superar el tamaño máximo del QR', () => {
+    const ach = Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, recordAt]));
+    const achClaimed = Object.fromEntries(ACHIEVEMENTS.slice(0, 50).map((a) => [a.id, recordAt]));
+    const link = exportSaveLink({ ...snapshot, ach, achClaimed });
+    expect(new TextEncoder().encode(link).length).toBeLessThan(QR_MAX_BYTES);
+    const imported = readSaveLink(link, now);
+    expect(Object.keys(imported.ach)).toHaveLength(100);
+    expect(Object.keys(imported.achClaimed)).toHaveLength(50);
+  });
+
   it('acepta guardados antiguos o vacíos y conserva cruces de ciudad pendientes', () => {
-    expect(readSaveLink(exportSaveLink({}), now)).toMatchObject({ paths: {}, ach: {}, run: null, daily: { last: -1 } });
+    expect(readSaveLink(exportSaveLink({}), now)).toMatchObject({
+      paths: {},
+      ach: {},
+      achClaimed: {},
+      shopOwned: {},
+      run: null,
+      daily: { last: -1 },
+    });
     const crossing = { ...run, level: 10, firstLevel: 1, helpAt: 3, pendingClear: { level: 10, routeChosen: true } };
     expect(readSaveLink(exportSaveLink({ run: crossing }), now).run).toMatchObject({
       level: 10,
@@ -93,11 +147,13 @@ describe('importar al guardado local', () => {
     return { ...(await import('../src/state.js')), disk };
   }
 
-  it('preserva la aventura local hasta confirmar y combina máximos, logros y racha al aceptar', async () => {
+  it('preserva la aventura local hasta confirmar y combina máximos, logros, compras y Desafío al aceptar', async () => {
     const local = {
       run: { ...run, level: 20 },
       paths: { c1: { score: 750000, level: 93 } },
       ach: { clean: recordAt - 86400000 },
+      achClaimed: { clean: recordAt - 86400000 },
+      shopOwned: { 'board:slate': recordAt - 86400000 },
       daily: { streak: 9, best: 9, last: dayNumber(now) - 1 },
     };
     const { importProgress, store, disk } = await withLocal(local);
@@ -109,7 +165,11 @@ describe('importar al guardado local', () => {
     expect(store).toMatchObject({
       run: { level: 40 },
       paths: { c1: { score: 750000, level: 100 } },
-      ach: { clean: local.ach.clean, perf10: recordAt },
+      ach: { clean: local.ach.clean, perf10: recordAt, ch250: recordAt },
+      achClaimed: { clean: local.achClaimed.clean, perf10: recordAt, ch250: recordAt },
+      shopOwned: { 'board:slate': local.shopOwned['board:slate'], 'board:celestial': recordAt },
+      survivalWon: { 150: true, 250: true },
+      survival: { route: '200', relic: 'reset', cleared: 8 },
       daily: { streak: 5, best: 9 },
       look: snapshot.look,
     });

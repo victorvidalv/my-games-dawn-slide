@@ -14,7 +14,7 @@ export const ZH_UI = {
   'Senda Firme': '坚毅之路',
   'Senda Eterna': '永恒之途',
   'Brújula del Alba': '晨曦罗盘',
-  '1 pista por turno (no acumulable)': '每回合 1 次提示（不可叠加）',
+  '1 pista por tablero (no acumulable)': '每盘 1 次提示（不可叠加）',
   '1 por turno': '每回合 1 次',
   'Reloj de Arena': '时之沙漏',
   'Rehace 1 tablero completo por partida': '每局可重来 1 个完整棋盘',
