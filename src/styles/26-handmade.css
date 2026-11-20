@@ -914,9 +914,7 @@ button:disabled {
   gap: 10px;
   padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
   background:
-    radial-gradient(ellipse at 50% 38%, #15101a00 30%, #15101acc 100%),
-    linear-gradient(#15101a44, #15101a99),
-    url('/backgrounds/cover.webp') 40% center/cover;
+    radial-gradient(ellipse at 50% 38%, #15101a00 30%, #15101acc 100%), linear-gradient(#15101a44, #15101a99), #15101a;
 }
 .title-lockup {
   display: flex;

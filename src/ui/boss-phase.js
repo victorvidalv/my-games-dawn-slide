@@ -19,7 +19,7 @@ let ambient = 0;
 let tick = 0;
 let timeUpHandler = null;
 
-const artUrl = (art) => `jefes/${art}.jpg`;
+const artUrl = (art) => `jefes/${art}.webp`;
 /** Precarga la ilustración del jefe (se pide un poco antes de llegar para que no haya parpadeo). */
 export function preloadBossArt(level) {
   const boss = bossFor(level);

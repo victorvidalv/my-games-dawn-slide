@@ -12,7 +12,7 @@ GIF en bucle con paleta común de 63 colores más transparencia, cuadros de 100 
 
 `src/ui/map.js` muestra el GIF solo durante el desplazamiento entre ciudades, orienta el personaje en la dirección de la ruta y vuelve al PNG al llegar. Si se prefiere movimiento reducido, usa únicamente el PNG. Los GIF se incluyen en la caché sin conexión.
 
-Comprobación: formato, transparencia, ocho cuadros distintos, duración, bucle y revisión visual de la tira de cuadros en `output/imagegen/caminatas-preview.png`.
+Comprobación: formato, transparencia, ocho cuadros distintos, duración, bucle y revisión visual de la tira de cuadros (la vista previa se retiró del repositorio; está en el historial de git).
 
 ## Prompt jean
 

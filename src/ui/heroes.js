@@ -241,6 +241,11 @@ export function showReviveOffer() {
     pct = Math.round(reviveShare(S.run) * 100),
     after = Math.max(0, now - cost),
     fmt = (n) => n.toLocaleString(numLocale());
+  // Sus ilustraciones solo se descargan la primera vez que aparece (no al abrir el juego)
+  modal.querySelectorAll('img[data-src]').forEach((img) => {
+    img.src = img.dataset.src;
+    img.removeAttribute('data-src');
+  });
   haltBoard();
   boardEl.classList.add('board-lock');
   setTensionFx(0, false);

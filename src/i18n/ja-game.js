@@ -650,4 +650,5 @@ export const JA_GAME = {
   'Te faltan {n} pts': 'あと {n} 点必要',
   'Tienes {n} pts': '所持 {n} 点',
   'Activado: {n}': '装備中：{n}',
+  'Por defecto': 'デフォルト',
 };

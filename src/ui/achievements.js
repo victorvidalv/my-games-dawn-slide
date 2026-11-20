@@ -39,7 +39,7 @@ import {
 } from '../game/achievements.js';
 import { numLocale } from '../i18n.js';
 import { S, persist, store } from '../state.js';
-import { burst } from './fx.js';
+import { burst, celebration } from './fx.js';
 import { icon } from './icons.js';
 
 const TYPE_NAME = {
@@ -104,30 +104,14 @@ export function applyLook() {
   return look;
 }
 
-/** Lanza una celebración: las épicas y legendarias encadenan varias ráfagas alrededor del punto de salida. */
-function playBurst(fx, x, y, spread = 60) {
-  burst(x, y, fx.n, fx.colors, fx.speed);
-  for (let w = 1; w < (fx.waves || 1); w++)
-    setTimeout(
-      () =>
-        burst(
-          x - spread * (0.3 + Math.random() * 1.3),
-          y + spread * (Math.random() * 1.4 - 0.9),
-          Math.round(fx.n * 0.7),
-          fx.colors,
-          fx.speed * 0.9,
-        ),
-      230 * w,
-    );
-}
-
-/** Celebración elegida al sacar la llave (nada si es «Sin adornos»). */
+/** Celebración elegida al sacar la llave (nada si es «Sin adornos»): cada una tiene su forma y su movimiento (fx.js). */
 export function celebrate(el) {
-  const fx = rewardById('fx', lookOf(store).fx)?.burst;
+  const id = lookOf(store).fx,
+    fx = rewardById('fx', id)?.burst;
   if (!fx || !el || reducedMotion()) return;
   const b = $('board').getBoundingClientRect(),
     r = el.getBoundingClientRect();
-  playBurst(fx, b.right - 8, r.top + r.height / 2, b.width * 0.32);
+  celebration(id, b.right - 8, r.top + r.height / 2, b.width, fx.colors);
 }
 
 /** Actualiza la badge numérica del botón Logros en la pantalla principal (logros y cofres por abrir). */
@@ -359,7 +343,7 @@ function renderAchShop() {
           : '';
       return `<article class="ach-shop-card r-${rar.id}${equipped ? ' on' : ''}${owned ? ' owned' : ''}${canBuy ? ' can-buy' : ''}">
         <button type="button" class="ach-shop-open" data-open-type="${type}" data-open-id="${item.id}" aria-label="Ver ${item.name}">
-          <span class="rar-chip">${rar.name}</span>${item.anim ? `<span class="anim-chip">Animado</span>` : ''}
+          ${item.price === 0 ? `<span class="rar-chip default-chip">Por defecto</span>` : `<span class="rar-chip">${rar.name}</span>`}${item.anim ? `<span class="anim-chip">Animado</span>` : ''}
           <span class="ach-shop-art">${swatch(type, item.id)}</span>
           <b class="ach-shop-name">${item.name}</b>
         </button>${progress}${actionBtn}</article>`;
@@ -425,12 +409,13 @@ function tryOn(type, id) {
 
 function previewBurst() {
   if (!pv || reducedMotion()) return;
-  const fx = rewardById('fx', pv.type === 'fx' ? pv.id : lookOf(store).fx)?.burst;
+  const id = pv.type === 'fx' ? pv.id : lookOf(store).fx;
+  const fx = rewardById('fx', id)?.burst;
   const frame = pv.el.querySelector('.look-mini');
   if (!fx || !frame) return;
   const r = frame.getBoundingClientRect();
   const cell = r.width / 6.8;
-  playBurst(fx, r.right - 6, r.top + cell * 2.9, r.width * 0.3);
+  celebration(id, r.right - 6, r.top + cell * 2.9, r.width, fx.colors);
 }
 
 function paintPreview() {
@@ -516,7 +501,7 @@ export function openPreview(type, id) {
   el.setAttribute('aria-labelledby', 'lookPvName');
   el.innerHTML = `<div class="look-pv r-${rar.id}">
       <header class="look-pv-head">
-        <span class="rar-chip">${rar.name}</span>${item.anim ? `<span class="anim-chip">Animado</span>` : ''}
+        ${item.price === 0 ? `<span class="rar-chip default-chip">Por defecto</span>` : `<span class="rar-chip">${rar.name}</span>`}${item.anim ? `<span class="anim-chip">Animado</span>` : ''}
         <small>${TYPE_NAME[type]}</small>
         <h3 id="lookPvName">${item.name}</h3>
         <button type="button" class="look-pv-x" data-pv-close aria-label="Cerrar">✕</button>

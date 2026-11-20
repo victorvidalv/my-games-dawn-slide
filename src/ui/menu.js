@@ -125,7 +125,7 @@ function openPause() {
   $('pauseHero').src = heroArt(heroOf().id, 'story');
   $('pause').style.setProperty(
     '--pause-scene',
-    cssUrl(survival ? 'backgrounds/challenge-dawn.jpg' : `backgrounds/zone-${zoneIdx(S.run.level) + 1}.webp`),
+    cssUrl(survival ? 'backgrounds/challenge-dawn.webp' : `backgrounds/zone-${zoneIdx(S.run.level) + 1}.webp`),
   );
   soundLabel();
   $('pause').classList.add('show');

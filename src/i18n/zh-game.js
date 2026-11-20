@@ -644,4 +644,5 @@ export const ZH_GAME = {
   'Te faltan {n} pts': '还差 {n} 积分',
   'Tienes {n} pts': '你有 {n} 积分',
   'Activado: {n}': '已装备：{n}',
+  'Por defecto': '默认',
 };

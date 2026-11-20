@@ -667,4 +667,5 @@ export const EN_GAME = {
   'Te faltan {n} pts': 'You need {n} more pts',
   'Tienes {n} pts': 'You have {n} pts',
   'Activado: {n}': 'Equipped: {n}',
+  'Por defecto': 'Default',
 };

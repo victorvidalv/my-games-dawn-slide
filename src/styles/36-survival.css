@@ -164,11 +164,11 @@
 .challenge-relic-art {
   --relic-y: 0%;
   display: block;
-  background: url('/icons/challenge-relics.png') var(--relic-x, 0%) var(--relic-y) / 300% 200% no-repeat;
+  background: url('/icons/challenge-relics.webp') var(--relic-x, 0%) var(--relic-y) / 300% 200% no-repeat;
 }
 
 .challenge-relic-option .relic-art {
-  background-image: url('/icons/challenge-relics.png');
+  background-image: url('/icons/challenge-relics.webp');
 }
 
 #survivalPlay {

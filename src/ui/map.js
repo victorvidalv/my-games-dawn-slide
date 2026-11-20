@@ -16,7 +16,7 @@ function paintScenery(i) {
 export function applyChallengeScenery() {
   const r = document.documentElement.style;
   curZone = -1;
-  r.setProperty('--scene', cssUrl('backgrounds/challenge-dawn.jpg'));
+  r.setProperty('--scene', cssUrl('backgrounds/challenge-dawn.webp'));
   r.setProperty('--scene-shade', 'transparent');
   const hues = [188, 38, 214, 152, 266, 18, 46, 174];
   for (let k = 0; k < 8; k++) {
@@ -316,7 +316,7 @@ export function showMap(fromI, toI, { travel = false, overview = false } = {}) {
     });
     const hero = mk('g', { class: 'atlas-traveler' }),
       heroId = heroOf().id,
-      still = `heroes/${heroId}-mapa.png`;
+      still = `heroes/${heroId}-mapa.webp`;
     const art = mk(
       'image',
       { href: still, x: -24, y: -70, width: 48, height: 64, preserveAspectRatio: 'xMidYMax meet' },

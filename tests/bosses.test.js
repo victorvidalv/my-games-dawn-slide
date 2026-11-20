@@ -41,11 +41,11 @@ describe('jefes: datos y reglas', () => {
   });
 
   it('cada jefe tiene su ilustración en public/jefes (las diez, en JPG optimizado)', () => {
-    const missing = LEVELS.filter((l) => !fs.existsSync(`public/jefes/${BOSSES[l].art}.jpg`)).map(
+    const missing = LEVELS.filter((l) => !fs.existsSync(`public/jefes/${BOSSES[l].art}.webp`)).map(
       (l) => `${l}:${BOSSES[l].art}`,
     );
     expect(missing).toEqual([]);
-    expect(fs.existsSync('public/jefes/sentinel.jpg')).toBe(true); // la imagen de reserva (si falta alguna, el juego usa esta)
+    expect(fs.existsSync('public/jefes/sentinel.webp')).toBe(true); // la imagen de reserva (si falta alguna, el juego usa esta)
   });
 
   it('cada jefe tiene un retrato WebP recortado y una frase corta propia', () => {

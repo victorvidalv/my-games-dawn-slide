@@ -1,8 +1,6 @@
 /* Full-screen illustrated title background. */
 #menu {
-  background:
-    linear-gradient(#10202b38, #10202b8c),
-    url('/backgrounds/cover.webp') 40% center/cover;
+  background: linear-gradient(#10202b38, #10202b8c), #15101a;
   overflow-y: auto;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;

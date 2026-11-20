@@ -5,7 +5,7 @@ import { isBossLevel, levelPlan } from './mechanics.js';
  * Cada encuentro combina un tablero más exigente, una REGLA de presión propia (turnos ajustados, contrarreloj o ambas),
  * +30 % de puntos, una ilustración, un color de fase y una introducción antes de mover la primera pieza.
  *   (las piezas especiales de cada tablero las decide el calibrador: ver `bossMechLabel`)
- *   art    – ilustración en `public/jefes/<art>.jpg` (si falta, se usa `sentinel`)
+ *   art    – ilustración en `public/jefes/<art>.webp` (si falta, se usa `sentinel`)
  *   color  – [color principal, color secundario] de la fase: aura, destellos, vignette y resplandor del tablero
  */
 export const BOSSES = {

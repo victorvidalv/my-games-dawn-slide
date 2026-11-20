@@ -1,18 +1,13 @@
 # Poderes de Jean y Van: 25 cuadros con expresión facial
 
-Láminas corregidas con la herramienta integrada de imágenes usando las láminas anteriores como referencia de identidad, composición, vestuario y gestos de poder. Cada lámina contiene la secuencia completa en una cuadrícula de 5 × 5, leída de izquierda a derecha y de arriba abajo. Se conservan los originales generados, los 25 recortes PNG por héroe y los prompts completos.
+Láminas corregidas con la herramienta integrada de imágenes usando las láminas anteriores como referencia de identidad, composición, vestuario y gestos de poder. Cada lámina contiene la secuencia completa en una cuadrícula de 5 × 5, leída de izquierda a derecha y de arriba abajo. Se conservan los prompts completos.
 
 Ambos héroes cierran los ojos para concentrarse, los abren progresivamente al despertar su poder, levantan las cejas, abren la boca durante la invocación y terminan con una sonrisa y un parpadeo. Los lentes de Van permanecen transparentes para que sus ojos se distingan. La expresión se revisa también en los recortes al tamaño del juego.
 
-- `jean-sheet.png`: Jean activa su reloj con luz cian y expresión de concentración, esfuerzo y confianza.
-- `van-sheet.png`: Van traza una constelación violeta sobre su libro, con concentración, asombro y satisfacción.
-- `jean-frames/01.png` a `25.png` y `van-frames/01.png` a `25.png`: recortes a 144 × 288 px, el tamaño usado por el juego.
-- `../../../public/heroes/{jean,van}-power.gif`: 25 cuadros distintos × 60 ms = 1500 ms; una sola reproducción, con paleta común de 256 colores para evitar parpadeo cromático.
-- `../../../public/heroes/{jean,van}-power.webp`: retratos quietos actualizados a partir del cuadro 17, para movimiento reducido y fallos de descarga.
-- `preview.html`: permite reproducir ambos GIF.
-- `expresiones-preview.png`: comparación de los rostros en siete momentos de la animación, a partir de los cuadros del GIF final.
+Las láminas, los 50 recortes PNG y las vistas previas se retiraron del repositorio al integrarse en el juego (siguen en el historial de git, antes del commit «Optimize images»). Lo que usa el juego:
 
-Recrear con `python scripts/build-power-gifs.py` (requiere Pillow). Validar sin reescribir con `python scripts/build-power-gifs.py --check`. La comprobación verifica cantidad, dimensiones, duración por cuadro, duración total, 25 cuadros distintos y reproducción única. La interfaz usa `AWAKENING_MS = 1500`. Las rutas del juego se mantienen y el precache incluye sus revisiones actualizadas automáticamente en cada compilación.
+- `public/heroes/{jean,van}-power-anim.webp`: 25 cuadros × 60 ms = 1500 ms, una sola reproducción (la interfaz usa `AWAKENING_MS = 1500`).
+- `public/heroes/{jean,van}-power.webp`: retratos quietos a partir del cuadro 17, para movimiento reducido y fallos de descarga.
 
 ## Prompt Jean (herramienta integrada)
 
