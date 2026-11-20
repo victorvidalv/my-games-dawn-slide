@@ -20,18 +20,20 @@ describe('héroes', () => {
 });
 
 describe('Lía · turnos de reserva', () => {
-  it('solo Lía recibe turnos extra: el 25 % del mínimo del tablero (8 → +2)', () => {
-    expect(bonusTurns('lia', 8)).toBe(2);
-    expect(bonusTurns('lia', 40)).toBe(10);
+  it('solo Lía recibe turnos extra: 40 % del mínimo en Normal, 20 % en Difícil y 25 % en Experto', () => {
+    expect(bonusTurns('lia', 8)).toBe(3);
+    expect(bonusTurns('lia', 40)).toBe(16);
+    expect(bonusTurns('lia', 40, false, 1, 50)).toBe(8);
+    expect(bonusTurns('lia', 40, false, 1, 75)).toBe(10);
     expect(bonusTurns('lia', 2)).toBe(1);
     expect(bonusTurns('jean', 40)).toBe(0);
     expect(bonusTurns('van', 40)).toBe(0);
   });
-  it('heroLimit suma el bonus al límite normal, igual en todos los caminos, y no cambia para el resto de héroes', () => {
+  it('heroLimit suma el bonus de su camino al límite normal y no cambia para el resto de héroes', () => {
     for (const opt of [2, 7, 20, 37])
       for (const start of [1, 50, 75]) {
         expect(heroLimit('jean', opt, start)).toBe(moveLimit(opt, start));
-        expect(heroLimit('lia', opt, start)).toBe(moveLimit(opt, start) + bonusTurns('lia', opt));
+        expect(heroLimit('lia', opt, start)).toBe(moveLimit(opt, start) + bonusTurns('lia', opt, false, 1, start));
       }
   });
 });

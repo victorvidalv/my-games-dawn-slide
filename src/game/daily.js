@@ -6,9 +6,9 @@ import { levelPlan } from './mechanics.js';
 
 export const DAILY_TARGETS = [5, 8, 12];
 export const STREAK_HINT_REWARDS = [
-  { days: 3, hints: 5 },
-  { days: 5, hints: 10 },
-  { days: 7, hints: 15 },
+  { days: 3, hints: 3 },
+  { days: 5, hints: 5 },
+  { days: 7, hints: 8 },
 ];
 export const streakHintBonus = (days) =>
   STREAK_HINT_REWARDS.reduce((bonus, reward) => (days >= reward.days ? reward.hints : bonus), 0);

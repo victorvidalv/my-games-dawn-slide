@@ -5,6 +5,7 @@ import { POWER_READY_SHARE, powerReady } from '../src/game/powers.js';
 import { maxPrize, bonusPrize } from '../src/game/minigames.js';
 import { MAX_REVIVES, REVIVE_SHARE } from '../src/game/shop.js';
 import { braveExtra, moveLimit } from '../src/engine/difficulty.js';
+import { HEROIC_BENEFITS } from '../src/game/routes.js';
 
 /**
  * Equilibrio del juego con el modelo de src/game/balance.js (determinista). Los rangos salen de `npm run simulate`:
@@ -115,14 +116,20 @@ describe('equilibrio de los poderes de héroe (simulación)', () => {
     });
   });
 
-  it('Jean/Juth descansan en algunos tableros', () => {
-    expect(POWER_READY_SHARE).toEqual({ 1: 1, 50: 0.85, 75: 0.7 });
-    const ready = (s) => Array.from({ length: 100 }, (_, i) => powerReady(i + 1, s)).filter(Boolean).length;
-    expect(ready(NORMAL)).toBe(100);
-    expect(ready(DIFICIL)).toBeGreaterThanOrEqual(84);
-    expect(ready(DIFICIL)).toBeLessThanOrEqual(86);
-    expect(ready(EXPERTO)).toBeGreaterThanOrEqual(69);
-    expect(ready(EXPERTO)).toBeLessThanOrEqual(71);
+  it('Jean/Juth descansan en algunos tableros (nunca en el primero, en un jefe ni dos seguidos)', () => {
+    expect(POWER_READY_SHARE).toEqual({ jean: { 1: 0.85, 50: 0.75, 75: 0.65 }, van: { 1: 1, 50: 0.65, 75: 0.7 } });
+    const ready = (s, hero) => Array.from({ length: 100 }, (_, i) => powerReady(i + 1, s, hero)).filter(Boolean).length;
+    expect(ready(NORMAL, 'van')).toBe(100);
+    for (const hero of ['jean', 'van'])
+      for (const s of PATHS) {
+        const share = POWER_READY_SHARE[hero][s];
+        expect(Math.abs(ready(s, hero) - 100 * share), `${hero} ${s}`).toBeLessThanOrEqual(1);
+        expect(powerReady(1, s, hero)).toBe(true);
+        for (let level = 2; level <= 100; level++) {
+          if (level % 10 === 0) expect(powerReady(level, s, hero), `${hero} ${s} jefe ${level}`).toBe(true);
+          expect(powerReady(level, s, hero) || powerReady(level - 1, s, hero), `${hero} ${s} ${level}`).toBe(true);
+        }
+      }
   });
 });
 
@@ -162,18 +169,22 @@ describe('camino heroico (simulación)', () => {
     for (const g of [lia, jean, juth]) expect(g.points).toBeGreaterThan(1.0);
   });
 
-  it('con tienda, el descuento compensa el camino heroico de Juth', () => {
-    let withDiscount = 0;
-    let without = 0;
-    for (const start of PATHS) {
-      const a = averageRuns({ hero: 'van', start, skill: 0.8, runs: RUNS, shop: true });
-      const b = averageRuns({ hero: 'van', start, skill: 0.8, runs: RUNS, shop: true, route: 'brave' });
-      withDiscount += b.cleared - a.cleared;
-      const c = averageRuns({ hero: 'van', start, skill: 0.8, runs: RUNS });
-      const d = averageRuns({ hero: 'van', start, skill: 0.8, runs: RUNS, route: 'brave' });
-      without += d.cleared - c.cleared;
+  it('con tienda, el descuento heroico de Juth abarata sus compras sin hacerle perder niveles', () => {
+    const play = () =>
+      PATHS.map((start) =>
+        averageRuns({ hero: 'van', start, skill: 0.8, runs: RUNS, shop: true, route: 'brave' }),
+      ).reduce((a, r) => ({ cleared: a.cleared + r.cleared, spent: a.spent + r.spent }), { cleared: 0, spent: 0 });
+    const withDiscount = play();
+    const discount = HEROIC_BENEFITS.shop.van;
+    HEROIC_BENEFITS.shop.van = 0;
+    let without;
+    try {
+      without = play();
+    } finally {
+      HEROIC_BENEFITS.shop.van = discount;
     }
-    expect(withDiscount).toBeGreaterThan(without);
+    expect(withDiscount.spent).toBeLessThan(without.spent * 0.85);
+    expect(withDiscount.cleared).toBeGreaterThanOrEqual(without.cleared - 0.5);
   });
 
   it('el tablero heroico pide más movimientos y su límite es más estricto', () => {

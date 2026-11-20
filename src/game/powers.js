@@ -1,6 +1,7 @@
 import { encode, N } from '../engine/board.js';
 import { byPath } from '../engine/difficulty.js';
-import { powerFactor } from './routes.js';
+import { isHeroic, powerFactor } from './routes.js';
+import { isBossLevel } from './mechanics.js';
 import { analyze, expand } from '../engine/solver.js';
 
 /** Jean rebobina ~33 % de los movimientos hechos, mínimo 3 (o todos si lleva menos); `power` = 0,5 en el camino heroico (≈17 %, mínimo 2). */
@@ -8,17 +9,30 @@ export const REWIND_SHARE = 1 / 3;
 export const REWIND_MIN = 3;
 export const rewindCount = (moves, power = 1) =>
   Math.min(moves, Math.max(Math.round(REWIND_MIN * power), Math.round(moves * REWIND_SHARE * power)));
-/** Destino de Juth: ejecuta ~25 % de los pasos que faltan (heroico la mitad), con un mínimo de 1; nunca el último (siempre deja uno al jugador). */
+/** Destino de Juth: ejecuta ~25 % de los pasos que faltan (en su camino heroico, entero), con un mínimo de 1; nunca el último (siempre deja uno al jugador). */
 export const DESTINY_SHARE = 0.25;
-export const JUTH_MIN_REMAINING = 2; // usable solo si quedan al menos 3 pasos (con 1 o 2 no hace nada)
+export const JUTH_MIN_REMAINING = 3; // usable solo si quedan al menos 4 pasos (con menos no hace nada)
 export const destinyCount = (left, share = DESTINY_SHARE) =>
   left > JUTH_MIN_REMAINING ? Math.min(left - 1, Math.max(1, Math.round(left * share))) : 0;
-/** Parte de los tableros en los que los poderes de Jean y Juth están listos: Normal todos, Difícil ~85 %, Experto ~70 % (repartidos de forma pareja). */
-export const POWER_READY_SHARE = { 1: 1, 50: 0.85, 75: 0.7 };
-export const powerReady = (level = 1, start = 1) => {
-  const k = byPath(POWER_READY_SHARE, start);
-  return Math.floor(level * k + 1e-9) > Math.floor((level - 1) * k + 1e-9);
+/**
+ * Parte de los tableros en los que el poder de cada héroe está listo (repartidos de forma pareja; el primer tablero y los
+ * jefes siempre, y nunca dos descansos seguidos). Cada héroe tiene su camino: Juth guía en Normal (nunca descansa), Jean
+ * domina Difícil y Lía, con su reserva, Experto.
+ */
+export const POWER_READY_SHARE = {
+  jean: { 1: 0.85, 50: 0.75, 75: 0.65 },
+  van: { 1: 1, 50: 0.65, 75: 0.7 },
 };
+export const powerReady = (level = 1, start = 1, hero = 'jean') => {
+  const k = byPath(POWER_READY_SHARE[hero] || POWER_READY_SHARE.jean, start);
+  return level <= 1 || Math.floor(level * k + 1e-9) > Math.floor((level - 1) * k + 1e-9);
+};
+/** En tableros largos (mínimo ≥ JEAN_LONG_BOARD) Jean puede rebobinar dos veces. */
+export const JEAN_LONG_BOARD = 14;
+/** `heroicBoss`: jefe dentro del Camino del Péndulo, donde Jean tiene un rebobinado extra. */
+export const powerUses = (hero, opt = 0, heroicBoss = false) =>
+  hero === 'jean' ? (opt >= JEAN_LONG_BOARD ? 2 : 1) + (heroicBoss ? 1 : 0) : 1;
+const runUses = (run, G) => powerUses(run?.hero, G?.opt, isHeroic(run) && isBossLevel(G?.n) && !G?.tutorial);
 
 const plans = new WeakMap();
 /** One graph analysis per position, shared by the button and activation; respects all special pieces. */
@@ -58,9 +72,12 @@ export function destinyPlan(G, share = DESTINY_SHARE) {
   return plan;
 }
 
+const usesLeft = (run, G) =>
+  run?.powerUsedLevel === G?.n ? Math.max(0, runUses(run, G) - (run.powerUsedCount || 1)) : runUses(run, G);
+
 function powerUsed(run, G) {
   return (
-    run?.powerUsedLevel === G?.n ||
+    usesLeft(run, G) === 0 ||
     (run?.hero === 'jean' && run.undoUsedLevel === G?.n && run.undoUsedCount > 0) ||
     (run?.hero === 'van' && run.freeHintLevel === G?.n && run.freeHintCount > 0)
   );
@@ -70,24 +87,31 @@ export function powerState(run, G) {
   if (!run || !G || G.done) return { ok: false, reason: 'Sin tablero' };
   if (run.hero === 'lia') return { ok: false, reason: 'Reserva automática' };
   if (powerUsed(run, G)) return { ok: false, reason: 'Usado · próximo tablero' };
-  if (!powerReady(G.n, run.start)) return { ok: false, reason: 'Descansa este tablero' };
-  if (run.hero === 'jean')
+  if (!powerReady(G.n, run.start, run.hero)) return { ok: false, reason: 'Descansa · listo en el próximo tablero' };
+  if (run.hero === 'jean') {
+    const left = usesLeft(run, G);
     return G.hist.length
-      ? { ok: true, count: rewindCount(G.hist.length, powerFactor(run)), reason: '1 uso por tablero' }
+      ? {
+          ok: true,
+          count: rewindCount(G.hist.length, powerFactor(run)),
+          reason: left > 1 ? `${left} usos en este tablero` : '1 uso por tablero',
+        }
       : { ok: false, reason: 'Mueve una pieza primero' };
+  }
   if (run.hero !== 'van') return { ok: false, reason: 'Sin poder' };
   const plan = destinyPlan(G, DESTINY_SHARE * powerFactor(run));
   if (plan && G.limit - G.moves < plan.steps.length)
     return { ok: false, reason: `Necesitas ${plan.steps.length} turnos` };
   return plan
     ? { ok: true, plan, reason: `${plan.steps.length} movimientos · 1 uso` }
-    : { ok: false, reason: 'Requiere al menos 3 pasos hasta la salida' };
+    : { ok: false, reason: 'Requiere al menos 4 pasos hasta la salida' };
 }
 
 /** Consume before any animation, so saving or reloading cannot replenish the power. */
 export function beginPower(run, G) {
   const state = powerState(run, G);
   if (!state.ok) return null;
+  run.powerUsedCount = run.powerUsedLevel === G.n ? (run.powerUsedCount || 1) + 1 : 1;
   run.powerUsedLevel = G.n;
   return run.hero === 'jean'
     ? {

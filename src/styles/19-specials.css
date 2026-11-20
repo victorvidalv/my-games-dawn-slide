@@ -213,8 +213,7 @@
   place-items: center;
 }
 .piece.gate .face {
-  background-image:
-    repeating-linear-gradient(135deg, #09111828 0 7px, #0000 7px 14px), linear-gradient(165deg, var(--a), var(--b));
+  background-image: repeating-linear-gradient(135deg, #09111828 0 7px, #0000 7px 14px), var(--piece-paint);
 }
 .piece.gate.locked .face {
   filter: saturate(0.5) brightness(0.82);
@@ -330,8 +329,7 @@
     radial-gradient(circle at 12% 18%, #091118 0 2.5px, #efe5c9 2.8px 4.2px, #0000 4.5px),
     radial-gradient(circle at 88% 18%, #091118 0 2.5px, #efe5c9 2.8px 4.2px, #0000 4.5px),
     radial-gradient(circle at 12% 82%, #091118 0 2.5px, #efe5c9 2.8px 4.2px, #0000 4.5px),
-    radial-gradient(circle at 88% 82%, #091118 0 2.5px, #efe5c9 2.8px 4.2px, #0000 4.5px),
-    linear-gradient(165deg, var(--a), var(--b));
+    radial-gradient(circle at 88% 82%, #091118 0 2.5px, #efe5c9 2.8px 4.2px, #0000 4.5px), var(--piece-paint);
   box-shadow:
     0 4px 0 #091118,
     0 7px 10px #0006,
@@ -355,7 +353,7 @@
 .piece.ice .face {
   background:
     linear-gradient(125deg, #ffffff99 0 18%, #0000 18.5% 32%, #ffffff55 32.5% 41%, #0000 41.5%),
-    linear-gradient(155deg, #e9fcff 0%, #8ee3fc 42%, #43aad4 100%);
+    linear-gradient(155deg, #e9fcff 0 22%, #8ee3fc 23% 68%, #43aad4 69%);
   box-shadow:
     0 4px 0 #091118,
     0 7px 12px #0006,
@@ -472,7 +470,7 @@
 .mini .mp.red {
   width: calc(var(--c) * 2);
   left: 12px;
-  background: linear-gradient(#e86a6a, #b43a3a);
+  background: var(--hatch), var(--red-key-paint);
 }
 .mini .mp.blk {
   background: linear-gradient(#7fb4e6, #4a82b8);

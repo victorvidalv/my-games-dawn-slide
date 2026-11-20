@@ -4,7 +4,7 @@ import { curve, rateAt, braveExtra, startHintsFor, MAX_LEVEL } from '../engine/d
 import { calcGain } from '../engine/scoring.js';
 import { hintEvery, CITY_EVERY, bonusTurns, heroBaseLimit } from './heroes.js';
 import { MAX_REVIVES, REVIVE_SHARE, priceOf, extraTurns } from './shop.js';
-import { rewindCount, DESTINY_SHARE, JUTH_MIN_REMAINING, destinyCount, powerReady } from './powers.js';
+import { rewindCount, DESTINY_SHARE, JUTH_MIN_REMAINING, destinyCount, powerReady, powerUses } from './powers.js';
 import { BOSS_POINTS_BONUS, HEROIC_BENEFITS, heroicPowerFactor, juthHeroicFamily } from './routes.js';
 import { bossCapFor, bossRating } from './bosses.js';
 import { isBossLevel, levelPlan, lettersOfFamily } from './mechanics.js';
@@ -35,7 +35,7 @@ function juthMechanicPressure(level, rating) {
  * MODEL.unnoticedCost. Una pista evita el error entero (y se gasta); se guardan para tableros duros (d ≥ MODEL.hintMinD).
  * Se pierde al agotar los turnos sin llegar a la salida. Poderes (una vez por tablero, como en el juego):
  *   Lía  – turnos de reserva (más límite) y, en su camino heroico, 1 pista gratis cada cuatro tableros;
- *   Jean – Rebobinar: devuelve ~33 % de los movimientos hechos, mínimo 3 (borra el primer error del tablero);
+ *   Jean – Rebobinar: devuelve ~33 % de los movimientos hechos, mínimo 3 (borra un error; dos en tableros largos);
  *   Juth – Trazar destino: ~25 % de los pasos que faltan (si quedan al menos 3): sin error en esos pasos.
  * Sellos (cada 3-4 niveles desde el 5): el jugador hábil rodea un poco para recogerlos y cobra puntos extra.
  * Minijuegos (niveles 15, 25…): pistas según habilidad, con el premio máximo proporcional al nivel.
@@ -100,7 +100,7 @@ export function playBoard(
     baseLimit +
     (powers.liaTurns && hero === 'lia'
       ? Math.max(1, Math.round(d * powers.liaTurns))
-      : bonusTurns(hero, d, boss, power));
+      : bonusTurns(hero, d, boss, power, start));
   let extra = 0;
   if (seal) {
     // rodeo para recoger el sello: más movimientos y, si hace falta, más límite
@@ -120,8 +120,8 @@ export function playBoard(
   let moves = 0;
   let h = hints;
   let f = heroic && hero === 'lia' && level % HEROIC_BENEFITS.liaEvery === 0 ? HEROIC_BENEFITS.liaHints : 0; // pistas gratis de ESTE tablero (camino heroico de Lía)
-  const ready = powerReady(level, start); // en los caminos difíciles los poderes descansan en algunos tableros
-  let rewind = hero === 'jean' && ready; // una vez por tablero
+  const ready = powerReady(level, start, hero); // en algunos tableros el poder descansa (según héroe y camino)
+  let rewind = hero === 'jean' && ready ? powerUses(hero, d, heroic && !!boss) : 0; // una vez por tablero, dos en los largos
   let destiny = hero === 'van' && ready;
   let safe = 0; // pasos protegidos por «Trazar destino»
   for (let step = 0; step < need; step++) {
@@ -147,8 +147,8 @@ export function playBoard(
         const k = 1 + Math.floor(Math.log(1 - rng()) / Math.log(0.5)); // 1 + geométrica (media 2)
         let waste = 0;
         for (let j = 0; j < k; j++) waste += rng() >= MODEL.notice ? MODEL.unnoticedCost : 2;
-        if (rewind) {
-          rewind = false;
+        if (rewind > 0) {
+          rewind--;
           waste = Math.max(0, waste - 2 * rewindCount(moves, power));
         } // Jean rebobina ~33 % de los movimientos hechos (mín. 3)
         moves += waste;

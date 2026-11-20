@@ -170,8 +170,8 @@
 }
 @media (max-height: 760px) and (max-aspect-ratio: 13/10) {
   .cover-heroes {
-    inset: clamp(56px, 13dvh, 96px) 0 auto;
-    height: 40dvh;
+    inset: max(50px, calc(env(safe-area-inset-top) + 36px)) 0 auto;
+    height: min(34dvh, 290px);
   }
 }
 @media (min-aspect-ratio: 13/10) {
@@ -189,6 +189,15 @@
     background:
       linear-gradient(90deg, #0d162721, transparent 35%, #13182788 63%, #090d17db),
       radial-gradient(ellipse at 68% 31%, #ffe8ad42, transparent 44%);
+  }
+}
+@media (min-aspect-ratio: 13/10) and (max-height: 520px) {
+  .cover-heroes {
+    inset: 0 auto 0 0;
+    width: max(0px, calc(100vw - clamp(280px, 57vw, 465px) - clamp(16px, 4vw, 48px)));
+    height: 100%;
+    object-position: center;
+    mask-image: linear-gradient(#000 70%, transparent);
   }
 }
 @media (prefers-reduced-motion: reduce) {

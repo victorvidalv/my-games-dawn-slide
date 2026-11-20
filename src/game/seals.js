@@ -4,6 +4,7 @@ import { baseScore, calcGain } from '../engine/scoring.js';
 import { hash32 } from '../engine/rng.js';
 import { sealAt } from '../engine/calibration.js';
 import { heroicPoints } from './routes.js';
+import { relicPoints } from './relics.js';
 
 /** Niveles con sello (y su tipo) según el calibrador. */
 export const SEAL_LEVELS = Array.from({ length: 100 }, (_, i) => i + 1).filter((l) => sealAt(l));
@@ -34,7 +35,7 @@ export const sealPoints = (rate, opt, required, tier = 2) =>
   );
 /** Tipo de sello que se intenta colocar en un nivel (el del calibrador; el motor lo baja si el tablero no da para tanto rodeo). */
 export const requestedSealTier = (level) => sealAt(level)?.tier ?? 1;
-export const sealReward = (run, seal) => Math.round(seal.value * (1 + heroicPoints(run)));
+export const sealReward = (run, seal) => relicPoints(run, Math.round(seal.value * (1 + heroicPoints(run))));
 export const sealLimit = (seal, base) => (seal ? Math.max(base, seal.requiredMoves + 1) : base);
 
 /** A slide crosses every cell in its swept footprint, including intermediate cells on ice. */

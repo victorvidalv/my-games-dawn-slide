@@ -6,6 +6,10 @@ export const ZH_GAME = {
   'solución más larga': '解法步数更多',
   'más mecanismos': '机关更多',
   '+{p} de puntos · {rule}': '+{p} 分 · {rule}',
+  '+{p} de puntos · {rule} · {perk}': '积分 +{p} · {rule} · {perk}',
+  'pista gratis cada 4 tableros': '每 4 关一次免费提示',
+  'rebobinado extra en el jefe': '首领关多一次倒转',
+  'runas a plena potencia': '符文全力发动',
   'Pistas extra al iniciar Aventura': '开启冒险时的额外提示',
   '{n} días': '{n} 天',
   '+{n} pistas': '+{n} 次提示',
@@ -26,14 +30,14 @@ export const ZH_GAME = {
   'Escriba de las Runas': '符文的书记官',
   'Turnos de reserva': '储备步数',
   'Más turnos en cada tablero': '每关都有更多步数',
-  'Cada tablero te da turnos extra (un cuarto del mínimo necesario) para perdonar los errores pequeños sin quitarte el reto.':
-    '每块棋盘都会给你额外步数（最少步数的四分之一），小失误可以被原谅，挑战却不会变少。',
+  'Cada tablero te da turnos extra (alrededor de un tercio del mínimo necesario; algo menos en los caminos difíciles) para perdonar los errores pequeños sin quitarte el reto.':
+    '每块棋盘都会给你额外步数（约为最少步数的三分之一；较难的道路上略少），小失误可以被原谅，挑战却不会变少。',
   'Retrocede varios movimientos': '后退若干步',
-  'Una vez por tablero, devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.':
-    '每关一次，把方块和步数退回大约三分之一（至少三步）。如果走的步数更少，就回到开局。',
+  'Una vez por tablero (dos en los tableros largos), devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.':
+    '每关一次（长棋盘两次），把方块和步数退回大约三分之一（至少三步）。如果走的步数更少，就回到开局。',
   'Ejecuta movimientos óptimos': '自动走出最优步',
-  'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos tres pasos pendientes.':
-    '每关一次，符文会把方块朝出口移动，大约走完剩余步数的四分之一（不会走最后一步）。会消耗步数，并且至少要还剩三步。',
+  'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos cuatro pasos pendientes.':
+    '每关一次，符文会把方块朝出口移动，大约走完剩余步数的四分之一（不会走最后一步）。会消耗步数，并且至少要还剩四步。',
   Hero: '英雄',
   'Camino de la Brasa': '余烬之路',
   'Camino del Péndulo': '钟摆之路',
@@ -213,8 +217,8 @@ export const ZH_GAME = {
   'Muchos turnos extra': '大量额外步数',
   'Bastantes más turnos para este tablero.': '这块棋盘多很多步。',
   'Rehacer tablero': '重做棋盘',
-  'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados).':
-    '这块棋盘从头再来，步数归 0（已购步数保留）。',
+  'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados). Una vez por tablero.':
+    '这块棋盘从头再来，步数归 0（已购步数保留）。每关一次。',
   'Saltar nivel': '跳过关卡',
   'Pasa al siguiente nivel sin puntos y sin racha.': '直接进入下一关，没有分数，连胜中断。',
   'No hay un tablero en juego.': '当前没有棋盘。',

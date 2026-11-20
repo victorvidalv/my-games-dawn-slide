@@ -3,6 +3,7 @@ export const ZH_SHOP = {
   'Ya compraste una pista para este tablero.': '你已经为这块棋盘购买过提示。',
   'Una compra por tablero': '每块棋盘限购一次',
   'Ya compraste turnos para este tablero.': '你已经为这块棋盘购买了额外步数。',
+  'Ya rehiciste este tablero.': '这块棋盘已经重来过了。',
   'Los jefes no se pueden saltar.': '无法跳过首领关卡。',
   'Ya usaste el salto de esta ciudad.': '你已经用过这座城市的跳过机会。',
   'Un paquete por tablero': '每块棋盘限购一份',

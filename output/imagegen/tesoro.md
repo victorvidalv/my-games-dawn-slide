@@ -2,7 +2,7 @@
 
 Generado con la herramienta de imágenes integrada. Referencias directas del estilo del juego: retratos originales de Jean y Lía, ilustración de Ennari y fondo de la tienda.
 
-Archivo final: `public/historia/tesoro.webp`. WebP optimizado a 640 × 960 px, calidad 72. El original de alta resolución se conserva en el historial de imágenes generadas.
+La ilustración se exportó a WebP de 640 × 960 px. La versión de `public/historia` se retiró porque ninguna pantalla la cargaba. El original de alta resolución se conserva en el historial de imágenes generadas.
 
 ## Prompt final
 

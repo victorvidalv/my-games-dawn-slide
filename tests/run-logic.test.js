@@ -77,6 +77,13 @@ describe('crear partidas', () => {
     });
   });
 
+  it('el Farol suma sus pistas a las del camino y la racha diaria (no las reemplaza)', () => {
+    // 3 del camino + 15 de una racha de 7 días + 7 del Farol
+    expect(newAdventureRun({ seed: 7, start: 1, hero: 'lia', from: 1, hints: 18, relic: 'lantern' }).hints).toBe(25);
+    expect(newAdventureRun({ seed: 7, start: 75, hero: 'lia', from: 1, hints: 2, relic: 'lantern' }).hints).toBe(9);
+    expect(newAdventureRun({ seed: 7, start: 1, hero: 'lia', from: 1, hints: 18, relic: 'sun' }).hints).toBe(18);
+  });
+
   it('el reto diario no tiene héroe ni vidas y va por la ruta normal', () => {
     const run = newDailyRun({
       challenge: { id: 'classic', level: 34 },

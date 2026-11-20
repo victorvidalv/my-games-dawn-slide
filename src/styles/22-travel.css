@@ -1,4 +1,4 @@
-/* Paradas para elegir camino: la imagen de la ciudad de fondo con la guía encima; arriba el nombre de la ciudad y la frase de la historia,
+/* Paradas para elegir camino: la imagen de la ciudad de fondo con el héroe encima; arriba el nombre de la ciudad y la frase de la historia,
    abajo «Elige tu camino» y los dos caminos bien destacados. */
 .travel-legacy {
   display: none !important;
@@ -25,17 +25,17 @@
   pointer-events: none;
   background: linear-gradient(180deg, #08121acf 0%, #08121a38 30%, #08121a55 56%, #08121af2 100%);
 }
-.travel-guide {
+.travel-hero {
   position: fixed;
-  left: -5%;
-  bottom: 0;
+  left: 0;
+  bottom: clamp(125px, 23dvh, 195px);
   z-index: 2;
-  height: min(74dvh, 860px);
-  width: auto;
-  max-width: 92vw;
+  height: clamp(230px, calc(100dvh - 420px), 660px);
+  width: 100%;
   object-fit: contain;
-  object-position: left bottom;
+  object-position: center bottom;
   filter: drop-shadow(0 10px 26px #000b);
+  mask-image: linear-gradient(#000 84%, transparent);
   pointer-events: none;
   user-select: none;
 }
@@ -212,9 +212,10 @@
   }
 }
 @media (min-aspect-ratio: 11/10) {
-  .travel-guide {
-    left: 2%;
-    height: 92dvh;
+  .travel-hero {
+    bottom: 0;
+    width: min(47vw, 660px);
+    height: min(88dvh, 850px);
   }
   .travel-head,
   .travel-bottom {
@@ -230,6 +231,9 @@
   }
 }
 @media (min-aspect-ratio: 11/10) and (max-width: 760px) {
+  .travel-hero {
+    width: clamp(100px, 32vw, 225px);
+  }
   .travel-head,
   .travel-bottom {
     margin-left: clamp(100px, 30vw, 210px);
@@ -261,11 +265,23 @@
   }
 }
 @media (max-height: 640px) {
-  .travel-guide {
-    height: 62dvh;
-  }
   #travel .route-option {
     min-height: 70px;
+  }
+}
+@media (max-aspect-ratio: 11/10) and (max-height: 640px) {
+  .travel-hero {
+    bottom: clamp(93px, 19dvh, 125px);
+    height: clamp(200px, calc(100dvh - 365px), 275px);
+  }
+  #travel .travel-bottom .route-option {
+    min-height: 100px;
+    gap: 6px;
+    padding: 8px 9px;
+  }
+  #travel .travel-bottom .choice-icon {
+    width: 36px;
+    height: 36px;
   }
 }
 .travel-ask {

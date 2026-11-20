@@ -135,6 +135,7 @@ it('el bono heroico también se aplica al sello (según el héroe) y coincide co
   expect(sealReward(run({ route: 'brave' }), seal)).toBe(Math.round(100 * (1 + B.points.jean)));
   expect(sealReward(run({ hero: 'lia', route: 'brave' }), seal)).toBe(Math.round(100 * (1 + B.points.lia)));
   expect(sealReward(run(), seal)).toBe(100);
+  expect(sealReward(run({ route: 'brave', relic: 'sun' }), seal)).toBe(Math.round(145 * 1.15));
 });
 
 it('restaura el mismo tablero y sello sin regenerar, también en partidas antiguas sin sello', () => {

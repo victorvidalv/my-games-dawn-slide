@@ -3,6 +3,7 @@ export const JA_SHOP = {
   'Ya compraste una pista para este tablero.': 'このボードのヒントは購入済みです。',
   'Una compra por tablero': '1ボードにつき1回',
   'Ya compraste turnos para este tablero.': 'このボードの追加手数は購入済みです。',
+  'Ya rehiciste este tablero.': 'このボードはもうやり直しました。',
   'Los jefes no se pueden saltar.': 'ボスはスキップできません。',
   'Ya usaste el salto de esta ciudad.': 'この街のスキップは使用済みです。',
   'Un paquete por tablero': '1ボードにつき1パック',

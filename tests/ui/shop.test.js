@@ -2,10 +2,10 @@
 import { describe, expect, it } from 'vitest';
 import { bootApp, untilPlayable } from './app.js';
 
-/** Aventura con Van en el nivel 12 del camino Normal y puntos de sobra para la tienda. */
+/** Aventura con Van en el nivel 37 del camino Normal (tablero con 4+ pasos para Trazar destino) y puntos de sobra para la tienda. */
 const savedRun = {
   run: {
-    level: 12,
+    level: 37,
     seed: 77,
     start: 1,
     mode: 'c',
@@ -22,7 +22,7 @@ describe('interfaz: tienda', () => {
   it('comprar una pista deja la pista y el poder del héroe listos al cerrar la tienda', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
-    await untilPlayable(app, 12);
+    await untilPlayable(app, 37);
     app.$('bShop').click();
     expect(app.$('shop').classList.contains('show')).toBe(true);
     app.$('shopList').querySelector('[data-id="hint"]').click();

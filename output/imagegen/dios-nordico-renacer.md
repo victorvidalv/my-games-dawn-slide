@@ -4,7 +4,7 @@ Versión revisada con la herramienta de imágenes integrada. Deidad joven, sin b
 
 Referencias directas de estilo: `public/heroes/jean.webp`, `public/heroes/lia.webp` y `public/heroes/van.webp`. Contornos oscuros gruesos, rasgos expresivos, sombras planas y textura de impresión del juego original.
 
-Reemplaza `public/backgrounds/dios-nordico-renacer.webp`. WebP optimizado a 640 × 960 px, calidad 72. El original de alta resolución se conserva en el historial de imágenes generadas.
+La ilustración anterior se exportó como `dios-nordico-renacer.webp`. La pantalla actual usa `public/backgrounds/guardiana-del-alba.webp` para el personaje y `public/backgrounds/umbral-del-alba.webp` para el paisaje.
 
 ## Prompt final
 

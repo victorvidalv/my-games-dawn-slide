@@ -108,8 +108,8 @@ export const revivedMessage = (cost) =>
 function fillTravel(run, hero, city) {
   const story = storyFor(hero.id, city * 10 + 1);
   const path = heroicPath(hero.id);
-  $('travelGuide').src = `backgrounds/${path.guide}`;
-  $('travelGuide').alt = path.guideAlt;
+  $('travelHero').src = heroArt(hero.id, 'route');
+  $('travelHero').alt = hero.name;
   $('routeBraveIcon').innerHTML = icon(path.icon);
   $('routeBraveName').textContent = path.name;
   $('routePerk').textContent = path.benefit;
@@ -141,7 +141,12 @@ function fillTravel(run, hero, city) {
   if (portrait) {
     $('travelChipImg').src = lorePortraitSrc(portrait.id);
     $('travelChipImg').alt = portrait.name;
-    $('travelChipName').textContent = `${portrait.name} · ${portrait.caption}`;
+    // Dos nodos de texto: así el traductor reconoce el nombre y la leyenda por separado.
+    const name = document.createElement('bdi'), // no <span>: el chip ya da estilo propio a sus <span>
+      caption = document.createElement('bdi');
+    name.textContent = portrait.name;
+    caption.textContent = portrait.caption;
+    $('travelChipName').replaceChildren(name, ' · ', caption);
   } else {
     $('travelChipImg').removeAttribute('src');
     $('travelChipName').textContent = ZONES[city].n;

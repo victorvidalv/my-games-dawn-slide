@@ -33,7 +33,7 @@ describe('tienda: precios proporcionales', () => {
     expect(SHOP_ITEMS.map((i) => i.id)).toEqual(['hint', 'moves3', 'moves', 'redo', 'skip']);
   });
   it('el precio es N niveles de esa dificultad: sube con el nivel y es proporcional a lo que se gana', () => {
-    const levels = { hint: 0.6, redo: 0.8, moves3: 1.2, moves: 2, skip: 4 };
+    const levels = { hint: 0.6, redo: 1, moves3: 1, moves: 1.8, skip: 4 };
     for (const rating of [1, 25, 50, 100]) {
       for (const [id, n] of Object.entries(levels))
         expect(priceOf(id, rating)).toBe(Math.round((n * baseScore(rating) * pathPrice(1)) / 10) * 10);
@@ -51,13 +51,24 @@ describe('tienda: precios proporcionales', () => {
       expect(priceOf(id, 40, 75)).toBeGreaterThan(priceOf(id, 40, 50));
     }
   });
-  it('los turnos comprados son un % del límite del tablero (mínimo 1 y 2)', () => {
-    expect(extraTurns('moves3', 4)).toBe(1);
-    expect(extraTurns('moves', 4)).toBe(2);
+  it('los turnos comprados son un % del límite del tablero (mínimo 2 y 4)', () => {
+    expect(extraTurns('moves3', 4)).toBe(2);
+    expect(extraTurns('moves', 4)).toBe(4);
     expect(extraTurns('moves3', 40)).toBe(2);
-    expect(extraTurns('moves', 40)).toBe(4);
-    expect(extraTurns('moves', 80)).toBe(8);
+    expect(extraTurns('moves', 40)).toBe(6);
+    expect(extraTurns('moves3', 80)).toBe(5);
+    expect(extraTurns('moves', 80)).toBe(12);
     expect(extraTurns('hint', 40)).toBe(0);
+  });
+  it('el paquete grande sale más barato por turno que el pequeño', () => {
+    for (const [rating, limit] of [
+      [20, 12],
+      [50, 30],
+      [99, 48],
+    ])
+      expect(priceOf('moves', rating) / extraTurns('moves', limit)).toBeLessThan(
+        priceOf('moves3', rating) / extraTurns('moves3', limit),
+      );
   });
 });
 
@@ -69,18 +80,18 @@ describe('tienda: compras', () => {
     expect(run.score).toBe(priceOf('moves', 10) - 1);
     expect(G.limit).toBe(10);
   });
-  it('turnos extra pequeños (+5 %, mín. 1): suben el límite, descuentan el precio y registran bought', () => {
+  it('turnos extra pequeños (+6 %, mín. 2): suben el límite, descuentan el precio y registran bought', () => {
     const { run, G } = mk(100000, { moves: 10, limit: 10 });
     expect(moveStatus(G.moves, G.limit)).toBe('over');
     const r = buy('moves3', { run, G });
     expect(r).toEqual({ ok: true, price: priceOf('moves3', 10) });
-    expect(G.limit).toBe(10 + 1);
-    expect(G.bought).toBe(1);
+    expect(G.limit).toBe(10 + 2);
+    expect(G.bought).toBe(2);
     expect(run.score).toBe(100000 - priceOf('moves3', 10));
     expect(run.spent).toBe(priceOf('moves3', 10));
     expect(moveStatus(G.moves, G.limit)).not.toBe('over');
   });
-  it('turnos extra grandes (+10 %, mín. 2): sube el límite, descuenta el precio y el jugador deja de estar eliminado', () => {
+  it('turnos extra grandes (+15 %, mín. 4): sube el límite, descuenta el precio y el jugador deja de estar eliminado', () => {
     const { run, G } = mk(100000, { moves: 11, limit: 10 });
     expect(moveStatus(G.moves, G.limit)).toBe('over');
     const r = buy('moves', { run, G });
@@ -127,6 +138,14 @@ describe('tienda: compras', () => {
     expect(G.hist).toEqual([]);
     expect(G.pos).toEqual(G.start);
     expect(G.limit).toBe(limit);
+  });
+  it('rehacer solo se puede comprar una vez por tablero, aunque se recargue', () => {
+    const { run, G } = mk(100000);
+    expect(buy('redo', { run, G }).ok).toBe(true);
+    G.moves = 3;
+    const reloaded = JSON.parse(JSON.stringify(run));
+    expect(availability('redo', { run: reloaded, G }).ok).toBe(false);
+    expect(availability('redo', { run, G: { ...G, n: G.n + 1 } }).ok).toBe(true);
   });
   it('rehacer no está disponible si aún no has movido', () => {
     const { run, G } = mk(100000, { moves: 0 });
@@ -189,6 +208,13 @@ describe('revivir al caer (fuera de la tienda)', () => {
     expect(canPaidRevive(run)).toBe(false);
     expect(payRevive(run)).toEqual({ ok: false, cost: 0 });
     expect(run.score).toBe(6700);
+  });
+  it('con la Bolsa mercante revivir cuesta solo el 20 % (no en el reto diario)', () => {
+    const run = { score: 10000, spent: 0, revivesBought: 0, mode: 'c', relic: 'purse' };
+    expect(reviveCost(10000, run)).toBe(2000);
+    expect(payRevive(run)).toEqual({ ok: true, cost: 2000 });
+    expect(reviveCost(10000, { ...run, relic: 'sun' })).toBe(3300);
+    expect(reviveCost(10000, { ...run, daily: 'classic' })).toBe(3300);
   });
   it('no se puede revivir sin puntos ni en Práctica', () => {
     expect(canPaidRevive({ score: 0, revivesBought: 0, mode: 'c' })).toBe(false);

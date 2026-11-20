@@ -389,7 +389,7 @@ body.boss-arrive .meter {
 }
 #bossIntro.portrait-intro .boss-backdrop {
   z-index: 2;
-  inset: 12dvh auto auto 50%;
+  inset: clamp(77px, 12dvh, 126px) auto auto 50%;
   translate: -50% 0;
   width: min(96vw, 590px);
   height: 64dvh;
@@ -446,7 +446,7 @@ body.boss-arrive .meter {
 #bossIntro .boss-goals li {
   padding: 6px 13px;
   font: 750 clamp(13px, 3.8vw, 17px)/1.2 var(--font-ui);
-  background: #122128f2;
+  background: var(--hatch), var(--ink-panel);
 }
 #bossIntro .boss-fight {
   min-height: 46px;
@@ -504,9 +504,29 @@ body.boss-arrive .meter {
     padding-bottom: calc(env(safe-area-inset-bottom) + 17px);
   }
 }
+@media (min-aspect-ratio: 13/10) {
+  #bossIntro.portrait-intro .boss-backdrop {
+    inset: auto auto 0 0;
+    translate: none;
+    width: 53%;
+    height: 94dvh;
+    object-position: center bottom;
+  }
+  #bossIntro.portrait-intro .boss-shell {
+    justify-self: end;
+    justify-content: center;
+    gap: clamp(12px, 4dvh, 36px);
+    width: 48%;
+    padding-block: 14px;
+  }
+  #bossIntro .boss-name {
+    font-size: clamp(24px, 7dvh, 46px);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   #bossIntro.portrait-intro .boss-stage::before,
   #bossIntro.portrait-intro .boss-stage::after,
+  #bossIntro.portrait-intro .boss-backdrop,
   #bossIntro.portrait-intro .boss-shell * {
     animation: none !important;
   }

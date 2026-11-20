@@ -8,15 +8,15 @@ cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 
-/* Ilustraciones de jefe (≈ 130 KB cada una): no se descargan todas al instalar; se guardan la primera vez que se ven y después
-   salen de la caché (también sin conexión). */
+/* Los retratos de jefe se guardan al verlos por primera vez. La versión nueva de la caché
+   permite que las partidas existentes descarguen los retratos rediseñados. */
 registerRoute(
   ({ url }) => /\/jefes\/[^/]+\.(jpg|webp)$/.test(url.pathname),
   async ({ request }) => {
-    const cache = await caches.open('jefes-v1');
+    const cache = await caches.open('jefes-v2');
     const hit = await cache.match(request);
     if (hit) return hit;
-    const res = await fetch(request);
+    const res = await fetch(request, { cache: 'reload' });
     if (res.ok) cache.put(request, res.clone());
     return res;
   },

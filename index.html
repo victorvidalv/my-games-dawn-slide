@@ -109,7 +109,7 @@
  <div class="travel-stage">
   <img class="travel-city-bg" id="travelScene" alt="" draggable="false">
   <div class="travel-vignette" aria-hidden="true"></div>
-  <img class="travel-guide" id="travelGuide" src="backgrounds/guia-elfa.webp" alt="La guía del camino" draggable="false">
+  <img class="travel-hero" id="travelHero" alt="" draggable="false">
   <div class="travel-shell">
    <header class="travel-head">
     <h2 class="travel-heading" id="travelTitle"></h2>
@@ -137,43 +137,42 @@
 <div class="modal" id="heroSelect" role="dialog" aria-modal="true" aria-labelledby="heroSelectTitle"><div class="card hero-selector">
  <div class="tag" id="heroPath" hidden></div><h2 id="heroSelectTitle">Elige tu compañero</h2>
  <div class="hero-cards" id="heroCards" role="radiogroup" aria-label="Elige un héroe"></div>
- <div class="hero-power"><span class="hero-power-icon" id="heroPowerIcon" aria-hidden="true"></span><div><h3 id="heroPowerTitle" hidden></h3><span class="hero-ability-label">Poder</span><strong id="heroPowerShort"></strong><p id="heroPowerDetail" hidden></p></div></div>
- <div class="hero-route-info" id="heroRouteInfo"><i id="heroRouteIcon" aria-hidden="true"></i><div><span class="hero-ability-label">Camino heroico · desde el nivel 11</span><strong id="heroRouteBenefit"></strong></div></div>
+ <div class="hero-summary">
+  <div><i id="heroPowerIcon" aria-hidden="true"></i><span><small class="hero-ability-label">Poder</small><strong id="heroPowerShort"></strong></span></div>
+  <div><i id="heroRouteIcon" aria-hidden="true"></i><span><small class="hero-ability-label">Heroico · nivel 11</small><strong id="heroRouteName"></strong></span></div>
+ </div>
+ <fieldset class="hero-relics"><legend class="hero-ability-label">Reliquia</legend><div class="relic-options" id="heroRelics"></div></fieldset>
  <div class="hero-start" id="heroStartBox"><span class="hero-ability-label" id="heroStartLabel">Empezar desde el nivel</span><div class="start-chips" id="heroStarts" role="radiogroup" aria-labelledby="heroStartLabel"></div><small id="heroStartNote"></small></div>
- <p id="heroQuote" hidden></p>
  <div class="hero-selector-actions"><button id="heroCancel">Menú</button><button class="primary" id="heroConfirm">Comenzar aventura ➜</button></div>
 </div></div>
 <div class="modal" id="rescue" role="dialog" aria-modal="true" aria-labelledby="rescueTitle"><div class="card rescue-card"><img class="rescue-portrait" id="rescueHero" alt="Lía protege la aventura"><span class="rescue-heart" id="rescueIcon" aria-hidden="true"></span><div class="tag" id="rescueTag"></div><h2 id="rescueTitle">La aventura sigue</h2><p id="rescueText"></p><button class="primary" id="rescueContinue">Activar poder</button></div></div>
 <div class="modal" id="reviveOffer" role="dialog" aria-modal="true" aria-labelledby="reviveTitle">
  <div class="revive-stage">
-  <img class="revive-backdrop" src="backgrounds/dios-nordico-renacer.webp" alt="" aria-hidden="true">
-  <img class="revive-god" src="backgrounds/dios-nordico-renacer.webp" alt="El Viejo de la Fragua, el dios del último aliento">
+  <img class="revive-backdrop" src="/backgrounds/umbral-del-alba.webp" alt="" loading="lazy" decoding="async">
   <div class="revive-vignette" aria-hidden="true"></div>
+  <div class="revive-mist" aria-hidden="true"></div>
   <div class="revive-shell">
    <header class="revive-top">
-    <div class="tag">ÚLTIMO UMBRAL · SOLO 1 VEZ POR PARTIDA</div>
+    <p class="revive-label">Una vez por partida</p>
     <h2 id="reviveTitle">¿Renacer de las cenizas?</h2>
-    <p class="revive-cryptic">«El Viejo de la Fragua devuelve un aliento al caído, mas cobra un tercio de su gloria. Así se pactó antes del Cierre.»</p>
+    <p class="revive-quote">«Aún queda luz. Puedes volver a intentarlo.»</p>
    </header>
-   <aside class="revive-panel">
-    <div class="revive-explain">
-     <p class="revive-rule">Si eliges <strong>Revivir</strong>, repites este tablero desde <b>0 movimientos</b>, pero <b>pierdes el 33 % de tus puntos actuales</b>. Solo puedes usar este poder <b>1 vez</b> en toda la partida.</p>
-     <div class="revive-math">
-      <div><small>TUS PUNTOS</small><b id="reviveNow">0</b></div>
-      <div><small>PIERDES (−33 %)</small><b id="reviveCost" class="is-loss">−0</b></div>
-      <div><small>TE QUEDARÍAN</small><b id="reviveAfter">0</b></div>
-     </div>
-    </div>
-   </aside>
-   <div class="revive-bottom">
+   <div class="revive-portrait">
+    <img src="/backgrounds/guardiana-del-alba.webp" alt="La Guardiana del Alba sonríe y ofrece una luz dorada" loading="lazy" decoding="async">
+   </div>
+   <div class="revive-panel">
+    <p class="revive-rule">Repite el tablero desde cero a cambio del 33 % de tus puntos.</p>
+    <dl class="revive-math">
+     <div><dt>TUS PUNTOS</dt><dd id="reviveNow">0</dd></div>
+     <div><dt>PIERDES (−33 %)</dt><dd id="reviveCost" class="is-loss">−0</dd></div>
+     <div><dt>TE QUEDARÍAN</dt><dd id="reviveAfter">0</dd></div>
+    </dl>
     <div class="revive-actions">
-     <button class="revive-btn is-revive" id="reviveAccept">
-      <span class="choice-icon" aria-hidden="true">🔥</span>
-      <span class="choice-copy"><strong>Revivir (−33 %)</strong><small id="reviveBtnNote">Pierdes 0 pts · Solo 1 vez</small></span>
+     <button type="button" class="revive-btn is-revive" id="reviveAccept">
+      <i data-icon="flame" aria-hidden="true"></i><span>Revivir</span>
      </button>
-     <button class="revive-btn is-end" id="reviveEnd">
-      <span class="choice-icon" aria-hidden="true">✕</span>
-      <span class="choice-copy"><strong>Finalizar</strong><small>Terminar la partida ahora</small></span>
+     <button type="button" class="revive-btn is-end" id="reviveEnd">
+      <span>Finalizar</span>
      </button>
     </div>
    </div>
@@ -365,7 +364,7 @@
 <!-- Tienda: escena con el fondo y el mercader (los textos y las ayudas se dibujan encima) -->
 <div class="modal" id="shop" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
   <div class="shop-world">
-    <div id="shopDiscount" class="shop-discount" hidden>Camino de las Runas · −33 %</div>
+    <div id="shopDiscount" class="shop-discount" hidden></div>
     <div class="shop-scene">
       <img class="shop-bg" id="shopBg" src="/tienda/fondo-tienda.webp" alt="" draggable="false">
       <h2 class="shop-sign" id="shopTitle">Tienda de Don Dublón</h2>

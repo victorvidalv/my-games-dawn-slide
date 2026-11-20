@@ -2,7 +2,7 @@ import { Music, setTensionFx } from '../audio/music.js';
 import { $, cssUrl } from '../dom.js';
 import { saveRun } from '../game/session.js';
 import { HEROES, canHint, bonusTurns } from '../game/heroes.js';
-import { bossRetriesLeft, reviveCost } from '../game/shop.js';
+import { bossRetriesLeft, reviveCost, reviveShare } from '../game/shop.js';
 import { S, haltBoard, heroOf, pathOf, persist, setBusy, store } from '../state.js';
 import { acceptRescue } from '../game/run-logic.js';
 import { boardEl, layout, updateHud } from './board.js';
@@ -12,25 +12,27 @@ import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
 import { startOptions } from '../game/starts.js';
+import { RELICS } from '../game/relics.js';
 import { heroicPath, heroicHintsLeft, powerFactor } from '../game/routes.js';
 import { bossCapFor } from '../game/bosses.js';
 import { preloadAwakening } from './power-art.js';
 import { numLocale } from '../i18n.js';
-function heroMarkup(h, pose = 'start') {
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="hero-art" viewBox="0 0 100 145" role="img" aria-label="${h.name}, ${h.role}"><defs><clipPath id="portrait-${h.id}-${pose}"><rect width="100" height="145" rx="16"/></clipPath></defs><image href="${heroArt(h.id, pose)}" width="100" height="145" preserveAspectRatio="xMidYMin slice" clip-path="url(#portrait-${h.id}-${pose})"/><rect x="1" y="1" width="98" height="143" rx="16" fill="none" stroke="${h.color}" stroke-opacity=".65" stroke-width="2"/></svg>`;
-}
 export function syncHero(id = S.run?.hero) {
   const h = heroOf(id);
-  const art = document.querySelector('#travel .traveler>.hero-art');
-  if (art) art.outerHTML = heroMarkup(h, 'map');
   document.documentElement.style.setProperty('--hero-color', h.color);
   if (h.id !== 'lia' && !matchMedia('(prefers-reduced-motion: reduce)').matches) preloadAwakening(h.id).catch(() => {});
 }
 export function chooseHero(start, mode) {
   return new Promise((resolve) => {
     const modal = $('heroSelect'),
-      cards = $('heroCards');
+      cards = $('heroCards'),
+      relics = $('heroRelics');
     let selected = heroOf(store.heroChoice || S.run?.hero).id;
+    const selectedRelic = RELICS.find(({ id }) => id === S.run?.relic) ?? RELICS[0];
+    relics.innerHTML = RELICS.map(
+      (relic, i) =>
+        `<label class="relic-option" style="--relic-x:${i * 50}%"><input type="radio" name="heroRelic" value="${relic.id}" ${relic.id === selectedRelic.id ? 'checked' : ''}><span class="relic-card"><span class="relic-art" aria-hidden="true"></span><span><b>${relic.name}</b><small>${relic.label}</small></span></span></label>`,
+    ).join('');
     const reached = store.paths['c' + start]?.level || 0,
       options = startOptions(reached);
     let from = 1;
@@ -68,19 +70,16 @@ export function chooseHero(start, mode) {
     const render = () => {
       const h = heroOf(selected);
       modal.style.setProperty('--chosen', h.color);
-      modal.style.setProperty('--hero-scene', cssUrl(`heroes/${h.id}.webp`));
+      modal.style.setProperty('--hero-scene', cssUrl(heroArt(h.id, 'select')));
       cards.innerHTML = HEROES.map(
         (v) =>
-          `<button class="hero-choice ${v.id === selected ? 'selected' : ''}" role="radio" aria-checked="${v.id === selected}" tabindex="${v.id === selected ? 0 : -1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${v.short}"><img src="${heroArt(v.id, v.id === selected ? 'ready' : 'start')}" alt="${v.name}, ${v.role}" width="360" height="720"><span class="hero-choice-name">${v.name}</span><span class="hero-check" aria-hidden="true">✓</span></button>`,
+          `<button class="hero-choice ${v.id === selected ? 'selected' : ''}" role="radio" aria-checked="${v.id === selected}" tabindex="${v.id === selected ? 0 : -1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${v.short}"><img src="${heroArt(v.id, v.id === selected ? 'ready' : 'select')}" alt="${v.name}, ${v.role}" width="640" height="853"><span class="hero-choice-name">${v.name}</span><span class="hero-check" aria-hidden="true">✓</span></button>`,
       ).join('');
       $('heroPowerIcon').innerHTML = icon(h.icon);
-      $('heroPowerTitle').textContent = h.power;
-      $('heroPowerShort').textContent = h.short;
-      $('heroPowerDetail').textContent = h.detail;
-      $('heroQuote').textContent = h.quote;
+      $('heroPowerShort').textContent = h.id === 'lia' ? 'Más turnos' : h.power;
       const path = heroicPath(h.id);
       $('heroRouteIcon').innerHTML = icon(path.icon);
-      $('heroRouteBenefit').textContent = path.summary;
+      $('heroRouteName').textContent = path.name;
       $('heroConfirm').textContent = from === 1 ? 'Comenzar aventura ➜' : `Comenzar desde el nivel ${from} ➜`;
       renderStarts();
       cards.querySelectorAll('button').forEach(
@@ -123,7 +122,7 @@ export function chooseHero(start, mode) {
     $('heroConfirm').onclick = () => {
       store.heroChoice = selected;
       persist();
-      close({ hero: selected, from });
+      close({ hero: selected, from, relic: relics.querySelector('input:checked').value });
     };
     render();
     modal.classList.add('show');
@@ -142,7 +141,7 @@ export function updateHeroHud() {
   const status = powerState(S.run, S.G);
   $('heroHudPower').textContent =
     h.id === 'lia'
-      ? `+${bonusTurns('lia', S.G.opt, bossCapFor(S.G.n), powerFactor(S.run))} turnos de reserva`
+      ? `+${bonusTurns('lia', S.G.opt, bossCapFor(S.G.n), powerFactor(S.run), S.run.start)} turnos de reserva`
       : status.reason;
   const free = heroicHintsLeft(S.run, S.G.n);
   $('hintN').textContent = prac ? '∞' : free ? `${free} gratis` : S.run.hints;
@@ -232,21 +231,25 @@ export function showRescue(kind = S.run?.rescue?.kind || 'lia') {
   };
 }
 
-/** Pantalla completa del dios nórdico tras perder: elegir Revivir (−33 % pts, solo 1 vez) o Finalizar. */
+/** Oferta de la Guardiana del Alba tras perder. */
 export function showReviveOffer() {
   const modal = $('reviveOffer'),
+    accept = $('reviveAccept'),
+    end = $('reviveEnd'),
     now = S.run?.score || 0,
-    cost = reviveCost(now),
+    cost = reviveCost(now, S.run),
+    pct = Math.round(reviveShare(S.run) * 100),
     after = Math.max(0, now - cost),
     fmt = (n) => n.toLocaleString(numLocale());
   haltBoard();
   boardEl.classList.add('board-lock');
   setTensionFx(0, false);
   Music.duck(0.3);
+  modal.querySelector('.revive-rule').textContent = `Repite el tablero desde cero a cambio del ${pct} % de tus puntos.`;
+  $('reviveCost').previousElementSibling.textContent = `PIERDES (−${pct} %)`;
   $('reviveNow').textContent = fmt(now);
   $('reviveCost').textContent = `−${fmt(cost)}`;
   $('reviveAfter').textContent = fmt(after);
-  $('reviveBtnNote').textContent = `Pierdes ${fmt(cost)} pts · Reinicia el tablero (solo 1 vez)`;
   return new Promise((resolve) => {
     let picked = false;
     const pick = (yes) => {
@@ -258,11 +261,15 @@ export function showReviveOffer() {
     };
     const onKey = (e) => {
       if (e.key === 'Escape') pick(false);
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        (document.activeElement === accept ? end : accept).focus();
+      }
     };
-    $('reviveAccept').onclick = () => pick(true);
-    $('reviveEnd').onclick = () => pick(false);
+    accept.onclick = () => pick(true);
+    end.onclick = () => pick(false);
     modal.addEventListener('keydown', onKey);
     modal.classList.add('show');
-    $('reviveAccept').focus();
+    accept.focus();
   });
 }

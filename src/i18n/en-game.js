@@ -6,6 +6,10 @@ export const EN_GAME = {
   'solución más larga': 'longer solution',
   'más mecanismos': 'more mechanics',
   '+{p} de puntos · {rule}': '+{p} points · {rule}',
+  '+{p} de puntos · {rule} · {perk}': '+{p} points · {rule} · {perk}',
+  'pista gratis cada 4 tableros': 'free hint every 4 boards',
+  'rebobinado extra en el jefe': 'extra rewind on the boss',
+  'runas a plena potencia': 'runes at full strength',
   'Pistas extra al iniciar Aventura': 'Extra hints when starting Adventure',
   '{n} días': '{n} days',
   '+{n} pistas': '+{n} hints',
@@ -29,14 +33,14 @@ export const EN_GAME = {
   'Escriba de las Runas': 'Rune Scribe',
   'Turnos de reserva': 'Reserve turns',
   'Más turnos en cada tablero': 'More turns on every board',
-  'Cada tablero te da turnos extra (un cuarto del mínimo necesario) para perdonar los errores pequeños sin quitarte el reto.':
-    'Every board gives you extra turns (a quarter of the minimum needed) to forgive small mistakes without taking away the challenge.',
+  'Cada tablero te da turnos extra (alrededor de un tercio del mínimo necesario; algo menos en los caminos difíciles) para perdonar los errores pequeños sin quitarte el reto.':
+    'Every board gives you extra turns (about a third of the minimum needed; a little less on the harder paths) to forgive small mistakes without taking away the challenge.',
   'Retrocede varios movimientos': 'Go back several moves',
-  'Una vez por tablero, devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.':
-    'Once per board, it puts the pieces and turns back about a third of your moves (at least three). If you have made fewer, you return to the start.',
+  'Una vez por tablero (dos en los tableros largos), devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.':
+    'Once per board (twice on long boards), it puts the pieces and turns back about a third of your moves (at least three). If you have made fewer, you return to the start.',
   'Ejecuta movimientos óptimos': 'Plays optimal moves',
-  'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos tres pasos pendientes.':
-    'Once per board, the runes move the pieces toward the exit, about a quarter of the steps left (never the last one). It uses turns and needs at least three steps left.',
+  'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos cuatro pasos pendientes.':
+    'Once per board, the runes move the pieces toward the exit, about a quarter of the steps left (never the last one). It uses turns and needs at least four steps left.',
   Hero: 'Hero',
 
   /* caminos heroicos */
@@ -233,8 +237,8 @@ export const EN_GAME = {
   'Muchos turnos extra': 'Many extra turns',
   'Bastantes más turnos para este tablero.': 'Quite a few more turns for this board.',
   'Rehacer tablero': 'Redo board',
-  'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados).':
-    'Start this board over with 0 moves (you keep the turns you bought).',
+  'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados). Una vez por tablero.':
+    'Start this board over with 0 moves (you keep the turns you bought). Once per board.',
   'Saltar nivel': 'Skip level',
   'Pasa al siguiente nivel sin puntos y sin racha.': 'Move on to the next level with no points and no streak.',
   'No hay un tablero en juego.': 'There is no board in play.',

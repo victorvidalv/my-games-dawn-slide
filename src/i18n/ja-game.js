@@ -6,6 +6,10 @@ export const JA_GAME = {
   'solución más larga': '解法の手数が多い',
   'más mecanismos': '仕掛けが多い',
   '+{p} de puntos · {rule}': 'スコア +{p} · {rule}',
+  '+{p} de puntos · {rule} · {perk}': 'スコア +{p} · {rule} · {perk}',
+  'pista gratis cada 4 tableros': '4ボードごとに無料ヒント',
+  'rebobinado extra en el jefe': 'ボス戦で巻き戻し+1',
+  'runas a plena potencia': 'ルーンが全力で働く',
   'Pistas extra al iniciar Aventura': '冒険開始時の追加ヒント',
   '{n} días': '{n}日',
   '+{n} pistas': 'ヒント +{n}',
@@ -28,14 +32,14 @@ export const JA_GAME = {
   'Escriba de las Runas': 'ルーンの書記',
   'Turnos de reserva': '予備の手数',
   'Más turnos en cada tablero': 'どのボードでも手数が増える',
-  'Cada tablero te da turnos extra (un cuarto del mínimo necesario) para perdonar los errores pequeños sin quitarte el reto.':
-    'どのボードでも手数が少し増えます（最少手数の4分の1）。小さなミスは許されますが、手ごたえはそのままです。',
+  'Cada tablero te da turnos extra (alrededor de un tercio del mínimo necesario; algo menos en los caminos difíciles) para perdonar los errores pequeños sin quitarte el reto.':
+    'どのボードでも手数が増えます（最少手数の約3分の1。難しい道では少し減ります）。小さなミスは許されますが、手ごたえはそのままです。',
   'Retrocede varios movimientos': '数手前に戻る',
-  'Una vez por tablero, devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.':
-    '1ボードに1回、ブロックと手数を約3分の1（最低3手）戻します。それより少ない場合は最初に戻ります。',
+  'Una vez por tablero (dos en los tableros largos), devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.':
+    '1ボードに1回（長いボードでは2回）、ブロックと手数を約3分の1（最低3手）戻します。それより少ない場合は最初に戻ります。',
   'Ejecuta movimientos óptimos': '最善手を自動で進める',
-  'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos tres pasos pendientes.':
-    '1ボードに1回、ルーンがブロックを出口へ向けて動かします。残り手数の約4分の1を進めます（最後の一手は残ります）。手数を消費し、残り3手以上が必要です。',
+  'Una vez por tablero, las runas mueven las piezas hacia la salida, cerca de un cuarto de los pasos que faltan (nunca el último). Consume turnos y requiere al menos cuatro pasos pendientes.':
+    '1ボードに1回、ルーンがブロックを出口へ向けて動かします。残り手数の約4分の1を進めます（最後の一手は残ります）。手数を消費し、残り4手以上が必要です。',
   Hero: 'ヒーロー',
   'Camino de la Brasa': '残り火の道',
   'Camino del Péndulo': '振り子の道',
@@ -218,8 +222,8 @@ export const JA_GAME = {
   'Muchos turnos extra': 'たくさんの追加手数',
   'Bastantes más turnos para este tablero.': 'このボードの手数がかなり増える。',
   'Rehacer tablero': 'ボードをやり直す',
-  'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados).':
-    'このボードを0手から最初からやり直します（購入した手数は残ります）。',
+  'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados). Una vez por tablero.':
+    'このボードを0手から最初からやり直します（購入した手数は残ります）。1ボードに1回。',
   'Saltar nivel': 'レベルをスキップ',
   'Pasa al siguiente nivel sin puntos y sin racha.': 'スコアなし・連続なしで次のレベルへ進みます。',
   'No hay un tablero en juego.': 'プレイ中のボードがありません。',

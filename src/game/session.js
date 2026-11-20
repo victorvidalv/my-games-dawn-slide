@@ -108,7 +108,17 @@ export async function startRun(start, mode) {
   if (S.run) recordBest(true); // si abandonas, lo logrado cuenta
   const hints = startHintsAt(start, from) + streakHintBonus(currentStreak(store.daily, dayNumber()));
   setBoard(null);
-  setRun(newAdventureRun({ seed: Math.floor(Math.random() * 2 ** 31), start, mode, hero: picked.hero, from, hints }));
+  setRun(
+    newAdventureRun({
+      seed: Math.floor(Math.random() * 2 ** 31),
+      start,
+      mode,
+      hero: picked.hero,
+      from,
+      hints,
+      relic: picked.relic,
+    }),
+  );
   markStat('heroes', picked.hero);
   syncHero();
   syncRouteStyle();

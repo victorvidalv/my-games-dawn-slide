@@ -140,9 +140,9 @@ describe('retos diarios: el tablero del día', () => {
 
 describe('retos diarios: medallas y racha', () => {
   it('el premio de pistas usa solo el tramo vigente al iniciar la aventura', () => {
-    expect([0, 2, 3, 4, 5, 6, 7, 10].map(streakHintBonus)).toEqual([0, 0, 5, 5, 10, 10, 15, 15]);
+    expect([0, 2, 3, 4, 5, 6, 7, 10].map(streakHintBonus)).toEqual([0, 0, 3, 3, 5, 5, 8, 8]);
     const daily = { last: 100, streak: 7 };
-    expect(streakHintBonus(currentStreak(daily, 101))).toBe(15);
+    expect(streakHintBonus(currentStreak(daily, 101))).toBe(8);
     expect(streakHintBonus(currentStreak(daily, 102))).toBe(0);
   });
 

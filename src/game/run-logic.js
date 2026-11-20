@@ -8,18 +8,21 @@ import { encodeBoard, isValidState } from '../engine/board.js';
 import { analyze } from '../engine/solver.js';
 import { zoneIdx } from '../data/zones.js';
 import { clearRewards, snapshotRescue } from './heroes.js';
+import { relicFor } from './relics.js';
 import { canPaidRevive, hasRevive, shopBoardKey, useFreeRetry, useRevive } from './shop.js';
 
 const copyRows = (rows) => rows.map((p) => p.slice());
 
 /** Partida nueva de aventura. `from` es el nivel inicial ya validado. */
-export function newAdventureRun({ seed, start, mode = 'c', hero, from, hints }) {
+export function newAdventureRun({ seed, start, mode = 'c', hero, from, hints, relic }) {
+  const selected = relicFor({ mode, relic });
   return {
     seed,
     level: from,
     start,
     mode,
     hero,
+    ...(selected && { relic: selected.id }),
     lifeUsed: false,
     revive: 0,
     revivesBought: 0,
@@ -28,7 +31,7 @@ export function newAdventureRun({ seed, start, mode = 'c', hero, from, hints }) 
     undoUsedCount: 0,
     vanAwardedAt: 0,
     score: 0,
-    hints,
+    hints: (hints ?? 0) + (selected?.hints ?? 0), // el Farol se suma a las pistas del camino y a las de la racha diaria
     adj: 0,
     streak: 0,
     recBroken: false,

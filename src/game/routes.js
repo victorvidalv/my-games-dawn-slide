@@ -1,19 +1,22 @@
 import { gainFor } from '../engine/scoring.js';
 
 import { isBossLevel, lettersOfFamily, TUTORIALS } from './mechanics.js';
+import { relicFor, relicPoints } from './relics.js';
 
 /** Premios compartidos y margen de movimientos de la Brasa. */
 export const HEROIC_BENEFITS = {
   powerScale: 0.5,
   liaMargin: 0.85,
-  points: { lia: 0.45, jean: 0.4, van: 0.35 }, // fracción extra de puntos
-  shop: { lia: 0.3, jean: 0.3, van: 0.2 }, // descuento de la tienda (negativo = más cara)
+  points: { lia: 0.35, jean: 0.45, van: 0.45 }, // fracción extra de puntos (Lía conserva su reserva entera, por eso gana menos)
+  shop: { lia: 0.2, jean: 0.25, van: 0.25 }, // descuento de la tienda (negativo = más cara)
   liaHints: 1,
   liaEvery: 4,
 };
-const heroicCopy = (hero, challenge) => ({
+/** Cada camino heroico tiene un premio propio, además de los puntos: Lía, pista gratis; Jean, rebobinado extra en el jefe; Juth, runas a plena potencia. */
+const heroicCopy = (hero, challenge, perk) => ({
   summary: `Más puntos + ${challenge}`,
-  benefit: `+${Math.round(HEROIC_BENEFITS.points[hero] * 100)} % de puntos · ${challenge}`,
+  benefit: `+${Math.round(HEROIC_BENEFITS.points[hero] * 100)} % de puntos · ${challenge} · ${perk}`,
+  perk,
 });
 
 // Las partidas guardadas conservan 'brave'. El héroe determina la variante.
@@ -21,23 +24,17 @@ export const HEROIC_PATHS = {
   lia: {
     name: 'Camino de la Brasa',
     icon: 'flame',
-    ...heroicCopy('lia', 'menos turnos'),
-    guide: 'guia-brasa.webp',
-    guideAlt: 'La forjadora, acompañante de Lía',
+    ...heroicCopy('lia', 'menos turnos', 'pista gratis cada 4 tableros'),
   },
   jean: {
     name: 'Camino del Péndulo',
     icon: 'clock',
-    ...heroicCopy('jean', 'solución más larga'),
-    guide: 'guia-elfa.webp',
-    guideAlt: 'La elfa, acompañante de Jean',
+    ...heroicCopy('jean', 'solución más larga', 'rebobinado extra en el jefe'),
   },
   van: {
     name: 'Camino de las Runas',
     icon: 'stars',
-    ...heroicCopy('van', 'más mecanismos'),
-    guide: 'guia-runas.webp',
-    guideAlt: 'El erudito, acompañante de Juth',
+    ...heroicCopy('van', 'más mecanismos', 'runas a plena potencia'),
   },
 };
 
@@ -64,11 +61,15 @@ export const heroicPath = (hero) => HEROIC_PATHS[hero] || HEROIC_PATHS.lia;
 export const isHeroic = (run) => !!run && run.mode !== 'p' && run.route === 'brave';
 /** Fracción extra de puntos del camino heroico (0 fuera de él). */
 export const heroicPoints = (run) => (isHeroic(run) ? (HEROIC_BENEFITS.points[run.hero] ?? 0) : 0);
-/** La Brasa reduce el límite base. Lía conserva toda su reserva. */
-export const heroicPowerFactor = (hero, heroic) => (heroic && hero !== 'lia' ? HEROIC_BENEFITS.powerScale : 1);
+/** En su camino heroico Jean rebobina la mitad (a cambio, un uso extra en el jefe); Lía conserva su reserva y Juth sus runas enteras. */
+export const heroicPowerFactor = (hero, heroic) => (heroic && hero === 'jean' ? HEROIC_BENEFITS.powerScale : 1);
 export const powerFactor = (run) => heroicPowerFactor(run?.hero, isHeroic(run));
-/** Descuento de la tienda en el camino heroico (puede ser negativo: más cara). */
-export const shopDiscount = (run) => (isHeroic(run) ? (HEROIC_BENEFITS.shop[run.hero] ?? 0) : 0);
+/** Los descuentos de la ruta y la reliquia se aplican sucesivamente al precio. */
+export function shopDiscount(run) {
+  const route = isHeroic(run) ? (HEROIC_BENEFITS.shop[run.hero] ?? 0) : 0;
+  const relic = relicFor(run)?.discount ?? 0;
+  return relic ? 1 - (1 - route) * (1 - relic) : route;
+}
 
 export function heroicHintsLeft(run, level) {
   if (!isHeroic(run) || run.hero !== 'lia' || level % HEROIC_BENEFITS.liaEvery !== 0) return 0; // una pista gratis cada `liaEvery` tableros
@@ -85,5 +86,10 @@ export function useHeroicHint(run, level) {
 
 export const BOSS_POINTS_BONUS = 0.3;
 
-export const routeGain = (run, rating, moves, opt, streak, level = run?.level || 1) =>
-  gainFor(rating, moves, opt, streak, { bonus: heroicPoints(run) + (isBossLevel(level) ? BOSS_POINTS_BONUS : 0) });
+export function routeGain(run, rating, moves, opt, streak, level = run?.level || 1) {
+  const gain = gainFor(rating, moves, opt, streak, {
+    bonus: heroicPoints(run) + (isBossLevel(level) ? BOSS_POINTS_BONUS : 0),
+  });
+  gain.total = relicPoints(run, gain.total);
+  return gain;
+}

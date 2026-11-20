@@ -35,8 +35,10 @@
   --p7b: #a64560;
   --p7d: #5e2036;
   --hatch:
-    radial-gradient(#ffffff0f 0.9px, #0000 1.3px) 0 0/6px 6px,
-    radial-gradient(#0000001f 0.9px, #0000 1.3px) 3px 3px/6px 6px; /* grano de óleo: puntos, no tela */
+    repeating-linear-gradient(122deg, #080b1629 0 1px, #0000 1px 7px),
+    repeating-linear-gradient(28deg, #fff3d409 0 1px, #0000 1px 11px);
+  --ink-panel: linear-gradient(157deg, #293344 0 29%, #202434 29.5% 71%, #161a2a 71.5%);
+  --red-key-paint: linear-gradient(151deg, #ff8c5f 0 23%, #db4d34 23.75% 73%, #831b23 74%);
   --wob-a: 19px 25px 16px 23px / 23px 16px 25px 19px; /* paneles grandes */
   --wob-b: 13px 18px 12px 17px / 17px 12px 18px 13px; /* tarjetas y botones */
   --wob-c: 9px 13px 8px 12px / 12px 8px 13px 9px; /* fichas */
@@ -60,7 +62,7 @@
 /* Paneles y ventanas: papel oscuro recortado a mano con filo de tinta y brillo cálido en el borde superior */
 .card {
   border-radius: var(--wob-a);
-  background: var(--rivets), var(--paper-grain), var(--hatch), linear-gradient(165deg, #43283e, #2c1d33 58%, #35233a);
+  background: var(--rivets), var(--hatch), var(--ink-panel);
   border: 3px solid #150e0c;
   /* placa de juego: filo de tinta, aro de latón, filo de tinta exterior y sombra desplazada */
   box-shadow: var(--plate);
@@ -142,10 +144,7 @@ button.primary:active {
 /* Marco del tablero: madera tallada con veta, canto oscuro y relieve */
 .frame {
   border-radius: 21px 26px 19px 24px / 25px 19px 26px 21px;
-  background:
-    repeating-linear-gradient(91deg, #0000 0 6px, #00000012 6px 7px),
-    repeating-linear-gradient(88deg, #0000 0 23px, #ffffff08 23px 25px),
-    linear-gradient(155deg, #a2692f, #6e4219 55%, #8a5624);
+  background: var(--hatch), linear-gradient(151deg, #9b6840 0 30%, #69402e 30.5% 76%, #4a2d28 76.5%);
   border-width: 3px;
   box-shadow:
     inset 0 0 0 2px #e0b04f44,
@@ -234,7 +233,7 @@ button {
 }
 .meter,
 .path {
-  background: var(--hatch), linear-gradient(170deg, #3e2539f0, #2a1c31f2);
+  background: var(--hatch), var(--ink-panel);
 }
 .path {
   background: var(--hatch), #ffffff08;
@@ -262,7 +261,9 @@ button {
   background: var(--hatch), linear-gradient(170deg, #5b3853f0, #3d2742f2);
 }
 .hero-selector {
-  background: var(--rivets), var(--hatch), linear-gradient(150deg, #43283e, #2c1d33) !important;
+  --portrait-tone: color-mix(in srgb, var(--chosen, #e0b04f) 19%, #202434);
+  background:
+    var(--rivets), var(--hatch), linear-gradient(152deg, var(--portrait-tone) 0 34%, #202434 34.5% 76%, #161a2a 76.5%) !important;
   border: 3px solid #150e0c !important;
   box-shadow: var(--plate) !important;
   border-radius: var(--wob-a) !important;
@@ -274,7 +275,7 @@ button {
 }
 .hero-selector .hero-power,
 .hero-selector .hero-route-info {
-  background: var(--hatch), linear-gradient(170deg, #4a2c44f0, #321f38f2) !important;
+  background: var(--hatch), linear-gradient(153deg, var(--portrait-tone) 0 68%, #202434 68.5%) !important;
   border: 2.5px solid #150e0c !important;
   border-radius: var(--wob-d) !important;
   box-shadow:
@@ -342,7 +343,7 @@ button {
 .askcard {
   border-radius: var(--wob-a);
   border: 3px solid #150e0c;
-  background: var(--rivets), var(--hatch), linear-gradient(165deg, #43283e, #2c1d33 58%, #35233a);
+  background: var(--rivets), var(--hatch), var(--ink-panel);
   box-shadow: var(--plate);
 }
 #pause .pause-menu {
@@ -993,7 +994,7 @@ button:disabled {
   max-height: calc(100dvh - 250px);
   margin-top: auto;
   padding: 20px 16px 16px;
-  background: var(--rivets), var(--hatch), linear-gradient(165deg, #43283eef, #251a2cf5 60%);
+  background: var(--rivets), var(--hatch), var(--ink-panel);
 }
 #menu .menu-pick {
   display: table;
@@ -1016,7 +1017,7 @@ button:disabled {
   position: relative;
   padding: 12px 14px 11px 12px;
   border-left: 3px solid #150e0c;
-  background: var(--hatch), linear-gradient(170deg, #4a2c44f2, #2f1f36f4);
+  background: var(--hatch), var(--ink-panel);
 }
 #menu .path::before {
   content: '';

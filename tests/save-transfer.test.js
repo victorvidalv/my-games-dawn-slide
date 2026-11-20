@@ -36,6 +36,12 @@ const snapshot = {
 };
 
 describe('enlaces de transferencia', () => {
+  it.each(['sun', 'purse', 'lantern'])('transfiere la reliquia %s con las pistas restantes', (relic) => {
+    const link = exportSaveLink({ ...snapshot, run: { ...run, relic, hints: 4 } });
+    expect(new TextEncoder().encode(link).length).toBeLessThan(QR_MAX_BYTES);
+    expect(readSaveLink(link, now).run).toMatchObject({ relic, hints: 4 });
+  });
+
   it('conserva Aventura, logros, aspecto y retos dentro del límite del QR', () => {
     const link = exportSaveLink(snapshot);
     expect(new TextEncoder().encode(link).length).toBeLessThan(QR_MAX_BYTES);

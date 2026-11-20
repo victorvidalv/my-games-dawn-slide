@@ -165,7 +165,7 @@ falta una familia usa otra), `varyBoard()` crea una variante propia de cada part
 - **Normal:** distancia = objetivo de la curva + ajuste adaptativo.
 - **Adaptativo:** si juegas con ≥ 90 % de eficiencia el ajuste sube (máx. +1 hasta el nivel 10, +2 después);
   si < 40 %, baja (mín. −2).
-- **Camino heroico** (al terminar una ciudad): cada héroe afronta una dificultad distinta y gana más puntos (Lía +45 %, Jean +40 %, Juth +35 %) y una tienda más barata (−30 %, −30 %, −20 %); Lía además recibe una pista gratis cada 4 tableros (`HEROIC_BENEFITS`, calibrado con `npm run simulate`).
+- **Camino heroico** (al terminar una ciudad): cada héroe afronta una dificultad distinta y gana más puntos (Lía +35 %, Jean +45 %, Juth +45 %) y una tienda más barata (−20 %, −25 %, −25 %); Lía además recibe una pista gratis cada 4 tableros (`HEROIC_BENEFITS`, calibrado con `npm run simulate`).
 - Siempre dentro de ±3 del objetivo, y el límite de movimientos baja de ×2 a ×1,3 del mínimo entre el nivel 1 y el 100 (`limitFactor`).
 
 > Si cambias `curve()` o las reglas de generación, ejecuta `npm run levels:all` y `npm test`
@@ -198,13 +198,13 @@ Elegir héroe es permanente durante la aventura. Las reglas están en [`src/game
 
 | Héroe | Poder | Función |
 |---|---|---|
-| **Lía** | Turnos de reserva: +25 % del mínimo del tablero (8 → +2). La barra distingue el tramo verde y muestra cuántos quedan, antes de los turnos comprados. | `bonusTurns`, `heroLimit`, `reserveState` |
-| **Jean** | Rebobinar: una vez por tablero devuelve ~33 % de los movimientos hechos (mínimo 3), pieza a pieza, y recupera los turnos. Con menos de tres vuelve al inicio. No devuelve compras ni pistas. | `powerState`, `beginPower` |
-| **Juth** | Trazar destino: una vez por tablero ejecuta ~25 % de los pasos que faltan (mínimo 1, nunca el último) de una solución óptima desde la posición actual, consumiendo turnos. Solo se habilita con al menos 3 pasos pendientes y turnos suficientes. | `destinyPlan`, `beginPower` |
+| **Lía** | Turnos de reserva: +40 % del mínimo del tablero en Normal, +20 % en Difícil y +25 % en Experto (8 → +3 en Normal). La barra distingue el tramo verde y muestra cuántos quedan, antes de los turnos comprados. | `bonusTurns`, `heroLimit`, `reserveState` |
+| **Jean** | Rebobinar: una vez por tablero (dos si el mínimo es de 14 o más) devuelve ~33 % de los movimientos hechos (mínimo 3), pieza a pieza, y recupera los turnos. Con menos de tres vuelve al inicio. No devuelve compras ni pistas. | `powerState`, `beginPower` |
+| **Juth** | Trazar destino: una vez por tablero ejecuta ~25 % de los pasos que faltan (mínimo 1, nunca el último) de una solución óptima desde la posición actual, consumiendo turnos. Solo se habilita con al menos 4 pasos pendientes y turnos suficientes. | `destinyPlan`, `beginPower` |
 
 Reglas comunes: el botón Poder sustituye Deshacer; Lía tiene poder pasivo y no muestra botón. Todos conservan las pistas de su reserva y ganan **+1 pista cada 5 niveles**. Guardar, recargar, rehacer en tienda o revivir no renueva una carga gastada en el mismo nivel. Los pasos se guardan durante la animación; al recargar se conserva lo ya ejecutado y la carga gastada.
 
-**Equilibrio por camino.** Los poderes de Jean y Juth están listos en todos los tableros de Normal, en ~85 % de Difícil y en ~70 % de Experto (`POWER_READY_SHARE`; los demás tableros «descansan»). La reserva de Lía es el 25 % del mínimo del tablero en todos los caminos. Las pistas ganadas por nivel son más escasas (cada 5, 6 y 8 niveles: `hintEvery`) y los premios de los minijuegos también (×1, ×0,8 y ×0,6: `PRIZE_PATH_SCALE`).
+**Equilibrio por camino.** Cada héroe tiene su terreno: Juth guía en Normal (su poder nunca descansa allí), Jean domina Difícil y Lía, Experto. El poder de Jean está listo en ~85 % de los tableros de Normal, ~75 % de Difícil y ~65 % de Experto (con dos rebobinados en los tableros largos); el de Juth en todos los de Normal, ~65 % de Difícil y ~70 % de Experto (`POWER_READY_SHARE`; los demás tableros «descansan», nunca el primero, un jefe ni dos seguidos). La reserva de Lía es el 40 %, 20 % y 25 % del mínimo según el camino. Las pistas ganadas por nivel son más escasas (cada 5, 6 y 8 niveles: `hintEvery`) y los premios de los minijuegos también (×1, ×0,8 y ×0,6: `PRIZE_PATH_SCALE`).
 
 `src/game/balance.js` modela estas reglas (rebobinado del 33 % de Jean, ~25 % de los pasos de Juth, reserva de Lía, camino heroico, sellos, minijuegos, tienda y revivir) y `npm run simulate` imprime las tablas con las que se calibró; `tests/balance.test.js` vigila los rangos. Resumen de lo calibrado (jugador medio / bueno / experto, media de los tres héroes): Normal llega a ~55 / ~84 / ~94 niveles, Difícil a ~33 / ~64 / ~91 y Experto a ~17 / ~44 / ~80. Los tres poderes aportan entre 8 y 32 niveles extra según el camino (en Normal Jean destaca algo más que Lía y Juth).
 
@@ -249,7 +249,7 @@ El menú principal tiene tres pestañas.
 - El nivel que cuenta es el más alto alcanzado en cualquier camino y no se pierde al terminar una partida.
 - Cada reto tiene tres tableros con mínimos de 5, 8 y 12 movimientos. Se puede retomar la partida y repetir cada tablero para mejorar su marca.
 - **Medallas**: oro en el mínimo exacto, plata hasta un 15 % más (al menos 2 movimientos), bronce al resolver.
-- **Racha**: un día al resolver los tres tableros de cualquier reto. A los 3, 5 o 7 días seguidos, una aventura nueva empieza con 5, 10 o 15 pistas extra, según el tramo más alto. Si se rompe la racha, caduca el premio para futuras aventuras. Las pistas ya entregadas quedan en la partida.
+- **Racha**: un día al resolver los tres tableros de cualquier reto. A los 3, 5 o 7 días seguidos, una aventura nueva empieza con 3, 5 u 8 pistas extra, según el tramo más alto (se suman a las del Farol de pistas). Si se rompe la racha, caduca el premio para futuras aventuras. Las pistas ya entregadas quedan en la partida.
 - Los retos guardan su partida por separado de la Aventura y se puede compartir el resultado.
 
 **Logros** ([`src/game/achievements.js`](src/game/achievements.js), [`src/ui/achievements.js`](src/ui/achievements.js)): 18 logros de Aventura y de retos diarios, con progreso visible. Cada uno desbloquea una recompensa cosmética que se activa con un toque en la misma pestaña: música del menú (temas de las ciudades y del jefe; al tocarla suena al instante), aspecto de la llave, diseño de las piezas y celebración al resolver. Las bloqueadas se ven con candado y dicen con qué logro se consiguen. Nada cambia las reglas ni la dificultad. Para añadir una recompensa: una entrada en `REWARDS`, un logro que la dé y su estilo en `33-daily.css`.
@@ -284,9 +284,9 @@ Los turnos comprados aparecen como cristales de hielo bajo el medidor, y se «de
 | Objeto | Precio | Efecto |
 |---|---|---|
 | 💡 Pista | 0,6 niveles | Una pista extra |
-| ↺ Rehacer tablero | 0,8 niveles | Reinicia el tablero con 0 movimientos (conserva los turnos comprados) |
-| ⏳ Turnos extra | 1,2 niveles | Unos turnos más para este tablero (la tienda muestra cuántos) |
-| ⏳ Muchos turnos extra | 2 niveles | Bastantes turnos más para este tablero |
+| ↺ Rehacer tablero | 1 nivel | Reinicia el tablero con 0 movimientos (conserva los turnos comprados). Una vez por tablero |
+| ⏳ Turnos extra | 1 nivel | +6 % del límite (mínimo 2) para este tablero |
+| ⏳ Muchos turnos extra | 1,8 niveles | +15 % del límite (mínimo 4) para este tablero: el paquete grande sale más barato por turno |
 | ⏭ Saltar nivel | 4 niveles | Pasa al siguiente sin puntos y sin racha |
 
 Si te pasas del límite de movimientos la aventura termina: **no se ofrece comprar turnos al perder**, hay que comprarlos antes.
@@ -339,11 +339,13 @@ Tras los niveles 10, 20…90 se elige entre el **Camino normal** y el camino her
 
 | Camino | Reto | Puntos extra |
 | --- | --- | --- |
-| Brasa (Lía) | Menos turnos en el límite base; Lía conserva su reserva. | +45 % |
-| Péndulo (Jean) | Una solución más larga cuando hay un tablero compatible en el banco. | +40 % |
-| Runas (Juth) | Más mecanismos ya aprendidos si hay una combinación compatible; los jefes y las lecciones conservan su plan. | +35 % |
+| Brasa (Lía) | Menos turnos en el límite base; Lía conserva su reserva. | +35 % |
+| Péndulo (Jean) | Una solución más larga cuando hay un tablero compatible en el banco. | +45 % |
+| Runas (Juth) | Más mecanismos ya aprendidos si hay una combinación compatible; los jefes y las lecciones conservan su plan. | +45 % |
 
-Se mantienen los descuentos de la tienda y la pista gratis de Lía cada cuatro tableros. Los poderes de Jean y Juth tienen la mitad de potencia en sus caminos heroicos. Las partidas guardadas conservan el tablero y el límite de turnos con los que empezaron.
+Se mantienen los descuentos de la tienda. Cada camino tiene además un premio propio: Lía recibe una pista gratis cada cuatro tableros; Jean rebobina la mitad pero tiene un rebobinado extra en el jefe; Juth conserva sus runas a plena potencia. Las partidas guardadas conservan el tablero y el límite de turnos con los que empezaron.
+
+**Reliquias** (se elige una al empezar la aventura; no cuentan en el reto diario ni en Práctica, `src/game/relics.js`): Medallón solar +15 % de puntos (también en sellos) · Bolsa mercante −30 % en la tienda (se multiplica con el descuento heroico) y revivir por el 20 % de los puntos en vez del 33 % · Farol de pistas +7 pistas al empezar, que se suman a las del camino y a las de la racha diaria.
 
 ## Sellos opcionales
 

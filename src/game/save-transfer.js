@@ -4,10 +4,12 @@ import { QR_MAX_BYTES } from '../qr.js';
 import { lookOf } from './achievements.js';
 import { dayNumber, emptyDaily } from './daily.js';
 import { isBossLevel } from './mechanics.js';
+import { relicFor } from './relics.js';
 import { HEROIC_BENEFITS } from './routes.js';
 import { BOSS_FREE_RETRIES, MAX_REVIVES } from './shop.js';
 
-const VERSION = 1;
+const BASE_VERSION = 1;
+const RELIC_VERSION = 2;
 const BASE_URL = 'https://dawnslide.com/';
 const PREFIX = '#s=';
 const MAX_TOKEN_LENGTH = QR_MAX_BYTES - BASE_URL.length - PREFIX.length - 1;
@@ -17,6 +19,7 @@ const UINT16 = 0xffff;
 // Orden fijo del formato v1. Los cambios en las tablas del juego no deben cambiar estas posiciones.
 const PATHS = [1, 50, 75];
 const HEROES = ['lia', 'jean', 'van'];
+const RELICS = ['sun', 'purse', 'lantern'];
 const MINI_GAMES = ['catch', 'whack', 'stack', 'clock', 'rhythm', 'order', 'pairs', 'simon', 'shell'];
 const CHALLENGES = ['classic', 'frost', 'gears', 'all', 'master'];
 const COUNTERS = ['completed', 'perfects', 'mini5', 'iceRock', 'locks', 'bosses', 'cleanCity'];
@@ -92,7 +95,10 @@ export function exportSaveLink(store) {
     const n = bounded(value, 2 ** (8 * width) - 1);
     for (let i = 0; i < width; i++) bytes.push((n >>> (8 * i)) & 255);
   };
-  write(VERSION);
+  const run = store.run;
+  const level = !run?.daily && run?.mode !== 'p' ? bounded(run?.level, MAX_LEVEL) : 0;
+  const relic = level ? relicFor(run) : undefined;
+  write(relic ? RELIC_VERSION : BASE_VERSION);
   for (const path of PATHS) {
     const record = store.paths?.['c' + path];
     write(record?.score, 4);
@@ -120,8 +126,6 @@ export function exportSaveLink(store) {
   for (const [type, items] of Object.entries(LOOKS)) write(indexOf(items, look[type]));
   write(maskOf(LESSONS, (id) => Boolean(store.tips?.[id])));
 
-  const run = store.run;
-  const level = !run?.daily && run?.mode !== 'p' ? bounded(run?.level, MAX_LEVEL) : 0;
   write(level);
   if (level) {
     const pending = run.pendingClear?.level === level;
@@ -148,6 +152,7 @@ export function exportSaveLink(store) {
     write(isBossLevel(level) && run.bossRetry?.level === level ? bounded(run.bossRetry.used, BOSS_FREE_RETRIES) : 0);
     write(run.heroicHintLevel === level ? bounded(run.heroicHintCount, HEROIC_BENEFITS.liaHints) : 0);
     write(run.revive);
+    if (relic) write(indexOf(RELICS, relic.id));
   }
   write(checksum(bytes), 4);
   const token = toBase64(bytes);
@@ -182,7 +187,8 @@ export function readSaveHash(hash, now = new Date()) {
     return items.filter((_, i) => (bits & (1 << i)) !== 0);
   };
 
-  if (read() !== VERSION) invalid();
+  const version = read();
+  if (version !== BASE_VERSION && version !== RELIC_VERSION) invalid();
   const paths = {};
   for (const path of PATHS) {
     const score = read(4),
@@ -251,13 +257,14 @@ export function readSaveHash(hash, now = new Date()) {
       revivesBought: flags.has('paidRevive') ? MAX_REVIVES : 0,
       recBroken: flags.has('recBroken'),
     };
+    if (version === RELIC_VERSION) run.relic = RELICS[read(1, RELICS.length - 1)];
     if (flags.has('pendingClear')) run.pendingClear = { level, routeChosen: flags.has('routeChosen') };
     if (flags.has('bonus')) run.bonus = 1;
     if (flags.has('sealClaimed')) run.sealClaims = { [level]: 0 };
     if (bossRetries) run.bossRetry = { level, used: bossRetries };
     if (heroicHints) Object.assign(run, { heroicHintLevel: level, heroicHintCount: heroicHints });
     if (level === 10 && flags.has('routeChosen') && flags.has('brave')) run.route = 'brave';
-  }
+  } else if (version === RELIC_VERSION) invalid();
   if (offset !== end) invalid();
   return { paths, ach, stats, daily, look, tips, run };
 }

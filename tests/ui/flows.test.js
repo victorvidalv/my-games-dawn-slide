@@ -1,6 +1,11 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { bootApp, until, untilPlayable } from './app.js';
+
+afterEach(async () => {
+  const { Music } = await import('../../src/audio/music.js');
+  Music.background();
+});
 
 const SAVE_KEY = 'desbloquea.rogue.v2';
 const saved = () => JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
@@ -11,6 +16,42 @@ const savedRun = {
 };
 
 describe('interfaz: aventura', () => {
+  it('el selector conserva una sola reliquia al cambiar de héroe y la guarda al empezar', async () => {
+    const app = await bootApp();
+    const started = app.session.startRun(1, 'c');
+    const relics = app.$('heroRelics');
+    expect(relics.querySelector('input:checked').value).toBe('sun');
+    relics.querySelector('[value="lantern"]').click();
+    app.$('heroCards').querySelector('[data-hero="jean"]').click();
+    expect(app.$('heroRouteName').textContent).toBe('Camino del Péndulo');
+    expect([...relics.querySelectorAll('input:checked')].map((r) => r.value)).toEqual(['lantern']);
+    app.$('heroConfirm').click();
+    await until(() => shown(app, 'journey'));
+    expect(saved().run).toMatchObject({ relic: 'lantern', hero: 'jean', hints: 10 });
+    app.$('mapClose').click();
+    await started;
+  });
+
+  it('muestra al héroe de la partida al elegir camino, incluso al cambiar de personaje', async () => {
+    const app = await bootApp();
+    const { HEROES } = await import('../../src/game/heroes.js');
+    const { showTravelDialog } = await import('../../src/ui/session-view.js');
+    for (const hero of HEROES) {
+      const picked = showTravelDialog({
+        run: { pendingClear: { level: 10 } },
+        hero,
+        onChoose: () => {},
+        isActive: () => true,
+      });
+      await until(() => shown(app, 'travel'));
+      const portrait = app.$('travelHero');
+      expect(portrait.getAttribute('src')).toBe(`heroes/${hero.id}-route.webp`);
+      expect(portrait.alt).toBe(hero.name);
+      app.$('routeNormal').click();
+      await picked;
+    }
+  });
+
   it('«Continuar» retoma la partida guardada y pinta el HUD del nivel', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
@@ -45,6 +86,26 @@ describe('interfaz: aventura', () => {
     expect(app.S.run.rescue).toBeUndefined();
     expect(app.S.G).toMatchObject({ moves: 0, done: false });
     expect(app.S.busy).toBe(false);
+  });
+
+  it('la oferta de revivir muestra el costo, conserva el foco y reinicia al aceptar', async () => {
+    const app = await bootApp({ save: { run: { ...savedRun.run, level: 11, hero: 'jean', score: 900 } } });
+    app.$('bContinue').click();
+    await untilPlayable(app, 11);
+    app.S.G.moves = 4;
+    app.session.fail('limit');
+    expect(shown(app, 'reviveOffer')).toBe(true);
+    expect(app.$('reviveNow').textContent).toBe('900');
+    expect(app.$('reviveCost').textContent).toBe('−297');
+    expect(app.$('reviveAfter').textContent).toBe('603');
+    expect(document.activeElement).toBe(app.$('reviveAccept'));
+    app.$('reviveAccept').dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+    expect(document.activeElement).toBe(app.$('reviveEnd'));
+    app.$('reviveAccept').click();
+    await untilPlayable(app, 11);
+    expect(shown(app, 'reviveOffer')).toBe(false);
+    expect(app.S.run).toMatchObject({ score: 603, revivesBought: 1 });
+    expect(app.S.G.moves).toBe(0);
   });
 
   it('«Guardar y salir» deja la partida guardada y libera el juego', async () => {

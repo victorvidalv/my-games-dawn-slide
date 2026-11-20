@@ -3,6 +3,7 @@ import {
   HEROIC_PATHS,
   HEROIC_BENEFITS,
   heroicHintsLeft,
+  heroicPowerFactor,
   isHeroic,
   routeGain,
   shopDiscount,
@@ -19,10 +20,27 @@ import special from '../src/data/special.json';
 const run = (hero, route = 'brave') => ({ hero, route, mode: 'c', start: 1, level: 11, hints: 3, score: 10000 });
 
 describe('camino heroico propio de cada héroe', () => {
-  it('tres símbolos y acompañantes distintos, Jean conserva la elfa', () => {
+  it('aplica la reliquia al total del duelo y al precio con descuento de ruta', () => {
+    const brave = run('jean');
+    const bossGain = routeGain(brave, 30, 12, 10, 2, 20).total;
+    expect(routeGain({ ...brave, relic: 'sun' }, 30, 12, 10, 2, 20).total).toBe(Math.round(bossGain * 1.15));
+    const normalPrice = priceOf('hint', 30, 1);
+    expect(priceOf('hint', 30, 1, { ...brave, route: 'normal', relic: 'purse' })).toBe(Math.round(normalPrice * 0.7));
+    expect(priceOf('hint', 30, 1, { ...brave, relic: 'purse' })).toBe(Math.round(normalPrice * 0.75 * 0.7));
+    expect(priceOf('hint', 17, 1, { ...brave, relic: 'purse' })).toBe(Math.round(priceOf('hint', 17) * 0.75 * 0.7));
+  });
+
+  it('cada camino heroico tiene un premio propio: Jean rebobina a la mitad, Juth y Lía conservan su poder entero', () => {
+    expect(heroicPowerFactor('jean', true)).toBe(0.5);
+    expect(heroicPowerFactor('van', true)).toBe(1);
+    expect(heroicPowerFactor('lia', true)).toBe(1);
+    expect(heroicPowerFactor('jean', false)).toBe(1);
+    expect(new Set(Object.values(HEROIC_PATHS).map((p) => p.perk)).size).toBe(3);
+    for (const p of Object.values(HEROIC_PATHS)) expect(p.benefit).toContain(p.perk);
+  });
+
+  it('cada camino heroico tiene su propio símbolo', () => {
     expect(new Set(Object.values(HEROIC_PATHS).map((p) => p.icon)).size).toBe(3);
-    expect(new Set(Object.values(HEROIC_PATHS).map((p) => p.guide)).size).toBe(3);
-    expect(HEROIC_PATHS.jean.guide).toBe('guia-elfa.webp');
   });
   it('cada héroe gana su porcentaje de puntos en el camino heroico', () => {
     const base = calcGain(30, 12, 10, 2).total;

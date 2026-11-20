@@ -38,15 +38,9 @@ export function endingStory(victory, id, level) {
   const port = $('fPortrait');
   port.parentElement.style.setProperty('--ending-scene', cssUrl(bg));
   port.onerror = () => {
-    if (h.id === 'van' && !port.dataset.triedJuth) {
-      port.dataset.triedJuth = '1';
-      port.src = 'heroes/juth-final.webp';
-      return;
-    }
     port.onerror = null;
     port.src = heroArt(h.id, 'victory');
   };
-  delete port.dataset.triedJuth;
   port.src = heroArt(h.id, 'final');
   port.alt = `${h.name} alcanza el final de su senda`;
   $('fLore').textContent = l.endingLore;

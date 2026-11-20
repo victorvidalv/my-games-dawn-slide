@@ -1534,295 +1534,209 @@ body.perfect .frame {
     0 0 10px #000b;
 }
 
-/* Pantalla completa del dios nórdico tras perder: Revivir (−33 %, 1 vez) o Finalizar */
+/* Oferta de revivir: la guardiana y el santuario se dibujan en capas separadas. */
 #reviveOffer {
   padding: 0;
-  background: #0a1016;
+  background: #10182a;
   overflow: hidden;
   backdrop-filter: none;
   z-index: 63;
 }
 .revive-stage {
   position: relative;
+  isolation: isolate;
   width: 100%;
   height: 100%;
   overflow-y: auto;
 }
 .revive-backdrop,
-.revive-god,
-.revive-vignette {
+.revive-vignette,
+.revive-mist {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
 }
 .revive-backdrop {
+  inset: -5%;
+  width: 110%;
+  height: 110%;
   object-fit: cover;
-  filter: blur(18px) brightness(0.38) saturate(0.85);
-  transform: scale(1.08);
-}
-.revive-god {
-  object-fit: cover;
-  object-position: center 22%;
-  z-index: 1;
+  object-position: center;
+  filter: brightness(0.8) saturate(0.9);
 }
 .revive-vignette {
-  z-index: 2;
+  inset: 0;
+  background: linear-gradient(#111b2eca, #131c3036 31% 63%, #111829d9);
+}
+.revive-mist {
+  inset: 12% -12% 14%;
   background:
-    linear-gradient(180deg, #090f15df 0%, #090f1522 30%, #090f1552 60%, #090f15f4 100%),
-    linear-gradient(90deg, transparent 0%, #090f1526 42%, #090f15db 84%);
+    radial-gradient(ellipse 55% 9% at 30% 76%, #f8dca556, transparent),
+    radial-gradient(ellipse 55% 14% at 68% 91%, #b9a8f149, transparent);
+}
+#reviveOffer.show .revive-backdrop {
+  animation: boss-mist-landscape 12s ease-in-out infinite alternate;
+}
+#reviveOffer.show .revive-mist {
+  animation: boss-mist-drift 9s ease-in-out infinite alternate;
 }
 .revive-shell {
   position: relative;
-  z-index: 3;
-  width: min(100%, 1160px);
+  display: grid;
+  grid-template-areas: 'title' 'portrait' 'panel';
+  grid-template-rows: auto minmax(210px, 1fr) auto;
+  gap: clamp(8px, 1.4dvh, 18px);
+  width: min(100%, 1200px);
   min-height: 100dvh;
   margin: 0 auto;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 12px;
-  padding: calc(env(safe-area-inset-top) + 14px) clamp(14px, 3.2vw, 34px) calc(env(safe-area-inset-bottom) + 16px);
+  padding: calc(env(safe-area-inset-top) + clamp(12px, 3dvh, 26px)) clamp(14px, 4vw, 40px)
+    calc(env(safe-area-inset-bottom) + clamp(12px, 3dvh, 26px));
 }
 .revive-top {
-  text-align: left;
-  max-width: 560px;
+  grid-area: title;
+  text-align: center;
+  text-shadow: 0 2px 5px #111522;
 }
-.revive-top .tag {
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  color: #f5c56c;
-  opacity: 1;
-  font-weight: 800;
-  text-shadow: 0 2px 4px #091118;
+.revive-label {
+  margin: 0;
+  color: #ffe1a4;
+  font: 800 10px/1.2 var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 .revive-top h2 {
-  font: 700 clamp(23px, 4.2vw, 38px)/1.12 var(--font-book);
-  color: #f7eed6;
-  margin: 6px 0 8px;
-  text-shadow:
-    0 2px 0 #091118,
-    0 4px 18px #000c;
+  margin: 5px 0 4px;
+  color: #fff0d1;
+  font: 700 clamp(26px, 6vw, 48px)/1.08 var(--font-title);
+  text-wrap: balance;
 }
-.revive-cryptic {
-  font: italic 600 clamp(13px, 2.2vw, 15px)/1.45 var(--font-book);
-  color: #f1d7a0;
+.revive-quote {
   margin: 0;
-  max-width: 460px;
-  text-shadow: 0 2px 6px #000e;
+  color: #f7e7cc;
+  font: italic 600 clamp(14px, 2.65dvh, 18px)/1.3 var(--font-book);
+  text-wrap: balance;
+}
+.revive-portrait {
+  grid-area: portrait;
+  position: relative;
+}
+.revive-portrait img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mask-image: linear-gradient(#000 82%, transparent);
+  filter: drop-shadow(0 9px 16px #0d182c90);
 }
 .revive-panel {
-  align-self: end;
-  justify-self: end;
-  width: min(100%, 390px);
-}
-.revive-explain {
-  background: linear-gradient(160deg, #1b242beb, #10171ef5);
-  border: 2.5px solid #091118;
-  border-left: 4px solid #eb9c4a;
-  border-radius: 14px;
-  padding: 13px 15px;
+  grid-area: panel;
+  justify-self: center;
+  display: grid;
+  gap: 11px;
+  width: min(100%, 440px);
+  padding: clamp(10px, 2.1dvh, 18px);
+  border: 2px solid #d6b071;
+  border-radius: var(--wob-b);
+  background: var(--hatch), var(--ink-panel);
   box-shadow:
-    0 5px 0 #091118,
-    0 16px 34px #000a,
-    inset 0 0 0 1px #f3c4742a;
-  text-align: left;
+    0 0 0 3px #15101b,
+    0 10px 24px #090e1b93;
 }
 .revive-rule {
-  font:
-    500 13px/1.45 system-ui,
-    sans-serif;
-  color: #f1e8d3;
-  margin: 0 0 11px;
-}
-.revive-rule strong {
-  color: #ffcb74;
+  margin: 0;
+  color: #fff0d7;
+  text-align: center;
+  font: 650 13px/1.35 var(--font-ui);
+  text-wrap: balance;
 }
 .revive-math {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding-top: 10px;
-  border-top: 1px solid #ffffff1c;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
 }
 .revive-math > div {
-  background: #0b1218cc;
-  border: 1.5px solid #091118;
-  border-radius: 9px;
-  padding: 7px 8px;
+  min-width: 0;
+  padding: 6px 3px;
+  border: 1px solid #d6b07150;
+  border-radius: 8px;
+  background: #0d1526c9;
   text-align: center;
 }
-.revive-math small {
-  display: block;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.09em;
-  color: #bca988;
-  margin-bottom: 3px;
+.revive-math dt {
+  margin-bottom: 4px;
+  color: #e2d4bd;
+  font: 800 clamp(8px, 2.4vw, 10px)/1.15 var(--font-ui);
+  text-wrap: balance;
 }
-.revive-math b {
-  display: block;
-  font: 900 14.5px/1.1 var(--font-book);
-  color: #f6ebd2;
+.revive-math dd {
+  margin: 0;
+  color: #fff0d1;
+  font: 720 clamp(13px, 3.75vw, 19px)/1.1 var(--font-ui);
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
-.revive-math b.is-loss {
-  color: #ff8f70;
-}
-.revive-bottom {
-  width: 100%;
-  align-self: end;
+.revive-math .is-loss {
+  color: #ffab90;
 }
 .revive-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 8px;
 }
 .revive-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 66px;
-  padding: 11px 14px;
-  border: 2.5px solid #091118;
-  border-radius: 12px;
-  color: #f6eed9;
-  box-shadow:
-    0 4px 0 #091118,
-    0 10px 24px #0009,
-    inset 0 1px 0 #ffffff24;
-  white-space: normal;
-  text-align: left;
-  transition:
-    transform 0.12s,
-    box-shadow 0.12s,
-    background 0.14s;
-}
-.revive-btn:hover,
-.revive-btn:focus-visible {
-  transform: translateY(-2px);
-  box-shadow:
-    0 6px 0 #091118,
-    0 14px 28px #000a,
-    inset 0 0 0 1px #f4ca7688;
-}
-.revive-btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #091118;
-}
-.revive-btn .choice-icon {
-  font-size: 21px;
-  width: 26px;
+  justify-content: center;
+  gap: 5px;
+  min-height: 46px;
+  margin: 0;
+  padding: 6px 8px;
+  border: 2px solid #17101a;
+  color: #fff2d9;
+  font: 800 14px/1.15 var(--font-ui);
   text-align: center;
-  flex: none;
-  text-shadow: 0 2px 0 #091118;
 }
-.revive-btn .choice-copy {
-  flex: 1;
-  min-width: 0;
-}
-.revive-btn strong {
+.revive-btn .ic {
   display: block;
-  font: 800 15px/1.15 var(--font-book);
-  color: #fff2d6;
-}
-.revive-btn small {
-  display: block;
-  font-size: 11px;
-  font-weight: 500;
-  color: #d6cbb5;
-  margin-top: 3px;
-  line-height: 1.3;
+  width: 24px;
+  height: 24px;
 }
 .revive-btn.is-revive {
-  background: linear-gradient(160deg, #7a3f1af5, #432110fa);
-  border-color: #091118;
-  box-shadow:
-    0 4px 0 #091118,
-    0 10px 26px #000a,
-    inset 0 0 0 1px #f5b65c55;
-}
-.revive-btn.is-revive:hover,
-.revive-btn.is-revive:focus-visible {
-  background: linear-gradient(160deg, #8f4a1ff8, #542914fc);
+  background: var(--hatch), linear-gradient(152deg, #9b6035 0 32%, #744329 32.75% 83%, #552a2c 84%);
 }
 .revive-btn.is-end {
-  background: linear-gradient(160deg, #1a262ef2, #101920f7);
+  background: var(--hatch), linear-gradient(152deg, #3d4b65 0 32%, #28344e 32.75% 83%, #21283e 84%);
 }
-.revive-btn.is-end:hover,
-.revive-btn.is-end:focus-visible {
-  background: linear-gradient(160deg, #23343ff7, #15212afa);
+.revive-btn:focus-visible {
+  outline: 2px solid #fff0be;
+  outline-offset: 1px;
 }
-@media (min-aspect-ratio: 11/10) {
-  .revive-god {
-    width: min(56vw, 74dvh);
-    left: 0;
-    right: auto;
-    object-fit: cover;
-    object-position: center 18%;
-    -webkit-mask-image: linear-gradient(90deg, #000 72%, transparent 100%);
-    mask-image: linear-gradient(90deg, #000 72%, transparent 100%);
-  }
+@media (min-aspect-ratio: 13/10) {
   .revive-vignette {
-    background:
-      linear-gradient(180deg, #090f1599 0%, transparent 34%, transparent 64%, #090f15eb 100%),
-      linear-gradient(90deg, transparent 0%, #090f1578 38%, #090f15ea 64%);
+    background: linear-gradient(90deg, #11182921, #1118293d 43%, #1118299c);
   }
   .revive-shell {
-    grid-template-columns: minmax(220px, 1fr) minmax(340px, 540px);
-    grid-template-rows: 1fr auto auto;
-    align-content: end;
-    gap: 14px 28px;
+    grid-template-areas: 'portrait title' 'portrait panel';
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-rows: minmax(105px, 1fr) minmax(min-content, 1fr);
+    column-gap: clamp(12px, 3vw, 38px);
+    height: 100dvh;
   }
   .revive-top {
-    grid-column: 2;
-    grid-row: 1;
     align-self: end;
-    max-width: none;
   }
   .revive-panel {
-    grid-column: 2;
-    grid-row: 2;
-    width: 100%;
-    justify-self: stretch;
     align-self: start;
   }
-  .revive-bottom {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    max-width: 760px;
-    justify-self: end;
-  }
-}
-@media (max-width: 540px) and (max-aspect-ratio: 11/10) {
-  .revive-actions {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-  .revive-btn {
-    min-height: 56px;
-    padding: 10px 12px;
-  }
-  .revive-math b {
-    font-size: 13px;
-  }
-}
-@media (max-height: 660px) and (max-aspect-ratio: 11/10) {
-  .revive-shell {
-    gap: 8px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
   .revive-top h2 {
-    font-size: 21px;
-    margin: 4px 0;
+    font-size: clamp(22px, 6dvh, 48px);
   }
-  .revive-explain {
-    padding: 10px 12px;
-  }
-  .revive-rule {
-    font-size: 12px;
-    margin-bottom: 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  #reviveOffer.show .revive-backdrop,
+  #reviveOffer.show .revive-mist {
+    animation: none;
   }
 }
 
@@ -2201,11 +2115,6 @@ body.perfect .frame {
   opacity: 0.85;
 }
 
-#heroPowerShort {
-  font-size: 17px;
-  line-height: 1.3;
-  letter-spacing: 0.01em;
-}
 .hero-power {
   align-items: center;
 }

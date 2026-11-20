@@ -66,6 +66,7 @@
 
 /* La posición va en `translate` (no en left/top): moverla no recalcula la maquetación ni repinta el tablero, solo se compone en la GPU. */
 .piece {
+  --piece-paint: linear-gradient(151deg, var(--a) 0 25%, var(--b) 25.75% 75%, var(--d) 76%);
   position: absolute;
   left: 0;
   top: 0;

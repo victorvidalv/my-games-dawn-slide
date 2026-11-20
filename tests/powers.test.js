@@ -5,7 +5,7 @@ import { beginPower, destinyCount, rewindCount, destinyPlan, powerState, reserve
 import bank from '../src/data/levels.json';
 import special from '../src/data/special.json';
 
-const rewindBoard = (n) => ({ n: 7, moves: n, limit: 30, pos: [n], hist: Array.from({ length: n }, (_, i) => [i]) });
+const rewindBoard = (n) => ({ n: 8, moves: n, limit: 30, pos: [n], hist: Array.from({ length: n }, (_, i) => [i]) });
 const run = (hero) => ({ hero, hints: 4, score: 1234 });
 
 describe('Jean: ~33 % de los movimientos hechos, mínimo 3', () => {
@@ -34,10 +34,31 @@ describe('Jean: ~33 % de los movimientos hechos, mínimo 3', () => {
     const loaded = JSON.parse(JSON.stringify(r));
     expect(powerState(loaded, G).ok).toBe(false);
     expect(powerState(loaded, { ...G, moves: 0, hist: [] }).ok).toBe(false);
-    expect(powerState(loaded, { ...G, n: 8 }).ok).toBe(true);
+    expect(powerState(loaded, { ...G, n: 9 }).ok).toBe(true);
+  });
+  it('en tableros largos (mínimo ≥ 14) Jean rebobina dos veces; en los cortos, una', () => {
+    const r = run('jean'),
+      long = { ...rewindBoard(12), opt: 14 };
+    expect(powerState(r, long).reason).toBe('2 usos en este tablero');
+    expect(beginPower(r, long)).not.toBeNull();
+    const loaded = JSON.parse(JSON.stringify(r));
+    expect(powerState(loaded, long).ok).toBe(true);
+    expect(beginPower(loaded, long)).not.toBeNull();
+    expect(powerState(loaded, long).ok).toBe(false);
+    expect(powerState(loaded, { ...long, n: 9 }).ok).toBe(true);
+    const short = run('jean');
+    beginPower(short, { ...rewindBoard(12), opt: 13 });
+    expect(powerState(short, { ...rewindBoard(12), opt: 13 }).ok).toBe(false);
+  });
+  it('en el jefe de su camino heroico Jean tiene un rebobinado extra', () => {
+    const boss = { ...rewindBoard(12), n: 20, opt: 10 };
+    const heroic = { ...run('jean'), route: 'brave', mode: 'c' };
+    expect(powerState(heroic, boss).reason).toBe('2 usos en este tablero');
+    expect(powerState({ ...run('jean'), mode: 'c' }, boss).reason).toBe('1 uso por tablero');
+    expect(powerState(heroic, { ...boss, n: 19 }).reason).toBe('1 uso por tablero');
   });
   it('un uso antiguo de Jean cuenta como poder gastado en ese tablero', () => {
-    expect(powerState({ ...run('jean'), undoUsedLevel: 7, undoUsedCount: 1 }, rewindBoard(4)).ok).toBe(false);
+    expect(powerState({ ...run('jean'), undoUsedLevel: 8, undoUsedCount: 1 }, rewindBoard(4)).ok).toBe(false);
   });
 });
 
@@ -70,16 +91,16 @@ describe('Juth: ~25 % de los pasos que faltan, legales', () => {
       }
       expect(an.dist.get(encode(G.pos))).toBe(before - n);
     });
-  it('se desactiva cuando quedan dos o menos pasos y no consume la carga', () => {
+  it('se desactiva cuando quedan tres o menos pasos y no consume la carga', () => {
     const G = { ...decodeBoard('h2.2.0'), n: 10, moves: 0, limit: 10, hist: [] },
       r = run('van');
     expect(destinyPlan(G)).toBeNull();
     expect(beginPower(r, G)).toBeNull();
     expect(r.powerUsedLevel).toBeUndefined();
   });
-  it('la parte es ~25 %, mínimo 1 con 3+ pasos, nada con 1 o 2, y nunca el último', () => {
-    expect([1, 2].map((l) => destinyCount(l))).toEqual([0, 0]);
-    expect([3, 4, 5, 6, 8, 12, 20].map((l) => destinyCount(l))).toEqual([1, 1, 1, 2, 2, 3, 5]);
+  it('la parte es ~25 %, mínimo 1 con 4+ pasos, nada con 3 o menos, y nunca el último', () => {
+    expect([1, 2, 3].map((l) => destinyCount(l))).toEqual([0, 0, 0]);
+    expect([4, 5, 6, 8, 12, 20].map((l) => destinyCount(l))).toEqual([1, 1, 2, 2, 3, 5]);
     for (let l = 3; l < 40; l++) expect(destinyCount(l, 0.4)).toBeLessThan(l);
   });
   it('no activa una secuencia si quedan menos turnos que pasos a ejecutar', () => {

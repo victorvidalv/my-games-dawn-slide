@@ -4,14 +4,17 @@ import { snapshotRescue } from './heroes.js';
 import { byPath } from '../engine/difficulty.js';
 
 import { shopDiscount } from './routes.js';
+import { relicFor } from './relics.js';
 
 import { baseScore } from '../engine/scoring.js';
 
 /** Los precios se descuentan del puntaje y escalan con los puntos base del tablero. */
 const PATH_PRICE = { 1: 1, 50: 1.15, 75: 1.3 };
 export const pathPrice = (start = 1) => byPath(PATH_PRICE, start);
-/** Revivir al caer (fuera de tienda): cuesta 33 % de tus puntos actuales y solo 1 vez por partida. */
+/** Revivir al caer (fuera de tienda): cuesta 33 % de tus puntos actuales (20 % con la Bolsa mercante) y solo 1 vez por partida. */
 export const REVIVE_SHARE = 0.33;
+/** Parte de los puntos que cuesta revivir en esta partida. */
+export const reviveShare = (run) => relicFor(run)?.revive ?? REVIVE_SHARE;
 export const MAX_REVIVES = 1;
 
 export const SHOP_ITEMS = [
@@ -20,26 +23,26 @@ export const SHOP_ITEMS = [
     id: 'moves3',
     icon: 'hourglass',
     name: 'Turnos extra',
-    levels: 1.2,
-    share: 0.05,
-    min: 1,
+    levels: 1,
+    share: 0.06,
+    min: 2,
     detail: 'Más turnos para este tablero.',
   },
   {
     id: 'moves',
     icon: 'hourglass',
     name: 'Muchos turnos extra',
-    levels: 2,
-    share: 0.1,
-    min: 2,
+    levels: 1.8,
+    share: 0.15,
+    min: 4,
     detail: 'Bastantes más turnos para este tablero.',
   },
   {
     id: 'redo',
     icon: 'rewind',
     name: 'Rehacer tablero',
-    levels: 0.8,
-    detail: 'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados).',
+    levels: 1,
+    detail: 'Empieza este tablero de cero con 0 movimientos (conservas los turnos comprados). Una vez por tablero.',
   },
   {
     id: 'skip',
@@ -55,7 +58,8 @@ export const itemById = (id) => SHOP_ITEMS.find((i) => i.id === id);
 /** Precio en puntos de un objeto: niveles × valor de un nivel de esa dificultad × camino (redondeado a la decena). */
 export const priceOf = (id, rating = 1, start = 1, run = null) => {
   const normal = Math.round((itemById(id).levels * baseScore(rating) * pathPrice(start)) / 10) * 10;
-  return Math.round(normal * (1 - shopDiscount(run)));
+  const discountBasisPoints = Math.round(shopDiscount(run) * 10000);
+  return Math.round((normal * (10000 - discountBasisPoints)) / 10000);
 };
 
 /** Turnos que da un objeto de turnos sobre el límite actual del tablero (0 si no es de turnos). */
@@ -81,6 +85,7 @@ export function availability(id, { run, G }) {
     if (isBossLevel(G.n)) return { ok: false, reason: 'Los jefes no se pueden saltar.' };
     if (run.lastSkipZone === zoneIdx(G.n)) return { ok: false, reason: 'Ya usaste el salto de esta ciudad.' };
   }
+  if (id === 'redo' && run.redoBoard === shopBoardKey(G)) return { ok: false, reason: 'Ya rehiciste este tablero.' };
   if (id === 'redo' && !G.moves) return { ok: false, reason: 'Aún no has movido nada.' };
   const price = priceOf(id, G.rate, run.start, run);
   if ((run.score || 0) < price) return { ok: false, reason: 'No te alcanzan los puntos.', price };
@@ -107,6 +112,7 @@ export function buy(id, { run, G }) {
     run.turnPackBoard = shopBoardKey(G);
     G.bought = moves; // turnos comprados: se muestran congelados y se «derriten» al usarse
   } else if (id === 'redo') {
+    run.redoBoard = shopBoardKey(G);
     G.pos = G.start.slice();
     G.hist = [];
     G.moves = 0;
@@ -114,17 +120,17 @@ export function buy(id, { run, G }) {
   return { ok: true, price: a.price };
 }
 
-/** Costo en puntos (33 %) de revivir tras perder con `score` puntos actuales. */
-export const reviveCost = (score = 0) => Math.round(Math.max(0, score || 0) * REVIVE_SHARE);
+/** Costo en puntos (33 %, o 20 % con la Bolsa) de revivir tras perder con `score` puntos actuales. */
+export const reviveCost = (score = 0, run = null) => Math.round(Math.max(0, score || 0) * reviveShare(run));
 
 /** ¿Puede revivir pagando el 33 % de sus puntos actuales? (una sola vez por aventura, nunca en Práctica). */
 export const canPaidRevive = (run, mode = run?.mode) =>
-  !!run && mode !== 'p' && (run.revivesBought || 0) < MAX_REVIVES && reviveCost(run.score) > 0;
+  !!run && mode !== 'p' && (run.revivesBought || 0) < MAX_REVIVES && reviveCost(run.score, run) > 0;
 
 /** Cobra el 33 % de los puntos actuales y marca el único revivir de la partida. */
 export function payRevive(run) {
   if (!canPaidRevive(run)) return { ok: false, cost: 0 };
-  const cost = reviveCost(run.score);
+  const cost = reviveCost(run.score, run);
   run.score -= cost;
   run.spent = (run.spent || 0) + cost;
   run.revivesBought = (run.revivesBought || 0) + 1;

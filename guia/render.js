@@ -1,9 +1,10 @@
 import { BOSS_RULES } from '../src/game/bosses.js';
-import { DAILY_TARGETS } from '../src/game/daily.js';
+import { DAILY_TARGETS, STREAK_HINT_REWARDS } from '../src/game/daily.js';
 import { MAX_GRADE, maxPrize } from '../src/game/minigames.js';
 import { FIRST_ROTATED_LEVEL } from '../src/game/orientation.js';
-import { HEROIC_BENEFITS } from '../src/game/routes.js';
-import { BOSS_FREE_RETRIES } from '../src/game/shop.js';
+import { HEROIC_BENEFITS, HEROIC_PATHS } from '../src/game/routes.js';
+import { RELICS } from '../src/game/relics.js';
+import { BOSS_FREE_RETRIES, REVIVE_SHARE } from '../src/game/shop.js';
 import { WORLD } from '../src/data/lore.js';
 import { HERO_LORE } from '../src/data/story.js';
 import { tr } from '../src/i18n.js';
@@ -30,7 +31,7 @@ export function renderGuide(lang) {
   const chapters = [
     ['como-jugar', g.basics], ['retos-diarios', g.daily], ['pistas', g.hints],
     ['tienda', g.shop], ['minijuegos', g.miniTitle], ['mecanicas', g.mechanics],
-    ['maleficios', g.curseTitle], ['heroes', g.heroes], ['caminos-heroicos', g.heroicTitle],
+    ['maleficios', g.curseTitle], ['heroes', g.heroes], ['reliquias', g.relicsTitle], ['caminos-heroicos', g.heroicTitle],
     ['jefes', g.bosses], ['historia', g.story], ['banda-sonora', g.sound],
   ];
   const figure = (level, [caption, alt], eager = false) => `<figure class="capture">
@@ -41,17 +42,22 @@ export function renderGuide(lang) {
   </figure>`;
   const feature = (key, symbol) => `<div class="mechanic mechanic-${key}"><dt><span aria-hidden="true">${symbol}</span>${g[key][0]}</dt><dd>${g[key][1]}</dd></div>`;
   const heroes = [['lia', 'lia'], ['jean', 'jean'], ['juth', 'van']];
-  const hero = ([key, file]) => `<article class="hero hero-${key}">
+  const hero = ([key, file], index) => `<article class="hero hero-${key}">
     <img src="/heroes/${file}-story.webp" alt="" width="320" height="224" loading="lazy" decoding="async">
     <div class="hero-copy">
       <h3>${g[key][0]}</h3><p>${g[key][1]}</p>
+      <p class="hero-best"><span>${g.heroBestLabel}</span> ${g.heroBest[index]}</p>
       <blockquote>${tr(HERO_LORE[file].quote, lang)}</blockquote>
     </div>
   </article>`;
   const route = ([key, file], index) => `<div class="route-guide hero-${key}">
     <dt><span>${g.routeNames[index]}</span><strong aria-label="${g.bonusPoints} +${Math.round(HEROIC_BENEFITS.points[file] * 100)}%">+${Math.round(HEROIC_BENEFITS.points[file] * 100)}%</strong></dt>
-    <dd>${g[key][0]} · ${g.heroPaths[index]}</dd>
+    <dd>${g[key][0]} · ${g.heroPaths[index]}<br><span class="route-perk">${g.perkLabel}${lang === 'ja' || lang === 'zh' ? '：' : ': '}${tr(HEROIC_PATHS[file].perk, lang)}</span></dd>
   </div>`;
+  const relicIcons = { sun: '☀', purse: '◈', lantern: '✦' };
+  const relic = (r, index) => `<div class="mechanic relic relic-${r.id}"><dt><span aria-hidden="true">${relicIcons[r.id]}</span>${tr(r.name, lang)}<em>${tr(r.label, lang)}</em></dt><dd>${g.relicTips[index]}</dd></div>`;
+  const streak = ({ days, hints }) =>
+    `<span><b>${g.streakDays.replace('{d}', days)}</b>${g.streakHints.replace('{h}', hints)}</span>`;
   const track = ([key, file]) => `<button type="button" class="track hero-${key}" data-track="${file}" aria-pressed="false">
     <span class="track-icon" aria-hidden="true">♫</span><b>${g[key][0]}</b><span class="listen-action">${g.listen}</span>
   </button>`;
@@ -110,7 +116,7 @@ export function renderGuide(lang) {
           <p>${g.dailyUnlock}</p>
         </div>
         ${figure('daily', g.dailyShot)}
-        <div class="streak"><h3>${g.rewardTitle}</h3><p>${g.dailyStreak}</p></div>
+        <div class="streak"><h3>${g.rewardTitle}</h3><div class="streak-rewards">${STREAK_HINT_REWARDS.map(streak).join('')}</div><p>${g.dailyStreak}</p></div>
       </section>
 
       <section id="pistas" class="section basic">
@@ -124,6 +130,7 @@ export function renderGuide(lang) {
           <h2>${g.shop}</h2>
           <p>${g.shopIntro}</p>
           <p>${g.shopLimit}</p>
+          <p>${g.shopRevive.replace('{share}', Math.round(REVIVE_SHARE * 100)).replace('{purse}', Math.round(RELICS.find((r) => r.id === 'purse').revive * 100))}</p>
         </div>
         ${figure('shop', g.shopShot)}
       </section>
@@ -159,12 +166,20 @@ export function renderGuide(lang) {
         <h2>${g.heroes}</h2>
         <p class="section-intro">${g.heroesIntro}</p>
         <div class="hero-grid">${heroes.map(hero).join('')}</div>
+        <p class="hero-rest">${g.heroRest}</p>
+      </section>
+
+      <section id="reliquias" class="section">
+        <h2>${g.relicsTitle}</h2>
+        <p class="section-intro">${g.relicsIntro}</p>
+        <dl class="relic-grid">${RELICS.map(relic).join('')}</dl>
       </section>
 
       <section id="caminos-heroicos" class="section feature-section">
         <div>
           <h2>${g.heroicTitle}</h2>
           <p>${g.heroicIntro}</p>
+          <p>${g.heroicPerks}</p>
           <dl class="route-guide-list">${heroes.map(route).join('')}</dl>
         </div>
         ${figure('route', g.routeShot)}

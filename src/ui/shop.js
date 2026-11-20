@@ -87,12 +87,14 @@ function say(text, mood) {
 
 function render() {
   $('shopScore').textContent = fmt(S.run.score);
-  $('shopDiscount').hidden = !shopDiscount(S.run);
+  const discount = shopDiscount(S.run);
+  $('shopDiscount').hidden = !discount;
+  $('shopDiscount').textContent = `Descuento en tienda · −${fmt(Number((discount * 100).toFixed(1)))} %`;
   $('shopList').innerHTML = SHOP_ITEMS.map((i) => {
     const a = availability(i.id, { run: S.run, G: S.G });
     return `<button class="shop-item${a.ok ? '' : ' off'}" data-id="${i.id}" aria-disabled="${!a.ok}">
       <span class="ico">${icon(i.icon)}</span><span><b>${nameOf(i)}</b><small>${a.ok || !a.reason ? shortOf(i.id) : a.reason}</small></span>
-      <span class="price">${shopDiscount(S.run) ? `<del>${fmt(priceOf(i.id, S.G.rate, S.run.start))}</del>` : ''}${fmt(priceNow(i.id))}</span></button>`;
+      <span class="price">${discount ? `<del>${fmt(priceOf(i.id, S.G.rate, S.run.start))}</del>` : ''}${fmt(priceNow(i.id))}</span></button>`;
   }).join('');
 }
 

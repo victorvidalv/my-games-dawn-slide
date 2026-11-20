@@ -68,7 +68,7 @@ function liaToast(left) {
 export function renderTurns() {
   const G = S.G;
   const bought = G.bought || 0;
-  const reserve = bonusTurns(S.run.hero, G.opt, bossCapFor(G.n), powerFactor(S.run));
+  const reserve = bonusTurns(S.run.hero, G.opt, bossCapFor(G.n), powerFactor(S.run), S.run.start);
   const segment = $('liaReserve'),
     label = $('liaReserveLabel');
   segment.hidden = label.hidden = !reserve;
