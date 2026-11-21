@@ -8,6 +8,9 @@ import { S, heroOf } from '../state.js';
 import { motes } from './fx.js';
 let curZone = -1;
 
+/** Fichas en tonos suaves: la saturación de la zona se atenúa (≈ 37–46 %) para que no resulten chillonas. */
+const softSat = (s) => Math.round(s * 0.72);
+
 function paintScenery(i) {
   const style = document.documentElement.style;
   style.setProperty('--scene', cssUrl(`backgrounds/zone-${i + 1}.webp`));
@@ -20,8 +23,8 @@ export function applyChallengeScenery() {
   r.setProperty('--scene-shade', 'transparent');
   const hues = [188, 38, 214, 152, 266, 18, 46, 174];
   for (let k = 0; k < 8; k++) {
-    const l = 54 + (k % 2 ? 4 : -3);
-    const s = 58 - (k % 3 === 0 ? 5 : 0);
+    const l = 58 + (k % 2 ? 4 : -3);
+    const s = softSat(58) - (k % 3 === 0 ? 4 : 0);
     r.setProperty(`--p${k}a`, `hsl(${hues[k]} ${s}% ${Math.min(l + 15, 86)}%)`);
     r.setProperty(`--p${k}b`, `hsl(${hues[k]} ${s}% ${l - 5}%)`);
     r.setProperty(`--p${k}d`, `hsl(${hues[k]} ${Math.max(24, s - 10)}% ${Math.max(16, l - 28)}%)`);
@@ -41,8 +44,8 @@ export function applyZone(i) {
       ['a', 'b', 'd'].forEach((c) => r.removeProperty(`--p${k}${c}`));
       continue;
     }
-    const l = z.l + (k % 2 ? 4 : -3),
-      s = z.s - (k % 3 === 0 ? 6 : 0);
+    const l = z.l + 4 + (k % 2 ? 4 : -3),
+      s = softSat(z.s) - (k % 3 === 0 ? 4 : 0);
     r.setProperty(`--p${k}a`, `hsl(${z.h[k]} ${s}% ${Math.min(l + 14, 88)}%)`);
     r.setProperty(`--p${k}b`, `hsl(${z.h[k]} ${s}% ${l - 5}%)`);
     r.setProperty(`--p${k}d`, `hsl(${z.h[k]} ${Math.max(20, s - 12)}% ${Math.max(14, l - 30)}%)`);

@@ -1,41 +1,39 @@
 /*
- * Diseños de fichas y llaves de Canjear. Cada estilo es un material completo (no un filtro de color): piedra cincelada,
- * vitral emplomado, tinta nocturna, porcelana pintada, latón con engranaje, pergamino rúnico, laca con oro y lingote con
- * gema. Las fichas conservan su color (--a/--b/--d) para distinguirse en el tablero; la llave conserva su flecha.
+ * Diseños de fichas y llaves de Canjear. Las fichas siguen una línea sobria: formas limpias de radio uniforme, relieve
+ * suave y colores apagados, sin adornos interiores: cada estilo se distingue solo por su color y su acabado. Cada
+ * estilo es un material completo: madera lacada, piedra pulida, vidrio esmerilado, tinta nocturna, porcelana, latón
+ * champán, pergamino, laca con filete dorado y oro viejo satinado. Las fichas conservan su color (--a/--b/--d)
+ * para distinguirse en el tablero; la llave conserva su flecha.
  *
  * Van en @scope con la raíz [data-pieces] / [data-key]: así el <body> lleva lo equipado y una muestra de la tienda
  * (con su propio data-pieces/data-key) gana por cercanía. Cada estilo fija TODAS las propiedades para no heredar nada
- * del equipado. Generado a mano a partir de una tabla; si cambias un estilo, mantén la lista de propiedades completa.
- * Las piezas especiales (pesada, hielo, candado) conservan su aspecto propio.
+ * del equipado. La sección de fichas se genera a partir de una tabla: si cambias un estilo, mantén la lista de
+ * propiedades completa. Las piezas especiales (pesada, hielo, candado) conservan su aspecto propio.
  */
 
 /* ---- Fichas: paint ---- */
 @scope ([data-pieces='paint']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      radial-gradient(circle at 8px 8px, #f6dc9a 0 1.5px, #091118 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(circle at calc(100% - 8px) 8px, #f6dc9a 0 1.5px, #091118 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(circle at 8px calc(100% - 9px), #f6dc9a 0 1.5px, #091118 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(circle at calc(100% - 8px) calc(100% - 9px), #f6dc9a 0 1.5px, #091118 1.6px 2.7px, #0000 2.9px),
-      var(--hatch), var(--piece-paint);
+      linear-gradient(180deg, #ffffff2b, #fff0 42%), repeating-linear-gradient(90deg, #ffffff06 0 2px, #0000 2px 9px),
+      linear-gradient(180deg, var(--a), color-mix(in oklab, var(--a) 40%, var(--b)));
     box-shadow:
-      0 4px 0 #091118,
-      0 7px 11px #0006,
-      inset 0 -4px 0 color-mix(in oklab, var(--d) 80%, #1c120c),
-      inset 0 0 0 1.5px #0911185e,
-      inset 0 0 0 3.5px #f1ce8240,
-      inset 0 2px 0 #fff4d640;
-    border-color: #091118;
-    border-radius: 10px 13px 9px 12px / 12px 9px 13px 10px;
+      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
+      0 6px 10px #0000004d,
+      inset 0 1px 0 #ffffff70,
+      inset 0 -3px 0 color-mix(in oklab, var(--b) 60%, var(--d)),
+      inset 0 0 0 1px #ffffff1a;
+    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
+    border-radius: 10px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 4px 14% auto 13%;
+    inset: 3px 10% auto;
     width: auto;
     height: 1px;
-    background: linear-gradient(90deg, #fff0cc9c, #fff0cc15);
+    background: linear-gradient(90deg, #fff0, #ffffff80, #fff0);
     background-size: auto;
     border-radius: 1px;
     transform: none;
@@ -83,48 +81,41 @@
 @scope ([data-pieces='stone']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      radial-gradient(circle at 30% 35%, #ffffff26 0 0.8px, #0000 1.3px) 0 0 / 6px 7px,
-      radial-gradient(circle at 70% 60%, #0000003d 0 1px, #0000 1.5px) 0 0 / 9px 8px,
-      linear-gradient(
-        162deg,
-        color-mix(in oklab, var(--a) 42%, #c9c3b4) 0 30%,
-        color-mix(in oklab, var(--b) 38%, #857f73) 31% 74%,
-        color-mix(in oklab, var(--d) 45%, #4b4740) 75%
-      );
+      radial-gradient(circle at 30% 35%, #ffffff1c 0 0.7px, #0000 1.2px) 0 0 / 7px 6px,
+      radial-gradient(circle at 70% 60%, #00000024 0 0.8px, #0000 1.3px) 0 0 / 9px 8px,
+      linear-gradient(170deg, color-mix(in oklab, var(--a) 62%, #e4dfd4), color-mix(in oklab, var(--b) 58%, #a19a8e));
     box-shadow:
-      0 4px 0 #091118,
-      0 7px 10px #0007,
-      inset 0 0 0 2px #ffffff2e,
-      inset 0 0 0 4px color-mix(in oklab, var(--d) 40%, #3d3a34),
-      inset 0 0 0 5px #ffffff1a,
-      inset 0 -4px 0 #0006;
-    border-color: #091118;
-    border-radius: 4px 7px 3px 6px / 6px 3px 7px 4px;
+      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
+      0 6px 10px #0000004d,
+      inset 0 0 0 2px #ffffff26,
+      inset 0 1px 0 #ffffff55,
+      inset 0 -3px 0 #00000026;
+    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
+    border-radius: 6px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 22% auto auto 64%;
-    width: 18%;
-    height: 2px;
-    background: #00000059;
+    inset: 3px 8% auto;
+    width: auto;
+    height: 30%;
+    background: linear-gradient(180deg, #ffffff26, #fff0);
     background-size: auto;
-    border-radius: 2px;
-    transform: rotate(-32deg);
+    border-radius: 4px 4px 0 0;
+    transform: none;
     animation: none;
     opacity: 1;
     filter: none;
   }
   .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
     inset: 0;
     margin: auto;
-    width: 34%;
-    height: 62%;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 16l6-8 6 8 6-8' stroke='%23ffffff40' stroke-width='3' transform='translate(0 1.2)'/%3E%3Cpath d='M3 16l6-8 6 8 6-8' stroke='%230000006b' stroke-width='3'/%3E%3C/g%3E%3C/svg%3E")
-      center / contain no-repeat;
+    width: auto;
+    height: auto;
+    background: none;
     mask: none;
     -webkit-mask: none;
     opacity: 1;
@@ -135,14 +126,13 @@
     aspect-ratio: auto;
   }
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
     inset: 0;
     margin: auto;
-    width: 62%;
-    height: 34%;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 16l6-8 6 8 6-8' stroke='%23ffffff40' stroke-width='3' transform='translate(0 1.2)'/%3E%3Cpath d='M3 16l6-8 6 8 6-8' stroke='%230000006b' stroke-width='3'/%3E%3C/g%3E%3C/svg%3E")
-      center / contain no-repeat;
+    width: auto;
+    height: auto;
+    background: none;
     mask: none;
     -webkit-mask: none;
     opacity: 1;
@@ -158,39 +148,27 @@
 @scope ([data-pieces='glass']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      linear-gradient(125deg, #ffffffb8 0 7%, #fff0 8% 36%, #ffffff4d 37% 41%, #fff0 42%),
-      conic-gradient(
-        from 25deg at 38% 58%,
-        #1b1a22 0 0.8%,
-        color-mix(in oklab, var(--a) 75%, #fff) 0.8% 24.2%,
-        #1b1a22 24.2% 25.8%,
-        var(--b) 25.8% 49.2%,
-        #1b1a22 49.2% 50.8%,
-        color-mix(in oklab, var(--a) 90%, #fff) 50.8% 74.2%,
-        #1b1a22 74.2% 75.8%,
-        color-mix(in oklab, var(--b) 80%, #000) 75.8% 99.2%,
-        #1b1a22 99.2%
-      );
+      linear-gradient(118deg, #fff0 0 18%, #ffffff3d 18% 30%, #fff0 30% 36%, #ffffff1f 36% 40%, #fff0 40%),
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 72%, #fff), color-mix(in oklab, var(--b) 78%, #fff));
     box-shadow:
-      0 4px 0 #091118,
-      0 0 14px color-mix(in oklab, var(--a) 45%, transparent),
-      inset 0 0 0 2.5px #23222b,
-      inset 0 0 0 3.5px #ffffff40,
-      inset 0 0 10px #fff5,
-      inset 0 -4px 0 #0004;
-    border-color: #091118;
+      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
+      0 6px 10px #0000004d,
+      inset 0 0 0 1px #ffffff99,
+      inset 0 0 12px #ffffff40,
+      inset 0 -3px 0 color-mix(in oklab, var(--b) 55%, #0000);
+    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
     border-radius: 9px;
     filter: none;
-    opacity: 0.95;
+    opacity: 0.94;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 3px 8% auto 8%;
+    inset: 2px 6% auto;
     width: auto;
-    height: 22%;
-    background: linear-gradient(180deg, #ffffff8c, #fff0);
+    height: 26%;
+    background: linear-gradient(180deg, #ffffff73, #fff0);
     background-size: auto;
-    border-radius: 6px 6px 40% 40%;
+    border-radius: 7px 7px 40% 40%;
     transform: none;
     animation: none;
     opacity: 1;
@@ -236,67 +214,61 @@
 @scope ([data-pieces='night']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      radial-gradient(circle at 20% 30%, #fff 0 0.7px, #0000 1.2px) 0 0 / 13px 11px,
-      radial-gradient(circle at 60% 70%, #fffbe0 0 0.6px, #0000 1.1px) 3px 2px / 17px 13px,
-      radial-gradient(ellipse at 50% 125%, color-mix(in oklab, var(--b) 75%, transparent), #0000 70%),
-      linear-gradient(165deg, #1d1a38, #0b0a18);
+      radial-gradient(circle at 20% 30%, #ffffffb0 0 0.6px, #0000 1.1px) 0 0 / 15px 12px,
+      radial-gradient(circle at 60% 70%, #fff6d999 0 0.5px, #0000 1px) 4px 3px / 19px 14px,
+      linear-gradient(180deg, color-mix(in oklab, var(--b) 58%, #232a3d), color-mix(in oklab, var(--d) 60%, #121722));
     box-shadow:
-      0 4px 0 #04030c,
-      0 0 12px color-mix(in oklab, var(--a) 55%, transparent),
-      inset 0 0 0 2px var(--a),
-      inset 0 0 0 3.5px #0008,
-      inset 0 0 14px color-mix(in oklab, var(--b) 55%, transparent);
-    border-color: #04030c;
-    border-radius: 11px;
+      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
+      0 6px 10px #0000004d,
+      inset 0 0 0 1.5px color-mix(in oklab, var(--a) 60%, #0000),
+      inset 0 1px 0 #ffffff2e;
+    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
+    border-radius: 10px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 3px 12% auto 12%;
+    inset: 3px 12% auto;
     width: auto;
-    height: 1.5px;
-    background: linear-gradient(90deg, #fff0, color-mix(in oklab, var(--a) 80%, #fff), #fff0);
+    height: 1px;
+    background: linear-gradient(90deg, #fff0, #ffffff4d, #fff0);
     background-size: auto;
-    border-radius: 1px;
+    border-radius: 0;
     transform: none;
     animation: none;
     opacity: 1;
     filter: none;
   }
   .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
     inset: 0;
     margin: auto;
-    width: 30%;
-    height: 64%;
-    background: var(--a);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14.5 3.5a8.5 8.5 0 1 0 6.2 14.3A7 7 0 0 1 14.5 3.5z'/%3E%3Cpath d='M19 3l.8 1.9 1.9.8-1.9.8L19 8.4l-.8-1.9-1.9-.8 1.9-.8z'/%3E%3C/svg%3E")
-      center / contain no-repeat;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14.5 3.5a8.5 8.5 0 1 0 6.2 14.3A7 7 0 0 1 14.5 3.5z'/%3E%3Cpath d='M19 3l.8 1.9 1.9.8-1.9.8L19 8.4l-.8-1.9-1.9-.8 1.9-.8z'/%3E%3C/svg%3E")
-      center / contain no-repeat;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
     opacity: 1;
-    filter: drop-shadow(0 0 4px color-mix(in oklab, var(--a) 80%, transparent));
+    filter: none;
     border-radius: 0;
     animation: none;
     box-shadow: none;
     aspect-ratio: auto;
   }
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
     inset: 0;
     margin: auto;
-    width: 64%;
-    height: 30%;
-    background: var(--a);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14.5 3.5a8.5 8.5 0 1 0 6.2 14.3A7 7 0 0 1 14.5 3.5z'/%3E%3Cpath d='M19 3l.8 1.9 1.9.8-1.9.8L19 8.4l-.8-1.9-1.9-.8 1.9-.8z'/%3E%3C/svg%3E")
-      center / contain no-repeat;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14.5 3.5a8.5 8.5 0 1 0 6.2 14.3A7 7 0 0 1 14.5 3.5z'/%3E%3Cpath d='M19 3l.8 1.9 1.9.8-1.9.8L19 8.4l-.8-1.9-1.9-.8 1.9-.8z'/%3E%3C/svg%3E")
-      center / contain no-repeat;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
     opacity: 1;
-    filter: drop-shadow(0 0 4px color-mix(in oklab, var(--a) 80%, transparent));
+    filter: none;
     border-radius: 0;
     animation: none;
     box-shadow: none;
@@ -307,67 +279,63 @@
 /* ---- Fichas: ceramic ---- */
 @scope ([data-pieces='ceramic']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
-    background: linear-gradient(160deg, #ffffff 0 18%, #f1f5f7 40%, #d8e1e8);
+    background:
+      linear-gradient(180deg, #ffffff40, #fff0 45%),
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 20%, #fbf9f4), color-mix(in oklab, var(--a) 34%, #e6e1d7));
     box-shadow:
-      0 4px 0 #091118,
-      0 7px 10px #0005,
-      inset 0 0 0 2px #fff,
-      inset 0 0 0 4px var(--b),
-      inset 0 0 0 5px #fff9,
-      inset 0 -4px 0 color-mix(in oklab, var(--b) 35%, #9fb1c0),
-      inset 0 2px 0 #fff;
-    border-color: #091118;
+      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
+      0 6px 10px #0000004d,
+      inset 0 0 0 2.5px color-mix(in oklab, var(--b) 70%, #fff),
+      inset 0 0 0 3.5px #ffffffcc,
+      inset 0 -3px 0 #0000001f;
+    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
     border-radius: 12px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 5px auto auto 9px;
-    width: 30%;
-    height: 24%;
-    background: radial-gradient(ellipse at 40% 40%, #ffffffe6, #fff0 70%);
+    inset: 4px 14% auto;
+    width: auto;
+    height: 22%;
+    background: linear-gradient(180deg, #ffffff99, #fff0);
     background-size: auto;
-    border-radius: 50%;
+    border-radius: 8px 8px 50% 50%;
     transform: none;
     animation: none;
     opacity: 1;
     filter: none;
   }
   .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
-    inset: 7px;
-    margin: 0;
+    inset: 0;
+    margin: auto;
     width: auto;
     height: auto;
-    background: var(--b);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M0 11c2.5-4 5.5-4 8 0s5.5 4 8 0M0 4.5c2.5-3 5.5-3 8 0s5.5 3 8 0' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='14.5' r='1.1'/%3E%3C/svg%3E")
-      0 0 / 16px 16px repeat;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M0 11c2.5-4 5.5-4 8 0s5.5 4 8 0M0 4.5c2.5-3 5.5-3 8 0s5.5 3 8 0' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='14.5' r='1.1'/%3E%3C/svg%3E")
-      0 0 / 16px 16px repeat;
-    opacity: 0.78;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
     filter: none;
-    border-radius: 6px;
+    border-radius: 0;
     animation: none;
     box-shadow: none;
     aspect-ratio: auto;
   }
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
-    inset: 7px;
-    margin: 0;
+    inset: 0;
+    margin: auto;
     width: auto;
     height: auto;
-    background: var(--b);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M0 11c2.5-4 5.5-4 8 0s5.5 4 8 0M0 4.5c2.5-3 5.5-3 8 0s5.5 3 8 0' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='14.5' r='1.1'/%3E%3C/svg%3E")
-      0 0 / 16px 16px repeat;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M0 11c2.5-4 5.5-4 8 0s5.5 4 8 0M0 4.5c2.5-3 5.5-3 8 0s5.5 3 8 0' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='14.5' r='1.1'/%3E%3C/svg%3E")
-      0 0 / 16px 16px repeat;
-    opacity: 0.78;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
     filter: none;
-    border-radius: 6px;
+    border-radius: 0;
     animation: none;
     box-shadow: none;
     aspect-ratio: auto;
@@ -378,76 +346,66 @@
 @scope ([data-pieces='brass']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      radial-gradient(circle at 8px 8px, #fff1c0 0 1.5px, #5a4210 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(circle at calc(100% - 8px) 8px, #fff1c0 0 1.5px, #5a4210 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(circle at 8px calc(100% - 9px), #fff1c0 0 1.5px, #5a4210 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(circle at calc(100% - 8px) calc(100% - 9px), #fff1c0 0 1.5px, #5a4210 1.6px 2.7px, #0000 2.9px),
-      repeating-linear-gradient(90deg, #ffffff14 0 1px, #0000 1px 3px),
+      repeating-linear-gradient(90deg, #ffffff0f 0 1px, #0000 1px 3px),
       linear-gradient(
         180deg,
-        color-mix(in oklab, var(--a) 38%, #f4d98e) 0 28%,
-        color-mix(in oklab, var(--b) 40%, #b38a35) 29% 72%,
-        color-mix(in oklab, var(--d) 45%, #5e4512) 73%
+        color-mix(in oklab, var(--a) 50%, #ecdcb4),
+        color-mix(in oklab, var(--b) 50%, #cdb47d) 55%,
+        color-mix(in oklab, var(--d) 45%, #ad9258)
       );
     box-shadow:
-      0 4px 0 #091118,
-      0 7px 10px #0006,
-      inset 0 0 0 1.5px #fff6d0b3,
-      inset 0 0 0 3.5px #6b4e1499,
-      inset 0 0 0 4.5px #ffe9a64d,
-      inset 0 -4px 0 #0005,
-      inset 0 2px 0 #fffbe6;
-    border-color: #091118;
-    border-radius: 7px;
+      0 3px 0 #5e4a22,
+      0 6px 10px #0000004d,
+      inset 0 1px 0 #fff8e0b0,
+      inset 0 0 0 2px #fff3d033,
+      inset 0 -3px 0 #8a7038;
+    border-color: #4a3a1a;
+    border-radius: 8px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 38% 6% auto 6%;
+    inset: 3px 10% auto;
     width: auto;
-    height: 3px;
-    background: linear-gradient(90deg, #fff0, #fffbe6aa, #fff0);
+    height: 1px;
+    background: linear-gradient(90deg, #fff0, #fffbe8cc, #fff0);
     background-size: auto;
-    border-radius: 1px;
+    border-radius: 0;
     transform: none;
     animation: none;
     opacity: 1;
     filter: none;
   }
   .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
     inset: 0;
     margin: auto;
-    width: 30%;
-    height: 66%;
-    background: #3b2a0a8c;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10.6 2h2.8l.5 2.6 1.7.7 2.2-1.5 2 2-1.5 2.2.7 1.7 2.6.5v2.8l-2.6.5-.7 1.7 1.5 2.2-2 2-2.2-1.5-1.7.7-.5 2.6h-2.8l-.5-2.6-1.7-.7-2.2 1.5-2-2 1.5-2.2-.7-1.7L2 13.4v-2.8l2.6-.5.7-1.7-1.5-2.2 2-2 2.2 1.5 1.7-.7zM12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z' fill-rule='evenodd'/%3E%3C/svg%3E")
-      center / contain no-repeat;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10.6 2h2.8l.5 2.6 1.7.7 2.2-1.5 2 2-1.5 2.2.7 1.7 2.6.5v2.8l-2.6.5-.7 1.7 1.5 2.2-2 2-2.2-1.5-1.7.7-.5 2.6h-2.8l-.5-2.6-1.7-.7-2.2 1.5-2-2 1.5-2.2-.7-1.7L2 13.4v-2.8l2.6-.5.7-1.7-1.5-2.2 2-2 2.2 1.5 1.7-.7zM12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z' fill-rule='evenodd'/%3E%3C/svg%3E")
-      center / contain no-repeat;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
     opacity: 1;
-    filter: drop-shadow(0 1px 0 #fff3c466);
+    filter: none;
     border-radius: 0;
     animation: none;
     box-shadow: none;
     aspect-ratio: auto;
   }
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
     inset: 0;
     margin: auto;
-    width: 66%;
-    height: 30%;
-    background: #3b2a0a8c;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10.6 2h2.8l.5 2.6 1.7.7 2.2-1.5 2 2-1.5 2.2.7 1.7 2.6.5v2.8l-2.6.5-.7 1.7 1.5 2.2-2 2-2.2-1.5-1.7.7-.5 2.6h-2.8l-.5-2.6-1.7-.7-2.2 1.5-2-2 1.5-2.2-.7-1.7L2 13.4v-2.8l2.6-.5.7-1.7-1.5-2.2 2-2 2.2 1.5 1.7-.7zM12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z' fill-rule='evenodd'/%3E%3C/svg%3E")
-      center / contain no-repeat;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10.6 2h2.8l.5 2.6 1.7.7 2.2-1.5 2 2-1.5 2.2.7 1.7 2.6.5v2.8l-2.6.5-.7 1.7 1.5 2.2-2 2-2.2-1.5-1.7.7-.5 2.6h-2.8l-.5-2.6-1.7-.7-2.2 1.5-2-2 1.5-2.2-.7-1.7L2 13.4v-2.8l2.6-.5.7-1.7-1.5-2.2 2-2 2.2 1.5 1.7-.7zM12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z' fill-rule='evenodd'/%3E%3C/svg%3E")
-      center / contain no-repeat;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
     opacity: 1;
-    filter: drop-shadow(0 1px 0 #fff3c466);
+    filter: none;
     border-radius: 0;
     animation: none;
     box-shadow: none;
@@ -459,67 +417,61 @@
 @scope ([data-pieces='runic']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      radial-gradient(circle at 30% 40%, #6b4a2a1f 0 1px, #0000 1.5px) 0 0 / 7px 6px,
-      radial-gradient(ellipse at 50% 50%, #0000 55%, #7a522a59),
-      linear-gradient(160deg, #f6e7c0, #e0c48b 60%, #bf9c5c);
+      radial-gradient(ellipse at 50% 50%, #fff0 55%, color-mix(in oklab, var(--d) 18%, #0000)),
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 26%, #f5ecd8), color-mix(in oklab, var(--a) 40%, #ddcdaa));
     box-shadow:
-      0 4px 0 #091118,
-      0 7px 10px #0006,
-      inset 0 0 0 3px var(--b),
-      inset 0 0 0 4.5px #3a2a1a73,
-      inset 0 0 0 6px #fff4d64d,
-      inset 0 -3px 0 #8a6a3a;
-    border-color: #091118;
-    border-radius: 10px 13px 9px 12px / 12px 9px 13px 10px;
+      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
+      0 6px 10px #0000004d,
+      inset 0 0 0 2px color-mix(in oklab, var(--b) 55%, #f5ecd8),
+      inset 0 1px 0 #ffffff80,
+      inset 0 -3px 0 #0000001f;
+    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
+    border-radius: 8px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 0;
-    width: auto;
+    inset: 0 auto 0 -40%;
+    width: 30%;
     height: auto;
-    background: radial-gradient(ellipse at 50% 50%, color-mix(in oklab, var(--a) 30%, transparent), #0000 65%);
+    background: linear-gradient(100deg, #fff0, #fff8e04d, #fff0);
     background-size: auto;
-    border-radius: inherit;
-    transform: none;
+    border-radius: 0;
+    transform: skewX(-18deg);
     animation: none;
     opacity: 1;
     filter: none;
   }
   .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
-    inset: 28% 14%;
-    margin: 0;
+    inset: 0;
+    margin: auto;
     width: auto;
     height: auto;
-    background: var(--b);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v12M3 6l4-2.5M3 9.5l4-2.5'/%3E%3Cpath d='M11 15V3l4 4-4 4 4 4'/%3E%3Cpath d='M19 3v12M19 3l3 4M19 9l3-3'/%3E%3C/g%3E%3C/svg%3E")
-      center / auto 100% repeat-x;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v12M3 6l4-2.5M3 9.5l4-2.5'/%3E%3Cpath d='M11 15V3l4 4-4 4 4 4'/%3E%3Cpath d='M19 3v12M19 3l3 4M19 9l3-3'/%3E%3C/g%3E%3C/svg%3E")
-      center / auto 100% repeat-x;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
     opacity: 1;
-    filter: drop-shadow(0 0 3px var(--a));
+    filter: none;
     border-radius: 0;
     animation: none;
     box-shadow: none;
     aspect-ratio: auto;
   }
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
-    inset: 14% 28%;
-    margin: 0;
+    inset: 0;
+    margin: auto;
     width: auto;
     height: auto;
-    background: var(--b);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v12M3 6l4-2.5M3 9.5l4-2.5'/%3E%3Cpath d='M11 15V3l4 4-4 4 4 4'/%3E%3Cpath d='M19 3v12M19 3l3 4M19 9l3-3'/%3E%3C/g%3E%3C/svg%3E")
-      center / 100% auto repeat-y;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v12M3 6l4-2.5M3 9.5l4-2.5'/%3E%3Cpath d='M11 15V3l4 4-4 4 4 4'/%3E%3Cpath d='M19 3v12M19 3l3 4M19 9l3-3'/%3E%3C/g%3E%3C/svg%3E")
-      center / 100% auto repeat-y;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
     opacity: 1;
-    filter: drop-shadow(0 0 3px var(--a));
+    filter: none;
     border-radius: 0;
     animation: none;
     box-shadow: none;
@@ -531,27 +483,25 @@
 @scope ([data-pieces='lacquer']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      linear-gradient(162deg, #ffffff42 0 12%, #fff0 26%),
-      radial-gradient(ellipse at 50% 120%, color-mix(in oklab, var(--a) 30%, transparent), #0000 60%),
-      linear-gradient(160deg, color-mix(in oklab, var(--b) 72%, #120806), color-mix(in oklab, var(--d) 55%, #050203));
+      linear-gradient(180deg, #ffffff1f, #fff0 40%),
+      linear-gradient(180deg, color-mix(in oklab, var(--b) 84%, #2a2024), color-mix(in oklab, var(--d) 82%, #1a1216));
     box-shadow:
-      0 4px 0 #091118,
-      0 8px 12px #0007,
-      inset 0 0 0 1.5px #f6d68a,
-      inset 0 0 0 3px #3a1a0a,
-      inset 0 0 0 4px #e9c46a8c,
-      inset 0 2px 0 #ffffff59;
-    border-color: #091118;
+      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
+      0 6px 10px #0000004d,
+      inset 0 0 0 2.5px color-mix(in oklab, var(--d) 70%, #000),
+      inset 0 0 0 3.5px #dcc58ab0,
+      inset 0 1px 0 #ffffff40;
+    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
     border-radius: 9px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: -30% auto -30% -70%;
-    width: 45%;
+    inset: 0 auto 0 -40%;
+    width: 26%;
     height: auto;
-    background: linear-gradient(100deg, #fff0, #ffe6a873 50%, #fff0);
+    background: linear-gradient(100deg, #fff0, #ffffff2e, #fff0);
     background-size: auto;
     border-radius: 0;
     transform: skewX(-18deg);
@@ -560,35 +510,15 @@
     filter: none;
   }
   .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
-    inset: 5px;
-    margin: 0;
+    inset: 0;
+    margin: auto;
     width: auto;
     height: auto;
-    background: linear-gradient(160deg, #fff1b8, #e9c46a 45%, #a8791c);
-    mask:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(0 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        0 0 / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(90 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        100% 0 / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(180 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        100% 100% / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(270 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        0 100% / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg%3E%3Ccircle cx='12' cy='12' r='2.6'/%3E%3Cpath d='M12 2.5c2 2.4 2 4.6 0 6.6-2-2-2-4.2 0-6.6zM12 21.5c-2-2.4-2-4.6 0-6.6 2 2 2 4.2 0 6.6zM2.5 12c2.4-2 4.6-2 6.6 0-2 2-4.2 2-6.6 0zM21.5 12c-2.4 2-4.6 2-6.6 0 2-2 4.2-2 6.6 0z'/%3E%3C/g%3E%3C/svg%3E")
-        center / auto 58% no-repeat;
-    -webkit-mask:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(0 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        0 0 / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(90 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        100% 0 / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(180 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        100% 100% / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(270 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        0 100% / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg%3E%3Ccircle cx='12' cy='12' r='2.6'/%3E%3Cpath d='M12 2.5c2 2.4 2 4.6 0 6.6-2-2-2-4.2 0-6.6zM12 21.5c-2-2.4-2-4.6 0-6.6 2 2 2 4.2 0 6.6zM2.5 12c2.4-2 4.6-2 6.6 0-2 2-4.2 2-6.6 0zM21.5 12c-2.4 2-4.6 2-6.6 0 2-2 4.2-2 6.6 0z'/%3E%3C/g%3E%3C/svg%3E")
-        center / auto 58% no-repeat;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
     opacity: 1;
     filter: none;
     border-radius: 0;
@@ -597,35 +527,15 @@
     aspect-ratio: auto;
   }
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
-    inset: 5px;
-    margin: 0;
+    inset: 0;
+    margin: auto;
     width: auto;
     height: auto;
-    background: linear-gradient(160deg, #fff1b8, #e9c46a 45%, #a8791c);
-    mask:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(0 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        0 0 / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(90 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        100% 0 / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(180 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        100% 100% / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(270 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        0 100% / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg%3E%3Ccircle cx='12' cy='12' r='2.6'/%3E%3Cpath d='M12 2.5c2 2.4 2 4.6 0 6.6-2-2-2-4.2 0-6.6zM12 21.5c-2-2.4-2-4.6 0-6.6 2 2 2 4.2 0 6.6zM2.5 12c2.4-2 4.6-2 6.6 0-2 2-4.2 2-6.6 0zM21.5 12c-2.4 2-4.6 2-6.6 0 2-2 4.2-2 6.6 0z'/%3E%3C/g%3E%3C/svg%3E")
-        center / 58% auto no-repeat;
-    -webkit-mask:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(0 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        0 0 / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(90 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        100% 0 / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(180 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        100% 100% / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg transform='rotate(270 12 12)' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 21V9q0-6 6-6h12'/%3E%3Cpath d='M7 21v-8q0-6 6-6h3'/%3E%3Ccircle cx='15.5' cy='12.5' r='2.2'/%3E%3C/g%3E%3C/svg%3E")
-        0 100% / 14px 14px no-repeat,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg%3E%3Ccircle cx='12' cy='12' r='2.6'/%3E%3Cpath d='M12 2.5c2 2.4 2 4.6 0 6.6-2-2-2-4.2 0-6.6zM12 21.5c-2-2.4-2-4.6 0-6.6 2 2 2 4.2 0 6.6zM2.5 12c2.4-2 4.6-2 6.6 0-2 2-4.2 2-6.6 0zM21.5 12c-2.4 2-4.6 2-6.6 0 2-2 4.2-2 6.6 0z'/%3E%3C/g%3E%3C/svg%3E")
-        center / 58% auto no-repeat;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
     opacity: 1;
     filter: none;
     border-radius: 0;
@@ -639,28 +549,31 @@
 @scope ([data-pieces='oldgold']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      repeating-linear-gradient(118deg, #7a541214 0 1px, #0000 1px 5px),
-      radial-gradient(ellipse at 28% 18%, #fffbe0d9, #fff0 45%),
-      linear-gradient(160deg, #fff0b0 0 12%, #eac862 32%, #c18f2c 66%, #7f5814);
+      linear-gradient(180deg, #fff6d84d, #fff0 45%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 42%, #f2e0b0),
+        color-mix(in oklab, var(--b) 42%, #cfb06a) 52%,
+        color-mix(in oklab, var(--d) 38%, #a8874a)
+      );
     box-shadow:
-      0 4px 0 #091118,
-      0 0 12px #ffd24a55,
-      inset 0 0 0 1.5px #fff6c9,
-      inset 0 0 0 3.5px color-mix(in oklab, var(--b) 70%, #8a5f12),
-      inset 0 0 0 5px #fff1b880,
-      inset 0 -4px 0 #6b4a0e,
-      inset 0 2px 0 #fffbe6;
-    border-color: #091118;
-    border-radius: 8px;
+      0 3px 0 #5c4720,
+      0 6px 10px #0000004d,
+      inset 0 0 0 1.5px #fff4cc80,
+      inset 0 0 0 3px #9c7c3e,
+      inset 0 0 0 4px #f3e2b04d,
+      inset 0 -3px 0 #7d6230;
+    border-color: #4a3818;
+    border-radius: 9px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: -30% auto -30% -70%;
-    width: 45%;
+    inset: 0 auto 0 -40%;
+    width: 24%;
     height: auto;
-    background: linear-gradient(100deg, #fff0, #fffbe6c4 50%, #fff0);
+    background: linear-gradient(100deg, #fff0, #fffbe866, #fff0);
     background-size: auto;
     border-radius: 0;
     transform: skewX(-18deg);
@@ -669,72 +582,38 @@
     filter: none;
   }
   .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
     inset: 0;
     margin: auto;
     width: auto;
-    height: 54%;
-    background:
-      radial-gradient(circle at 34% 28%, #fff 0 9%, #fff0 16%),
-      conic-gradient(
-        from 20deg,
-        #ffffff38 0 12.5%,
-        #0000 12.5% 25%,
-        #ffffff26 25% 37.5%,
-        #0000 37.5% 50%,
-        #ffffff38 50% 62.5%,
-        #0000 62.5% 75%,
-        #ffffff26 75% 87.5%,
-        #0000 87.5%
-      ),
-      radial-gradient(circle, color-mix(in oklab, var(--a) 85%, #fff) 0 20%, var(--b) 52%, var(--d) 88%);
+    height: auto;
+    background: none;
     mask: none;
     -webkit-mask: none;
     opacity: 1;
     filter: none;
-    border-radius: 50%;
+    border-radius: 0;
     animation: none;
-    box-shadow:
-      0 0 0 1.5px #6b4a0e,
-      0 0 0 3px #fff1b8,
-      0 0 0 4px #6b4a0e,
-      0 0 8px color-mix(in oklab, var(--a) 70%, transparent);
-    aspect-ratio: 1;
+    box-shadow: none;
+    aspect-ratio: auto;
   }
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
+    display: none;
     content: '';
     inset: 0;
     margin: auto;
-    width: 54%;
+    width: auto;
     height: auto;
-    background:
-      radial-gradient(circle at 34% 28%, #fff 0 9%, #fff0 16%),
-      conic-gradient(
-        from 20deg,
-        #ffffff38 0 12.5%,
-        #0000 12.5% 25%,
-        #ffffff26 25% 37.5%,
-        #0000 37.5% 50%,
-        #ffffff38 50% 62.5%,
-        #0000 62.5% 75%,
-        #ffffff26 75% 87.5%,
-        #0000 87.5%
-      ),
-      radial-gradient(circle, color-mix(in oklab, var(--a) 85%, #fff) 0 20%, var(--b) 52%, var(--d) 88%);
+    background: none;
     mask: none;
     -webkit-mask: none;
     opacity: 1;
     filter: none;
-    border-radius: 50%;
+    border-radius: 0;
     animation: none;
-    box-shadow:
-      0 0 0 1.5px #6b4a0e,
-      0 0 0 3px #fff1b8,
-      0 0 0 4px #6b4a0e,
-      0 0 8px color-mix(in oklab, var(--a) 70%, transparent);
-    aspect-ratio: 1;
+    box-shadow: none;
+    aspect-ratio: auto;
   }
 }
 
@@ -1202,8 +1081,8 @@
 
 /* Animaciones: fuera en modo ligero y con «reducir movimiento» */
 @scope ([data-pieces='runic']) {
-  .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
-    animation: skin-rune 2.8s ease-in-out infinite;
+  .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    animation: skin-sheen 7s ease-in-out infinite;
   }
 }
 @scope ([data-pieces='lacquer']) {
@@ -1265,15 +1144,6 @@ html.lite :is([data-pieces], [data-key]) .piece.red {
   }
   100% {
     translate: 420% 0;
-  }
-}
-@keyframes skin-rune {
-  0%,
-  100% {
-    opacity: 0.45;
-  }
-  50% {
-    opacity: 1;
   }
 }
 @keyframes skin-twinkle {

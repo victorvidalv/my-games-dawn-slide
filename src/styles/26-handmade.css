@@ -9,31 +9,31 @@
   --font-title: 'Copperplate', 'Copperplate Gothic Bold', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
   --font-book: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
   --font-ui: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
-  /* paleta de la ilustración: verde azulado, bermellón, oro, púrpura, azul marino, naranja de flor, crema de piedra */
-  --p0a: #58b3b8;
-  --p0b: #2f8394;
-  --p0d: #174b5c;
-  --p1a: #f2c45c;
-  --p1b: #d39528;
-  --p1d: #80520f;
-  --p2a: #a07bc6;
-  --p2b: #6c4893;
-  --p2d: #38214f;
-  --p3a: #9dbb5f;
-  --p3b: #678a36;
-  --p3d: #36501c;
-  --p4a: #5c82c4;
-  --p4b: #385594;
-  --p4d: #1b2d58;
-  --p5a: #f08c58;
-  --p5b: #cf5a2e;
-  --p5d: #7c2c14;
-  --p6a: #eedcaa;
-  --p6b: #c2aa77;
-  --p6d: #76603a;
-  --p7a: #d87688;
-  --p7b: #a64560;
-  --p7d: #5e2036;
+  /* paleta suave de fichas: salvia, arena, lavanda, verde musgo, azul niebla, albaricoque, piedra cálida y rosa viejo */
+  --p0a: #9ccbc0;
+  --p0b: #6aa396;
+  --p0d: #3d6a61;
+  --p1a: #ead39b;
+  --p1b: #cbab66;
+  --p1d: #866a33;
+  --p2a: #c2b4df;
+  --p2b: #9483bf;
+  --p2d: #584a7e;
+  --p3a: #b8cd97;
+  --p3b: #8aa567;
+  --p3d: #526838;
+  --p4a: #a8c0e0;
+  --p4b: #7692c0;
+  --p4d: #43587e;
+  --p5a: #f0bb9c;
+  --p5b: #d58d6b;
+  --p5d: #8b5237;
+  --p6a: #e4dccd;
+  --p6b: #bcae97;
+  --p6d: #776a55;
+  --p7a: #e5b0bd;
+  --p7b: #c27f8f;
+  --p7d: #7b4452;
   --hatch:
     repeating-linear-gradient(122deg, #080b1629 0 1px, #0000 1px 7px),
     repeating-linear-gradient(28deg, #fff3d409 0 1px, #0000 1px 11px);
