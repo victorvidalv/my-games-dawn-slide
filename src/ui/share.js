@@ -10,7 +10,7 @@ import { t } from '../i18n.js';
 const gameUrl = () => location.origin + location.pathname;
 const shareData = () => ({
   title: 'DAWNSLIDE',
-  text: t('Prueba DAWNSLIDE: un puzle de bloques con tres héroes y cien niveles.'),
+  text: t('Prueba DAWNSLIDE: un puzle de bloques con tres héroes y 21 niveles.'),
   url: gameUrl(),
 });
 const canShare = () => typeof navigator.share === 'function';

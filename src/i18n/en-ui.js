@@ -72,7 +72,7 @@ export const EN_UI = {
   /* menú principal */
   Menú: 'Menu',
   'Escoge el nivel': 'Choose your level',
-  'Puzle de bloques · tres héroes · cien niveles': 'Block puzzle · three heroes · 100 levels',
+  'Puzle de bloques · tres héroes · 21 niveles': 'Block puzzle · three heroes · 21 levels',
   '↩ Volver al juego': '↩ Back to the game',
   '📲 Instalar app': '📲 Install app',
   Normal: 'Normal',
@@ -447,8 +447,8 @@ export const EN_UI = {
   Compartir: 'Share',
   Cerrar: 'Close',
   'Compartir y jugar en el móvil': 'Share / play on your phone',
-  'Prueba DAWNSLIDE: un puzle de bloques con tres héroes y cien niveles.':
-    'Try DAWNSLIDE: a block puzzle with three heroes and one hundred levels.',
+  'Prueba DAWNSLIDE: un puzle de bloques con tres héroes y 21 niveles.':
+    'Try DAWNSLIDE: a block puzzle with three heroes and 21 levels.',
   /* revisión final */
   '★ NUEVO RÉCORD ★': '★ NEW RECORD ★',
   'Pagaste por revivir. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas. Te queda {n} revivir guardado.':
@@ -847,4 +847,21 @@ export const EN_UI = {
   'Superaste los 21 niveles.': 'You cleared all 21 levels.',
   '{reason} en el nivel {n} de 21. Thyes, año {year}.': '{reason} on level {n} of 21. Thyes, year {year}.',
   '+ turnos': '+ turns',
+  'Camino de 21 niveles': '21-level path',
+  'Con límite de turnos': 'With a turn limit',
+  'Elige dificultad · 21 niveles': 'Choose difficulty · 21 levels',
+  'Partida guardada · nivel {n} de {total}': 'Saved run · level {n} of {total}',
+  '{path} · Nivel {n} de {total} · {score} pts': '{path} · Level {n} of {total} · {score} pts',
+  'Rango de partida': 'Run grade',
+  PERFECTOS: 'PERFECTS',
+  'MEJOR RACHA': 'BEST STREAK',
+  PACTOS: 'PACTS',
+  'A {n} pts de tu récord': '{n} pts away from your record',
+  'Te faltó solo 1 nivel para llegar al final': 'Just 1 level shy of the finish',
+  'Te faltaron {n} niveles para llegar al final': '{n} levels shy of the finish',
+  'Reserva exacta de turnos: cada paso cuenta.': 'Exact turn reserve: every move counts.',
+  'Nivel {n}/{total} · {turns} turnos': 'Level {n}/{total} · {turns} turns',
+  '1 pista por tablero': '1 hint per board',
+  'Rehace 1 tablero': 'Reset 1 board',
+  '1 deshacer por tablero': '1 undo per board',
 };

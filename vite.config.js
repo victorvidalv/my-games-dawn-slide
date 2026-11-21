@@ -59,7 +59,7 @@ export default defineConfig({
         name: 'DAWNSLIDE',
         short_name: 'DAWNSLIDE',
         description:
-          'Open the road between the ten cities of Tri. A block puzzle, three heroes and one hundred levels.',
+          'Open the road across the seven realms of Tri. A block puzzle, three heroes and 21 levels.',
         lang: 'en',
         start_url: './',
         scope: './',

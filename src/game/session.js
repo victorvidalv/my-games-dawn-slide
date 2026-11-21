@@ -117,9 +117,9 @@ export function recordBest(final) {
 }
 
 /* ---------- Inicio de partida ---------- */
-export async function startRun(start, mode) {
+export async function startRun(start, mode, preset) {
   mode = 'c';
-  const picked = await chooseHero(start, mode);
+  const picked = preset || (await chooseHero(start, mode));
   if (!picked) {
     openMenu('adv');
     return;

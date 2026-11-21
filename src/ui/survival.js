@@ -34,7 +34,6 @@ let selectedRoute = '150';
 let selectedRelic = 'hint';
 
 export function paintSurvivalHome() {
-  const progress = survivalProgress(store);
   const completed = survivalCompletedCount(store);
   const best = survivalBestLevel(store);
   $('homeSurvivalRecord').hidden = completed === 0 && best === 0;
@@ -45,12 +44,7 @@ export function paintSurvivalHome() {
     $('homeSurvivalRecordLbl').textContent = 'Récord de nivel';
     $('homeSurvivalBest').textContent = best ? format(best) : '';
   }
-  if (progress?.status === 'active') {
-    const route = routeById(progress.route);
-    $('homeSurvivalSub').textContent = `Partida guardada · ${route.name} · nivel ${progress.cleared + 1}`;
-  } else {
-    $('homeSurvivalSub').textContent = '3 rutas · 150, 200 y 250 turnos';
-  }
+  $('homeSurvivalSub').textContent = 'Con límite de turnos';
 }
 
 export function renderSurvival() {
@@ -63,8 +57,7 @@ export function renderSurvival() {
     selectedRelic = progress.relic;
   }
 
-  $('survivalIntro').textContent =
-    'Supera todos los tableros con una reserva exacta de turnos. Sin margen de error: cada movimiento cuenta.';
+  $('survivalIntro').textContent = 'Reserva exacta de turnos: cada paso cuenta.';
 
   $('survivalSaved').hidden = !active;
   if (active) {
@@ -72,8 +65,7 @@ export function renderSurvival() {
     const savedRelic = challengeRelicById(progress.relic);
     $('survivalSavedArt').style.setProperty('--relic-x', `${relicIndex(savedRelic.id) * 50}%`);
     $('survivalSavedTitle').textContent = `${savedRoute.name} · ${format(savedRoute.turns)} turnos`;
-    $('survivalStatus').textContent =
-      `Nivel ${progress.cleared + 1} de ${savedRoute.levels} · ${format(progress.remaining)} turnos restantes · ${savedRelic.name}`;
+    $('survivalStatus').textContent = `Nivel ${progress.cleared + 1}/${savedRoute.levels} · ${format(progress.remaining)} turnos`;
     const bar = $('survivalSavedBar');
     if (bar) bar.style.width = `${Math.round((progress.cleared / savedRoute.levels) * 100)}%`;
   }
@@ -87,7 +79,7 @@ export function renderSurvival() {
       : bestNum > 0
         ? `<small class="route-best">Récord ${format(bestNum)}/${format(route.levels)}</small>`
         : `<small class="route-boards">${format(route.levels)} tableros</small>`;
-    return `<label class="challenge-route-option"><input type="radio" name="challengeRoute" value="${route.id}" ${route.id === selectedRoute ? 'checked' : ''}><span class="challenge-route-card${won ? ' won' : ''}"><span class="route-tag">${route.tag}</span><span class="route-turns">${format(route.turns)}<em>turnos</em></span><b>${route.name}</b>${foot}</span></label>`;
+    return `<label class="challenge-route-option"><input type="radio" name="challengeRoute" value="${route.id}" ${route.id === selectedRoute ? 'checked' : ''}><span class="challenge-route-card${won ? ' won' : ''}"><span class="route-turns">${format(route.turns)}<em>turnos</em></span><b>${route.name}</b>${foot}</span></label>`;
   }).join('');
 
   routesBox.querySelectorAll('input').forEach((input) => {

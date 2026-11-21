@@ -10,22 +10,22 @@ export const CHALLENGE_ROUTES = [
 export const CHALLENGE_RELICS = [
   {
     id: 'hint',
-    name: 'Brújula del Amanecer',
-    label: '1 pista por tablero (no acumulable)',
+    name: 'Brújula',
+    label: '1 pista por tablero',
     action: 'Pista',
     rule: '1 por tablero',
   },
   {
     id: 'reset',
     name: 'Reloj de Arena',
-    label: 'Rehace 1 tablero completo por partida',
+    label: 'Rehace 1 tablero',
     action: 'Rehacer tablero',
     rule: '1 por partida',
   },
   {
     id: 'undo',
     name: 'Hilo del Retorno',
-    label: 'Deshace 1 movimiento por tablero',
+    label: '1 deshacer por tablero',
     action: 'Deshacer',
     rule: '1 por tablero',
   },

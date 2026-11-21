@@ -186,9 +186,9 @@ $('pQuit').onclick = () => {
 };
 $('pSound').onclick = toggleSound;
 const continueLabel = (sr) =>
-  `▶ Continuar<small>${pathOf(sr.start || 1).n} · Nivel ${sr.level}` +
+  `<span class="cont-ico" aria-hidden="true">▶</span><span class="cont-copy"><b>Continuar</b><small>${pathOf(sr.start || 1).n} · Nivel ${sr.level} de ${MAX_LEVEL}` +
   (sr.mode === 'p' ? ' · Práctica' : ` · ${sr.score.toLocaleString(numLocale())} pts`) +
-  '</small>';
+  '</small></span><i class="cont-go" aria-hidden="true">›</i>';
 /* Cada entrada del menú abre su sección con «Volver». */
 const VIEWS = {
   adv: { title: 'Aventura', panel: 'panelAdv' },
@@ -235,12 +235,9 @@ function paintHomeRecord() {
 }
 
 function paintHome() {
-  const sr = store.run,
-    active = S.run && S.G && !S.G.done;
-  const hasSaved = !active && Number.isFinite(sr?.level);
   paintHomeRecord();
-  $('homeAdvSaved').hidden = !hasSaved;
-  $('homeAdvSaved').textContent = hasSaved ? `Partida guardada · nivel ${sr.level}` : '';
+  $('homeAdvSaved').hidden = true;
+  $('homeAdvSaved').textContent = '';
   paintDailyHome();
   paintSurvivalHome();
   paintAchBadge();

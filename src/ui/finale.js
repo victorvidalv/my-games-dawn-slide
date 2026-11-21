@@ -1,8 +1,10 @@
 import { Music } from '../audio/music.js';
 import { tone } from '../audio/sound.js';
 import { $ } from '../dom.js';
+import { MAX_LEVEL } from '../engine/difficulty.js';
 import { fateCards } from '../game/fate.js';
 import { relicFor } from '../game/relics.js';
+import { runGrade } from '../game/run-logic.js';
 import { recordBest, startRun } from '../game/session.js';
 import { S, discardRun, heroOf, pathOf, persist, rememberConfig, rkey, store } from '../state.js';
 import { fateArt } from './fate-art.js';
@@ -41,7 +43,45 @@ function renderBuildSummary(el, snapshot) {
   el.innerHTML = `<span class="build-title">Tu combinación</span><div class="build-meta">${chips}</div>${cardsHtml}`;
   el.hidden = false;
 }
-function showFinale(prac, p, score, broken, snapshot) {
+function renderGradeAndStats({ gradeEl, statsEl, nearEl, victory, snapshot, bestScore }) {
+  const boards = victory ? MAX_LEVEL : Math.max(0, (snapshot.level || 1) - 1);
+  const perfects = snapshot.perfects || 0;
+  const bestStreak = Math.max(snapshot.bestStreak || 0, snapshot.streak || 0);
+  const pacts = fateCards(snapshot).filter((c) => c.kind === 'pact').length;
+  const g = runGrade({
+    victory,
+    level: snapshot.level,
+    score: snapshot.score || 0,
+    perfects,
+    start: snapshot.start,
+  });
+  if (gradeEl) {
+    gradeEl.textContent = g.grade;
+    gradeEl.dataset.grade = g.cls;
+  }
+  if (statsEl) {
+    statsEl.innerHTML =
+      `<div><small>PERFECTOS</small><b>${perfects}/${boards || MAX_LEVEL}</b></div>` +
+      `<div><small>MEJOR RACHA</small><b>${bestStreak}</b></div>` +
+      `<div><small>PACTOS</small><b>${pacts}</b></div>`;
+    statsEl.hidden = false;
+  }
+  if (nearEl) {
+    const gap = (bestScore || 0) - (snapshot.score || 0);
+    const left = Math.max(1, MAX_LEVEL - boards);
+    if (!snapshot.recBroken && gap > 0) {
+      nearEl.textContent = `A ${gap.toLocaleString(numLocale())} pts de tu récord`;
+      nearEl.hidden = false;
+    } else if (!victory) {
+      nearEl.textContent =
+        left === 1 ? 'Te faltó solo 1 nivel para llegar al final' : `Te faltaron ${left} niveles para llegar al final`;
+      nearEl.hidden = false;
+    } else {
+      nearEl.hidden = true;
+    }
+  }
+}
+function showFinale(prac, p, score, broken, snapshot, bestScore) {
   const heroId = snapshot?.hero || 'lia';
   endingStory(true, heroId, 21);
   const mode = prac ? 'p' : 'c';
@@ -87,6 +127,14 @@ function showFinale(prac, p, score, broken, snapshot) {
   $('fChal').innerHTML = F.chal;
   $('fScore').textContent = prac ? '' : '0';
   $('fRec').innerHTML = !prac && broken ? '<span class="rec">★ NUEVO RÉCORD ★</span>' : '';
+  renderGradeAndStats({
+    gradeEl: $('fGrade'),
+    statsEl: $('fStats'),
+    nearEl: $('fNear'),
+    victory: true,
+    snapshot,
+    bestScore,
+  });
   renderBuildSummary($('fBuild'), snapshot);
   const box = $('fBtns');
   box.innerHTML = '';
@@ -135,7 +183,7 @@ export function endRun(victory, why) {
     const sc = S.run.score,
       br = S.run.recBroken;
     discardRun();
-    showFinale(prac, p, sc, br, snapshot);
+    showFinale(prac, p, sc, br, snapshot, rec.score);
     return;
   }
   endingStory(false, endingHero, S.run.level);
@@ -147,9 +195,24 @@ export function endRun(victory, why) {
   $('overRec').innerHTML = !prac && S.run.recBroken ? '<span class="rec">★ NUEVO RÉCORD ★</span>' : '';
   $('overLvl').textContent = S.run.level;
   $('overBest').textContent = rec.score.toLocaleString(numLocale());
+  renderGradeAndStats({
+    gradeEl: $('overGrade'),
+    statsEl: $('overStats'),
+    nearEl: $('overNear'),
+    victory: false,
+    snapshot,
+    bestScore: rec.score,
+  });
   renderBuildSummary($('overBuild'), snapshot);
+  const retryBtn = $('bRetryOver');
+  if (retryBtn) {
+    retryBtn.onclick = () => {
+      $('over').classList.remove('show');
+      startRun(snapshot.start, snapshot.mode, { hero: snapshot.hero, relic: snapshot.relic });
+    };
+  }
   $('over').classList.add('show');
   countUp($('overScore'), 0, S.run.score, 1200);
-  $('bToMenu').focus();
+  (retryBtn || $('bToMenu')).focus();
   discardRun();
 }

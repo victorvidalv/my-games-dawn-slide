@@ -207,6 +207,41 @@
 
 .challenge-relic-option .relic-art {
   background-image: url('/icons/challenge-relics.webp');
+  width: 42px;
+  height: 42px;
+}
+
+#panelSurvival .challenge-relic-options {
+  gap: 8px;
+}
+
+#panelSurvival .challenge-relic-option .relic-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  align-content: start;
+  gap: 5px;
+  padding: 10px 6px 9px;
+  text-align: center;
+}
+
+#panelSurvival .challenge-relic-option .relic-card > span:last-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  width: 100%;
+}
+
+#panelSurvival .challenge-relic-option .relic-card b {
+  font-size: 12px;
+  line-height: 1.15;
+  overflow-wrap: normal;
+}
+
+#panelSurvival .challenge-relic-option .relic-card small {
+  font-size: 10.5px;
+  line-height: 1.2;
+  color: #c8c4d4;
 }
 
 #survivalPlay {

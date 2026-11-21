@@ -34,6 +34,8 @@ export function newAdventureRun({ seed, start, mode = 'c', hero, hints, relic })
     hints: (hints ?? 0) + (selected?.hints ?? 0), // el Farol se suma a las pistas del camino y a las de la racha diaria
     adj: 0,
     streak: 0,
+    bestStreak: 0,
+    perfects: 0,
     recBroken: false,
     firstLevel: 1,
     fateDeck: fateDeck(seed),
@@ -198,10 +200,35 @@ export const cityAfter = (level) => Math.min(6, Math.floor(level / FATE_EVERY));
 export function applyAdventureWin(run, G, gain) {
   run.score += gain.total;
   run.cleared = (run.cleared || 0) + 1;
+  if (G.moves <= G.opt) run.perfects = (run.perfects || 0) + 1;
   run.streak = keepsStreak(run, gain.eff) ? (run.streak || 0) + 1 : 0;
+  run.bestStreak = Math.max(run.bestStreak || 0, run.streak);
   run.adj = Math.max(-2, Math.min(run.level < 10 ? 1 : 2, run.adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
   clearRewards(run, G.n);
   run.pendingClear = { level: G.n, gain: gain.total, moves: G.moves, opt: G.opt };
+}
+
+const GRADE_THRESHOLDS = {
+  1: { sPlus: 42000, s: 28000, a: 18000 },
+  50: { sPlus: 55000, s: 38000, a: 24000 },
+  75: { sPlus: 70000, s: 48000, a: 32000 },
+};
+
+/** Rango visual de la partida (S+, S, A, B, C) según victoria, puntaje y perfectos. */
+export function runGrade({ victory = false, level = 1, score = 0, perfects = 0, start = 1 } = {}) {
+  const key = start >= 75 ? 75 : start >= 50 ? 50 : 1;
+  const th = GRADE_THRESHOLDS[key];
+  const boards = victory ? MAX_LEVEL : Math.max(0, level - 1);
+  const perfRatio = boards ? perfects / boards : 0;
+  if (victory) {
+    if (score >= th.sPlus || (perfRatio >= 0.75 && score >= th.s)) return { grade: 'S+', cls: 'splus' };
+    if (score >= th.s || perfRatio >= 0.55) return { grade: 'S', cls: 's' };
+    if (score >= th.a || perfRatio >= 0.35) return { grade: 'A', cls: 'a' };
+    return { grade: 'B', cls: 'b' };
+  }
+  if (boards >= 15) return { grade: 'A', cls: 'a' };
+  if (boards >= 9) return { grade: 'B', cls: 'b' };
+  return { grade: 'C', cls: 'c' };
 }
 
 /**

@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <title>DAWNSLIDE · Block puzzle adventure with three heroes</title>
-<meta name="description" content="A free sliding-block puzzle adventure with roguelite elements. Free the red key, choose among three heroes and collect fate cards across 100 levels.">
+<meta name="description" content="A free sliding-block puzzle adventure with roguelite elements. Free the red key, choose among three heroes and collect fate cards across 7 realms and 21 levels.">
 <meta name="keywords" content="sliding block puzzle, unblock puzzle, free browser game, puzzle adventure, red key, three heroes, PWA game, juego de bloques, rompecabezas">
 <meta name="author" content="DAWNSLIDE">
 <meta name="robots" content="index,follow,max-image-preview:large">
@@ -40,7 +40,7 @@
   "@type": "VideoGame",
   "name": "DAWNSLIDE",
   "url": "%SITE_URL%/",
-  "description": "A free sliding-block puzzle adventure with roguelite elements. Choose from three heroes, play different boards across runs and shape each run with fate cards through ten cities.",
+  "description": "A free sliding-block puzzle adventure with roguelite elements. Choose from three heroes, play different boards across runs and shape each run with fate cards through seven realms and 21 levels.",
   "image": "%SITE_URL%/og-image.jpg",
   "genre": ["Puzzle", "Adventure"],
   "gamePlatform": ["Web browser", "Android", "iOS"],
@@ -55,7 +55,7 @@
 <link rel="preload" as="image" href="/backgrounds/cover-dawn.webp" fetchpriority="high">
 </head>
 <body>
-<noscript><main style="font:16px/1.5 Georgia,serif;max-width:640px;margin:10vh auto;padding:0 20px;color:#f6e6bd;background:#1a1528"><h1>DAWNSLIDE</h1><p>A free sliding-block puzzle adventure with roguelite elements. Choose one of three heroes, free the red key and explore ten cities across one hundred levels. Available in English, Spanish, Chinese and Japanese.</p><p>Please enable JavaScript to play.</p></main></noscript>
+<noscript><main style="font:16px/1.5 Georgia,serif;max-width:640px;margin:10vh auto;padding:0 20px;color:#f6e6bd;background:#1a1528"><h1>DAWNSLIDE</h1><p>A free sliding-block puzzle adventure with roguelite elements. Choose one of three heroes, free the red key and explore seven realms across 21 levels. Available in English, Spanish and Chinese.</p><p>Please enable JavaScript to play.</p></main></noscript>
 <div id="app">
   <div class="top">
     <div class="lv" title="Nivel" aria-label="Nivel"><i class="bi level-ico" data-icon="flag" aria-hidden="true"></i><b id="lvl">1</b></div>
@@ -231,11 +231,11 @@
   <div class="title-lockup">
     <svg class="title-crest" viewBox="0 0 64 72" aria-hidden="true"><path class="crest-shield" d="M32 3 59 12v23c0 17-12 28-27 34C17 63 5 52 5 35V12Z"/><path class="crest-inner" d="M32 9 53 16v19c0 13-9 22-21 27C20 57 11 48 11 35V16Z"/><circle class="crest-key" cx="32" cy="27" r="7"/><path class="crest-key" d="M32 34v20m0-7h7m-7-7h5"/></svg>
     <h1 class="logo">DAWN<i>SLIDE</i></h1>
-    <p class="title-sub">Puzle de bloques · tres héroes · cien niveles</p>
+    <p class="title-sub">Puzle de bloques · tres héroes · 21 niveles</p>
   </div>
   <div class="card" id="menuCard" data-view="home">
     <nav class="menu-home" id="menuHome" aria-label="Modos de juego">
-      <button type="button" class="home-btn hb-adv" id="tabAdv" data-view="adv"><i class="hb-ico bi" data-icon="flag" aria-hidden="true"></i><span class="hb-copy"><b>Aventura</b><small>Puzles con elementos roguelite</small><small id="homeAdvSaved" hidden></small><span class="home-record" id="homeRecord" hidden><span class="record-pill"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Récord</span><strong id="homeRecordScore"></strong></span><time id="homeRecordAge" hidden></time></span></span><i class="hb-go" aria-hidden="true">›</i></button>
+      <button type="button" class="home-btn hb-adv" id="tabAdv" data-view="adv"><i class="hb-ico bi" data-icon="flag" aria-hidden="true"></i><span class="hb-copy"><b>Aventura</b><small>Camino de 21 niveles</small><small id="homeAdvSaved" hidden></small><span class="home-record" id="homeRecord" hidden><span class="record-pill"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Récord</span><strong id="homeRecordScore"></strong></span><time id="homeRecordAge" hidden></time></span></span><i class="hb-go" aria-hidden="true">›</i></button>
       <button type="button" class="home-btn hb-survival" id="tabSurvival" data-view="survival"><i class="hb-ico bi" data-icon="hourglass" aria-hidden="true"></i><span class="hb-copy"><b>Desafío</b><small id="homeSurvivalSub"></small><span class="home-record" id="homeSurvivalRecord" hidden><span class="record-pill"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span id="homeSurvivalRecordLbl">Récord de nivel</span><strong id="homeSurvivalBest"></strong></span></span></span><i class="hb-go" aria-hidden="true">›</i></button>
       <button type="button" class="home-btn hb-daily" id="tabDaily" data-view="daily"><i class="hb-ico bi" data-icon="flame" aria-hidden="true"></i><span class="hb-copy"><b>Retos diarios</b><small id="homeDailySub"></small><span class="home-record"><span class="record-pill"><span>Racha actual</span><strong id="homeDailyStreak"></strong></span></span></span><i class="hb-go" aria-hidden="true">›</i></button>
     </nav>
@@ -255,7 +255,7 @@
     </div>
     <div class="menu-panel" id="panelAdv" hidden>
       <button class="primary cont" id="bContinue" style="display:none"></button>
-      <p class="menu-pick">Escoge el nivel</p>
+      <p class="menu-pick">Elige dificultad · 21 niveles</p>
       <p class="modeinfo" id="modeInfo" hidden></p>
       <div class="paths" id="paths"></div>
     </div>
@@ -432,10 +432,17 @@
     <h2 id="fTitle"></h2>
     <div class="ending-thanks" id="fThanks"></div>
     <div class="finale-score-box">
-      <small>PUNTAJE OBTENIDO</small>
-      <div class="big" id="fScore"></div>
+      <div class="score-grade-row">
+        <div>
+          <small>PUNTAJE OBTENIDO</small>
+          <div class="big" id="fScore"></div>
+        </div>
+        <span class="run-grade" id="fGrade" aria-label="Rango de partida"></span>
+      </div>
       <div id="fRec"></div>
+      <p class="run-near" id="fNear" hidden></p>
     </div>
+    <div class="run-stats" id="fStats" hidden></div>
     <div class="run-build" id="fBuild" hidden></div>
     <p class="ending-lore" id="fLore"></p>
     <p id="fText"></p>
@@ -459,17 +466,25 @@
    </header>
    <section class="over-summary">
     <div class="over-score-box">
-     <small>PUNTOS</small>
-     <div class="big" id="overScore">0</div>
+     <div class="score-grade-row">
+      <div>
+       <small>PUNTOS</small>
+       <div class="big" id="overScore">0</div>
+      </div>
+      <span class="run-grade" id="overGrade" aria-label="Rango de partida"></span>
+     </div>
      <div id="overRec"></div>
+     <p class="run-near" id="overNear" hidden></p>
     </div>
     <div class="over-stats">
      <div><small>NIVEL</small><b id="overLvl">1</b></div>
      <div><small>RÉCORD</small><b id="overBest">0</b></div>
     </div>
    </section>
+   <div class="run-stats" id="overStats" hidden></div>
    <div class="run-build" id="overBuild" hidden></div>
    <div class="over-bottom">
+    <button class="primary over-retry-btn" id="bRetryOver">↻ Jugar otra vez</button>
     <button class="over-home-btn" id="bToMenu">← Volver al inicio</button>
    </div>
   </div>

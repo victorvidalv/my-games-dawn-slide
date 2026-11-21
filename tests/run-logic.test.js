@@ -18,6 +18,7 @@ import {
   resetBoardForRevive,
   resolveFail,
   restoreDailyAttempt,
+  runGrade,
   boardKey,
   snapshotBoard,
   storeBoard,
@@ -74,7 +75,7 @@ describe('crear partidas', () => {
       fate: [],
       fatePicked: 0,
     });
-    expect(run.fateDeck).toHaveLength(24);
+    expect(run.fateDeck).toHaveLength(26);
   });
 
   it('el Farol suma sus pistas a las del camino y la racha diaria (no las reemplaza)', () => {
@@ -303,6 +304,22 @@ describe('rescates, movimientos y partidas guardadas', () => {
     acceptRescue(run, G);
     expect(run.rescue).toBeUndefined();
     expect(G).toMatchObject({ pos: [0, 0], moves: 0, done: false, limit: 12 });
+  });
+
+  it('el rango de partida (S+, S, A, B, C) refleja victoria, puntaje y perfectos', () => {
+    expect(runGrade({ victory: true, score: 45000, perfects: 16, start: 1 })).toEqual({ grade: 'S+', cls: 'splus' });
+    expect(runGrade({ victory: true, score: 30000, perfects: 10, start: 1 })).toEqual({ grade: 'S', cls: 's' });
+    expect(runGrade({ victory: true, score: 19000, perfects: 6, start: 1 })).toEqual({ grade: 'A', cls: 'a' });
+    expect(runGrade({ victory: true, score: 10000, perfects: 2, start: 1 })).toEqual({ grade: 'B', cls: 'b' });
+    expect(runGrade({ victory: false, level: 17, score: 12000, start: 50 })).toEqual({ grade: 'A', cls: 'a' });
+    expect(runGrade({ victory: false, level: 11, score: 6000, start: 50 })).toEqual({ grade: 'B', cls: 'b' });
+    expect(runGrade({ victory: false, level: 4, score: 1000, start: 75 })).toEqual({ grade: 'C', cls: 'c' });
+
+    const r = adventure({ score: 0, perfects: 0, bestStreak: 0, streak: 0 });
+    applyAdventureWin(r, board({ moves: 6, opt: 6 }), { total: 500, eff: 1 });
+    applyAdventureWin(r, board({ moves: 8, opt: 6 }), { total: 350, eff: 0.75 });
+    expect(r.perfects).toBe(1);
+    expect(r.bestStreak).toBe(1);
   });
 
   it('cada movimiento guarda la posición anterior para deshacer', () => {

@@ -14,7 +14,7 @@ it('elige ruta y reliquia en Desafío, usa la pista por turno, guarda y continú
     'tabSurvival',
     'tabDaily',
   ]);
-  expect(app.$('homeSurvivalSub').textContent).toBe('3 rutas · 150, 200 y 250 turnos');
+  expect(app.$('homeSurvivalSub').textContent).toBe('Con límite de turnos');
   app.$('tabSurvival').click();
   expect(app.$('survivalRoutes').querySelectorAll('input').length).toBe(3);
   expect(app.$('survivalRelics').querySelectorAll('input').length).toBe(3);

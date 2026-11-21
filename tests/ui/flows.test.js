@@ -149,6 +149,41 @@ describe('interfaz: aventura', () => {
     expect(saved().run ?? null).toBeNull();
     expect(saved().paths.c1).toMatchObject({ level: 2, runs: 1 });
   });
+
+  it('al perder muestra rango, estadísticas y permite reintentar en 1 toque con el mismo héroe y reliquia', async () => {
+    const app = await bootApp({
+      save: {
+        paths: { c50: { score: 8000, level: 12, runs: 2 } },
+        run: {
+          level: 10,
+          seed: 77,
+          start: 50,
+          mode: 'c',
+          hero: 'jean',
+          relic: 'lantern',
+          score: 6500,
+          hints: 2,
+          adj: 0,
+          streak: 3,
+          bestStreak: 4,
+          perfects: 5,
+          fate: ['juramento'],
+        },
+        tips: { tut_wall: true, tut_heavy: true, tut_gate: true, tut_ice: true },
+      },
+    });
+    app.$('bContinue').click();
+    await untilPlayable(app, 10);
+    app.session.fail('limit');
+    await until(() => shown(app, 'over'));
+    expect(app.$('overGrade').textContent).toBe('B');
+    expect(app.$('overNear').textContent).toContain('1.500');
+    expect(app.$('overStats').textContent).toContain('5/9');
+    app.$('bRetryOver').click();
+    await untilPlayable(app, 1);
+    expect(shown(app, 'over')).toBe(false);
+    expect(app.S.run).toMatchObject({ start: 50, hero: 'jean', relic: 'lantern', level: 1 });
+  });
 });
 
 describe('interfaz: reto diario', () => {

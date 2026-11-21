@@ -1,29 +1,25 @@
 /*
- * Diseños de fichas y llaves de Canjear. Las fichas siguen una línea sobria: formas limpias de radio uniforme, relieve
- * suave y colores apagados, sin adornos interiores: cada estilo se distingue solo por su color y su acabado. Cada
- * estilo es un material completo: madera lacada, piedra pulida, vidrio esmerilado, tinta nocturna, porcelana, latón
- * champán, pergamino, laca con filete dorado y oro viejo satinado. Las fichas conservan su color (--a/--b/--d)
- * para distinguirse en el tablero; la llave conserva su flecha.
+ * Diseños de fichas y llaves de Canjear en estilo anime cel-shading (tinta sumi, cortes de luz nítidos y paletas
+ * inspiradas en Demon Slayer). Cada estilo es muy distinto entre sí y escala visualmente por rareza:
+ *   Común (paint, stone, glass) → Raro (ceramic, night, brass) → Épico (runic, lacquer) → Legendario (oldgold).
+ * Las llaves siguen la misma progresión (red → amber/iron/rose → emerald/sapphire/crystal → obsidian/star → gold).
  *
- * Van en @scope con la raíz [data-pieces] / [data-key]: así el <body> lleva lo equipado y una muestra de la tienda
- * (con su propio data-pieces/data-key) gana por cercanía. Cada estilo fija TODAS las propiedades para no heredar nada
- * del equipado. La sección de fichas se genera a partir de una tabla: si cambias un estilo, mantén la lista de
- * propiedades completa. Las piezas especiales (pesada, hielo, candado) conservan su aspecto propio.
+ * Van en @scope con la raíz [data-pieces] / [data-key] para que tablero y vistas previas (.sw-real) coincidan al 100 %.
  */
 
-/* ---- Fichas: paint ---- */
+/* ---- Fichas: paint (base — cel-shading anime limpio y vibrante) ---- */
 @scope ([data-pieces='paint']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      linear-gradient(180deg, #ffffff2b, #fff0 42%), repeating-linear-gradient(90deg, #ffffff06 0 2px, #0000 2px 9px),
-      linear-gradient(180deg, var(--a), color-mix(in oklab, var(--a) 40%, var(--b)));
+      linear-gradient(122deg, #ffffff28 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, var(--a) 0 42%, var(--b) 42.5% 88%, color-mix(in oklab, var(--b) 65%, var(--d)) 100%);
     box-shadow:
-      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
+      0 3px 0 #120e14,
       0 6px 10px #0000004d,
-      inset 0 1px 0 #ffffff70,
-      inset 0 -3px 0 color-mix(in oklab, var(--b) 60%, var(--d)),
-      inset 0 0 0 1px #ffffff1a;
-    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
+      inset 0 2px 0 #ffffff66,
+      inset 0 -3px 0 var(--d),
+      inset 0 0 0 1.5px #120e1444;
+    border-color: #120e14;
     border-radius: 10px;
     filter: none;
     opacity: 1;
@@ -32,32 +28,16 @@
     content: '';
     inset: 3px 10% auto;
     width: auto;
-    height: 1px;
-    background: linear-gradient(90deg, #fff0, #ffffff80, #fff0);
+    height: 2px;
+    background: linear-gradient(90deg, #fff0, #ffffff99, #fff0);
     background-size: auto;
-    border-radius: 1px;
+    border-radius: 2px;
     transform: none;
     animation: none;
     opacity: 1;
     filter: none;
   }
-  .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
+  .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
     display: none;
     content: '';
@@ -77,54 +57,42 @@
   }
 }
 
-/* ---- Fichas: stone ---- */
+/* ---- Fichas: stone (común — piedra de templo biselada en cel-shading) ---- */
 @scope ([data-pieces='stone']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      radial-gradient(circle at 30% 35%, #ffffff1c 0 0.7px, #0000 1.2px) 0 0 / 7px 6px,
-      radial-gradient(circle at 70% 60%, #00000024 0 0.8px, #0000 1.3px) 0 0 / 9px 8px,
-      linear-gradient(170deg, color-mix(in oklab, var(--a) 62%, #e4dfd4), color-mix(in oklab, var(--b) 58%, #a19a8e));
+      linear-gradient(135deg, #ffffff22 0 38%, #0000 38.5% 68%, #00000024 68.5%),
+      radial-gradient(circle at 28% 34%, #ffffff22 0 0.8px, #0000 1.3px) 0 0 / 8px 7px,
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 52%, #ddd9d2) 0 46%,
+        color-mix(in oklab, var(--b) 50%, #98938b) 46.5% 100%
+      );
     box-shadow:
-      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
+      0 3px 0 #120e14,
       0 6px 10px #0000004d,
-      inset 0 0 0 2px #ffffff26,
-      inset 0 1px 0 #ffffff55,
-      inset 0 -3px 0 #00000026;
-    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
-    border-radius: 6px;
+      inset 0 0 0 2.5px #ffffff33,
+      inset 0 2px 0 #ffffff66,
+      inset 0 -3px 0 #120e144d;
+    border-color: #120e14;
+    border-radius: 5px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 3px 8% auto;
+    inset: 3px 6% auto;
     width: auto;
-    height: 30%;
-    background: linear-gradient(180deg, #ffffff26, #fff0);
+    height: 24%;
+    background: linear-gradient(180deg, #ffffff38, #fff0);
     background-size: auto;
-    border-radius: 4px 4px 0 0;
+    border-radius: 3px 3px 0 0;
     transform: none;
     animation: none;
     opacity: 1;
     filter: none;
   }
-  .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
+  .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
     display: none;
     content: '';
@@ -144,53 +112,37 @@
   }
 }
 
-/* ---- Fichas: glass ---- */
+/* ---- Fichas: glass (común — cristal anime translúcido con cortes de brillo) ---- */
 @scope ([data-pieces='glass']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      linear-gradient(118deg, #fff0 0 18%, #ffffff3d 18% 30%, #fff0 30% 36%, #ffffff1f 36% 40%, #fff0 40%),
-      linear-gradient(180deg, color-mix(in oklab, var(--a) 72%, #fff), color-mix(in oklab, var(--b) 78%, #fff));
+      linear-gradient(116deg, #fff0 0 14%, #ffffff66 14.5% 26%, #fff0 26.5% 33%, #ffffff38 33.5% 38%, #fff0 38.5%),
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 78%, #ffffff) 0 48%, color-mix(in oklab, var(--b) 82%, #c9f6ff) 100%);
     box-shadow:
-      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
-      0 6px 10px #0000004d,
-      inset 0 0 0 1px #ffffff99,
-      inset 0 0 12px #ffffff40,
-      inset 0 -3px 0 color-mix(in oklab, var(--b) 55%, #0000);
-    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
-    border-radius: 9px;
+      0 3px 0 #120e14,
+      0 6px 12px color-mix(in oklab, var(--a) 30%, #00000066),
+      inset 0 0 0 1.5px #ffffffcc,
+      inset 0 0 12px #ffffff55,
+      inset 0 -3px 0 color-mix(in oklab, var(--d) 70%, #0000);
+    border-color: #120e14;
+    border-radius: 10px;
     filter: none;
-    opacity: 0.94;
+    opacity: 0.96;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
     inset: 2px 6% auto;
     width: auto;
-    height: 26%;
-    background: linear-gradient(180deg, #ffffff73, #fff0);
+    height: 28%;
+    background: linear-gradient(180deg, #ffffff99, #fff0);
     background-size: auto;
-    border-radius: 7px 7px 40% 40%;
+    border-radius: 8px 8px 40% 40%;
     transform: none;
     animation: none;
     opacity: 1;
     filter: none;
   }
-  .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
+  .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
     display: none;
     content: '';
@@ -210,119 +162,37 @@
   }
 }
 
-/* ---- Fichas: night ---- */
-@scope ([data-pieces='night']) {
-  .piece:not(.red, .heavy, .ice, .gate) .face {
-    background:
-      radial-gradient(circle at 20% 30%, #ffffffb0 0 0.6px, #0000 1.1px) 0 0 / 15px 12px,
-      radial-gradient(circle at 60% 70%, #fff6d999 0 0.5px, #0000 1px) 4px 3px / 19px 14px,
-      linear-gradient(180deg, color-mix(in oklab, var(--b) 58%, #232a3d), color-mix(in oklab, var(--d) 60%, #121722));
-    box-shadow:
-      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
-      0 6px 10px #0000004d,
-      inset 0 0 0 1.5px color-mix(in oklab, var(--a) 60%, #0000),
-      inset 0 1px 0 #ffffff2e;
-    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
-    border-radius: 10px;
-    filter: none;
-    opacity: 1;
-  }
-  .piece:not(.red, .heavy, .ice, .gate) .face::before {
-    content: '';
-    inset: 3px 12% auto;
-    width: auto;
-    height: 1px;
-    background: linear-gradient(90deg, #fff0, #ffffff4d, #fff0);
-    background-size: auto;
-    border-radius: 0;
-    transform: none;
-    animation: none;
-    opacity: 1;
-    filter: none;
-  }
-  .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
-  .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
-}
-
-/* ---- Fichas: ceramic ---- */
+/* ---- Fichas: ceramic (raro — porcelana washi blanca con marco kimono de color vivo) ---- */
 @scope ([data-pieces='ceramic']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      linear-gradient(180deg, #ffffff40, #fff0 45%),
-      linear-gradient(180deg, color-mix(in oklab, var(--a) 20%, #fbf9f4), color-mix(in oklab, var(--a) 34%, #e6e1d7));
+      linear-gradient(130deg, #ffffff99 0 28%, #fff0 28.5%),
+      linear-gradient(180deg, #fcf8f0 0 54%, color-mix(in oklab, var(--a) 18%, #e9e2d3) 100%);
     box-shadow:
-      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
-      0 6px 10px #0000004d,
-      inset 0 0 0 2.5px color-mix(in oklab, var(--b) 70%, #fff),
-      inset 0 0 0 3.5px #ffffffcc,
-      inset 0 -3px 0 #0000001f;
-    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
+      0 3px 0 #120e14,
+      0 6px 10px #00000055,
+      inset 0 0 0 3.5px var(--a),
+      inset 0 0 0 5px #120e1455,
+      inset 0 -3px 0 var(--d);
+    border-color: #120e14;
     border-radius: 12px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 4px 14% auto;
+    inset: 5px 14% auto;
     width: auto;
-    height: 22%;
-    background: linear-gradient(180deg, #ffffff99, #fff0);
+    height: 20%;
+    background: linear-gradient(180deg, #ffffffcc, #fff0);
     background-size: auto;
-    border-radius: 8px 8px 50% 50%;
+    border-radius: 6px;
     transform: none;
     animation: none;
     opacity: 1;
     filter: none;
   }
-  .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
+  .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
     display: none;
     content: '';
@@ -342,24 +212,78 @@
   }
 }
 
-/* ---- Fichas: brass ---- */
+/* ---- Fichas: night (raro — tinta sumi nocturna con filo neón anime) ---- */
+@scope ([data-pieces='night']) {
+  .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(circle at 22% 28%, #ffffffdd 0 0.8px, #0000 1.4px) 0 0 / 16px 13px,
+      radial-gradient(circle at 72% 68%, var(--a) 0 0.9px, #0000 1.6px) 3px 2px / 20px 15px,
+      linear-gradient(
+        160deg,
+        color-mix(in oklab, var(--b) 42%, #1d223c) 0 45%,
+        color-mix(in oklab, var(--d) 45%, #0d1020) 45.5% 100%
+      );
+    box-shadow:
+      0 3px 0 #080910,
+      0 6px 12px color-mix(in oklab, var(--a) 32%, #00000077),
+      inset 0 0 0 2px var(--a),
+      inset 0 0 10px color-mix(in oklab, var(--a) 45%, #0000);
+    border-color: #080910;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 3px 10% auto;
+    width: auto;
+    height: 1.5px;
+    background: linear-gradient(90deg, #fff0, #ffffffaa, #fff0);
+    background-size: auto;
+    border-radius: 2px;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+}
+
+/* ---- Fichas: brass (raro — latón Taishō con bandas metálicas cel-shading) ---- */
 @scope ([data-pieces='brass']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      repeating-linear-gradient(90deg, #ffffff0f 0 1px, #0000 1px 3px),
+      linear-gradient(115deg, #fff0 0 20%, #fff8dc55 20.5% 32%, #fff0 32.5%),
       linear-gradient(
         180deg,
-        color-mix(in oklab, var(--a) 50%, #ecdcb4),
-        color-mix(in oklab, var(--b) 50%, #cdb47d) 55%,
-        color-mix(in oklab, var(--d) 45%, #ad9258)
+        color-mix(in oklab, var(--a) 44%, #f6e4b4) 0 38%,
+        color-mix(in oklab, var(--b) 48%, #d1ad62) 38.5% 74%,
+        color-mix(in oklab, var(--d) 44%, #96722d) 74.5% 100%
       );
     box-shadow:
-      0 3px 0 #5e4a22,
-      0 6px 10px #0000004d,
-      inset 0 1px 0 #fff8e0b0,
-      inset 0 0 0 2px #fff3d033,
-      inset 0 -3px 0 #8a7038;
-    border-color: #4a3a1a;
+      0 3px 0 #2b1e0a,
+      0 6px 10px #00000055,
+      inset 0 2px 0 #fffbe6cc,
+      inset 0 0 0 2px #f6d98a55,
+      inset 0 -3px 0 #6e501b;
+    border-color: #2b1e0a;
     border-radius: 8px;
     filter: none;
     opacity: 1;
@@ -368,8 +292,8 @@
     content: '';
     inset: 3px 10% auto;
     width: auto;
-    height: 1px;
-    background: linear-gradient(90deg, #fff0, #fffbe8cc, #fff0);
+    height: 1.5px;
+    background: linear-gradient(90deg, #fff0, #fffbe8ee, #fff0);
     background-size: auto;
     border-radius: 0;
     transform: none;
@@ -377,23 +301,7 @@
     opacity: 1;
     filter: none;
   }
-  .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
+  .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
     display: none;
     content: '';
@@ -413,29 +321,30 @@
   }
 }
 
-/* ---- Fichas: runic ---- */
+/* ---- Fichas: runic (épico — talismán washi con patrón geométrico haori y destello) ---- */
 @scope ([data-pieces='runic']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      radial-gradient(ellipse at 50% 50%, #fff0 55%, color-mix(in oklab, var(--d) 18%, #0000)),
-      linear-gradient(180deg, color-mix(in oklab, var(--a) 26%, #f5ecd8), color-mix(in oklab, var(--a) 40%, #ddcdaa));
+      repeating-linear-gradient(60deg, color-mix(in oklab, var(--b) 28%, #0000) 0 1.5px, #0000 1.5px 10px),
+      repeating-linear-gradient(-60deg, color-mix(in oklab, var(--b) 28%, #0000) 0 1.5px, #0000 1.5px 10px),
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 30%, #fff4d8) 0 46%, color-mix(in oklab, var(--a) 48%, #e4cc9a) 100%);
     box-shadow:
-      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
-      0 6px 10px #0000004d,
-      inset 0 0 0 2px color-mix(in oklab, var(--b) 55%, #f5ecd8),
-      inset 0 1px 0 #ffffff80,
-      inset 0 -3px 0 #0000001f;
-    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
+      0 3px 0 #120e14,
+      0 6px 12px color-mix(in oklab, var(--a) 32%, #00000066),
+      inset 0 0 0 2.5px var(--b),
+      inset 0 0 0 4px #fff8e6aa,
+      inset 0 -3px 0 var(--d);
+    border-color: #120e14;
     border-radius: 8px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 0 auto 0 -40%;
-    width: 30%;
+    inset: 0 auto 0 -45%;
+    width: 34%;
     height: auto;
-    background: linear-gradient(100deg, #fff0, #fff8e04d, #fff0);
+    background: linear-gradient(100deg, #fff0, #fff9e099 50%, #fff0);
     background-size: auto;
     border-radius: 0;
     transform: skewX(-18deg);
@@ -443,23 +352,7 @@
     opacity: 1;
     filter: none;
   }
-  .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
+  .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
     display: none;
     content: '';
@@ -479,29 +372,35 @@
   }
 }
 
-/* ---- Fichas: lacquer ---- */
+/* ---- Fichas: lacquer (épico — laca imperial Ichimatsu estilo Demon Slayer con marco de oro) ---- */
 @scope ([data-pieces='lacquer']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      linear-gradient(180deg, #ffffff1f, #fff0 40%),
-      linear-gradient(180deg, color-mix(in oklab, var(--b) 84%, #2a2024), color-mix(in oklab, var(--d) 82%, #1a1216));
+      conic-gradient(
+          color-mix(in oklab, var(--a) 88%, #fff) 90deg,
+          #16121a 90deg 180deg,
+          color-mix(in oklab, var(--b) 90%, #000) 180deg 270deg,
+          #16121a 270deg
+        )
+        0 0 / 16px 16px,
+      linear-gradient(180deg, var(--b), var(--d));
     box-shadow:
-      0 3px 0 color-mix(in oklab, var(--d) 72%, #0b1015),
-      0 6px 10px #0000004d,
-      inset 0 0 0 2.5px color-mix(in oklab, var(--d) 70%, #000),
-      inset 0 0 0 3.5px #dcc58ab0,
-      inset 0 1px 0 #ffffff40;
-    border-color: color-mix(in oklab, var(--d) 72%, #0b1015);
+      0 3px 0 #0a080d,
+      0 6px 14px color-mix(in oklab, var(--a) 35%, #00000077),
+      inset 0 0 0 2.5px #120e14,
+      inset 0 0 0 4px #f2cf78dd,
+      inset 0 2px 0 #ffffff66;
+    border-color: #0a080d;
     border-radius: 9px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 0 auto 0 -40%;
-    width: 26%;
+    inset: 0 auto 0 -45%;
+    width: 30%;
     height: auto;
-    background: linear-gradient(100deg, #fff0, #ffffff2e, #fff0);
+    background: linear-gradient(100deg, #fff0, #fff4cc80 50%, #fff0);
     background-size: auto;
     border-radius: 0;
     transform: skewX(-18deg);
@@ -509,23 +408,7 @@
     opacity: 1;
     filter: none;
   }
-  .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
+  .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
     display: none;
     content: '';
@@ -545,35 +428,37 @@
   }
 }
 
-/* ---- Fichas: oldgold ---- */
+/* ---- Fichas: oldgold (legendario — Oro del Amanecer: filigrana dorada radiante y brillo animado) ---- */
 @scope ([data-pieces='oldgold']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      linear-gradient(180deg, #fff6d84d, #fff0 45%),
+      linear-gradient(122deg, #fff0 0 18%, #fffbe088 18.5% 27%, #fff0 27.5%),
+      repeating-linear-gradient(45deg, #fff6c91c 0 2px, #0000 2px 8px),
       linear-gradient(
         180deg,
-        color-mix(in oklab, var(--a) 42%, #f2e0b0),
-        color-mix(in oklab, var(--b) 42%, #cfb06a) 52%,
-        color-mix(in oklab, var(--d) 38%, #a8874a)
+        color-mix(in oklab, var(--a) 32%, #fff0b8) 0 38%,
+        color-mix(in oklab, var(--b) 36%, #e4b448) 38.5% 76%,
+        color-mix(in oklab, var(--d) 36%, #a66f18) 76.5% 100%
       );
     box-shadow:
-      0 3px 0 #5c4720,
-      0 6px 10px #0000004d,
-      inset 0 0 0 1.5px #fff4cc80,
-      inset 0 0 0 3px #9c7c3e,
-      inset 0 0 0 4px #f3e2b04d,
-      inset 0 -3px 0 #7d6230;
-    border-color: #4a3818;
-    border-radius: 9px;
+      0 3px 0 #261806,
+      0 0 14px #f5c95a66,
+      0 6px 12px #00000066,
+      inset 0 0 0 1.5px #fffbe0dd,
+      inset 0 0 0 3px #8c5c12,
+      inset 0 0 0 4.5px #ffe594aa,
+      inset 0 -3px 0 #70470b;
+    border-color: #261806;
+    border-radius: 10px;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
-    inset: 0 auto 0 -40%;
-    width: 24%;
+    inset: 0 auto 0 -45%;
+    width: 32%;
     height: auto;
-    background: linear-gradient(100deg, #fff0, #fffbe866, #fff0);
+    background: linear-gradient(100deg, #fff0, #ffffffcc 50%, #fff0);
     background-size: auto;
     border-radius: 0;
     transform: skewX(-18deg);
@@ -581,23 +466,7 @@
     opacity: 1;
     filter: none;
   }
-  .piece.h:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
-    content: '';
-    inset: 0;
-    margin: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    mask: none;
-    -webkit-mask: none;
-    opacity: 1;
-    filter: none;
-    border-radius: 0;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
-  }
+  .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
     display: none;
     content: '';
@@ -617,482 +486,464 @@
   }
 }
 
-/* ---- Llave: red ---- */
+/* ============================ Llaves (cel-shading anime, escalando por rareza) ============================ */
+
+/* ---- Llave: red (base — bermellón laca anime con filo dorado) ---- */
 @scope ([data-key='red']) {
   .piece.red .face {
-    background: var(--hatch), var(--red-key-paint);
+    background:
+      linear-gradient(122deg, #ffffff38 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #ff6248 0 42%, #d62d20 42.5% 84%, #8c1614 100%);
     box-shadow:
-      0 4px 0 #091118,
-      0 7px 12px #0007,
-      inset 0 -4px 0 #6d1a12,
-      inset 0 0 0 1.5px #0911185e,
-      inset 0 0 0 3.5px #ffd98a8c,
-      inset 0 2px 0 #fff4d655;
-    border-color: #091118;
+      0 4px 0 #120e14,
+      0 0 14px #ff5a3c66,
+      inset 0 -4px 0 #6b1110,
+      inset 0 0 0 1.5px #120e1466,
+      inset 0 0 0 3.5px #ffd982cc,
+      inset 0 2px 0 #fff4d688;
+    border-color: #120e14;
     opacity: 1;
   }
   .piece.red .face::before {
     inset: 0;
     background:
-      linear-gradient(105deg, #fff0 38%, #ffffff8c 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+      linear-gradient(105deg, #fff0 38%, #ffffff99 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
     background-size:
       260% 100%,
       100% 100%;
     border-radius: 13px;
-    animation: key-glint 3.6s ease-in-out infinite;
+    animation: key-glint 3.4s ease-in-out infinite;
     opacity: 1;
     transform: none;
     width: auto;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffe9ad' stroke='%23091118' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff0b8' stroke='%23120e14' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 2px 0 #120e14);
   }
   .piece.red {
     animation: keyGlow 2.4s ease-in-out infinite;
   }
 }
 
-/* ---- Llave: amber ---- */
+/* ---- Llave: amber (común — Ámbar Relámpago) ---- */
 @scope ([data-key='amber']) {
   .piece.red .face {
     background:
-      radial-gradient(circle at 22% 62%, #fff8 0 1.2px, #0000 1.8px),
-      radial-gradient(circle at 74% 30%, #fff8 0 1.6px, #0000 2.3px),
-      radial-gradient(circle at 58% 76%, #fff6 0 1px, #0000 1.6px),
-      radial-gradient(circle at 84% 70%, #3a1a0499 0 1.6px, #0000 2.4px),
-      radial-gradient(ellipse at 30% 25%, #fff0b8 0, #ffc45a 22%, #ec9420 52%, #a85a0c 82%, #6a3006);
+      linear-gradient(122deg, #fffbe066 0 20%, #fff0 20.5%),
+      linear-gradient(180deg, #ffe270 0 42%, #f09b1c 42.5% 84%, #a85208 100%);
     box-shadow:
-      0 4px 0 #091118,
-      0 0 14px #ffb84a66,
-      inset 0 -4px 0 #7a4308,
-      inset 0 0 0 1.5px #0911185e,
-      inset 0 0 0 3.5px #ffe7a08c,
-      inset 0 0 12px #fff2c055;
-    border-color: #091118;
+      0 4px 0 #120e14,
+      0 0 14px #ffb84a77,
+      inset 0 -4px 0 #7a3b06,
+      inset 0 0 0 1.5px #120e1455,
+      inset 0 0 0 3.5px #fff2b2cc,
+      inset 0 2px 0 #ffffffaa;
+    border-color: #120e14;
     opacity: 1;
   }
   .piece.red .face::before {
     inset: 0;
     background:
-      linear-gradient(105deg, #fff0 38%, #ffffff8c 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+      linear-gradient(105deg, #fff0 38%, #ffffffa6 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
     background-size:
       260% 100%,
       100% 100%;
     border-radius: 13px;
-    animation: key-glint 3.6s ease-in-out infinite;
+    animation: key-glint 3.4s ease-in-out infinite;
     opacity: 1;
     transform: none;
     width: auto;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff6dc' stroke='%235a2c06' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff9e0' stroke='%234a2004' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 2px 0 #120e14);
   }
   .piece.red {
     animation: skin-glow-amber 2.6s ease-in-out infinite;
   }
 }
 
-/* ---- Llave: iron ---- */
+/* ---- Llave: iron (común — Acero Nichirin forjado) ---- */
 @scope ([data-key='iron']) {
   .piece.red .face {
     background:
-      radial-gradient(circle at 8px 8px, #d7dde0 0 1.5px, #1a1d20 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(circle at calc(100% - 8px) 8px, #d7dde0 0 1.5px, #1a1d20 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(circle at 8px calc(100% - 9px), #d7dde0 0 1.5px, #1a1d20 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(circle at calc(100% - 8px) calc(100% - 9px), #d7dde0 0 1.5px, #1a1d20 1.6px 2.7px, #0000 2.9px),
-      radial-gradient(ellipse at 78% 72%, #b0562aa6 0 10%, #0000 22%),
-      radial-gradient(ellipse at 22% 30%, #a8562a73 0 7%, #0000 16%),
-      radial-gradient(circle at 50% 50%, #ffffff12 0 1px, #0000 1.5px) 0 0 / 5px 5px,
-      linear-gradient(160deg, #a4abb0 0 20%, #6a7177 48%, #3b4045 80%, #262a2e);
+      linear-gradient(118deg, #ffffff55 0 14%, #fff0 14.5% 46%, #ffffff22 46.5% 51%, #fff0 51.5%),
+      linear-gradient(180deg, #b8c6d4 0 40%, #637386 40.5% 80%, #2a333f 100%);
     box-shadow:
-      0 4px 0 #091118,
+      0 4px 0 #120e14,
       0 7px 12px #0007,
-      inset 0 -4px 0 #1b1e21,
-      inset 0 0 0 1.5px #0911188c,
-      inset 0 0 0 3.5px #d5d9dc59,
-      inset 0 2px 0 #ffffff40;
-    border-color: #091118;
+      inset 0 -4px 0 #1a2028,
+      inset 0 0 0 1.5px #120e1488,
+      inset 0 0 0 3.5px #e2ebf588,
+      inset 0 2px 0 #ffffff66;
+    border-color: #120e14;
     opacity: 1;
   }
   .piece.red .face::before {
     inset: 0;
     background:
-      linear-gradient(105deg, #fff0 38%, #ffffff8c 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+      linear-gradient(105deg, #fff0 38%, #ffffff99 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
     background-size:
       260% 100%,
       100% 100%;
     border-radius: 13px;
     animation: key-glint 3.6s ease-in-out infinite;
-    opacity: 0.45;
+    opacity: 0.65;
     transform: none;
     width: auto;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23d9915a' stroke='%231a1d20' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23f2b672' stroke='%23120e14' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 2px 0 #120e14);
   }
   .piece.red {
     animation: none;
   }
 }
 
-/* ---- Llave: rose ---- */
+/* ---- Llave: rose (común — Sakura carmesí) ---- */
 @scope ([data-key='rose']) {
   .piece.red .face {
     background:
-      radial-gradient(circle at 50% 100%, #ffffff26 0 35%, #0000 36%) 0 0 / 10px 8px,
-      radial-gradient(circle at 20% 28%, #fff 0 1.4px, #ffe4ec 1.6px 2.6px, #0000 3px),
-      radial-gradient(circle at 80% 72%, #fff 0 1.2px, #ffe4ec 1.4px 2.2px, #0000 2.6px),
-      linear-gradient(160deg, #ffc2cc 0 18%, #f46f8c 48%, #c43a5e 78%, #8a2342);
+      linear-gradient(122deg, #ffffff4d 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #ffb6ce 0 38%, #eb5684 38.5% 82%, #9a1d48 100%);
     box-shadow:
-      0 4px 0 #091118,
-      0 0 12px #ff8fae55,
-      inset 0 -4px 0 #7a1e39,
-      inset 0 0 0 1.5px #0911185e,
-      inset 0 0 0 3.5px #ffe0e8a6,
-      inset 0 2px 0 #fff;
-    border-color: #091118;
+      0 4px 0 #120e14,
+      0 0 14px #ff7ca477,
+      inset 0 -4px 0 #701434,
+      inset 0 0 0 1.5px #120e1455,
+      inset 0 0 0 3.5px #ffe3ecdd,
+      inset 0 2px 0 #ffffffcc;
+    border-color: #120e14;
     opacity: 1;
   }
   .piece.red .face::before {
     inset: 0;
     background:
-      linear-gradient(105deg, #fff0 38%, #ffffff8c 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+      linear-gradient(105deg, #fff0 38%, #ffffffa6 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
     background-size:
       260% 100%,
       100% 100%;
     border-radius: 13px;
-    animation: key-glint 3.6s ease-in-out infinite;
+    animation: key-glint 3.4s ease-in-out infinite;
     opacity: 1;
     transform: none;
     width: auto;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fffaf4' stroke='%235c1027' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff8fa' stroke='%2359102a' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 2px 0 #120e14);
   }
   .piece.red {
     animation: skin-glow-rose 2.6s ease-in-out infinite;
   }
 }
 
-/* ---- Llave: emerald ---- */
+/* ---- Llave: emerald (raro — Esmeralda del Viento facetada) ---- */
 @scope ([data-key='emerald']) {
   .piece.red .face {
     background:
-      linear-gradient(120deg, #ffffffa6 0 9%, #fff0 10%), radial-gradient(ellipse at 50% 50%, #9dffcf 0 18%, #0000 19%),
+      linear-gradient(120deg, #ffffffb8 0 12%, #fff0 12.5%),
       conic-gradient(
-        from 22deg at 50% 50%,
-        #c8ffe0 0 6%,
-        #2fbf73 6% 18%,
-        #0d6a3a 18% 31%,
-        #4fe39a 31% 43%,
-        #0a5530 43% 56%,
-        #7ff0b0 56% 68%,
-        #127a44 68% 81%,
-        #3dd68a 81% 93%,
-        #c8ffe0 93%
+        from 20deg at 50% 50%,
+        #d4ffe8 0 8%,
+        #2ad47e 8% 22%,
+        #0c6e3d 22% 36%,
+        #52ed9e 36% 48%,
+        #09542e 48% 62%,
+        #86f7bc 62% 74%,
+        #12854b 74% 88%,
+        #d4ffe8 88%
       );
     box-shadow:
-      0 4px 0 #091118,
-      0 0 16px #58f0a088,
-      inset 0 -4px 0 #0b4a2a,
-      inset 0 0 0 1.5px #0911185e,
-      inset 0 0 0 3.5px #e8c46a,
-      inset 0 0 0 5px #0b4a2a66;
-    border-color: #091118;
+      0 4px 0 #120e14,
+      0 0 18px #42f09899,
+      inset 0 -4px 0 #094526,
+      inset 0 0 0 1.5px #120e1466,
+      inset 0 0 0 3.5px #f2cf78,
+      inset 0 0 0 5px #09452666;
+    border-color: #120e14;
     opacity: 1;
   }
   .piece.red .face::before {
     inset: 0;
     background:
-      linear-gradient(105deg, #fff0 38%, #ffffff8c 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+      linear-gradient(105deg, #fff0 38%, #ffffffa6 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
     background-size:
       260% 100%,
       100% 100%;
     border-radius: 13px;
-    animation: key-glint 3.6s ease-in-out infinite;
+    animation: key-glint 3.2s ease-in-out infinite;
     opacity: 1;
     transform: none;
     width: auto;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffe38a' stroke='%230a3a20' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff0a8' stroke='%2308381f' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 2px 0 #120e14);
   }
   .piece.red {
-    animation: skin-glow-emerald 2.6s ease-in-out infinite;
+    animation: skin-glow-emerald 2.4s ease-in-out infinite;
   }
 }
 
-/* ---- Llave: sapphire ---- */
+/* ---- Llave: sapphire (raro — Zafiro Respiración del Agua) ---- */
 @scope ([data-key='sapphire']) {
   .piece.red .face {
     background:
-      radial-gradient(circle at 24% 28%, #fff 0 1px, #0000 1.6px),
-      linear-gradient(0deg, #0000 47%, #ffffffb0 49% 51%, #0000 53%) 21% 26% / 10px 10px no-repeat,
-      linear-gradient(90deg, #0000 47%, #ffffffb0 49% 51%, #0000 53%) 21% 26% / 10px 10px no-repeat,
-      linear-gradient(120deg, #ffffff73 0 9%, #fff0 10%),
+      linear-gradient(120deg, #ffffff99 0 12%, #fff0 12.5%),
       conic-gradient(
-        from 22deg at 50% 50%,
-        #cfe6ff 0 6%,
-        #3f86e8 6% 18%,
-        #12398c 18% 31%,
-        #5aa3ff 31% 43%,
-        #0e2c6e 43% 56%,
-        #8cc4ff 56% 68%,
-        #17449c 68% 81%,
-        #4a92f2 81% 93%,
-        #cfe6ff 93%
+        from 20deg at 50% 50%,
+        #d8f0ff 0 8%,
+        #3490f2 8% 22%,
+        #103a8f 22% 36%,
+        #62b8ff 36% 48%,
+        #0c2a6e 48% 62%,
+        #96d4ff 62% 74%,
+        #184ca8 74% 88%,
+        #d8f0ff 88%
       );
     box-shadow:
-      0 4px 0 #091118,
-      0 0 16px #5aa8ff88,
-      inset 0 -4px 0 #0c2456,
-      inset 0 0 0 1.5px #0911185e,
-      inset 0 0 0 3.5px #e3ecf7,
-      inset 0 0 0 5px #0c245666;
-    border-color: #091118;
+      0 4px 0 #120e14,
+      0 0 18px #52b4ff99,
+      inset 0 -4px 0 #0a2254,
+      inset 0 0 0 1.5px #120e1466,
+      inset 0 0 0 3.5px #e6f2ff,
+      inset 0 0 0 5px #0a225466;
+    border-color: #120e14;
     opacity: 1;
   }
   .piece.red .face::before {
     inset: 0;
     background:
-      linear-gradient(105deg, #fff0 38%, #ffffff8c 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+      linear-gradient(105deg, #fff0 38%, #ffffffa6 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
     background-size:
       260% 100%,
       100% 100%;
     border-radius: 13px;
-    animation: key-glint 3.6s ease-in-out infinite;
+    animation: key-glint 3.2s ease-in-out infinite;
     opacity: 1;
     transform: none;
     width: auto;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23f1f6ff' stroke='%230c2456' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23f4f9ff' stroke='%230a2254' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 2px 0 #120e14);
   }
   .piece.red {
-    animation: skin-glow-sapphire 2.6s ease-in-out infinite;
+    animation: skin-glow-sapphire 2.4s ease-in-out infinite;
   }
 }
 
-/* ---- Llave: crystal ---- */
+/* ---- Llave: crystal (raro — Prisma de Niebla iridiscente) ---- */
 @scope ([data-key='crystal']) {
   .piece.red .face {
     background:
-      linear-gradient(
-        118deg,
-        #ffffffe0 0 11%,
-        #fff0 12% 42%,
-        #ffffff80 43% 48%,
-        #fff0 49% 70%,
-        #ffffff40 71% 74%,
-        #fff0 75%
-      ),
-      linear-gradient(90deg, #ff9aa24d, #ffe08a4d 25%, #9affc84d 50%, #8ad8ff4d 75%, #c49aff4d),
-      linear-gradient(160deg, #f6feff, #b4e8f8 50%, #6cbfe2);
+      linear-gradient(116deg, #ffffffee 0 13%, #fff0 13.5% 40%, #ffffff99 40.5% 47%, #fff0 47.5% 68%, #ffffff55 68.5% 72%, #fff0 72.5%),
+      linear-gradient(90deg, #ff99b866, #ffe48a66 25%, #8affd266 50%, #7ad8ff66 75%, #c89aff66),
+      linear-gradient(160deg, #ffffff, #b4ecff 50%, #5cb8e6);
     box-shadow:
-      0 4px 0 #091118,
-      0 0 16px #8fe3ffa6,
-      inset 0 -4px 0 #2b7aa3,
-      inset 0 0 0 1.5px #0911185e,
-      inset 0 0 0 3.5px #ffffffd9,
-      inset 0 0 14px #ffffffa6;
-    border-color: #091118;
-    opacity: 0.97;
+      0 4px 0 #120e14,
+      0 0 18px #8fe8ffbb,
+      inset 0 -4px 0 #246f99,
+      inset 0 0 0 1.5px #120e1455,
+      inset 0 0 0 3.5px #ffffffee,
+      inset 0 0 14px #ffffffaa;
+    border-color: #120e14;
+    opacity: 0.98;
   }
   .piece.red .face::before {
     inset: 0;
     background:
-      linear-gradient(105deg, #fff0 38%, #ffffff8c 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+      linear-gradient(105deg, #fff0 38%, #ffffffb8 50%, #fff0 62%), linear-gradient(180deg, #ffffff55, #fff0 45%);
     background-size:
       260% 100%,
       100% 100%;
     border-radius: 13px;
-    animation: key-glint 3.6s ease-in-out infinite;
+    animation: key-glint 3s ease-in-out infinite;
     opacity: 1;
     transform: none;
     width: auto;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffffff' stroke='%231d5a80' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffffff' stroke='%23185278' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 2px 0 #120e14);
   }
   .piece.red {
-    animation: skin-glow-crystal 2.4s ease-in-out infinite;
+    animation: skin-glow-crystal 2.2s ease-in-out infinite;
   }
 }
 
-/* ---- Llave: obsidian ---- */
+/* ---- Llave: obsidian (épico — Obsidiana Glicina con grietas eléctricas) ---- */
 @scope ([data-key='obsidian']) {
   .piece.red .face {
     background:
-      linear-gradient(118deg, #ffffff47 0 8%, #fff0 9% 46%, #ffffff1f 47% 51%, #fff0 52%),
-      repeating-linear-gradient(128deg, #0000 0 10px, #b07cff66 10px 11px, #0000 11px 25px),
-      radial-gradient(ellipse at 72% 80%, #8a4cff73, #0000 60%), linear-gradient(160deg, #3e3352, #120d1c 60%, #08060d);
+      linear-gradient(118deg, #ffffff55 0 9%, #fff0 9.5% 46%, #ffffff26 46.5% 51%, #fff0 51.5%),
+      repeating-linear-gradient(128deg, #0000 0 9px, #c47cffaa 9px 10.5px, #0000 10.5px 22px),
+      radial-gradient(ellipse at 72% 80%, #ff4d8877, #0000 58%),
+      linear-gradient(160deg, #3c2658, #140c24 58%, #07040d);
     box-shadow:
-      0 4px 0 #091118,
-      0 0 16px #b08cff77,
-      inset 0 -4px 0 #05030a,
-      inset 0 0 0 1.5px #0911185e,
-      inset 0 0 0 3.5px #c9a3ff80,
-      inset 0 0 12px #8a4cff4d;
-    border-color: #091118;
+      0 4px 0 #08040e,
+      0 0 20px #b87aff99,
+      inset 0 -4px 0 #05020a,
+      inset 0 0 0 1.5px #08040e,
+      inset 0 0 0 3.5px #d4a6ffaa,
+      inset 0 0 14px #9a4cff66;
+    border-color: #08040e;
     opacity: 1;
   }
   .piece.red .face::before {
     inset: 0;
     background:
-      linear-gradient(105deg, #fff0 38%, #ffffff8c 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+      linear-gradient(105deg, #fff0 38%, #f0d6ffaa 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
     background-size:
       260% 100%,
       100% 100%;
     border-radius: 13px;
-    animation: key-glint 3.6s ease-in-out infinite;
+    animation: key-glint 2.8s ease-in-out infinite;
     opacity: 1;
     transform: none;
     width: auto;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23e6d0ff' stroke='%23120d1c' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23f2dcff' stroke='%23120820' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 0 4px #c084fc) drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 0 5px #c884ff) drop-shadow(0 2px 0 #08040e);
   }
   .piece.red {
-    animation: skin-glow-obsidian 2.8s ease-in-out infinite;
+    animation: skin-glow-obsidian 2.4s ease-in-out infinite;
   }
 }
 
-/* ---- Llave: star ---- */
+/* ---- Llave: star (épico — Constelación Lunar) ---- */
 @scope ([data-key='star']) {
   .piece.red .face {
     background:
-      radial-gradient(circle at 14% 72%, #fff 0 1px, #0000 1.6px),
-      radial-gradient(circle at 88% 22%, #ffe9ad 0 1.2px, #0000 1.8px),
-      radial-gradient(circle at 46% 86%, #fff 0 0.8px, #0000 1.4px),
-      radial-gradient(ellipse at 70% 30%, #ff8fd866, #0000 50%),
-      radial-gradient(ellipse at 25% 40%, #6cd8ff4d, #0000 55%), linear-gradient(160deg, #6a4ad0, #2c1b74 55%, #110935);
+      radial-gradient(circle at 14% 72%, #fff 0 1.1px, #0000 1.8px),
+      radial-gradient(circle at 88% 22%, #ffe9ad 0 1.3px, #0000 2px),
+      radial-gradient(circle at 46% 86%, #fff 0 0.9px, #0000 1.5px),
+      radial-gradient(ellipse at 72% 28%, #ff7ad077, #0000 50%),
+      radial-gradient(ellipse at 24% 42%, #5ed8ff66, #0000 55%),
+      linear-gradient(160deg, #6e46e0, #2a1778 55%, #0f0730);
     box-shadow:
-      0 4px 0 #091118,
-      0 0 16px #b08cff88,
-      inset 0 -4px 0 #1a0f48,
-      inset 0 0 0 1.5px #0911185e,
-      inset 0 0 0 3.5px #ffe9ad99;
-    border-color: #091118;
+      0 4px 0 #0a061c,
+      0 0 20px #9c7cffaa,
+      inset 0 -4px 0 #160a42,
+      inset 0 0 0 1.5px #0a061c,
+      inset 0 0 0 3.5px #ffebb0cc;
+    border-color: #0a061c;
     opacity: 1;
   }
   .piece.red .face::before {
     inset: 10% 12%;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cg stroke='%23fff' stroke-width='.7' opacity='.75' fill='none'%3E%3Cpath d='M4 6l7 4 6-3 4 6'/%3E%3C/g%3E%3Cg fill='%23fff'%3E%3Ccircle cx='4' cy='6' r='1.1'/%3E%3Ccircle cx='11' cy='10' r='1.3'/%3E%3Ccircle cx='17' cy='7' r='1'/%3E%3Ccircle cx='21' cy='13' r='1.2'/%3E%3C/g%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cg stroke='%23fff' stroke-width='.8' opacity='.85' fill='none'%3E%3Cpath d='M4 6l7 4 6-3 4 6'/%3E%3C/g%3E%3Cg fill='%23fff'%3E%3Ccircle cx='4' cy='6' r='1.2'/%3E%3Ccircle cx='11' cy='10' r='1.4'/%3E%3Ccircle cx='17' cy='7' r='1.1'/%3E%3Ccircle cx='21' cy='13' r='1.3'/%3E%3C/g%3E%3C/svg%3E")
       center / contain no-repeat;
     background-size: contain;
     border-radius: 0;
-    animation: skin-twinkle 2.2s ease-in-out infinite alternate;
+    animation: skin-twinkle 2s ease-in-out infinite alternate;
     opacity: 1;
     transform: none;
     width: auto;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffe38a' stroke='%231a0f48' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffe68a' stroke='%23160a42' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 0 4px #ffd24a) drop-shadow(0 2px 0 #0a061c);
   }
   .piece.red {
-    animation: skin-glow-star 3.2s ease-in-out infinite;
+    animation: skin-glow-star 2.6s ease-in-out infinite;
   }
 }
 
-/* ---- Llave: gold ---- */
+/* ---- Llave: gold (legendario — Respiración Solar: oro imperial radiante y flecha rubí) ---- */
 @scope ([data-key='gold']) {
   .piece.red .face {
     background:
-      repeating-linear-gradient(118deg, #8a64081f 0 1px, #0000 1px 6px),
-      radial-gradient(ellipse at 28% 18%, #fffbe6 0, #ffe27a 26%, #e3a81e 62%, #9a6a08 92%);
+      linear-gradient(120deg, #fff0 0 18%, #ffffffaa 18.5% 27%, #fff0 27.5%),
+      radial-gradient(ellipse at 26% 18%, #fffdf0 0, #ffe678 28%, #eb9e14 64%, #9a5204 94%);
     box-shadow:
-      0 4px 0 #091118,
-      0 0 20px #ffd24a99,
-      inset 0 -4px 0 #7a5306,
-      inset 0 0 0 1.5px #5a3d05,
-      inset 0 0 0 3px #fff6c9,
-      inset 0 0 0 4.5px #a8791c,
-      inset 0 2px 0 #fff;
-    border-color: #091118;
+      0 4px 0 #1c1002,
+      0 0 24px #ffd24acc,
+      inset 0 -4px 0 #7a4404,
+      inset 0 0 0 1.5px #4a2a04,
+      inset 0 0 0 3.2px #fff8d4,
+      inset 0 0 0 4.8px #b87814,
+      inset 0 2px 0 #ffffff;
+    border-color: #1c1002;
     opacity: 1;
   }
   .piece.red .face::before {
     inset: -30% auto -30% -70%;
-    background: linear-gradient(100deg, #fff0, #ffffffd9 50%, #fff0);
+    background: linear-gradient(100deg, #fff0, #ffffffee 50%, #fff0);
     background-size: auto;
     border-radius: 0;
-    animation: skin-sheen 3s ease-in-out infinite;
+    animation: skin-sheen 2.4s ease-in-out infinite;
     opacity: 1;
     transform: skewX(-18deg);
-    width: 45%;
+    width: 48%;
     height: auto;
   }
   .piece.red .face::after {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%23fff1b8' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23e0304a' stroke='%234a0a12' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%23fff6cc' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23e82842' stroke='%233d060e' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / contain no-repeat;
     width: 54%;
     height: 54%;
-    filter: drop-shadow(0 0 3px #ff6a7a) drop-shadow(0 2px 0 #091118);
+    filter: drop-shadow(0 0 5px #ff546a) drop-shadow(0 2px 0 #1c1002);
   }
   .piece.red {
-    animation: skin-glow-gold 2.4s ease-in-out infinite;
+    animation: skin-glow-gold 2s ease-in-out infinite;
   }
 }
 
 /* Animaciones: fuera en modo ligero y con «reducir movimiento» */
 @scope ([data-pieces='runic']) {
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
-    animation: skin-sheen 7s ease-in-out infinite;
+    animation: skin-sheen 5.5s ease-in-out infinite;
   }
 }
 @scope ([data-pieces='lacquer']) {
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
-    animation: skin-sheen 6s ease-in-out infinite;
+    animation: skin-sheen 4.8s ease-in-out infinite;
   }
 }
 @scope ([data-pieces='oldgold']) {
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
-    animation: skin-sheen 4.2s ease-in-out infinite;
+    animation: skin-sheen 3.6s ease-in-out infinite;
   }
 }
 .piece.c1 .face::before,
@@ -1139,16 +990,16 @@ html.lite :is([data-pieces], [data-key]) .piece.red {
 
 @keyframes skin-sheen {
   0%,
-  60% {
+  55% {
     translate: 0 0;
   }
   100% {
-    translate: 420% 0;
+    translate: 440% 0;
   }
 }
 @keyframes skin-twinkle {
   from {
-    opacity: 0.35;
+    opacity: 0.4;
   }
   to {
     opacity: 1;
@@ -1161,70 +1012,70 @@ html.lite :is([data-pieces], [data-key]) .piece.red {
     filter: drop-shadow(0 0 3px #ffb84a44);
   }
   50% {
-    filter: drop-shadow(0 0 12px #ffb84acc);
+    filter: drop-shadow(0 0 13px #ffb84add);
   }
 }
 @keyframes skin-glow-rose {
   0%,
   100% {
-    filter: drop-shadow(0 0 3px #ff8fae44);
+    filter: drop-shadow(0 0 3px #ff7ca444);
   }
   50% {
-    filter: drop-shadow(0 0 12px #ff8faecc);
+    filter: drop-shadow(0 0 13px #ff7ca4dd);
   }
 }
 @keyframes skin-glow-emerald {
   0%,
   100% {
-    filter: drop-shadow(0 0 3px #58f0a044);
+    filter: drop-shadow(0 0 4px #42f09855);
   }
   50% {
-    filter: drop-shadow(0 0 12px #58f0a0cc);
+    filter: drop-shadow(0 0 14px #42f098dd);
   }
 }
 @keyframes skin-glow-sapphire {
   0%,
   100% {
-    filter: drop-shadow(0 0 3px #5aa8ff44);
+    filter: drop-shadow(0 0 4px #52b4ff55);
   }
   50% {
-    filter: drop-shadow(0 0 12px #5aa8ffcc);
+    filter: drop-shadow(0 0 14px #52b4ffdd);
   }
 }
 @keyframes skin-glow-crystal {
   0%,
   100% {
-    filter: drop-shadow(0 0 3px #bff0ff44);
+    filter: drop-shadow(0 0 4px #9ceeff55);
   }
   50% {
-    filter: drop-shadow(0 0 12px #bff0ffdd);
+    filter: drop-shadow(0 0 15px #9ceeffe6);
   }
 }
 @keyframes skin-glow-obsidian {
   0%,
   100% {
-    filter: drop-shadow(0 0 3px #c084fc44);
+    filter: drop-shadow(0 0 4px #c884ff66);
   }
   50% {
-    filter: drop-shadow(0 0 12px #c084fccc);
+    filter: drop-shadow(0 0 16px #c884ffdd);
   }
 }
 @keyframes skin-glow-star {
   0%,
   100% {
-    filter: drop-shadow(0 0 3px #b08cff44);
+    filter: drop-shadow(0 0 4px #9c7cff66);
   }
   50% {
-    filter: drop-shadow(0 0 12px #b08cffcc);
+    filter: drop-shadow(0 0 16px #b898ffdd);
   }
 }
 @keyframes skin-glow-gold {
   0%,
   100% {
-    filter: drop-shadow(0 0 3px #ffd24a44);
+    filter: drop-shadow(0 0 5px #ffd24a66);
   }
   50% {
-    filter: drop-shadow(0 0 12px #ffd24add);
+    filter: drop-shadow(0 0 18px #ffd24aee);
   }
 }
 
@@ -1235,9 +1086,9 @@ html.lite :is([data-pieces], [data-key]) .piece.red {
   overflow: visible;
   border: 0;
   border-radius: 12px;
-  background: radial-gradient(circle at 50% 45%, #2a3b4c, #0f1820);
+  background: radial-gradient(circle at 50% 45%, #242c4d, #101426);
   box-shadow:
-    inset 0 0 0 1.5px #0911188c,
+    inset 0 0 0 1.5px #120e148c,
     inset 0 2px 8px #0008;
   --gap: 2px;
 }
