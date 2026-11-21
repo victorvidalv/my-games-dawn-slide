@@ -42,13 +42,13 @@ import { isValidState, minMoves } from '../src/engine/index.js';
 const banks = { levels: bank.ratings, special };
 
 describe('retos diarios: calendario y desbloqueo', () => {
-  it('cinco retos: el Clásico siempre abierto y los demás al llegar al nivel 4, 8, 14 y 21 en Aventura', () => {
-    expect(CHALLENGES.map((c) => [c.id, c.unlock])).toEqual([
-      ['classic', 0],
-      ['frost', 4],
-      ['gears', 8],
-      ['all', 14],
-      ['master', 21],
+  it('cinco retos: el Clásico siempre abierto y los demás al llegar al nivel 10, 13, 18 y 21 en Aventura', () => {
+    expect(CHALLENGES.map((c) => [c.id, c.name, c.unlock])).toEqual([
+      ['classic', 'Clásico', 0],
+      ['rocks', 'Rocas', 10],
+      ['frost', 'Hielo', 13],
+      ['gears', 'Mecanismos', 18],
+      ['all', 'Todo junto', 21],
     ]);
     expect(CHALLENGES.map((c) => isUnlocked(c, 0))).toEqual([true, false, false, false, false]);
     for (const c of CHALLENGES.slice(1)) {
@@ -94,12 +94,13 @@ describe('retos diarios: el tablero del día', () => {
     ).toBe(days.length);
   });
   it('todos tienen solución y el mínimo anunciado coincide con la curva escalonada de cada reto', () => {
+    // Clásico 5·9·12 y cada reto siguiente un movimiento más en cada tablero
     expect(CHALLENGES.map((c) => challengeTargets(c))).toEqual([
-      [5, 8, 12],
-      [6, 9, 13],
-      [7, 10, 14],
-      [8, 12, 16],
-      [10, 14, 18],
+      [5, 9, 12],
+      [6, 10, 13],
+      [7, 11, 14],
+      [8, 12, 15],
+      [9, 13, 16],
     ]);
     for (const { c, d, target, G } of built) {
       expect(isValidState(G.pieces, G.pos, G.walls), `${c.id} día ${d}`).toBe(true);
@@ -126,23 +127,17 @@ describe('retos diarios: el tablero del día', () => {
         expect(k.size, `clásico día ${d}`).toBe(0);
         expect(walls).toBe(false);
       }
-      if (c.id === 'frost') expect(walls || k.has('ice'), `rocas/hielo día ${d}`).toBe(true);
+      if (c.id === 'rocks') expect(walls, `rocas día ${d}`).toBe(true);
+      if (c.id === 'frost') expect(k.has('ice'), `hielo día ${d}`).toBe(true);
       if (c.id === 'gears') expect(k.has('heavy') || k.has('lock') || k.has('gate'), `mecanismos día ${d}`).toBe(true);
-      if (c.id === 'all' || c.id === 'master')
-        expect(k.size + (walls ? 1 : 0), `${c.id} día ${d}`).toBeGreaterThanOrEqual(3);
+      if (c.id === 'all') expect(k.size + (walls ? 1 : 0), `${c.id} día ${d}`).toBeGreaterThanOrEqual(3);
     }
-    // el Maestro deja menos margen que «Todo junto» para un mínimo parecido
-    const ratio = (id) => built.filter((b) => b.c.id === id).reduce((a, b) => a + b.G.limit / b.G.opt, 0) / days.length;
-    expect(ratio('master')).toBeLessThan(ratio('all'));
   });
-  it('rocas y hielo se alternan de un día al siguiente', () => {
-    const c = challengeById('frost'),
-      a = buildDaily(c, 20800, banks),
-      b = buildDaily(c, 20801, banks);
-    expect(a.family).toBe(todayFamily(c, 20800));
-    expect(b.family).toBe(todayFamily(c, 20801));
-    expect(a.family).not.toBe(b.family);
-    expect([a.family, b.family].sort()).toEqual(['ice', 'walls']);
+  it('Rocas y Hielo son retos separados, cada uno con su familia todos los días', () => {
+    for (const day of [20800, 20801, 20802]) {
+      expect(todayFamily(challengeById('rocks'), day)).toBe('walls');
+      expect(todayFamily(challengeById('frost'), day)).toBe('ice');
+    }
   });
 });
 

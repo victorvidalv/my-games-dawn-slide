@@ -4,7 +4,7 @@ import { buildLevel, pickBoard } from '../engine/levels.js';
 import { hash32, mulberry32 } from '../engine/rng.js';
 import { levelPlan } from './mechanics.js';
 
-export const DAILY_TARGETS = [5, 8, 12];
+export const DAILY_TARGETS = [5, 9, 12];
 export const STREAK_HINT_REWARDS = [
   { days: 3, hints: 1 },
   { days: 5, hints: 2 },
@@ -12,7 +12,14 @@ export const STREAK_HINT_REWARDS = [
 ];
 export const streakHintBonus = (days) =>
   STREAK_HINT_REWARDS.reduce((bonus, reward) => (days >= reward.days ? reward.hints : bonus), 0);
-/** `level` solo decide la ciudad de fondo y su música; `ratings` es el tramo de dificultad del banco del que sale el tablero. */
+/**
+ * Cinco retos, cada uno con su pieza y una escalera de mínimos: el Clásico pide 5, 9 y 12 movimientos y cada reto
+ * siguiente uno más en cada tablero (Rocas 6·10·13, Hielo 7·11·14, Mecanismos 8·12·15, Todo junto 9·13·16).
+ * `level` solo decide la ciudad de fondo, su música y el margen de turnos; `ratings` es el tramo de dificultad del banco.
+ * Los id se conservan por compatibilidad: «frost» es ahora solo el hielo y «rocks» es nuevo.
+ */
+export const DAILY_STEP = 1;
+const ladder = (k) => DAILY_TARGETS.map((t) => t + k * DAILY_STEP);
 export const CHALLENGES = [
   {
     id: 'classic',
@@ -21,54 +28,53 @@ export const CHALLENGES = [
     name: 'Clásico',
     desc: 'Sin piezas especiales',
     families: ['plain'],
-    targets: [5, 8, 12],
+    targets: ladder(0),
     ratings: [1, 60],
     level: 1,
   },
   {
-    id: 'frost',
-    unlock: 4,
-    icon: 'ice',
-    name: 'Rocas y hielo',
-    desc: 'Un día rocas, otro hielo',
-    families: ['walls', 'ice'],
-    targets: [6, 9, 13],
+    id: 'rocks',
+    unlock: 10,
+    icon: 'rock',
+    name: 'Rocas',
+    desc: 'Rocas que bloquean el paso',
+    families: ['walls'],
+    targets: ladder(1),
     ratings: [15, 75],
+    level: 7,
+  },
+  {
+    id: 'frost',
+    unlock: 13,
+    icon: 'ice',
+    name: 'Hielo',
+    desc: 'Piezas que resbalan hasta chocar',
+    families: ['ice'],
+    targets: ladder(2),
+    ratings: [20, 80],
     level: 10,
   },
   {
     id: 'gears',
-    unlock: 8,
+    unlock: 18,
     icon: 'lock',
     name: 'Mecanismos',
     desc: 'Candados y piezas pesadas',
     families: ['combo_hg'],
-    targets: [7, 10, 14],
+    targets: ladder(3),
     ratings: [25, 85],
     level: 13,
   },
   {
     id: 'all',
-    unlock: 14,
+    unlock: 21,
     icon: 'crystal',
     name: 'Todo junto',
     desc: 'Todas las piezas especiales',
     families: ['combo_whgi'],
-    targets: [8, 12, 16],
+    targets: ladder(4),
     ratings: [50, 92],
     level: 16,
-  },
-  {
-    id: 'master',
-    unlock: 21,
-    icon: 'crown',
-    name: 'Maestro',
-    desc: 'Todas las piezas, sin margen',
-    families: ['combo_whgi'],
-    targets: [10, 14, 18],
-    ratings: [75, 100],
-    level: 21,
-    tight: true,
   },
 ];
 export const challengeById = (id) => CHALLENGES.find((c) => c.id === id) || CHALLENGES[0];

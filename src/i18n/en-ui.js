@@ -910,4 +910,10 @@ export const EN_UI = {
   '+2 turnos y rehace 1 tablero': '+2 turns and reset 1 board',
   '2 deshacer por tablero': '2 undos per board',
   '2 por tablero': '2 per board',
+  'Rocas que bloquean el paso': 'Rocks that block the way',
+  'Piezas que resbalan hasta chocar': 'Pieces that slide until they hit something',
+  'Resuelve el reto Todo junto': 'Solve the All together challenge',
+  'Resuelve 5 retos Todo junto': 'Solve 5 All together challenges',
+  Rocas: 'Rocks',
+  Hielo: 'Ice',
 };

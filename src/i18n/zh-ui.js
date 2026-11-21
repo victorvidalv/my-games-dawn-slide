@@ -868,4 +868,10 @@ export const ZH_UI = {
   '+2 turnos y rehace 1 tablero': '+2 步并可重置 1 个棋盘',
   '2 deshacer por tablero': '每盘 2 次撤销',
   '2 por tablero': '每盘 2 次',
+  'Rocas que bloquean el paso': '挡路的岩石',
+  'Piezas que resbalan hasta chocar': '方块会一直滑到撞上为止',
+  'Resuelve el reto Todo junto': '完成全部登场挑战',
+  'Resuelve 5 retos Todo junto': '完成 5 次全部登场挑战',
+  Rocas: '岩石',
+  Hielo: '冰块',
 };
