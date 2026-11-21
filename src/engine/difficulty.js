@@ -59,15 +59,15 @@ export const minReach = (rating) => curve(rating).target - (rating > 85 ? 3 : ra
 /** Margen (±) de movimientos mínimos alrededor del objetivo que se ofrece al jugador. */
 export const WINDOW = 3;
 
-/** Pistas iniciales según la dificultad del camino (Experto empieza más justo). */
-export const startHintsFor = (start = 1) => (pathKey(start) === 75 ? 2 : 3);
+/** Pistas iniciales según la dificultad del camino (Normal 3 · Difícil 2 · Experto 1). */
+export const startHintsFor = (start = 1) => byPath({ 1: 3, 50: 2, 75: 1 }, start);
 
 /**
  * Factor de límite de movimientos: empieza holgado y se aprieta hasta el nivel 21, así la dificultad se siente subir.
- *   Normal ×2,1 → ×1,45 · Difícil ×1,75 → ×1,10 · Experto ×1,6 → ×1,05, con un margen mínimo de turnos de sobra
+ *   Normal ×2,0 → ×1,30 · Difícil ×1,65 → ×1,15 · Experto ×1,50 → ×1,12, con un margen mínimo de turnos de sobra
  *   (Normal 4, los demás 2): un error cuesta varios movimientos fijos, así que los tableros cortos necesitan margen absoluto.
  */
-const LIMIT_FACTORS = { 1: [2.1, 1.45], 50: [1.75, 1.1], 75: [1.6, 1.05] };
+const LIMIT_FACTORS = { 1: [2.0, 1.3], 50: [1.65, 1.15], 75: [1.5, 1.12] };
 const MIN_SPARE = { 1: 4, 50: 2, 75: 2 };
 const limitFactor = (start = 1, level = 1) => {
   const [from, to] = byPath(LIMIT_FACTORS, start);

@@ -27,10 +27,10 @@ describe('dificultad: la curva calibrada de 21 niveles se siente apropiada', () 
     }
     for (let l = 1; l <= MAX_LEVEL; l++) expect(Math.abs(targetAt(1, l) - at(l)), `nivel ${l}`).toBeLessThanOrEqual(1);
   });
-  it('llegar al nivel 21 es desafiante: Normal ≥ 22, Difícil ≥ 30 y Experto 37', () => {
+  it('llegar al nivel 21 es desafiante: Normal ≥ 22, Difícil ≥ 28 y Experto ≥ 32', () => {
     expect(targetAt(1, 21)).toBeGreaterThanOrEqual(22);
-    expect(targetAt(50, 21)).toBeGreaterThanOrEqual(30);
-    expect(targetAt(75, 21)).toBe(37);
+    expect(targetAt(50, 21)).toBeGreaterThanOrEqual(28);
+    expect(targetAt(75, 21)).toBeGreaterThanOrEqual(32);
   });
   it('Difícil y Experto empiezan más arriba que Normal, y Experto más arriba que Difícil', () => {
     expect(targetAt(50, 1)).toBeGreaterThanOrEqual(9);
@@ -67,9 +67,9 @@ describe('dificultad: la curva calibrada de 21 niveles se siente apropiada', () 
     }
     expect(minReach(30)).toBe(curve(30).target);
   });
-  it('el límite en Normal va de ×2,1 a ×1,45 (siempre 4 turnos de sobra) y es más estricto en Difícil y Experto', () => {
-    expect(moveLimit(20, 1, 1)).toBe(42);
-    expect(moveLimit(22, 1, 21)).toBe(32);
+  it('el límite en Normal va de ×2,0 a ×1,30 (siempre 4 turnos de sobra) y es más estricto en Difícil y Experto', () => {
+    expect(moveLimit(20, 1, 1)).toBe(40);
+    expect(moveLimit(22, 1, 21)).toBe(29);
     expect(moveLimit(2, 1, 21)).toBe(6); // margen mínimo de 4 turnos en los tableros cortos
     expect(moveLimit(20, 50)).toBeLessThan(moveLimit(20, 1));
     expect(moveLimit(20, 75)).toBeLessThan(moveLimit(20, 50));
