@@ -65,7 +65,8 @@ export function renderSurvival() {
     const savedRelic = challengeRelicById(progress.relic);
     $('survivalSavedArt').style.setProperty('--relic-x', `${relicIndex(savedRelic.id) * 50}%`);
     $('survivalSavedTitle').textContent = `${savedRoute.name} · ${format(savedRoute.turns)} turnos`;
-    $('survivalStatus').textContent = `Nivel ${progress.cleared + 1}/${savedRoute.levels} · ${format(progress.remaining)} turnos`;
+    $('survivalStatus').textContent =
+      `Nivel ${progress.cleared + 1}/${savedRoute.levels} · ${format(progress.remaining)} turnos`;
     const bar = $('survivalSavedBar');
     if (bar) bar.style.width = `${Math.round((progress.cleared / savedRoute.levels) * 100)}%`;
   }

@@ -251,6 +251,7 @@ export function applyDailyWin(daily, G, points) {
 export function applySkip(run, G) {
   run.streak = 0;
   run.helpAt = G.n;
+  run.helped = true;
   run.pendingClear = { level: G.n, gain: 0, moves: G.moves, opt: G.opt, skipped: true };
 }
 
@@ -305,6 +306,7 @@ export function applyMove(G, i, x) {
 /** Marca que en este nivel se usó ayuda (cuenta para los logros «sin ayuda»). */
 export const markHelped = (run, level) => {
   run.helpAt = level;
+  run.helped = true; // para «Sin mapa»: la aventura usó alguna pista
 };
 
 /** Cómo sigue la aventura tras superar el nivel `n`: fin del juego (21), cierre de tramo (cada 3) o nivel siguiente. */

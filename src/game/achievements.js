@@ -1,8 +1,8 @@
 /**
- * Sistema de logros (100 logros: 25 simples, 50 medios y 25 difíciles) y pestaña Canjear (Tienda cosmética).
+ * Sistema de logros (113 logros: 25 simples, 55 medios y 33 difíciles) y pestaña Canjear (Tienda cosmética).
  * Cada logro cumplido queda listo para reclamar en la pantalla de Logros: al reclamarlo otorga puntos
  * acumulables que se canjean por bordes del tablero, fichas, llaves, celebraciones, melodías y portadas.
- * Reclamar logros también abre cofres de colección (puntos extra a los 5, 15, 30, 50, 75 y 100 logros).
+ * Reclamar logros también abre cofres de colección (puntos extra a los 5, 15, 30, 50, 75, 100 y 113 logros).
  * Lógica pura (sin DOM).
  */
 import { CHALLENGES, maxLevelReached } from './daily.js';
@@ -46,6 +46,9 @@ export const REWARDS = {
     { id: 'ivory', name: 'Pergamino dorado', price: 90, rarity: 'rare' },
     { id: 'celestial', name: 'Observatorio astral', price: 280, rarity: 'legendary', anim: true },
     { id: 'obsidian', name: 'Obsidiana real', price: 190, rarity: 'epic', anim: true },
+    { id: 'tide', name: 'Marea de luna', price: 160, rarity: 'epic', anim: true },
+    { id: 'sakura', name: 'Jardín de cerezos', price: 200, rarity: 'epic', anim: true },
+    { id: 'dawnfire', name: 'Corona del alba', price: 320, rarity: 'legendary', anim: true },
   ],
   pieces: [
     { id: 'paint', name: 'Madera pintada', price: 0, rarity: 'common' },
@@ -57,6 +60,9 @@ export const REWARDS = {
     { id: 'runic', name: 'Pergamino rúnico', price: 150, rarity: 'epic', anim: true },
     { id: 'lacquer', name: 'Lacado imperial', price: 180, rarity: 'epic', anim: true },
     { id: 'oldgold', name: 'Oro viejo', price: 280, rarity: 'legendary', anim: true },
+    { id: 'frostedge', name: 'Escarcha viva', price: 160, rarity: 'epic', anim: true },
+    { id: 'neon', name: 'Filo de neón', price: 200, rarity: 'epic', anim: true },
+    { id: 'ember', name: 'Brasas vivas', price: 320, rarity: 'legendary', anim: true },
   ],
   key: [
     { id: 'red', name: 'Llave roja', price: 0, rarity: 'common' },
@@ -69,6 +75,9 @@ export const REWARDS = {
     { id: 'obsidian', name: 'Llave de obsidiana', price: 150, rarity: 'epic', anim: true },
     { id: 'star', name: 'Llave de estrellas', price: 190, rarity: 'epic', anim: true },
     { id: 'gold', name: 'Llave dorada', price: 280, rarity: 'legendary', anim: true },
+    { id: 'moon', name: 'Llave lunar', price: 110, rarity: 'rare' },
+    { id: 'phoenix', name: 'Llave del fénix', price: 220, rarity: 'epic', anim: true },
+    { id: 'eclipse', name: 'Llave del eclipse', price: 340, rarity: 'legendary', anim: true },
   ],
   fx: [
     { id: 'none', name: 'Sin adornos', price: 0, rarity: 'common' },
@@ -193,6 +202,7 @@ export const MILESTONES = [
   { n: 50, points: 120, name: 'Cofre de oro' },
   { n: 75, points: 180, name: 'Cofre real' },
   { n: 100, points: 300, name: 'Cofre del amanecer' },
+  { n: 113, points: 250, name: 'Cofre del ocaso' },
 ];
 
 export const REWARD_TYPES = Object.keys(REWARDS);
@@ -221,7 +231,27 @@ export const COUNTERS = [
   'goldSeals',
   'legacyAchPoints',
   'bestRunStreak', // marca máxima (se sube con raiseStat, no se suma)
+  // Rebalance del roguelite (van al final: el código de guardado los lee en este orden)
+  'emberBoards', // tableros con la Brasa intacta de Lía
+  'bestGrade', // mejor rango de victoria (1 C · 2 B · 3 A · 4 S · 5 S+), marca máxima
+  'maxPactsWin', // más Pactos llevados en una aventura ganada, marca máxima
+  'fateCap', // 1 si alguna vez se ganó un tablero con las cartas en el tope de puntos
+  'cleanRun', // 1 si se completó una aventura sin pistas
+  'oathWin', // 1 si se completó una aventura con Juramento
+  'challengePure', // 1 si se completó una senda de Desafío sin usar la reliquia
+  'dailyBestDay', // más retos diarios distintos completados en un mismo día, marca máxima
+  'relicsSeen', // máscara de bits: reliquias de Aventura usadas
+  'heroWins', // máscara de bits: héroes con los que se completó una aventura
+  'fateSeen', // máscara de bits: cartas del destino elegidas alguna vez
 ];
+
+/** Contadores que son máscaras de bits (se marcan con `flagStat` y se leen contando bits). */
+export const FLAG_STATS = ['relicsSeen', 'heroWins', 'fateSeen'];
+const bitCount = (n) => {
+  let c = 0;
+  for (let x = Number(n) || 0; x > 0; x = Math.floor(x / 2)) c += x % 2;
+  return c;
+};
 
 export const COLLECTIONS = ['heroes', 'paths', 'mini5Kinds', 'challengeRelics', 'challengeRoutesPlayed'];
 
@@ -255,6 +285,9 @@ export const STATS = {
   challenge250Won: (store) => (survivalWonFor(store, '250') ? 1 : 0),
   challengeWonCount: (store) => survivalCompletedCount(store),
   cosmeticsOwned: (store) => Object.keys(store.shopOwned || {}).length,
+  relicsSeenCount: (store) => bitCount(store.stats?.relicsSeen),
+  heroWinsCount: (store) => bitCount(store.stats?.heroWins),
+  fateSeenCount: (store) => bitCount(store.stats?.fateSeen),
 };
 
 export const statsOf = (store = {}) =>
@@ -304,6 +337,46 @@ export function raiseStat(store, name, value) {
   if (!(Number(value) > (Number(stats[name]) || 0))) return false;
   stats[name] = Number(value);
   return true;
+}
+
+/** Marca el bit `bit` (0..30) de una estadística máscara (`FLAG_STATS`). Devuelve true si es nuevo. */
+export function flagStat(store, name, bit) {
+  if (!FLAG_STATS.includes(name)) throw new Error(`unknown flag stat: ${name}`);
+  if (!(bit >= 0 && bit <= 30)) return false;
+  const stats = (store.stats ||= {});
+  const before = Number(stats[name]) || 0;
+  const after = before | (1 << bit);
+  stats[name] = after;
+  return after !== before;
+}
+
+const HERO_BITS = ['lia', 'jean', 'van'];
+const RELIC_BITS = ['sun', 'purse', 'lantern'];
+const GRADE_VALUE = { C: 1, B: 2, A: 3, S: 4, 'S+': 5 };
+
+/** Al empezar una aventura: anota la reliquia (para «Relicario»). */
+export function adventureStartStats(store, run) {
+  return flagStat(store, 'relicsSeen', RELIC_BITS.indexOf(run?.relic));
+}
+
+/**
+ * Al completar una aventura: héroe, rango, Pactos, sin pistas y Juramento. `grade` es el de `runGrade` ('S+', 'S'…),
+ * `pacts` cuántos Pactos llevaba y `oath` si uno era Juramento. Devuelve true si algo cambió.
+ */
+export function victoryStats(store, { hero, grade, pacts = 0, oath = false, helped = false }) {
+  let changed = flagStat(store, 'heroWins', HERO_BITS.indexOf(hero));
+  changed = raiseStat(store, 'bestGrade', GRADE_VALUE[grade] || 0) || changed;
+  changed = raiseStat(store, 'maxPactsWin', pacts) || changed;
+  if (!helped) changed = raiseStat(store, 'cleanRun', 1) || changed;
+  if (oath) changed = raiseStat(store, 'oathWin', 1) || changed;
+  return changed;
+}
+
+/** Al ganar un tablero de Aventura: Brasa intacta y cartas en el tope de puntos. */
+export function boardWinStats(store, { ember = false, capped = false }) {
+  if (ember) bumpStat(store, 'emberBoards');
+  const top = capped && raiseStat(store, 'fateCap', 1);
+  return ember || top;
 }
 
 export function bumpStat(store, name, by = 1) {
@@ -1188,9 +1261,9 @@ export const ACHIEVEMENTS = [
     tier: 'bronze',
     points: 15,
     name: 'Primer botín',
-    desc: 'Alcanza 25.000 puntos en una partida',
+    desc: 'Alcanza 15.000 puntos en una partida',
     stat: 'bestScore',
-    goal: 25000,
+    goal: 15000,
   },
   {
     id: 'cosmetic1',
@@ -1288,9 +1361,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 35,
     name: 'Tesoro del amanecer',
-    desc: 'Alcanza 60.000 puntos en una partida',
+    desc: 'Alcanza 45.000 puntos en una partida',
     stat: 'bestScore',
-    goal: 60000,
+    goal: 45000,
   },
   {
     id: 'cosmetic5',
@@ -1328,9 +1401,9 @@ export const ACHIEVEMENTS = [
     tier: 'gold',
     points: 95,
     name: 'Fortuna real',
-    desc: 'Alcanza 100.000 puntos en una partida',
+    desc: 'Alcanza 80.000 puntos en una partida',
     stat: 'bestScore',
-    goal: 100000,
+    goal: 80000,
   },
   {
     id: 'cosmetic15',
@@ -1351,6 +1424,137 @@ export const ACHIEVEMENTS = [
     desc: 'Canjea 30 objetos en la Tienda de logros',
     stat: 'cosmeticsOwned',
     goal: 30,
+  },
+  // ===== Nuevos (rebalance del roguelite): rangos, héroes, reliquias, cartas y retos combinados =====
+  {
+    id: 'gradeS',
+    group: 'adventure',
+    tier: 'silver',
+    points: 45,
+    name: 'Amanecer brillante',
+    desc: 'Completa una aventura con rango S o mejor',
+    stat: 'bestGrade',
+    goal: 4,
+  },
+  {
+    id: 'gradeSPlus',
+    group: 'adventure',
+    tier: 'gold',
+    points: 130,
+    name: 'Sol sin sombra',
+    desc: 'Completa una aventura con rango S+',
+    stat: 'bestGrade',
+    goal: 5,
+  },
+  {
+    id: 'relics3',
+    group: 'adventure',
+    tier: 'silver',
+    points: 30,
+    name: 'Relicario',
+    desc: 'Juega una aventura con cada reliquia',
+    stat: 'relicsSeenCount',
+    goal: 3,
+  },
+  {
+    id: 'heroWins3',
+    group: 'adventure',
+    tier: 'gold',
+    points: 140,
+    name: 'Trío legendario',
+    desc: 'Completa una aventura con cada héroe',
+    stat: 'heroWinsCount',
+    goal: 3,
+  },
+  {
+    id: 'cleanRun',
+    group: 'adventure',
+    tier: 'gold',
+    points: 130,
+    name: 'Sin mapa',
+    desc: 'Completa una aventura sin usar ninguna pista',
+    stat: 'cleanRun',
+    goal: 1,
+  },
+  {
+    id: 'oathWin',
+    group: 'adventure',
+    tier: 'gold',
+    points: 140,
+    name: 'Fiel al juramento',
+    desc: 'Completa una aventura con el Pacto Juramento',
+    stat: 'oathWin',
+    goal: 1,
+  },
+  {
+    id: 'ember25',
+    group: 'mastery',
+    tier: 'silver',
+    points: 40,
+    name: 'Brasa intacta',
+    desc: 'Termina 25 tableros con Lía sin tocar su reserva',
+    stat: 'emberBoards',
+    goal: 25,
+  },
+  {
+    id: 'pacts3win',
+    group: 'mastery',
+    tier: 'silver',
+    points: 50,
+    name: 'Tratante del destino',
+    desc: 'Completa una aventura llevando 3 Pactos',
+    stat: 'maxPactsWin',
+    goal: 3,
+  },
+  {
+    id: 'fateCap',
+    group: 'mastery',
+    tier: 'gold',
+    points: 100,
+    name: 'Destino desbordado',
+    desc: 'Gana un tablero con tus cartas en el tope de +90 % de puntos',
+    stat: 'fateCap',
+    goal: 1,
+  },
+  {
+    id: 'fateAll',
+    group: 'mastery',
+    tier: 'gold',
+    points: 120,
+    name: 'Baraja completa',
+    desc: 'Elige alguna vez las 31 cartas del destino',
+    stat: 'fateSeenCount',
+    goal: 31,
+  },
+  {
+    id: 'streak21',
+    group: 'mastery',
+    tier: 'gold',
+    points: 150,
+    name: 'Racha del amanecer',
+    desc: 'Encadena los 21 tableros de una aventura en racha',
+    stat: 'bestRunStreak',
+    goal: 21,
+  },
+  {
+    id: 'dailyAll',
+    group: 'daily',
+    tier: 'silver',
+    points: 50,
+    name: 'Día completo',
+    desc: 'Completa los 5 retos diarios el mismo día',
+    stat: 'dailyBestDay',
+    goal: 5,
+  },
+  {
+    id: 'chPure',
+    group: 'challenge',
+    tier: 'gold',
+    points: 140,
+    name: 'Manos desnudas',
+    desc: 'Completa una senda de Desafío sin usar la reliquia',
+    stat: 'challengePure',
+    goal: 1,
   },
 ];
 

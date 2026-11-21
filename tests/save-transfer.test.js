@@ -90,14 +90,21 @@ describe('enlaces de transferencia v4 (con las cartas del destino)', () => {
     expect(readSaveHash(new URL(link).hash, now)).toEqual(imported);
   });
 
-  it('soporta todos los 100 logros (pendientes y reclamados) sin superar el tamaño máximo del QR', () => {
+  it('soporta todos los logros y objetos de Canjear (pendientes, reclamados y nuevos) sin superar el tamaño máximo del QR', () => {
     const ach = Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, recordAt]));
     const achClaimed = Object.fromEntries(ACHIEVEMENTS.slice(0, 50).map((a) => [a.id, recordAt]));
-    const link = exportSaveLink({ ...snapshot, ach, achClaimed });
+    const stats = { ...snapshot.stats, emberBoards: 30, bestGrade: 5, heroWins: 7, fateSeen: 2 ** 31 - 1 };
+    const link = exportSaveLink({ ...snapshot, ach, achClaimed, stats });
     expect(new TextEncoder().encode(link).length).toBeLessThan(QR_MAX_BYTES);
     const imported = readSaveLink(link, now);
-    expect(Object.keys(imported.ach)).toHaveLength(100);
+    expect(Object.keys(imported.ach)).toHaveLength(ACHIEVEMENTS.length);
     expect(Object.keys(imported.achClaimed)).toHaveLength(50);
+    expect(imported.stats).toMatchObject({ emberBoards: 30, bestGrade: 5, heroWins: 7, fateSeen: 2 ** 31 - 1 });
+    // con todo reclamado alcanza para los objetos nuevos de Canjear, que también viajan en el enlace
+    const shopOwned = { ...snapshot.shopOwned, 'board:dawnfire': recordAt, 'key:eclipse': recordAt };
+    const rich = readSaveLink(exportSaveLink({ ...snapshot, ach, achClaimed: ach, stats, shopOwned }), now);
+    expect(rich.shopOwned).toHaveProperty('board:dawnfire');
+    expect(rich.shopOwned).toHaveProperty('key:eclipse');
   });
 
   it('acepta guardados antiguos o vacíos y conserva cruces de ciudad pendientes', () => {

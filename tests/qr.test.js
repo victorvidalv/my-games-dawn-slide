@@ -32,8 +32,10 @@ describe('generador de QR', () => {
     expect(qrMatrix('a')).not.toEqual(qrMatrix('b'));
   });
   it('rechaza textos demasiado largos y exporta un SVG', () => {
-    expect(QR_MAX_BYTES).toBe(213);
-    expect(qrMatrix('x'.repeat(QR_MAX_BYTES)).length).toBe(57);
+    expect(QR_MAX_BYTES).toBe(287);
+    expect(qrMatrix('x'.repeat(213)).length).toBe(57); // versión 10
+    expect(qrMatrix('x'.repeat(250)).length).toBe(61); // versión 11
+    expect(qrMatrix('x'.repeat(QR_MAX_BYTES)).length).toBe(65); // versión 12
     expect(() => qrMatrix('x'.repeat(QR_MAX_BYTES + 1))).toThrow();
     expect(qrSvg('hola')).toMatch(/^<svg[\s\S]*<path d="M/);
   });

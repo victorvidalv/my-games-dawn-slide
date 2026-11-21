@@ -32,6 +32,12 @@ import {
   spentPoints,
   statsOf,
   unclaimedAchievements,
+  adventureStartStats,
+  boardWinStats,
+  flagStat,
+  isDone,
+  rewardById,
+  victoryStats,
 } from '../src/game/achievements.js';
 import { CHALLENGES } from '../src/game/daily.js';
 import { HEROES } from '../src/game/heroes.js';
@@ -39,11 +45,11 @@ import { DICTS } from '../src/i18n.js';
 import { bestAdventureRecord, mergePaths, mergeSaves } from '../src/game/save-merge.js';
 
 describe('registro de logros y tienda', () => {
-  it('cien logros (25 simples, 50 medios y 25 difíciles) en 5 grupos con estadística conocida y puntaje positivo', () => {
-    expect(ACHIEVEMENTS).toHaveLength(100);
+  it('113 logros (25 simples, 55 medios y 33 difíciles) en 5 grupos con estadística conocida y puntaje positivo', () => {
+    expect(ACHIEVEMENTS).toHaveLength(113);
     expect(ACHIEVEMENTS.filter((a) => a.tier === 'bronze')).toHaveLength(25);
-    expect(ACHIEVEMENTS.filter((a) => a.tier === 'silver')).toHaveLength(50);
-    expect(ACHIEVEMENTS.filter((a) => a.tier === 'gold')).toHaveLength(25);
+    expect(ACHIEVEMENTS.filter((a) => a.tier === 'silver')).toHaveLength(55);
+    expect(ACHIEVEMENTS.filter((a) => a.tier === 'gold')).toHaveLength(33);
     const groups = GROUPS.map((g) => g.id);
     const ids = new Set();
     for (const a of ACHIEVEMENTS) {
@@ -54,7 +60,14 @@ describe('registro de logros y tienda', () => {
       expect(TIERS[a.tier], a.id).toBeTruthy();
       expect(a.points, a.id).toBeGreaterThan(0);
     }
-    for (const g of groups) expect(ACHIEVEMENTS.filter((a) => a.group === g).length, g).toBe(20);
+    // 20 por grupo de base y los 13 del roguelite repartidos (Aventura 6, Maestría 5, Desafío 1, Diario 1)
+    expect(Object.fromEntries(groups.map((g) => [g, ACHIEVEMENTS.filter((a) => a.group === g).length]))).toEqual({
+      adventure: 26,
+      mastery: 25,
+      challenge: 21,
+      daily: 21,
+      collection: 20,
+    });
     // La tienda tiene 5 categorías, cada una con un elemento de serie gratis y premios con precio > 0
     expect(REWARD_TYPES).toEqual(['board', 'pieces', 'key', 'fx', 'music', 'cover']);
     let buyable = 0;
@@ -345,4 +358,69 @@ it('el récord de Aventura mantiene su fecha al combinar guardados y caminos', (
     recordAt: 1500,
   });
   expect(bestAdventureRecord({ p1: { score: 4000 }, c1: { score: 0 } })).toBeNull();
+});
+
+describe('logros del roguelite: rangos, héroes, reliquias, cartas y retos combinados', () => {
+  const reached = (store, id) =>
+    isDone(
+      ACHIEVEMENTS.find((a) => a.id === id),
+      statsOf(store),
+    );
+
+  it('las máscaras cuentan reliquias, héroes y cartas distintas (repetir no suma)', () => {
+    const store = {};
+    adventureStartStats(store, { relic: 'sun' });
+    adventureStartStats(store, { relic: 'sun' });
+    expect(statsOf(store).relicsSeenCount).toBe(1);
+    adventureStartStats(store, { relic: 'purse' });
+    adventureStartStats(store, { relic: 'lantern' });
+    expect(reached(store, 'relics3')).toBe(true);
+    for (let i = 0; i < 30; i++) flagStat(store, 'fateSeen', i);
+    expect(reached(store, 'fateAll')).toBe(false);
+    flagStat(store, 'fateSeen', 30);
+    expect(statsOf(store).fateSeenCount).toBe(31);
+    expect(reached(store, 'fateAll')).toBe(true);
+    expect(flagStat(store, 'fateSeen', 31), 'fuera de rango').toBe(false);
+  });
+
+  it('una victoria anota héroe, rango, Pactos, aventura sin pistas y Juramento', () => {
+    const store = {};
+    victoryStats(store, { hero: 'lia', grade: 'S', pacts: 2, oath: false, helped: true });
+    expect(reached(store, 'gradeS')).toBe(true);
+    expect(reached(store, 'gradeSPlus')).toBe(false);
+    expect(reached(store, 'cleanRun')).toBe(false);
+    expect(reached(store, 'pacts3win')).toBe(false);
+    victoryStats(store, { hero: 'jean', grade: 'A', pacts: 3, oath: true, helped: false });
+    expect(statsOf(store).bestGrade, 'el rango guarda el mejor').toBe(4);
+    expect(reached(store, 'pacts3win')).toBe(true);
+    expect(reached(store, 'oathWin')).toBe(true);
+    expect(reached(store, 'cleanRun')).toBe(true);
+    expect(reached(store, 'heroWins3')).toBe(false);
+    victoryStats(store, { hero: 'van', grade: 'S+' });
+    expect(reached(store, 'heroWins3')).toBe(true);
+    expect(reached(store, 'gradeSPlus')).toBe(true);
+  });
+
+  it('un tablero suma Brasa intacta y marca el tope de puntos de las cartas', () => {
+    const store = {};
+    for (let i = 0; i < 24; i++) boardWinStats(store, { ember: true });
+    expect(reached(store, 'ember25')).toBe(false);
+    boardWinStats(store, { ember: true, capped: true });
+    expect(reached(store, 'ember25')).toBe(true);
+    expect(reached(store, 'fateCap')).toBe(true);
+  });
+
+  it('los nuevos objetos animados de Canjear son épicos o legendarios y la Llave lunar es rara', () => {
+    const ids = (type) => REWARDS[type].map((r) => r.id);
+    expect(ids('board')).toEqual(expect.arrayContaining(['tide', 'sakura', 'dawnfire']));
+    expect(ids('pieces')).toEqual(expect.arrayContaining(['frostedge', 'neon', 'ember']));
+    expect(ids('key')).toEqual(expect.arrayContaining(['moon', 'phoenix', 'eclipse']));
+    expect(rewardById('key', 'moon').rarity).toBe('rare');
+    for (const [type, id] of [
+      ['board', 'dawnfire'],
+      ['pieces', 'ember'],
+      ['key', 'eclipse'],
+    ])
+      expect(rewardById(type, id)).toMatchObject({ rarity: 'legendary', anim: true });
+  });
 });

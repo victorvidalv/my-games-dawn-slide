@@ -74,8 +74,7 @@ export function renderDaily() {
       targets = challengeTargets(c);
     const progress = dailyProgress(store, c.id, day),
       done = progress?.boards?.filter(Boolean).length || 0;
-    const todayTag =
-      c.families.length > 1 ? (todayFamily(c, day) === 'ice' ? 'Hoy: Hielo' : 'Hoy: Rocas') : '';
+    const todayTag = c.families.length > 1 ? (todayFamily(c, day) === 'ice' ? 'Hoy: Hielo' : 'Hoy: Rocas') : '';
     const meta = `${targets.join(' · ')} mov.${todayTag ? ` · ${todayTag}` : ''}`;
     const side = !open
       ? `<span class="dc-side lock">${icon('lock')}<small>Nivel ${c.unlock}</small></span>`

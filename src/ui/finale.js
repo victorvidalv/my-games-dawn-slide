@@ -11,7 +11,8 @@ import { fateArt } from './fate-art.js';
 import { icon } from './icons.js';
 import { countUp } from './fx.js';
 import { openMenu } from './menu.js';
-import { countStat, markStat } from './achievements.js';
+import { countStat, markStat, updateStats } from './achievements.js';
+import { victoryStats } from '../game/achievements.js';
 import { endingStory } from './story.js';
 import { WORLD } from '../data/lore.js';
 import { numLocale } from '../i18n.js';
@@ -180,6 +181,23 @@ export function endRun(victory, why) {
   if (victory) {
     markStat('paths', S.run.start);
     countStat('completed');
+    const pacts = fateCards(snapshot).filter((c) => c.kind === 'pact');
+    const { grade } = runGrade({
+      victory: true,
+      level: snapshot.level,
+      score: snapshot.score || 0,
+      perfects: snapshot.perfects || 0,
+      start: snapshot.start,
+    });
+    updateStats((st) =>
+      victoryStats(st, {
+        hero: endingHero,
+        grade,
+        pacts: pacts.length,
+        oath: pacts.some((c) => c.id === 'juramento'),
+        helped: !!snapshot.helped,
+      }),
+    );
     const sc = S.run.score,
       br = S.run.recBroken;
     discardRun();

@@ -196,7 +196,7 @@ export function canUseChallengeRelic(progress) {
 
 export function useChallengeHint(progress) {
   if (progress?.relic !== 'hint' || !canUseChallengeRelic(progress).ok) return progress;
-  return { ...progress, hintUsedTurn: true };
+  return { ...progress, hintUsedTurn: true, relicUsed: true };
 }
 
 export function useChallengeReset(progress) {
@@ -209,6 +209,7 @@ export function useChallengeReset(progress) {
     undoStack: [],
     undoCount: 0,
     resetUsed: true,
+    relicUsed: true,
     hintUsedTurn: false,
     undoUsedBoard: false,
   };
@@ -227,6 +228,7 @@ export function useChallengeUndo(progress) {
     undoStack: stack,
     undoCount: count,
     undoUsedBoard: count >= UNDO_PER_BOARD,
+    relicUsed: true,
     hintUsedTurn: false,
   };
 }

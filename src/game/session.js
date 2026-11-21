@@ -19,7 +19,8 @@ import {
   streakHintBonus,
   writeDailyProgress,
 } from './daily.js';
-import { boardStats } from './achievements.js';
+import { FLAG_STATS, adventureStartStats, boardStats, boardWinStats, flagStat } from './achievements.js';
+import { boardPure } from './run-points.js';
 import { hintMove } from '../engine/solver.js';
 import {
   buildSurvival,
@@ -54,12 +55,15 @@ import { S, closeRun, gainNow, haltBoard, heroOf, persist, rkey, setBoard, setBu
 import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { showDailyResult } from '../ui/daily.js';
-import { countStat, markStat, pauseAchievementToasts, raiseStat } from '../ui/achievements.js';
+import { countStat, markStat, pauseAchievementToasts, raiseStat, updateStats } from '../ui/achievements.js';
 import { boardEl, buildPieces, fitBoard, layout, updateHud } from '../ui/board.js';
 import {
+  FATE_CARDS,
   FATE_EVERY,
+  FATE_POINTS_RANGE,
   canRerollFate,
   fateById,
+  fatePoints,
   fateCityRewards,
   fateOffer,
   needsFatePick,
@@ -138,6 +142,7 @@ export async function startRun(start, mode, preset) {
     }),
   );
   markStat('heroes', picked.hero);
+  updateStats((st) => adventureStartStats(st, S.run));
   syncHero();
   syncFateHud();
   applyZone(zoneIdx(1));
@@ -309,6 +314,7 @@ export function playSurvivalTurn(won) {
   lockBoard();
   if (won) {
     countStat('challengeBoards');
+    if (run.survival.status === 'won' && !run.survival.relicUsed) raiseStat('challengePure', 1);
     sfx.success();
     playKeyExit(G, { party: false });
     boardEl.classList.add('survival-clear');
@@ -409,7 +415,16 @@ function fateDialog() {
     },
     onChoose: (id) => {
       const out = pickFate(session, id, city, baseScore(done.opt));
-      if (out) countStat('fateCards', ...(fateById(id)?.kind === 'pact' ? ['pacts'] : []));
+      if (out) {
+        countStat('fateCards', ...(fateById(id)?.kind === 'pact' ? ['pacts'] : []));
+        updateStats((st) =>
+          flagStat(
+            st,
+            FLAG_STATS[2],
+            FATE_CARDS.findIndex((c) => c.id === id),
+          ),
+        );
+      }
       saveRun();
       syncFateHud();
       return out;
@@ -469,6 +484,8 @@ export function win() {
     previous = run.score;
   applyAdventureWin(run, G, gain);
   raiseStat('bestRunStreak', run.streak);
+  const capped = fatePoints(run, { ...G, pure: boardPure(run, G, G.moves) }) >= FATE_POINTS_RANGE[1];
+  updateStats((st) => boardWinStats(st, { ember: gain.ember, capped }));
   recordBest();
   saveRun();
   setTensionFx(0, false);
@@ -521,6 +538,7 @@ function winDaily() {
   const out =
     totals && recordDaily((store.daily ||= emptyDaily()), d.id, d.day, totals.moves, totals.opt, d.boards.slice());
   writeDailyProgress(store, d, { boards: d.boards.slice(), attempt: null });
+  if (out) raiseStat('dailyBestDay', Object.keys(store.daily.days[d.day] || {}).length);
   persist();
   setTensionFx(0, false);
   Music.duck(0.55);

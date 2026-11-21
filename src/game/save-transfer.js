@@ -27,6 +27,8 @@ const RELIC_VERSION = 2;
 const V3_VERSION = 3;
 /** v4 = v3 sin jefes ni camino heroico, con las cartas del destino de la partida en curso. */
 const V4_VERSION = 4;
+/** v5 = v4 con las listas vigentes de logros, contadores y Canjear (las de v3/v4 quedan fijas más abajo). */
+const V5_VERSION = 5;
 /* Lo que guardaban v1-v3 de los jefes y del camino heroico (ya no existen): se lee para validar y se descarta. */
 const LEGACY_BOSS_RETRIES = 2;
 const LEGACY_HEROIC_HINTS = 1;
@@ -91,13 +93,24 @@ const LEGACY_LOOKS = {
 // Logros y contadores tal como estaban en v3 (los enlaces antiguos se leen con estas tablas fijas; v4 usa las actuales).
 // prettier-ignore
 const V3_ACH_IDS = ['firstWin','lv5','city1','lv20','heroes2','lv25','lv35','lv50','lv65','lv75','lv90','heroes','hard25','hard50','expert25','lv100','done','hard100','expert','paths3','perf1','perf5','fate1','icerock5','locks5','perf10','perf25','perf50','icerock','locks','heavy10','heavy25','fate9','fate27','clean','perf100','perf200','icerock75','fate81','clean5','chBoard1','chBoard3','chRelicUse','chLvl5','chRoutes2','chBoard10','chBoard20','chBoard30','chBoard50','chRelicUse10','chRelics3','chRoutes3','chLvl8','chLvl10','chLvl14','chBoard100','ch150','ch200','ch250','chAll','day1','day3','gold1','streak2','kinds2','day7','day15','day30','kinds','streak3','streak7','streak14','gold5','gold10','master','day100','streak30','gold25','day50','master5','boards10','power1','shop1','score1k','cosmetic1','mini1','mini3','mini5','boards50','boards100','power5','power25','shop5','score5k','cosmetic5','mini9','boards250','score25k','cosmetic15','cosmetic30'];
-const V4_ACH_IDS = ALL_ACHIEVEMENTS.map((a) => a.id);
-const V3_SHOP_KEYS = REWARD_TYPES.flatMap((type) =>
-  REWARDS[type].filter((item) => item.price > 0).map((item) => rewardKey(type, item.id)),
-);
+// v4 se escribía con las listas de entonces: 100 logros y 17 contadores (los nuevos van siempre al final).
+const V4_ACH_IDS = ALL_ACHIEVEMENTS.slice(0, 100).map((a) => a.id);
+const V5_ACH_IDS = ALL_ACHIEVEMENTS.map((a) => a.id);
+/** Objetos de Canjear que había en v3/v4 (por tipo, los primeros de cada lista: los nuevos se añaden al final). */
+const V4_REWARD_COUNTS = { board: 10, pieces: 9, key: 10, fx: 10, music: 13, cover: 6 };
+const shopKeys = (counts) =>
+  REWARD_TYPES.flatMap((type) =>
+    REWARDS[type]
+      .slice(0, counts ? counts[type] : undefined)
+      .filter((item) => item.price > 0)
+      .map((item) => rewardKey(type, item.id)),
+  );
+const V3_SHOP_KEYS = shopKeys(V4_REWARD_COUNTS);
+const V5_SHOP_KEYS = shopKeys(null);
 // prettier-ignore
 const V3_COUNTERS = ['completed','perfects','mini5','iceRock','locks','fateCards','cleanCity','boardsSolved','heavyBoards','shopBuys','powersUsed','challengeBoards','challengeRelicsUsed'];
-const V4_COUNTERS = ALL_COUNTERS;
+const V4_COUNTERS = ALL_COUNTERS.slice(0, 17);
+const V5_COUNTERS = ALL_COUNTERS;
 const V3_CHALLENGE_ROUTES = CHALLENGE_ROUTES.map((r) => r.id);
 const V3_CHALLENGE_RELICS = CHALLENGE_RELICS.map((r) => r.id);
 const V3_LOOKS = Object.fromEntries(REWARD_TYPES.map((type) => [type, REWARDS[type].map((r) => r.id)]));
@@ -169,7 +182,7 @@ export function exportSaveLink(store = {}) {
   };
   const writeV = (value, max = UINT32) => writeVarint(bytes, value, max);
 
-  write(V4_VERSION);
+  write(V5_VERSION);
 
   // 1. Caminos de Aventura (solo los que tienen avance)
   const pathRecords = PATHS.map((path) => store.paths?.['c' + path] || null);
@@ -189,14 +202,14 @@ export function exportSaveLink(store = {}) {
     writeV(rec.runs, UINT16);
   });
 
-  // 2. Los 100 logros (estado ternario: 0 = no, 1 = ganado, 2 = reclamado) -> 20 bytes
-  writeTrits(bytes, V4_ACH_IDS, (id) => (store.achClaimed?.[id] ? 2 : store.ach?.[id] ? 1 : 0));
+  // 2. Los logros (estado ternario: 0 = no, 1 = ganado, 2 = reclamado), 5 por byte
+  writeTrits(bytes, V5_ACH_IDS, (id) => (store.achClaimed?.[id] ? 2 : store.ach?.[id] ? 1 : 0));
 
   // 3. Elementos canjeados en la Tienda (bitset) -> 7 bytes
-  writeBitset(bytes, V3_SHOP_KEYS, (key) => Boolean(store.shopOwned?.[key]));
+  writeBitset(bytes, V5_SHOP_KEYS, (key) => Boolean(store.shopOwned?.[key]));
 
-  // 4. Estadísticas: 13 contadores (varint) + 5 colecciones (21 bits en 3 bytes)
-  for (const stat of V4_COUNTERS) writeV(store.stats?.[stat], UINT32);
+  // 4. Estadísticas: contadores (varint) + 5 colecciones (21 bits en 3 bytes)
+  for (const stat of V5_COUNTERS) writeV(store.stats?.[stat], UINT32);
   const colBits =
     maskOf(HEROES, (id) => store.stats?.heroes?.includes(id)) |
     (maskOf(PATHS, (id) => store.stats?.paths?.includes(id)) << 3) |
@@ -323,8 +336,8 @@ export function readSaveHash(hash, now = new Date()) {
   };
 
   const version = read();
-  if (version === V3_VERSION || version === V4_VERSION)
-    return readV3(read, readV, () => offset === end, now, version === V4_VERSION);
+  if (version === V3_VERSION || version === V4_VERSION || version === V5_VERSION)
+    return readV3(read, readV, () => offset === end, now, version);
   if (version !== BASE_VERSION && version !== RELIC_VERSION) invalid();
 
   // Decodificador heredado v1 / v2
@@ -400,9 +413,12 @@ export function readSaveHash(hash, now = new Date()) {
   return { paths, ach, stats, daily, look, tips, run };
 }
 
-function readV3(read, readV, atEnd, now, v4 = false) {
-  const achIds = v4 ? V4_ACH_IDS : V3_ACH_IDS,
-    counters = v4 ? V4_COUNTERS : V3_COUNTERS;
+function readV3(read, readV, atEnd, now, version = V3_VERSION) {
+  const v4 = version >= V4_VERSION,
+    v5 = version >= V5_VERSION;
+  const achIds = v5 ? V5_ACH_IDS : v4 ? V4_ACH_IDS : V3_ACH_IDS,
+    counters = v5 ? V5_COUNTERS : v4 ? V4_COUNTERS : V3_COUNTERS,
+    shop = v5 ? V5_SHOP_KEYS : V3_SHOP_KEYS;
   const ts = now.getTime();
   const maxSec = Math.floor(ts / 1000) + 86400;
 
@@ -418,7 +434,7 @@ function readV3(read, readV, atEnd, now, v4 = false) {
     paths['c' + path] = { score, level, runs, ...(recordAt ? { recordAt } : {}) };
   });
 
-  // 2. Los 100 logros (ternarios)
+  // 2. Los logros (ternarios)
   const ach = {};
   const achClaimed = {};
   for (let i = 0; i < achIds.length; i += 5) {
@@ -434,10 +450,10 @@ function readV3(read, readV, atEnd, now, v4 = false) {
 
   // 3. Tienda Canjear (objetos propios)
   const shopOwned = {};
-  for (let i = 0; i < V3_SHOP_KEYS.length; i += 8) {
+  for (let i = 0; i < shop.length; i += 8) {
     const b = read(1, 255);
-    for (let k = 0; k < 8 && i + k < V3_SHOP_KEYS.length; k++) {
-      if ((b & (1 << k)) !== 0) shopOwned[V3_SHOP_KEYS[i + k]] = ts;
+    for (let k = 0; k < 8 && i + k < shop.length; k++) {
+      if ((b & (1 << k)) !== 0) shopOwned[shop[i + k]] = ts;
     }
   }
 

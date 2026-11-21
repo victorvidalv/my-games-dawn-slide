@@ -189,6 +189,13 @@ export function raiseStat(name, value) {
   checkAchievements();
 }
 
+/** Aplica `fn(store)` (que devuelve true si cambió alguna estadística) y comprueba los logros. */
+export function updateStats(fn) {
+  if (!fn(store)) return;
+  persist();
+  checkAchievements();
+}
+
 /** Anota `key` en una colección de logros y comprueba si se desbloqueó alguno. */
 export function markStat(name, key) {
   if (!addToCollection(store, name, key)) return;

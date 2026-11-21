@@ -94,6 +94,41 @@ partida antes del final. Con el mismo modelo de jugador (% de partidas que compl
 Cada una se siente distinta: la Brújula te dice qué hacer, el Hilo te deja corregir sobre la marcha y el Reloj te da
 colchón y una partida de rescate.
 
+## 7. Logros y Canjear
+
+**Economía.** Antes se ganaban 5.600 puntos (logros + cofres) y el catálogo costaba 4.965 (89 %). Ahora hay 113
+logros y 7 cofres (7.115 puntos) y el catálogo cuesta 6.995 (98 %): se puede tener todo, pero solo jugando todos los
+modos a fondo. Las legendarias nuevas (320–340) son la meta larga de cada categoría.
+
+**Requisitos reajustados.** Los de puntaje venían del juego de 100 niveles: 25.000 → 15.000 (simple), 60.000 →
+45.000 (medio) y 100.000 → 80.000 (difícil), acordes a lo que da una aventura de 21 niveles en cada camino.
+
+**13 logros nuevos** atados a los sistemas del roguelite, para que cada partida persiga algo distinto:
+
+| Logro | Requisito | Tipo |
+| --- | --- | --- |
+| Amanecer brillante / Sol sin sombra | Completar con rango S / S+ | medio / difícil |
+| Relicario | Jugar con las 3 reliquias | medio |
+| Trío legendario | Completar con cada héroe | difícil |
+| Sin mapa | Completar sin pistas | difícil |
+| Fiel al juramento | Completar con Juramento | difícil |
+| Brasa intacta | 25 tableros de Lía sin tocar la reserva | medio |
+| Tratante del destino | Completar con 3 Pactos | medio |
+| Destino desbordado | Ganar con las cartas en el tope de +90 % | difícil |
+| Baraja completa | Elegir las 31 cartas alguna vez | difícil |
+| Racha del amanecer | Racha en los 21 tableros | difícil |
+| Día completo | Los 5 retos diarios el mismo día | medio |
+| Manos desnudas | Una senda de Desafío sin la reliquia | difícil |
+
+**Canjear: 9 objetos nuevos, todos con animación salvo la Llave lunar.** Tableros con el marco en movimiento (Marea de
+luna, Jardín de cerezos, Corona del alba), fichas con el borde animado (Escarcha viva, Filo de neón, Brasas vivas) y
+llaves (Llave lunar, Llave del fénix, Llave del eclipse). Las animaciones se apagan en modo ligero y con «reducir
+movimiento».
+
+**Código de guardado v5.** Lleva las listas nuevas; los códigos v3/v4 se siguen leyendo con sus tablas de entonces.
+El QR llega ahora hasta la versión 12 (287 bytes) para que quepa una partida completa con todo; se comprobó con el
+lector de QR del navegador que las versiones 10, 11 y 12 se leen bien.
+
 ## Pendiente
 
 - El modelo infravalora los usos extra de poder (Eco del poder): en el juego real un tercer rebobinado vale más.

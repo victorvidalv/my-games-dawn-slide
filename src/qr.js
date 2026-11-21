@@ -1,5 +1,5 @@
 /**
- * Generador de códigos QR (sin dependencias): modo byte, corrección de errores M, versiones 1-10 (hasta 213 bytes).
+ * Generador de códigos QR (sin dependencias): modo byte, corrección de errores M, versiones 1-12 (hasta 287 bytes).
  * `qrMatrix(texto)` devuelve una matriz de booleanos (true = módulo oscuro); `qrSvg(texto)` la dibuja como SVG.
  */
 
@@ -16,6 +16,8 @@ const BLOCKS = [
   [38, 2, 39, 2, 22],
   [36, 3, 37, 2, 22],
   [43, 4, 44, 1, 26],
+  [50, 1, 51, 4, 30],
+  [36, 6, 37, 2, 22],
 ];
 const ALIGN = [
   null,
@@ -29,6 +31,8 @@ const ALIGN = [
   [6, 24, 42],
   [6, 26, 46],
   [6, 28, 50],
+  [6, 30, 54],
+  [6, 32, 58],
 ];
 const dataWords = (v) => {
   const [a, na, b, nb] = BLOCKS[v];
@@ -36,7 +40,8 @@ const dataWords = (v) => {
 };
 const countBits = (v) => (v < 10 ? 8 : 16);
 const byteCapacity = (v) => dataWords(v) - Math.ceil((4 + countBits(v)) / 8);
-export const QR_MAX_BYTES = byteCapacity(10);
+export const QR_MAX_VERSION = 12;
+export const QR_MAX_BYTES = byteCapacity(QR_MAX_VERSION);
 
 /* Cuerpo de Galois GF(256) con el polinomio 0x11D */
 const EXP = new Array(512);
@@ -160,8 +165,8 @@ function penalty(m) {
 export function qrMatrix(text) {
   const bytes = [...new TextEncoder().encode(text)];
   let v = 1;
-  while (v <= 10 && bytes.length > byteCapacity(v)) v++;
-  if (v > 10) throw new Error('Texto demasiado largo para el QR');
+  while (v <= QR_MAX_VERSION && bytes.length > byteCapacity(v)) v++;
+  if (v > QR_MAX_VERSION) throw new Error('Texto demasiado largo para el QR');
   const n = 17 + 4 * v;
   const mod = Array.from({ length: n }, () => new Array(n).fill(false));
   const fn = Array.from({ length: n }, () => new Array(n).fill(false)); // módulos de función (no se enmascaran)
