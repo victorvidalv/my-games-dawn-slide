@@ -21,6 +21,7 @@
     "levels:all": "npm run levels && npm run levels:special",
     "simulate": "node scripts/simulate-heroes.mjs",
     "balance": "node scripts/analyze-balance.mjs",
+    "images": "node scripts/optimize-images.mjs",
     "melodies:html": "node scripts/build-melodies.mjs",
     "calibrator": "node tools/calibrator/server.mjs",
     "calibrate": "node scripts/calibrate.mjs"
@@ -30,6 +31,7 @@
     "globals": "^17.14.0",
     "happy-dom": "^21.0.4",
     "prettier": "^3.10.1",
+    "sharp": "^0.35.5",
     "vite": "^8.3.8",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.0"

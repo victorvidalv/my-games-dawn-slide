@@ -34,6 +34,7 @@ npm run dev        # servidor local con recarga en caliente
 | `npm run simulate` | Niveles extra que aporta cada poder frente a no tener ninguno. |
 | `npm run levels` · `levels:walls` · `levels:decorate` · `levels:all` | Regeneran los bancos de tableros. |
 | `npm run calibrator` | Calibrador de niveles y mecánicas (programa aparte). |
+| `npm run images` | Comprime las imágenes nuevas de `public/` sin cambiar su tamaño (solo si ahorra ≥ 8 %; `--dry` para simular). |
 
 ## Publicar en GitHub Pages
 
