@@ -34,18 +34,6 @@ export const CHAPTERS = [
     end: 'El sello de la Marea se rompe. El mar respira otra vez y los Kogn cantan en su lengua vieja.',
   },
   {
-    seal: 'Agua',
-    title: 'El pozo de los Sahrim',
-    opening:
-      'Los Sahrim cuentan los pozos como otros cuentan los años, y la Noche Larga les arrebató el último. Sin agua la caravana no avanza. Rompe el sello del Agua y haz brotar el pozo.',
-    cityLines: [
-      'Las dunas cubrieron el último pozo de los Sahrim.',
-      'Aquí cada movimiento de más cuesta agua.',
-      'La estrella caída marca el lugar donde cavar.',
-    ],
-    end: 'El sello del Agua se rompe. El pozo brota y los Sahrim vuelven a contar sus pozos, uno más.',
-  },
-  {
     seal: 'Memoria',
     title: 'Los nombres de la corteza',
     opening:
@@ -56,18 +44,6 @@ export const CHAPTERS = [
       'Avanza despacio: aquí la senda cambia con la tarde.',
     ],
     end: 'El sello de la Memoria se rompe. La aldea dice sus nombres en voz alta y los Ennari vuelven a escribirlos.',
-  },
-  {
-    seal: 'Chispa',
-    title: 'La hora detenida',
-    opening:
-      'El reloj mayor se paró la noche en que Vhorn apagó el Faro, y con él se detuvo el tiempo de la ciudad. Rompe el sello de la Chispa para que las agujas vuelvan a girar.',
-    cityLines: [
-      'Los relojeros kogn y ennari firmaron juntos cada engranaje.',
-      'Un movimiento torpe puede atascar toda la calle.',
-      'Aquí gana quien piensa antes de mover.',
-    ],
-    end: 'El sello de la Chispa se rompe. Las agujas se mueven y el tiempo de la ciudad vuelve a correr.',
   },
   {
     seal: 'Valor',
@@ -82,17 +58,16 @@ export const CHAPTERS = [
     end: 'El sello del Valor se rompe. La campana suena entre las montañas y el miedo se queda atrás.',
   },
   {
-    seal: 'Vida',
-    title: 'El jardín quieto',
+    seal: 'Chispa',
+    title: 'La hora detenida',
     opening:
-      'Los Sahrim trajeron la primera semilla de cerezo cruzando tres desiertos. Hoy los pétalos flotan inmóviles y, por primera vez, Vhorn se deja ver entre ellos. Rompe el sello de la Vida.',
+      'El reloj mayor se paró la noche en que Vhorn apagó el Faro, y con él se detuvo el tiempo de la ciudad. Rompe el sello de la Chispa para que las agujas vuelvan a girar.',
     cityLines: [
-      'Los pétalos cuelgan en el aire, como si el tiempo dudara.',
-      'Los candados de la villa se abren cubriendo la placa correcta.',
-      'Esta calma es una trampa: alguien os observa.',
+      'Los relojeros kogn y ennari firmaron juntos cada engranaje.',
+      'Un movimiento torpe puede atascar toda la calle.',
+      'Aquí gana quien piensa antes de mover.',
     ],
-    vhorn: 'Apagad esa luz. Todo lo que arde termina olvidado.',
-    end: 'El sello de la Vida se rompe. Los cerezos florecen y el viento trae una certeza: ya no hay vuelta atrás.',
+    end: 'El sello de la Chispa se rompe. Las agujas se mueven y el tiempo de la ciudad vuelve a correr.',
   },
   {
     seal: 'Fuego',
@@ -106,19 +81,6 @@ export const CHAPTERS = [
     ],
     vhorn: 'Descansad. Nadie recordará vuestra luz cuando acabe la noche.',
     end: 'El sello del Fuego se rompe. La fragua arde limpia y la tentación de rendirse se apaga.',
-  },
-  {
-    seal: 'Cielo',
-    title: 'Los puentes de luz',
-    opening:
-      'Los Aluen tejían puentes de luz entre islas flotantes, y Vhorn los cortó. Aquí los héroes descubren su secreto: Vhorn fue el primer vigía del Faro, hasta que el mundo lo olvidó.',
-    cityLines: [
-      'Las islas flotan sobre un abismo sin fondo.',
-      'Cada tablero es un puente que hay que tejer a mano.',
-      'Vhorn no quiere destruirlo todo: quiere que alguien lo recuerde.',
-    ],
-    vhorn: 'Yo encendí el Faro mil noches… y nadie dijo mi nombre.',
-    end: 'El sello del Cielo se rompe. El último puente de luz llega hasta el Castillo Dorado.',
   },
   {
     seal: 'Amanecer',

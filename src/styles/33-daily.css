@@ -203,6 +203,15 @@
   font: 600 11.5px/1.25 var(--font-ui);
   color: #e3f3f1;
 }
+.dc-meta {
+  font: 700 10.5px/1.2 var(--font-ui);
+  color: #ffe29a;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+#menu .daily-card.locked .dc-meta {
+  color: #b8aac6;
+}
 .dc-side {
   display: grid;
   justify-items: center;
@@ -392,17 +401,46 @@
   min-height: 30px;
   gap: 8px;
 }
+.daily-board-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.daily-board-ico .ic {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.daily-board-row.gold .daily-board-label {
+  color: #ffe29a;
+}
 .daily-boards button {
   padding: 4px 10px;
   margin: 0;
   font-size: 12px;
 }
 
-/* ---------- tablero en reto diario: sin tienda, sin pistas, sin puntos ---------- */
+/* ---------- tablero en reto diario: sin tienda, sin pistas, sin puntos; con reinicio rápido ---------- */
 body.daily-run #bShop,
 body.daily-run #bHint,
-body.daily-run .scores {
+body.daily-run #bPower,
+body.daily-run .scores,
+body:not(.daily-run) #bDailyReset {
   display: none !important;
+}
+body.daily-run #bDailyReset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: var(--wob-c);
+  font: 800 13px/1 var(--font-ui);
+}
+body.daily-run #bDailyReset:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 body.daily-run .top .lv b {
   font-size: clamp(15px, 4.6vw, 20px);

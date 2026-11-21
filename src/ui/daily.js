@@ -7,19 +7,22 @@ import { sfx } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import {
   CHALLENGES,
-  DAILY_TARGETS,
   STREAK_HINT_REWARDS,
   challengeById,
+  challengeTargets,
   currentStreak,
   dailyProgress,
   dayNumber,
   emptyDaily,
   isUnlocked,
   maxLevelReached,
+  medalFor,
   msToReset,
   resetText,
+  shareText,
   streakEarned,
   streakHintBonus,
+  todayFamily,
   todayResult,
 } from '../game/daily.js';
 import { leaveDaily, startDaily } from '../game/session.js';
@@ -60,28 +63,33 @@ export function renderDaily() {
     maxLevel = maxLevelReached(store.paths),
     streak = currentStreak(d, day);
   const bonus = streakHintBonus(streak);
-  const rewards = STREAK_HINT_REWARDS.map(
-    ({ days, hints }) =>
-      `<li class="${hints === bonus ? 'active' : ''}"><span>${days} días</span><b>+${hints} pistas</b>${hints === bonus ? '<small>Premio activo</small>' : ''}</li>`,
-  ).join('');
+  const rewards = STREAK_HINT_REWARDS.map(({ days, hints }) => {
+    const label = hints === 1 ? '+1 pista' : `+${hints} pistas`;
+    return `<li class="${hints === bonus ? 'active' : ''}"><span>${days} días</span><b>${label}</b>${hints === bonus ? '<small>Premio activo</small>' : ''}</li>`;
+  }).join('');
+  const solvedToday = CHALLENGES.filter((c) => todayResult(d, c.id, day)?.boards).length;
   const cards = CHALLENGES.map((c) => {
     const open = isUnlocked(c, maxLevel),
-      res = todayResult(d, c.id, day);
+      res = todayResult(d, c.id, day),
+      targets = challengeTargets(c);
     const progress = dailyProgress(store, c.id, day),
       done = progress?.boards?.filter(Boolean).length || 0;
+    const todayTag =
+      c.families.length > 1 ? (todayFamily(c, day) === 'ice' ? 'Hoy: Hielo' : 'Hoy: Rocas') : '';
+    const meta = `${targets.join(' · ')} mov.${todayTag ? ` · ${todayTag}` : ''}`;
     const side = !open
       ? `<span class="dc-side lock">${icon('lock')}<small>Nivel ${c.unlock}</small></span>`
       : res?.boards
         ? `<span class="dc-side done ${res.medal}">${icon(MEDAL_ICON[res.medal])}<small>${res.moves}/${res.opt}</small></span>`
-        : `<span class="dc-side go"><b>${done || progress?.attempt ? 'Continuar' : 'Jugar'}</b><small>${done}/${DAILY_TARGETS.length}</small></span>`;
+        : `<span class="dc-side go"><b>${done || progress?.attempt ? 'Continuar' : 'Jugar'}</b><small>${done}/${targets.length}</small></span>`;
     const noticeId = `dailyUnlock-${c.id}`;
     return `<div class="daily-entry">
-      <button type="button" class="daily-card${open ? '' : ' locked'}${res?.boards ? ' done' : ''}" data-id="${c.id}" ${open ? '' : `aria-disabled="true" aria-describedby="${noticeId}"`}><i class="dc-ico" aria-hidden="true">${icon(c.icon)}</i><span class="dc-copy"><b>${c.name}</b><small>${c.desc}</small></span>${side}</button>
+      <button type="button" class="daily-card${open ? '' : ' locked'}${res?.boards ? ' done' : ''}" data-id="${c.id}" ${open ? '' : `aria-disabled="true" aria-describedby="${noticeId}"`}><i class="dc-ico" aria-hidden="true">${icon(c.icon)}</i><span class="dc-copy"><b>${c.name}</b><small>${c.desc}</small><span class="dc-meta">${meta}</span></span>${side}</button>
       ${open ? '' : `<p class="daily-unlock" id="${noticeId}" role="status" hidden>Llega al nivel ${c.unlock} en Aventura para abrir este reto.</p>`}
     </div>`;
   }).join('');
   box.innerHTML = `<div class="daily-head"><div class="daily-streak${streak ? ' on' : ''}"><i aria-hidden="true">${icon('flame')}</i><b>${streak}</b><span>${streak === 1 ? 'día de racha' : 'días de racha'}</span></div><div class="daily-reset"><small>Nuevos retos en</small><b id="dailyReset">${resetText(msToReset())}</b></div></div>
-    <p class="daily-note" id="dailyNote" role="status">${streakEarned(d, day) ? 'Racha asegurada por hoy. ¡Vuelve mañana!' : 'Completa cualquier reto para sumar un día de racha.'}</p>
+    <p class="daily-note" id="dailyNote" role="status">${streakEarned(d, day) ? `Racha asegurada por hoy · ${solvedToday}/${CHALLENGES.length} completados` : 'Completa cualquier reto para sumar un día de racha.'}</p>
     <div class="daily-rewards">
       <b>Pistas extra al iniciar Aventura</b>
       <ul>${rewards}</ul>
@@ -154,7 +162,11 @@ export function showDailyResult(daily, { streakUp = false } = {}) {
   $('dailyEndStreakBox').classList.toggle('up', streakUp);
   const bonus = streakHintBonus(streak);
   $('dailyEndReward').hidden = !bonus;
-  $('dailyEndReward').textContent = bonus ? `+${bonus} pistas al iniciar Aventura` : '';
+  $('dailyEndReward').textContent = bonus
+    ? bonus === 1
+      ? '+1 pista al iniciar Aventura'
+      : `+${bonus} pistas al iniciar Aventura`
+    : '';
   $('dailyEndReset').textContent = resetText(msToReset());
   const close = () => {
     modal.classList.remove('show');
@@ -162,9 +174,12 @@ export function showDailyResult(daily, { streakUp = false } = {}) {
   };
   retry.replaceChildren(
     ...best.boards.map((board, index) => {
+      const boardMedal = medalFor(board.moves, board.opt);
       const row = document.createElement('div');
+      row.className = `daily-board-row ${boardMedal}`;
       const label = document.createElement('span');
-      label.textContent = `Tablero ${index + 1} · ${board.moves}/${board.opt}`;
+      label.className = 'daily-board-label';
+      label.innerHTML = `<i class="daily-board-ico" aria-hidden="true">${icon(MEDAL_ICON[boardMedal])}</i><span>Tablero ${index + 1} · ${board.moves}/${board.opt}</span>`;
       row.append(label);
       if (board.moves > board.opt && daily.day === dayNumber()) {
         const button = document.createElement('button');
@@ -195,7 +210,10 @@ export function showDailyResult(daily, { streakUp = false } = {}) {
     openMenu('daily');
   };
   $('dailyShare').onclick = async () => {
-    const text = `${tr('DAWNSLIDE')} · ${tr(c.name)} #${daily.day} · ${best.moves}/${best.opt} · ${tr(MEDAL_TITLE[best.medal])}${streak > 1 ? ` · ${streak} ${tr('días de racha')}` : ''}`;
+    const text = shareText(c, daily.day, best, streak, {
+      name: tr(c.name),
+      streakUnit: tr('días de racha'),
+    });
     try {
       if (typeof navigator.share === 'function') await navigator.share({ text, url: location.href });
       else {

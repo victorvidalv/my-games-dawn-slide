@@ -70,7 +70,24 @@
   object-position: center 10%;
 }
 #heroSelect .hero-choice::after {
-  background: linear-gradient(transparent 58%, #081225ed);
+  background: linear-gradient(transparent 50%, #081225f2);
+}
+#heroSelect .hero-choice-name {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  line-height: 1.1;
+}
+#heroSelect .hero-choice-name b {
+  display: block;
+  font-size: inherit;
+}
+#heroSelect .hero-choice-power {
+  display: block;
+  font: 700 11px/1.1 var(--font-ui);
+  letter-spacing: 0.03em;
+  color: #ffe39e;
+  text-shadow: 0 1px 0 #091118;
 }
 #heroSelect .hero-choice.selected {
   transform: translateY(-4px);

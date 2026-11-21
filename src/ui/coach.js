@@ -182,8 +182,7 @@ export function startCoach() {
   if (run.fate?.length) queue.push('fate');
   if (G.seal) queue.push('seal');
   queue.push(...mechanicsPresent(G));
-  if (G.rot) queue.push('curse'); // tablero con maleficio: se explica la primera vez
-  // Una sola explicación general por nivel: lo que hace falta YA para jugar este tablero (arrastrar, piezas nuevas, cartas, maleficio)
+  // Una sola explicación general por nivel: lo que hace falta YA para jugar este tablero (arrastrar, piezas nuevas, cartas)
   // se enseña siempre; las demás (puntos, ayudas, héroe, sellos) esperan su turno si ya hay otra ventana en este nivel.
   const pending = queue.filter((id) => !store.tips[id]);
   const urgent = pending.filter((id) => !CAN_WAIT.includes(id));

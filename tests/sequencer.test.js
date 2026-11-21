@@ -197,39 +197,42 @@ describe('secuenciador (con audio simulado)', () => {
     expect(Music.playing).toBe(false);
   });
 
-  it('capas por nivel: cada nivel de la ciudad suma notas (1 = básico … 10 = todo) y la melodía no cambia', () => {
+  it('capas por nivel: cada nivel del tramo suma notas (4 → 7 → 10) y la melodía no cambia', () => {
     let prev = 0;
     const counts = [];
-    for (let l = 1; l <= 10; l++) {
+    for (const [level, expectedLayer] of [
+      [1, 4],
+      [2, 7],
+      [3, 10],
+    ]) {
       Music.stop(0);
-      Music.setLevel(Math.min(l, 9)); // ciudad 1, nivel l → capa l (la capa 10 se fuerza sobre el mismo tema para comparar)
-      if (l === 10) Music.setLayer(10);
+      Music.setLevel(level);
       Music.start();
       Music.seek('verse'); // la canción tiene forma: se compara siempre la misma sección (estrofas)
       play(2300); // deja entrar la capa en el siguiente compás
-      expect(Music.layer).toBe(l);
+      expect(Music.layer).toBe(expectedLayer);
       stats.osc = 0;
       play(15500);
       counts.push(stats.osc);
-      expect(stats.osc, `capa ${l}`).toBeGreaterThanOrEqual(prev * 0.97);
+      expect(stats.osc, `capa ${expectedLayer}`).toBeGreaterThanOrEqual(prev * 0.97);
       prev = stats.osc;
     }
-    expect(counts[9]).toBeGreaterThan(counts[0] * 1.8); // en las estrofas el nivel 10 suena mucho más lleno que el 1 (el coro es grande en todos)
-    expect(new Set(counts).size).toBeGreaterThanOrEqual(6);
+    expect(counts[2]).toBeGreaterThan(counts[0] * 1.15);
     Music.stop(0.1);
   });
 
-  it('los cierres de ciudad (10, 20… 100) suenan con el tema de su ciudad; la marcha suena al elegir carta', () => {
+  it('los cierres de tramo (3, 6, 9…) suenan con el tema de su zona; la marcha suena al elegir carta', () => {
     const names = {};
-    for (const level of [9, 10, 20, 11]) {
+    for (const level of [2, 3, 4, 6]) {
       Music.setLevel(level);
       Music.start();
       play(2300);
       names[level] = Music.themeName;
     }
-    expect(names[10]).toBe(names[9]);
-    expect(names[10]).not.toBe('Marcha del destino');
-    expect(names[20]).not.toBe('Marcha del destino');
+    expect(names[3]).toBe(names[2]);
+    expect(names[4]).not.toBe(names[3]);
+    expect(names[3]).not.toBe('Marcha del destino');
+    expect(names[6]).not.toBe('Marcha del destino');
     Music.scene('fate');
     play(2300);
     expect(Music.themeName).toBe('Marcha del destino');
@@ -250,7 +253,7 @@ describe('secuenciador (con audio simulado)', () => {
       return { osc: stats.osc, min: stats.minFreq, max: stats.maxFreq };
     };
     const city = measure(() => {
-      Music.setLevel(9);
+      Music.setLevel(3);
       Music.setLayer(10);
     });
     const march = measure(() => Music.scene('fate'));
@@ -260,14 +263,14 @@ describe('secuenciador (con audio simulado)', () => {
     Music.stop(0.1);
   });
 
-  it('el nivel 11 vuelve a la capa 1 con el tema de la ciudad siguiente', () => {
-    Music.setLevel(10);
+  it('el nivel 4 vuelve a la capa 4 con el tema de la zona siguiente', () => {
+    Music.setLevel(3);
     Music.start();
     play(2300);
     expect(Music.layer).toBe(10);
-    Music.setLevel(11);
+    Music.setLevel(4);
     play(5000);
-    expect(Music.layer).toBe(1);
+    expect(Music.layer).toBe(4);
     Music.stop(0.1);
   });
 });

@@ -33,10 +33,12 @@ export function fateCardHtml(card, { muted = false, tag = 'span', attrs = '', in
       <span class="fate-corner" aria-hidden="true">${numberOf(card)}</span>
       <span class="fate-kind">${KIND_NAME[card.kind]}</span>
       <span class="fate-emblem">${fateArt(card)}</span>
-      <b class="fate-name">${card.name}</b>
-      <span class="fate-gain">${card.gain}</span>
-      ${card.cost ? `<span class="fate-cost">${card.cost}</span>` : ''}
-      ${muted ? '<span class="fate-muted-note">Sin efecto por tu Pacto</span>' : ''}
+      <span class="fate-body">
+        <b class="fate-name">${card.name}</b>
+        <span class="fate-gain">${card.gain}</span>
+        ${card.cost ? `<span class="fate-cost">${card.cost}</span>` : ''}
+        ${muted ? '<span class="fate-muted-note">Sin efecto por tu Pacto</span>' : ''}
+      </span>
     </span>
   </${tag}>`;
 }
@@ -93,13 +95,11 @@ function totalsHtml(summary) {
   if (t.heavyIce) chips.push(['turns', `+${t.heavyIce} turnos con pesadas o hielo`]);
   if (t.perfect) chips.push(['points', `Perfecto ${pct(t.perfect)}`]);
   if (t.streakCap) chips.push(['points', `Racha hasta ×${fmt(1 + t.streakCap / 10)}`]);
-  if (t.seal) chips.push(['points', `Sellos ${pct(t.seal)}`]);
-  if (t.shop) chips.push([t.shop < 0 ? 'good' : 'bad', `Tienda ${pct(t.shop)}`]);
+  if (t.cursePoints) chips.push(['points', `Maleficios ${pct(t.cursePoints)}`]);
+  if (t.finalPoints) chips.push(['points', `Tramo final ${pct(t.finalPoints)}`]);
   if (t.revives) chips.push(['good', `+${t.revives} revivir`]);
   if (t.noPower) chips.push(['bad', 'Sin poder del héroe']);
-  if (t.noShop) chips.push(['bad', 'Tienda cerrada']);
-  if (t.noSeals) chips.push(['bad', 'Sellos sin puntos']);
-  if (t.noRevive) chips.push(['bad', 'Sin revivir']);
+  if (t.noHints) chips.push(['bad', 'Sin pistas']);
   if (t.perfectStreak) chips.push(['bad', 'Racha solo con Perfecto']);
   return chips.map(([kind, text]) => `<span class="fate-chip is-${kind}">${text}</span>`).join('');
 }
@@ -134,7 +134,7 @@ $('bFate')?.addEventListener('click', openFatePanel);
 /* ---------- Elección al cerrar la ciudad ---------- */
 /** Paisaje, héroe y texto de la ciudad a la que se llega (city = 1..9: la siguiente es ZONES[city]). */
 function fillStage(hero, city) {
-  const story = storyFor(hero.id, city * 10 + 1);
+  const story = storyFor(hero.id, city * 3 + 1);
   $('travelScene').src = `backgrounds/zone-${city + 1}.webp`;
   $('travelHero').src = heroArt(hero.id, 'route');
   $('travelHero').alt = hero.name;
@@ -144,7 +144,7 @@ function fillStage(hero, city) {
   $('travelTitle').replaceChildren(name);
   $('travelInscription').textContent = `«${story.inscription}»`;
   $('fateChapter').textContent =
-    `THYES · AÑO ${WORLD.year} · CAPÍTULO ${city + 1} DE 10 · NIVELES ${city * 10 + 1}–${(city + 1) * 10}`;
+    `THYES · AÑO ${WORLD.year} · TRAMO ${city + 1} DE ${ZONES.length} · NIVELES ${city * 3 + 1}–${(city + 1) * 3}`;
   const portrait = LORE_PORTRAITS[city],
     chip = $('travelLoreChip'),
     line = story.vhorn ? `Vhorn: «${story.vhorn}»` : story.cityLines?.[0] || story.body || '';
@@ -183,49 +183,27 @@ function sparkle(el, card) {
  * Diálogo de cartas: `cards` son las 3 de la oferta. `onChoose(id)` aplica la elección y la guarda (se llama una vez);
  * la promesa se resuelve cuando termina la animación de salida. `isActive()` evita aplicarla si la partida cambió.
  */
-export function showFateDialog({ run, hero, city, cards, rewards, onChoose, isActive }) {
+export function showFateDialog({ run, hero, city, cards, canReroll = false, rewards, onReroll, onChoose, isActive }) {
   return new Promise((resolve) => {
     const modal = $('travel'),
-      box = $('fateOffer');
+      box = $('fateOffer'),
+      rerollBtn = $('fateReroll');
+    let currentCards = cards;
+    let buttons = [];
     fillStage(hero, city);
     $('fateAsk').textContent = `Carta del destino ${city} de ${FATE_PICKS}`;
-    $('fateSub').textContent =
-      cards.length > 2
-        ? 'Se suma a las que ya tienes. Las otras dos no vuelven.'
-        : 'Se suma a las que ya tienes. La otra no vuelve.';
     const reward = rewardsText(rewards);
     $('fateRewards').hidden = !reward;
     $('fateRewards').textContent = reward;
     fillOwned(run);
-    box.innerHTML = cards
-      .map((card, i) =>
-        fateCardHtml(card, {
-          tag: 'button',
-          muted: fateMuted(run, card.id),
-          index: i,
-          attrs: `type="button" aria-label="${card.name}. ${card.gain}.${card.cost ? ` Costo: ${card.cost}.` : ''}"`,
-        }),
-      )
-      .join('');
-    const buttons = [...box.querySelectorAll('.fate-card')];
     let chosen = false;
-    const key = (e) => {
-      const at = buttons.indexOf(document.activeElement);
-      if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(e.key)) {
-        e.preventDefault();
-        const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : -1;
-        buttons[(Math.max(0, at) + d + buttons.length) % buttons.length].focus();
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        buttons[(Math.max(0, at) + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
-      }
-    };
     let dealtAt = Infinity;
     const choose = (button) => {
       // nada se elige hasta que las cartas están sobre la mesa (el toque que salta la entrada no cuenta)
       if (chosen || !isActive() || performance.now() - dealtAt < 350) return;
       chosen = true;
-      const card = cards.find((c) => c.id === button.dataset.card);
+      if (rerollBtn) rerollBtn.hidden = true;
+      const card = currentCards.find((c) => c.id === button.dataset.card);
       buttons.forEach((b) => {
         b.disabled = true;
         b.classList.add(b === button ? 'picked' : 'unpicked');
@@ -245,7 +223,58 @@ export function showFateDialog({ run, hero, city, cards, rewards, onChoose, isAc
         reduced() ? 0 : 1100,
       );
     };
-    buttons.forEach((b) => (b.onclick = () => choose(b)));
+    const renderCards = (list) => {
+      currentCards = list;
+      $('fateSub').textContent =
+        list.length > 2
+          ? 'Se suma a las que ya tienes. Las otras dos no vuelven.'
+          : 'Se suma a las que ya tienes. La otra no vuelve.';
+      box.innerHTML = list
+        .map((card, i) =>
+          fateCardHtml(card, {
+            tag: 'button',
+            muted: fateMuted(run, card.id),
+            index: i,
+            attrs: `type="button" aria-label="${card.name}. ${card.gain}.${card.cost ? ` Costo: ${card.cost}.` : ''}"`,
+          }),
+        )
+        .join('');
+      buttons = [...box.querySelectorAll('.fate-card')];
+      buttons.forEach((b) => (b.onclick = () => choose(b)));
+    };
+    renderCards(cards);
+    if (rerollBtn) {
+      rerollBtn.hidden = !canReroll;
+      rerollBtn.disabled = false;
+      rerollBtn.onclick = () => {
+        if (chosen || !isActive() || !onReroll || performance.now() - dealtAt < 350) return;
+        const fresh = onReroll();
+        if (!fresh?.length) return;
+        rerollBtn.hidden = true;
+        modal.classList.remove('fate-dealt');
+        renderCards(fresh);
+        sfx.fateDeal();
+        setTimeout(
+          () => {
+            modal.classList.add('fate-dealt');
+            dealtAt = performance.now();
+            buttons[0]?.focus({ preventScroll: true });
+          },
+          reduced() ? 0 : 80,
+        );
+      };
+    }
+    const key = (e) => {
+      const at = buttons.indexOf(document.activeElement);
+      if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(e.key)) {
+        e.preventDefault();
+        const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : -1;
+        buttons[(Math.max(0, at) + d + buttons.length) % buttons.length].focus();
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        buttons[(Math.max(0, at) + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
+      }
+    };
     // Entrada: «Ciudad completada» con una carta que brilla (≈1,4 s, se salta con un toque) y después se reparten las cartas.
     $('fateIntroCity').textContent = ZONES[city - 1].n;
     let dealt = false;

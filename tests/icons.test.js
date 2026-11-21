@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { icon, ICON_NAMES } from '../src/ui/icons.js';
-import { SHOP_ITEMS } from '../src/game/shop.js';
 import { MECHANICS } from '../src/game/mechanics.js';
 import { HEROES } from '../src/game/heroes.js';
 
@@ -22,8 +21,7 @@ describe('iconos propios', () => {
   it('un nombre desconocido no rompe nada (cadena vacía)', () => {
     expect(icon('no-existe')).toBe('');
   });
-  it('todo lo que el juego muestra con icono lo tiene: tienda, piezas especiales, héroes, avisos y botones', () => {
-    for (const i of SHOP_ITEMS) expect(ICON_NAMES, `tienda ${i.id}`).toContain(i.icon);
+  it('todo lo que el juego muestra con icono lo tiene: piezas especiales, héroes, avisos y botones', () => {
     for (const m of Object.values(MECHANICS)) expect(ICON_NAMES, `pieza ${m.id}`).toContain(m.icon);
     for (const h of HEROES) expect(ICON_NAMES, `héroe ${h.id}`).toContain(h.icon);
     for (const n of ['undo', 'hint', 'purse', 'crown', 'alert', 'crystal', 'trophy', 'medal', 'unlock'])

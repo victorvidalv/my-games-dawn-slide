@@ -10,59 +10,43 @@ import {
   ratingForMin,
 } from '../src/engine/difficulty.js';
 import { levelPlan, mechanicsOfFamily } from '../src/game/mechanics.js';
-
-/** Cierre de ciudad (10, 20 … 100): el calendario calibrado le da un tablero algo más largo antes de elegir carta. */
-const isCityEnd = (level) => level >= 10 && level % 10 === 0;
 import { TUTORIAL_LEVELS, hasCurse, minFor } from '../src/engine/calibration.js';
 import { calcGain, gainFor } from '../src/engine/scoring.js';
 
 const PATHS = { Normal: 1, Difícil: 50, Experto: 75 };
 const targetAt = (start, level) => curve(rateAt(start, level)).target;
 
-describe('dificultad: la curva calibrada se siente apropiada', () => {
-  it('Normal sube por tramos: 1–20 de 2 a 6, 21–50 hasta 15, 51–80 hasta 22 y 81–100 meseta hasta 25 (sin saltos)', () => {
+describe('dificultad: la curva calibrada de 21 niveles se siente apropiada', () => {
+  it('Normal sube de 3 a 22 movimientos sin saltos bruscos', () => {
+    expect(MAX_LEVEL).toBe(21);
     const at = (l) => minFor(1, l);
-    expect([at(1), at(20), at(50), at(80), at(100)]).toEqual([2, 6, 15, 22, 25]);
+    expect([at(1), at(10), at(21)]).toEqual([3, 12, 22]);
     for (let l = 2; l <= MAX_LEVEL; l++) {
       expect(at(l), `nivel ${l}`).toBeGreaterThanOrEqual(at(l - 1));
       expect(at(l) - at(l - 1), `nivel ${l}`).toBeLessThanOrEqual(1);
     }
     for (let l = 1; l <= MAX_LEVEL; l++) expect(Math.abs(targetAt(1, l) - at(l)), `nivel ${l}`).toBeLessThanOrEqual(1);
   });
-  it('llegar al nivel 100 es desafiante: Normal ≥ 24 movimientos mínimos; Difícil y Experto ≥ 35', () => {
-    expect(targetAt(1, 100)).toBeGreaterThanOrEqual(24);
-    for (const start of [50, 75]) expect(targetAt(start, 100)).toBeGreaterThanOrEqual(35);
+  it('llegar al nivel 21 es desafiante: Normal ≥ 22, Difícil ≥ 30 y Experto 37', () => {
+    expect(targetAt(1, 21)).toBeGreaterThanOrEqual(22);
+    expect(targetAt(50, 21)).toBeGreaterThanOrEqual(30);
+    expect(targetAt(75, 21)).toBe(37);
   });
-  it('Difícil y Experto empiezan donde Normal ya exige pensar, y Experto más arriba que Difícil', () => {
+  it('Difícil y Experto empiezan más arriba que Normal, y Experto más arriba que Difícil', () => {
     expect(targetAt(50, 1)).toBeGreaterThanOrEqual(9);
     expect(targetAt(75, 1)).toBeGreaterThanOrEqual(targetAt(50, 1) + 5);
-    expect(targetAt(50, 1)).toBeLessThan(targetAt(1, 100));
+    expect(targetAt(50, 1)).toBeLessThan(targetAt(1, 21));
   });
-  it('sus curvas son más empinadas: llegan al máximo antes que Normal (Experto antes que Difícil)', () => {
-    const first = (start) => {
-      for (let l = 1; l <= MAX_LEVEL; l++) if (targetAt(start, l) >= 37) return l;
-      return MAX_LEVEL + 1;
-    };
-    expect(first(75)).toBeLessThan(first(50));
-    expect(first(50)).toBeLessThan(first(1));
-    expect(first(75)).toBeLessThanOrEqual(45);
-    expect(first(50)).toBeLessThanOrEqual(60);
-    expect(first(1)).toBeGreaterThanOrEqual(95);
-    expect(targetAt(50, 50) - targetAt(1, 50)).toBeGreaterThanOrEqual(8);
-  });
-  it('cada camino es más difícil que el anterior en el mismo nivel', () => {
-    for (let l = 1; l <= MAX_LEVEL; l += 1) {
+  it('cada camino es más difícil que el anterior en el mismo nivel y nunca retrocede', () => {
+    for (let l = 1; l <= MAX_LEVEL; l++) {
       expect(targetAt(50, l)).toBeGreaterThanOrEqual(targetAt(1, l));
       expect(targetAt(75, l)).toBeGreaterThanOrEqual(targetAt(50, l));
     }
-  });
-  it('la dificultad solo baja justo después de un cierre de ciudad (que es 2 más duro) y no da saltos bruscos', () => {
     for (const start of Object.values(PATHS)) {
       for (let l = 2; l <= MAX_LEVEL; l++) {
         const d = targetAt(start, l) - targetAt(start, l - 1);
-        expect(d, `camino ${start}, nivel ${l}`).toBeLessThanOrEqual(5);
-        if (!isCityEnd(l - 1)) expect(d, `camino ${start}, nivel ${l}`).toBeGreaterThanOrEqual(0);
-        else expect(d, `camino ${start}, nivel ${l}`).toBeGreaterThanOrEqual(-3);
+        expect(d, `camino ${start}, nivel ${l}`).toBeGreaterThanOrEqual(0);
+        expect(d, `camino ${start}, nivel ${l}`).toBeLessThanOrEqual(2);
       }
     }
   });
@@ -83,21 +67,21 @@ describe('dificultad: la curva calibrada se siente apropiada', () => {
     }
     expect(minReach(30)).toBe(curve(30).target);
   });
-  it('el límite en Normal va de ×2,2 a ×1,5 (siempre 4 turnos de sobra) y es más estricto en Difícil y Experto', () => {
-    expect(moveLimit(20)).toBe(44);
-    expect(moveLimit(25, 1, 100)).toBe(38); // nivel 100 de Normal: 25 movimientos con 38 turnos
-    expect(moveLimit(2, 1, 100)).toBe(6); // margen mínimo de 4 turnos en los tableros cortos
+  it('el límite en Normal va de ×2,1 a ×1,45 (siempre 4 turnos de sobra) y es más estricto en Difícil y Experto', () => {
+    expect(moveLimit(20, 1, 1)).toBe(42);
+    expect(moveLimit(22, 1, 21)).toBe(32);
+    expect(moveLimit(2, 1, 21)).toBe(6); // margen mínimo de 4 turnos en los tableros cortos
     expect(moveLimit(20, 50)).toBeLessThan(moveLimit(20, 1));
     expect(moveLimit(20, 75)).toBeLessThan(moveLimit(20, 50));
     expect(moveLimit(20, 75)).toBeGreaterThan(20);
-    expect(moveLimit(20, 1, 100)).toBeLessThan(moveLimit(20, 1, 1));
-    expect(moveLimit(20, 1, 100)).toBeGreaterThan(20);
+    expect(moveLimit(20, 1, 21)).toBeLessThan(moveLimit(20, 1, 1));
+    expect(moveLimit(20, 1, 21)).toBeGreaterThan(20);
   });
 });
 
-describe('calendario de piezas especiales (calibrado)', () => {
+describe('calendario de piezas especiales (21 niveles)', () => {
   const ORDER = ['wall', 'heavy', 'gate', 'ice'];
-  const plans = Array.from({ length: 100 }, (_, i) => levelPlan(i + 1));
+  const plans = Array.from({ length: MAX_LEVEL }, (_, i) => levelPlan(i + 1));
   it('cada mecánica llega en su nivel de tutorial, solas, una tras otra y nunca antes', () => {
     const lv = ORDER.map((m) => TUTORIAL_LEVELS[m]);
     for (let i = 1; i < lv.length; i++) expect(lv[i]).toBeGreaterThan(lv[i - 1]);
@@ -109,63 +93,25 @@ describe('calendario de piezas especiales (calibrado)', () => {
         expect(levelPlan(l).mechanics, `${m} antes de su tutorial (nivel ${l})`).not.toContain(m);
     });
   });
-  it('los primeros niveles son normales y en todos los tramos hay respiros normales', () => {
+  it('los primeros niveles son normales y los 5 maleficios están bien repartidos', () => {
     for (let l = 1; l < TUTORIAL_LEVELS.wall; l++) expect(plans[l - 1].family, `nivel ${l}`).toBe('plain');
-    for (let c = 1; c < 10; c++)
-      expect(
-        plans.slice(c * 10, c * 10 + 10).filter((p) => p.family === 'plain').length,
-        `tramo ${c + 1}`,
-      ).toBeGreaterThanOrEqual(1);
-    for (let l = 1; l <= 100; l++) expect(plans[l - 1].boss, `nivel ${l}: ya no hay jefes`).toBeUndefined();
+    const curses = Array.from({ length: MAX_LEVEL }, (_, i) => i + 1).filter(hasCurse);
+    expect(curses).toEqual([7, 12, 15, 18, 20]);
   });
-  it('las mecánicas no se repiten seguidas: nunca la misma mezcla en dos niveles especiales consecutivos ni tres especiales pegados', () => {
-    let run = 0;
-    for (let l = 1; l <= 100; l++) {
-      run = plans[l - 1].family === 'plain' ? 0 : run + 1;
-      if (!isCityEnd(l)) expect(run, `nivel ${l}`).toBeLessThanOrEqual(3);
-    }
-    let prev = null;
-    for (let l = 1; l <= 100; l++) {
-      const f = plans[l - 1].family;
-      if (f === 'plain') continue;
-      // salvo la práctica en solitario de una pieza recién llegada (los 8 niveles tras su tutorial), nunca la misma mezcla seguida
-      const single = plans[l - 1].mechanics.length === 1 ? plans[l - 1].mechanics[0] : null;
-      const practising = single && l - TUTORIAL_LEVELS[single] <= 8;
-      if (!isCityEnd(l) && l > TUTORIAL_LEVELS.heavy && !practising)
-        expect(f === prev, `nivel ${l}: ${f} repetida`).toBe(false);
-      prev = f;
-    }
-  });
-  it('cada pieza nueva se practica sola al menos 2 niveles en los 8 siguientes a su tutorial, y las parejas llegan después', () => {
-    for (const m of ORDER.slice(1)) {
-      const t = TUTORIAL_LEVELS[m];
-      const solo = plans.slice(t, t + 8).filter((p) => p.mechanics.length === 1 && p.mechanics[0] === m).length;
-      expect(solo, m).toBeGreaterThanOrEqual(2);
-      const firstMix = plans.findIndex((p, i) => i + 1 > t && p.mechanics.length > 1 && p.mechanics.includes(m)) + 1;
-      expect(firstMix === 0 || firstMix > t + 2, `${m}: primera mezcla en ${firstMix}`).toBe(true);
-    }
-  });
-  it('el maleficio no compite con el aprendizaje: ninguno en los 4 niveles tras el tutorial de una pieza', () => {
-    for (const m of ORDER)
-      for (let l = TUTORIAL_LEVELS[m] + 1; l <= TUTORIAL_LEVELS[m] + 4; l++)
-        expect(hasCurse(l), `nivel ${l}`).toBe(false);
-  });
-  it('las mezclas crecen: pocas al principio y todas juntas al final (el nivel 100 lleva las cuatro)', () => {
+  it('las mezclas crecen: pocas al principio y todas juntas al final (el nivel 21 lleva las cuatro)', () => {
     const avg = (a, b) => {
       const s = plans.slice(a - 1, b).filter((p) => p.mechanics.length);
       return s.reduce((x, p) => x + p.mechanics.length, 0) / s.length;
     };
-    expect(avg(12, 40)).toBeLessThan(avg(41, 70));
-    expect(avg(41, 70)).toBeLessThan(avg(71, 100));
-    expect(avg(80, 100)).toBeGreaterThanOrEqual(2.5);
-    expect(plans[99].mechanics).toEqual(ORDER);
-    expect(Math.max(...plans.slice(80).map((p) => p.mechanics.length))).toBe(4);
+    expect(avg(1, 10)).toBeLessThan(avg(11, 16));
+    expect(avg(11, 16)).toBeLessThan(avg(17, 21));
+    expect(plans[20].mechanics).toEqual(ORDER);
   });
   it('cada mecánica sigue apareciendo hasta el final (ninguna se pierde)', () => {
     for (const m of ORDER)
       for (const [a, b] of [
-        [TUTORIAL_LEVELS[m], 60],
-        [61, 100],
+        [TUTORIAL_LEVELS[m], 15],
+        [16, 21],
       ])
         expect(
           plans.slice(a - 1, b).some((p) => p.mechanics.includes(m)),

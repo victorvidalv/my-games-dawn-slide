@@ -2,14 +2,15 @@ import { hash32 } from '../engine/rng.js';
 import { TUTORIALS } from './mechanics.js';
 
 import { hasCurse } from '../engine/calibration.js';
+import { MAX_LEVEL } from '../engine/difficulty.js';
 
 /**
- * Maleficio: los niveles con el tablero girado los decide el calibrador (irregulares, nunca en cierres de ciudad ni en tutoriales de piezas);
- * el primero lleva su tutorial. El resto de niveles mantienen la salida a la derecha, así que el giro es una sorpresa.
+ * Maleficio: los niveles con el tablero girado los decide el calibrador; el primero lleva su tutorial.
+ * El resto de niveles mantienen la salida a la derecha, así que el giro es una sorpresa.
  */
 export const FIRST_ROTATED_LEVEL = TUTORIALS.curse.level;
 /** Conjunto de niveles girados (no depende de la partida; solo el sentido del giro cambia). */
-export function rotatedLevels(_seed, max = 100) {
+export function rotatedLevels(_seed, max = MAX_LEVEL) {
   const set = new Set();
   for (let l = 1; l <= max; l++) if (hasCurse(l)) set.add(l);
   return set;

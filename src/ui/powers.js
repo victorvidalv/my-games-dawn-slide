@@ -4,7 +4,6 @@ import { beginPower } from '../game/powers.js';
 import { saveRun } from '../game/session.js';
 import { S, heroOf, setBusy } from '../state.js';
 import { afterMove, cancelDrag, layout, updateHud } from './board.js';
-import { processSealMove } from './seals.js';
 import { motes, warmMotes } from './fx.js';
 import { openPowerStage } from './power-stage.js';
 import { countStat } from './achievements.js';
@@ -53,7 +52,6 @@ export async function activatePower() {
   countStat('powersUsed');
   saveRun();
   updateHud();
-  $('bShop').disabled = true;
   $('powerFxName').textContent = `${h.name} · ${name}`;
   $('powerStep').textContent = 'Poder activado';
   board.classList.add('hero-power', action.kind);
@@ -91,7 +89,6 @@ export async function activatePower() {
         G.hist.push(G.pos.slice());
         G.pos[i] = step.to;
         G.moves++;
-        processSealMove();
       }
       const piece = G.els[i];
       piece?.classList.add('power-piece');
@@ -126,6 +123,5 @@ export async function activatePower() {
       saveRun();
       updateHud();
     }
-    $('bShop').disabled = false;
   }
 }

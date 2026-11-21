@@ -6,20 +6,19 @@
 import { MAX_LEVEL } from '../engine/difficulty.js';
 import { encodeBoard, isValidState } from '../engine/board.js';
 import { analyze } from '../engine/solver.js';
-import { zoneIdx } from '../data/zones.js';
 import { clearRewards, snapshotRescue } from './heroes.js';
 import { relicFor } from './relics.js';
-import { canPaidRevive, hasRevive, shopBoardKey, useFreeRetry, useRevive } from './shop.js';
-import { fateDeck, keepsStreak } from './fate.js';
+import { canPaidRevive, hasRevive, useFreeRetry, useRevive } from './shop.js';
+import { FATE_EVERY, FATE_PICKS, fateById, fateDeck, keepsStreak } from './fate.js';
 
 const copyRows = (rows) => rows.map((p) => p.slice());
 
-/** Partida nueva de aventura. `from` es el nivel inicial ya validado. */
-export function newAdventureRun({ seed, start, mode = 'c', hero, from, hints, relic }) {
+/** Partida nueva de aventura (siempre desde el nivel 1). */
+export function newAdventureRun({ seed, start, mode = 'c', hero, hints, relic }) {
   const selected = relicFor({ mode, relic });
   return {
     seed,
-    level: from,
+    level: 1,
     start,
     mode,
     hero,
@@ -36,17 +35,16 @@ export function newAdventureRun({ seed, start, mode = 'c', hero, from, hints, re
     adj: 0,
     streak: 0,
     recBroken: false,
-    firstLevel: from,
+    firstLevel: 1,
     fateDeck: fateDeck(seed),
     fate: [],
-    fatePicked: Math.min(9, Math.floor((from - 1) / 10)), // al empezar más adelante, las ciudades saltadas no ofrecen carta
+    fatePicked: 0,
   };
 }
 
 /**
- * Partida guardada lista para continuar: rellena los campos que faltan en guardados antiguos. Las partidas de antes de
- * las cartas del destino empiezan a recibirlas en la próxima ciudad que cierren; los campos del camino heroico y de los
- * jefes (que ya no existen) se descartan.
+ * Partida guardada lista para continuar: rellena los campos que faltan en guardados antiguos y descarta
+ * campos de mecánicas retiradas (minijuegos, sellos, torre).
  */
 export function restoreRun(saved) {
   const run = {
@@ -63,16 +61,39 @@ export function restoreRun(saved) {
     recBroken: false,
     ...saved,
   };
-  for (const k of ['route', 'routeZone', 'bossSeen', 'bossRetry', 'heroicHintLevel', 'heroicHintCount', 'enterPending'])
+  for (const k of [
+    'route',
+    'routeZone',
+    'bossSeen',
+    'bossRetry',
+    'heroicHintLevel',
+    'heroicHintCount',
+    'enterPending',
+    'bonus',
+    'bonusPlan',
+    'lastBonusClaim',
+    'sealClaims',
+    'travelFrom',
+    'lastSkipZone',
+  ])
     delete run[k];
   if (run.pendingClear) delete run.pendingClear.routeChosen;
   if (run.board) {
     delete run.board.timeLimit;
     delete run.board.timeLeft;
+    delete run.board.seal;
   }
   if (!run.daily && !run.survival) {
-    run.fate = Array.isArray(run.fate) ? run.fate : [];
-    run.fatePicked ??= Math.min(9, Math.floor(((run.pendingClear?.level ?? run.level) - 1) / 10));
+    if (run.level > MAX_LEVEL) {
+      run.level = MAX_LEVEL;
+      delete run.board;
+      delete run.pendingClear;
+    }
+    run.fate = Array.isArray(run.fate) ? run.fate.filter(fateById) : [];
+    run.fatePicked = Math.min(
+      FATE_PICKS,
+      run.fatePicked ?? Math.floor(((run.pendingClear?.level ?? run.level) - 1) / FATE_EVERY),
+    );
   }
   return run;
 }
@@ -162,18 +183,16 @@ export function snapshotBoard(G) {
     hist: copyRows(G.hist),
     colors: G.colors?.slice(),
     family: G.family,
-    seal: G.seal ? { ...G.seal, cell: G.seal.cell.slice() } : null,
   };
 }
 
-/** Guarda el tablero dentro de la partida (y la marca de turnos comprados de la tienda). */
+/** Guarda el tablero dentro de la partida. */
 export function storeBoard(run, G) {
-  if (G.bought > 0) run.turnPackBoard = shopBoardKey(G);
   run.board = snapshotBoard(G);
 }
 
-/** Ciudad (0-9) cuyo capítulo se abre al superar el nivel `level`. */
-export const cityAfter = (level) => Math.min(9, Math.floor(level / 10));
+/** Tramo (0-6) cuyo fondo/música se abre al superar el nivel `level`. */
+export const cityAfter = (level) => Math.min(6, Math.floor(level / FATE_EVERY));
 
 /** Suma un tablero superado a la aventura: puntos, racha, dificultad adaptativa, pistas y avance pendiente. */
 export function applyAdventureWin(run, G, gain) {
@@ -260,14 +279,12 @@ export const markHelped = (run, level) => {
   run.helpAt = level;
 };
 
-/** Cómo sigue la aventura tras superar el nivel `n`: fin del juego, cruce de ciudad (cada 10) o nivel siguiente. */
-export const clearKind = (n) => (n >= MAX_LEVEL ? 'final' : n % 10 === 0 ? 'crossing' : 'next');
+/** Cómo sigue la aventura tras superar el nivel `n`: fin del juego (21), cierre de tramo (cada 3) o nivel siguiente. */
+export const clearKind = (n) => (n >= MAX_LEVEL ? 'final' : n % FATE_EVERY === 0 ? 'crossing' : 'next');
 
-/** Avanza la partida al nivel siguiente al superado y marca el viaje de mapa y el bonus si tocan. */
-export function advanceRun(run, n, { bonus = false } = {}) {
+/** Avanza la partida al nivel siguiente al superado. */
+export function advanceRun(run, n) {
   run.level = n + 1;
-  if (clearKind(n) === 'crossing') run.travelFrom = zoneIdx(n);
-  if (bonus) run.bonus = 1;
   delete run.pendingClear;
 }
 

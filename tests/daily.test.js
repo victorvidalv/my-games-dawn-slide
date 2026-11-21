@@ -3,9 +3,9 @@ import bank from '../src/data/levels.json';
 import special from '../src/data/special.json';
 import {
   CHALLENGES,
-  DAILY_TARGETS,
   buildDaily,
   challengeById,
+  challengeTargets,
   currentStreak,
   dailyProgress,
   dayNumber,
@@ -18,6 +18,7 @@ import {
   resetText,
   shareText,
   streakHintBonus,
+  todayFamily,
   todayResult,
   writeDailyProgress,
 } from '../src/game/daily.js';
@@ -41,26 +42,26 @@ import { isValidState, minMoves } from '../src/engine/index.js';
 const banks = { levels: bank.ratings, special };
 
 describe('retos diarios: calendario y desbloqueo', () => {
-  it('cinco retos: el Clásico siempre abierto y los demás al llegar al nivel 20, 30, 50 y 100 en Aventura', () => {
+  it('cinco retos: el Clásico siempre abierto y los demás al llegar al nivel 4, 8, 14 y 21 en Aventura', () => {
     expect(CHALLENGES.map((c) => [c.id, c.unlock])).toEqual([
       ['classic', 0],
-      ['frost', 20],
-      ['gears', 30],
-      ['all', 50],
-      ['master', 100],
+      ['frost', 4],
+      ['gears', 8],
+      ['all', 14],
+      ['master', 21],
     ]);
     expect(CHALLENGES.map((c) => isUnlocked(c, 0))).toEqual([true, false, false, false, false]);
     for (const c of CHALLENGES.slice(1)) {
       expect(isUnlocked(c, c.unlock - 1), c.id).toBe(false);
       expect(isUnlocked(c, c.unlock), c.id).toBe(true);
     }
-    expect(maxLevelReached({ c1: { level: 34 }, c50: { level: 58 }, c75: {} })).toBe(58); // cuenta cualquier camino
+    expect(maxLevelReached({ c1: { level: 12 }, c50: { level: 18 }, c75: {} })).toBe(18); // cuenta cualquier camino
     expect(maxLevelReached({})).toBe(0);
     expect(challengeById('nope').id).toBe('classic');
     for (const c of CHALLENGES) {
-      expect(c.level % 10).not.toBe(0);
-      expect(c.level % 10).not.toBe(5);
-    } // ni jefe ni parada de minijuego
+      expect(c.level).toBeGreaterThanOrEqual(1);
+      expect(c.level).toBeLessThanOrEqual(21);
+    }
   });
   it('el día cambia a la medianoche local y la cuenta atrás dice cuánto falta', () => {
     const a = new Date(2026, 10, 17, 23, 59, 30),
@@ -81,7 +82,7 @@ describe('retos diarios: el tablero del día', () => {
   let built = [];
   beforeAll(() => {
     built = CHALLENGES.flatMap((c) =>
-      days.flatMap((d) => DAILY_TARGETS.map((target, i) => ({ c, d, target, G: buildDaily(c, d, banks, i) }))),
+      days.flatMap((d) => challengeTargets(c).map((target, i) => ({ c, d, target, G: buildDaily(c, d, banks, i) }))),
     );
   }, 600000);
 
@@ -92,7 +93,14 @@ describe('retos diarios: el tablero del día', () => {
       new Set(built.filter((b) => b.c === c && b.target === 5).map((b) => JSON.stringify([b.G.pieces, b.G.pos]))).size,
     ).toBe(days.length);
   });
-  it('todos tienen solución, el mínimo anunciado es el real y es exactamente 5, 8 o 12 movimientos', () => {
+  it('todos tienen solución y el mínimo anunciado coincide con la curva escalonada de cada reto', () => {
+    expect(CHALLENGES.map((c) => challengeTargets(c))).toEqual([
+      [5, 8, 12],
+      [6, 9, 13],
+      [7, 10, 14],
+      [8, 12, 16],
+      [10, 14, 18],
+    ]);
     for (const { c, d, target, G } of built) {
       expect(isValidState(G.pieces, G.pos, G.walls), `${c.id} día ${d}`).toBe(true);
       expect(minMoves(G.pieces, G.pos, G.walls), `${c.id} día ${d}`).toBe(G.opt);
@@ -131,6 +139,8 @@ describe('retos diarios: el tablero del día', () => {
     const c = challengeById('frost'),
       a = buildDaily(c, 20800, banks),
       b = buildDaily(c, 20801, banks);
+    expect(a.family).toBe(todayFamily(c, 20800));
+    expect(b.family).toBe(todayFamily(c, 20801));
     expect(a.family).not.toBe(b.family);
     expect([a.family, b.family].sort()).toEqual(['ice', 'walls']);
   });
@@ -138,9 +148,9 @@ describe('retos diarios: el tablero del día', () => {
 
 describe('retos diarios: medallas y racha', () => {
   it('el premio de pistas usa solo el tramo vigente al iniciar la aventura', () => {
-    expect([0, 2, 3, 4, 5, 6, 7, 10].map(streakHintBonus)).toEqual([0, 0, 3, 3, 5, 5, 8, 8]);
+    expect([0, 2, 3, 4, 5, 6, 7, 10].map(streakHintBonus)).toEqual([0, 0, 1, 1, 2, 2, 3, 3]);
     const daily = { last: 100, streak: 7 };
-    expect(streakHintBonus(currentStreak(daily, 101))).toBe(8);
+    expect(streakHintBonus(currentStreak(daily, 101))).toBe(3);
     expect(streakHintBonus(currentStreak(daily, 102))).toBe(0);
   });
 
@@ -194,6 +204,22 @@ describe('retos diarios: medallas y racha', () => {
     expect(shareText(challengeById('classic'), 210, { moves: 16, opt: 15 }, 4)).toBe(
       'DAWNSLIDE · Clásico #210 · 16/15 · 4',
     );
+    expect(
+      shareText(
+        challengeById('classic'),
+        210,
+        {
+          moves: 26,
+          opt: 25,
+          boards: [
+            { moves: 5, opt: 5 },
+            { moves: 9, opt: 8 },
+            { moves: 12, opt: 12 },
+          ],
+        },
+        4,
+      ),
+    ).toBe('DAWNSLIDE · Clásico #210 · 26/25 🥇🥈🥇 · 4');
   });
 });
 
@@ -247,14 +273,14 @@ describe('logros y recompensas', () => {
   });
   it('se ganan una sola vez, con progreso visible, y no se pierden', () => {
     const store = {
-      paths: { c1: { level: 26 } },
+      paths: { c1: { level: 10 } },
       stats: { perfects: 4 },
       daily: { solved: 1, best: 2, gold: 0, by: {} },
     };
     const stats = statsOf(store);
-    expect(stats).toMatchObject({ maxLevel: 26, perfects: 4, dailySolved: 1, bestStreak: 2 });
+    expect(stats).toMatchObject({ maxLevel: 10, perfects: 4, dailySolved: 1, bestStreak: 2 });
     const perf = ACHIEVEMENTS.find((a) => a.id === 'perf10');
-    expect([progressOf(perf, stats), perf.goal, isDone(perf, stats)]).toEqual([4, 50, false]);
+    expect([progressOf(perf, stats), perf.goal, isDone(perf, stats)]).toEqual([4, 75, false]);
     expect(claimAchievements(store, 1).map((a) => a.id)).toEqual(['city1', 'lv25', 'day1', 'streak2']);
     expect(claimAchievements(store, 2)).toEqual([]); // ya anotados
     store.paths = {};

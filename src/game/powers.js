@@ -19,15 +19,15 @@ export const destinyCount = (left, share = DESTINY_SHARE) =>
  * Lía, con su reserva, Experto. `extra` = parte extra de la carta Carga.
  */
 export const POWER_READY_SHARE = {
-  jean: { 1: 0.85, 50: 0.75, 75: 0.65 },
-  van: { 1: 1, 50: 0.65, 75: 0.7 },
+  jean: { 1: 0.9, 50: 0.8, 75: 0.7 },
+  van: { 1: 1, 50: 0.75, 75: 0.75 },
 };
 export const powerReady = (level = 1, start = 1, hero = 'jean', extra = 0) => {
   const k = Math.min(1, byPath(POWER_READY_SHARE[hero] || POWER_READY_SHARE.jean, start) + extra);
   return level <= 1 || Math.floor(level * k + 1e-9) > Math.floor((level - 1) * k + 1e-9);
 };
 /** En tableros largos (mínimo ≥ JEAN_LONG_BOARD) Jean puede rebobinar dos veces. */
-export const JEAN_LONG_BOARD = 14;
+export const JEAN_LONG_BOARD = 16;
 /** `extra`: usos extra (carta Eco del poder en el último tablero de cada ciudad). */
 export const powerUses = (hero, opt = 0, extra = 0) => (hero === 'jean' && opt >= JEAN_LONG_BOARD ? 2 : 1) + extra;
 const runUses = (run, G) => powerUses(run?.hero, G?.opt, G?.tutorial ? 0 : fatePowerUses(run, G?.n));

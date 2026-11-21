@@ -15,7 +15,7 @@ const run = (level, start = 1) => ({
   hints: 3,
   score: 0,
 });
-const allTips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice'].map((k) => [k, true]));
+const allTips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_curse'].map((k) => [k, true]));
 const build = (level, start = 1) =>
   buildAdventureLevel(run(level, start), { levels: levelBank.ratings, special: specialBank, tips: allTips });
 
@@ -45,11 +45,11 @@ function parity(G, label, sample = 120) {
   }
 }
 
-describe('mecánicas: los 100 niveles', () => {
+describe('mecánicas: los 21 niveles', () => {
   it('todos los niveles se generan válidos, resolubles, con el mínimo correcto y siempre con pista', () => {
     for (const start of [1, 75]) {
-      for (let level = 1; level <= 100; level++) {
-        if (start !== 1 && level % 10 !== 0) continue; // el camino Experto: solo los jefes (ya se prueban todos los niveles en Normal)
+      for (let level = 1; level <= 21; level++) {
+        if (start !== 1 && level % 3 !== 0) continue;
         const label = `camino ${start} nivel ${level}`;
         const G = build(level, start);
         expect(isValidState(G.pieces, G.pos, G.walls), `${label}: estado válido`).toBe(true);
@@ -65,13 +65,13 @@ describe('mecánicas: los 100 niveles', () => {
   }, 600000);
 
   it('los movimientos del solver y los del arrastre coinciden en los niveles con hielo, candados y pesadas', () => {
-    for (const level of [8, 18, 28, 38, 48, 50, 58, 64, 70, 78, 88, 100]) {
+    for (const level of [3, 5, 6, 8, 10, 13, 15, 16, 18, 21]) {
       parity(build(level), `nivel ${level}`);
     }
   }, 600000);
 
-  it('los cierres de ciudad (10…100) son tableros normales, con el límite habitual de su camino', () => {
-    for (let level = 10; level <= 100; level += 10) {
+  it('los cierres de tramo (3…21) son tableros válidos con el límite habitual de su camino', () => {
+    for (let level = 3; level <= 21; level += 3) {
       const G = build(level);
       expect(levelPlan(level).boss, `nivel ${level}`).toBeUndefined();
       expect(G.opt, `nivel ${level}`).toBeGreaterThan(2);

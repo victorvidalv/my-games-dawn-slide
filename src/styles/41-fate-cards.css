@@ -3,11 +3,11 @@
    y, en los Pactos, el costo en rojo sobre un fondo oscuro con trama. Se reparten girando y la elegida brilla. */
 
 .fate-card {
-  --w: clamp(96px, 29vw, 172px);
+  --w: clamp(106px, 30vw, 224px);
   position: relative;
   display: block;
   width: var(--w);
-  aspect-ratio: 5 / 7.6;
+  aspect-ratio: 5 / 7.8;
   padding: 0;
   border: 0;
   border-radius: calc(var(--w) * 0.08);
@@ -15,31 +15,36 @@
   color: #1c1208;
   font: inherit;
   text-align: center;
+  text-shadow: none;
   cursor: default;
   perspective: 900px;
   -webkit-tap-highlight-color: transparent;
 }
 button.fate-card {
   cursor: pointer;
+  text-shadow: none;
+}
+.fate-card * {
+  text-shadow: none;
 }
 .fate-face {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto auto;
+  grid-template-rows: auto auto 1fr;
   justify-items: center;
   align-items: start;
   gap: calc(var(--w) * 0.03);
-  padding: calc(var(--w) * 0.07) calc(var(--w) * 0.07) calc(var(--w) * 0.08);
+  padding: calc(var(--w) * 0.065) calc(var(--w) * 0.06) calc(var(--w) * 0.065);
   border-radius: inherit;
   border: 2px solid #1c1208;
   background:
-    radial-gradient(ellipse 70% 42% at 50% 34%, color-mix(in srgb, var(--fb) 80%, #fff) 0 40%, transparent 72%),
+    radial-gradient(ellipse 70% 42% at 50% 30%, color-mix(in srgb, var(--fb) 82%, #fff) 0 40%, transparent 72%),
     repeating-linear-gradient(135deg, #ffffff12 0 2px, transparent 2px 9px),
     linear-gradient(170deg, var(--fb) 0%, color-mix(in srgb, var(--fa) 55%, var(--fb)) 46%, var(--fa) 100%);
   box-shadow:
-    inset 0 0 0 calc(var(--w) * 0.025) #fff6dc,
-    inset 0 0 0 calc(var(--w) * 0.04) color-mix(in srgb, var(--fa) 70%, #1c1208),
+    inset 0 0 0 calc(var(--w) * 0.022) #fff6dc,
+    inset 0 0 0 calc(var(--w) * 0.036) color-mix(in srgb, var(--fa) 70%, #1c1208),
     0 6px 0 #091118,
     0 12px 26px #000a;
   overflow: hidden;
@@ -48,49 +53,49 @@ button.fate-card {
 .fate-card.is-pact .fate-face {
   color: #fbeede;
   background:
-    radial-gradient(ellipse 70% 42% at 50% 34%, color-mix(in srgb, var(--fa) 75%, #fff) 0 34%, transparent 70%),
+    radial-gradient(ellipse 70% 42% at 50% 30%, color-mix(in srgb, var(--fa) 75%, #fff) 0 34%, transparent 70%),
     repeating-linear-gradient(45deg, #ffffff0c 0 1.5px, transparent 1.5px 8px),
     repeating-linear-gradient(-45deg, #0000003a 0 1.5px, transparent 1.5px 8px),
     linear-gradient(170deg, color-mix(in srgb, var(--fa) 60%, #1a0d14), #1a0d14 92%);
   box-shadow:
-    inset 0 0 0 calc(var(--w) * 0.025) #e8b25f,
-    inset 0 0 0 calc(var(--w) * 0.045) #5c1622,
+    inset 0 0 0 calc(var(--w) * 0.022) #e8b25f,
+    inset 0 0 0 calc(var(--w) * 0.04) #5c1622,
     0 6px 0 #091118,
     0 12px 26px #000a,
     0 0 0 1px #d9604f66;
 }
 .fate-corner {
   position: absolute;
-  top: calc(var(--w) * 0.06);
-  left: calc(var(--w) * 0.08);
-  font: 900 calc(var(--w) * 0.085) / 1 var(--font-book, Georgia, serif);
-  opacity: 0.7;
+  top: calc(var(--w) * 0.055);
+  left: calc(var(--w) * 0.075);
+  font: 900 calc(var(--w) * 0.08) / 1 var(--font-book, Georgia, serif);
+  opacity: 0.75;
 }
 .fate-kind {
   justify-self: end;
-  margin-right: calc(var(--w) * -0.01);
+  margin-right: calc(var(--w) * -0.005);
   padding: 2px calc(var(--w) * 0.05);
   border-radius: 999px;
   font:
-    800 max(8px, calc(var(--w) * 0.058)) / 1.2 system-ui,
+    800 max(9px, calc(var(--w) * 0.055)) / 1.2 system-ui,
     sans-serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: #fff6dccc;
-  color: #4b3414;
-  border: 1px solid #1c120855;
+  background: #fff6dce8;
+  color: #3a260a;
+  border: 1px solid #1c120866;
 }
 .is-pact .fate-kind {
-  background: #5c1622;
-  color: #ffd8c9;
-  border-color: #e8b25f88;
+  background: #6b1624;
+  color: #ffe2d6;
+  border-color: #e8b25faa;
 }
 .fate-emblem {
   display: grid;
   place-items: center;
-  width: 64%;
+  width: 44%;
   aspect-ratio: 1;
-  margin-top: calc(var(--w) * 0.01);
+  margin-top: calc(var(--w) * 0.005);
 }
 .fate-art {
   width: 100%;
@@ -98,35 +103,54 @@ button.fate-card {
   overflow: visible;
   filter: drop-shadow(0 3px 0 #1c120855);
 }
+.fate-body {
+  align-self: stretch;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: calc(var(--w) * 0.028);
+  padding: calc(var(--w) * 0.045) calc(var(--w) * 0.05);
+  border-radius: calc(var(--w) * 0.055);
+  background: #fffaf0f4;
+  border: 1.5px solid #1c120844;
+  box-shadow: inset 0 1px 0 #ffffff;
+}
+.is-pact .fate-body {
+  background: #14080ef2;
+  border-color: #e8b25f66;
+  box-shadow: inset 0 1px 0 #ffffff18;
+}
 .fate-name {
-  align-self: end;
-  font: 900 max(12px, calc(var(--w) * 0.105)) / 1.05 var(--font-book, Georgia, serif);
-  text-shadow: 0 1px 0 #fff8;
+  font: 900 max(13px, calc(var(--w) * 0.092)) / 1.1 var(--font-book, Georgia, serif);
+  color: #1c1208;
 }
 .is-pact .fate-name {
-  color: #ffe3a6;
-  text-shadow: 0 2px 0 #000;
+  color: #ffe7b0;
 }
 .fate-gain,
 .fate-cost,
 .fate-muted-note {
   font:
-    700 max(9.5px, calc(var(--w) * 0.068)) / 1.22 system-ui,
+    600 max(11.5px, calc(var(--w) * 0.068)) / 1.32 system-ui,
     sans-serif;
   text-wrap: balance;
+  -webkit-font-smoothing: antialiased;
 }
 .fate-gain {
-  color: #183a1f;
+  color: #164022;
 }
 .is-pact .fate-gain {
-  color: #b9f5c4;
+  color: #c6ffd2;
 }
 .fate-cost {
-  padding: 2px calc(var(--w) * 0.04);
+  width: 100%;
+  padding: 3px calc(var(--w) * 0.04);
   border-radius: 6px;
-  color: #ffd4cc;
-  background: #8e1f2acc;
-  border: 1px solid #ff9c8a66;
+  color: #fff2ee;
+  background: #9c1c2a;
+  border: 1px solid #ff9c8a88;
 }
 .fate-cost::before {
   content: '✕ ';
@@ -669,4 +693,128 @@ button.fate-card {
 .mini.fate-demo i:nth-child(3) {
   background: linear-gradient(170deg, #e0fbff, #5fd0e6);
   transform: rotate(16deg) translateX(22px);
+}
+
+/* ---------- Re-roll único de cartas del destino ---------- */
+.fate-reroll-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+.fate-reroll {
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 2px solid #e8b25faa;
+  background: #141c2ee6;
+  color: #ffe7b0;
+  font: 800 12px/1 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.03em;
+  text-shadow: none;
+  box-shadow: 0 3px 0 #091118;
+  cursor: pointer;
+}
+.fate-reroll:hover:not(:disabled) {
+  background: #1f2b44;
+  border-color: #ffe38a;
+}
+.fate-reroll[hidden] {
+  display: none;
+}
+
+/* ---------- Pantalla final y resumen de la build ---------- */
+.finale-score-box {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin: 10px 0 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 2px solid #e8b25f88;
+  background: linear-gradient(180deg, #1b1329d9, #100b1ad9);
+  box-shadow: inset 0 1px 0 #fff2;
+}
+.finale-score-box small {
+  font: 800 10px/1 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.14em;
+  color: #e8c780;
+}
+.finale-score-box .big {
+  margin: 0;
+}
+.run-build {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1.5px solid #e8b25f55;
+  background: #0d1322cc;
+  text-align: center;
+}
+.run-build[hidden] {
+  display: none;
+}
+.build-title {
+  font: 800 10px/1 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e8c780;
+}
+.build-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+.build-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1.5px solid #e8b25f66;
+  background: #1b2438;
+  color: #fff3d6;
+  font: 700 12px/1 var(--font-ui, system-ui, sans-serif);
+}
+.build-chip .ic {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+.build-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.build-card {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  width: 66px;
+  padding: 5px 4px;
+  border-radius: 9px;
+  border: 1.5px solid #1c1208;
+  background: linear-gradient(170deg, var(--fb), var(--fa));
+  color: #1c1208;
+  text-shadow: none;
+}
+.build-card.is-pact {
+  background: linear-gradient(170deg, color-mix(in srgb, var(--fa) 60%, #1a0d14), #1a0d14);
+  border-color: #d9604f88;
+  color: #ffe7b0;
+}
+.build-card-art {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+.build-card small {
+  font: 800 9.5px/1.1 var(--font-ui, system-ui, sans-serif);
+  text-align: center;
+  overflow-wrap: anywhere;
 }

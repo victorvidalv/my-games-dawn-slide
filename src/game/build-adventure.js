@@ -5,13 +5,13 @@ import { hash32, mulberry32 } from '../engine/rng.js';
 import { rateAt } from '../engine/difficulty.js';
 import { levelPlan, tutorialFor } from './mechanics.js';
 import { heroLimit } from './heroes.js';
-import { isSealLevel, planSeal, sealLimit } from './seals.js';
 import { fateBlocks, fateTurns } from './fate.js';
+import { relicTurns } from './relics.js';
 
-/** Límite de un tablero de esta aventura: héroe, camino, nivel y cartas del destino (turnos y Juramento). */
+/** Límite de un tablero de esta aventura: héroe, camino, nivel, reliquia y cartas del destino. */
 export const runLimit = (run, opt, level, pieces = []) =>
   heroLimit(run.hero, opt, run.start, level, {
-    fate: fateTurns(run, { opt, pieces }),
+    fate: fateTurns(run, { opt, pieces, n: level }) + relicTurns(run),
     noPower: fateBlocks(run, 'power'),
   });
 
@@ -40,10 +40,8 @@ export function buildAdventureLevel(run, { levels, special, tips = {}, withProof
       bought: rescue ? 0 : b.bought || 0,
       tutorial: rescue ? null : b.tutorial || null,
       family: b.family || plan.family,
-      seal: b.seal ? { ...b.seal, cell: b.seal.cell.slice() } : null,
       colors: saved?.colors?.slice(),
     };
-    G.limit = sealLimit(G.seal, G.limit);
   } else {
     const tutorial = run.mode === 'p' ? null : tutorialFor(level, tips);
     let base, built;
@@ -58,7 +56,7 @@ export function buildAdventureLevel(run, { levels, special, tips = {}, withProof
         rating: rate,
         adj: run.adj,
         rng: mulberry32(hash32(run.seed, level, 31)),
-        withAnalysis: isSealLevel(level) || withProof,
+        withAnalysis: withProof,
       });
     }
     G = {
@@ -75,20 +73,9 @@ export function buildAdventureLevel(run, { levels, special, tips = {}, withProof
       bought: 0,
       family: base.family,
       tutorial: tutorial?.mech || null,
-      seal: null,
     };
     if (tutorial) G.limit = built.opt + 40; // el tutorial no se puede perder
     if (withProof) G.analysis = built.analysis;
-    if (!tutorial && run.mode !== 'p' && isSealLevel(level)) {
-      const result = planSeal({ ...G, level, seed: run.seed, analysis: built.analysis, withProof });
-      if (result) {
-        G.seal = result.seal;
-        G.limit = result.limit;
-        if (withProof) G.sealProof = result.proof;
-        G.sealSearch = { visited: result.visited, truncated: result.truncated };
-      }
-    }
   }
-  if (G.seal && Object.hasOwn(run.sealClaims || {}, level)) G.seal.collected = true;
   return { ...G, done: false, els: [], plan };
 }

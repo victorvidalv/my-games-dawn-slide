@@ -11,9 +11,10 @@ const SAVE_KEY = 'desbloquea.rogue.v2';
 const saved = () => JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
 const shown = (app, id) => app.$(id).classList.contains('show');
 const buttons0 = (app) => [...app.$('fateOffer').querySelectorAll('.fate-card')];
-/** Partida guardada en el nivel 3 del camino Normal (sin tablero en curso). */
+/** Partida guardada en el nivel 2 del camino Normal (sin tablero en curso). */
 const savedRun = {
-  run: { level: 3, seed: 123, start: 1, mode: 'c', hero: 'van', score: 50, hints: 2, adj: 0, streak: 0 },
+  run: { level: 2, seed: 123, start: 1, mode: 'c', hero: 'van', score: 50, hints: 2, adj: 0, streak: 0 },
+  tips: { tut_wall: true },
 };
 
 describe('interfaz: aventura', () => {
@@ -24,13 +25,16 @@ describe('interfaz: aventura', () => {
     expect(relics.querySelector('input:checked').value).toBe('sun');
     relics.querySelector('[value="lantern"]').click();
     app.$('heroCards').querySelector('[data-hero="jean"]').click();
-    expect(app.$('heroRouteName').textContent).toBe('1 de 3 cartas por ciudad');
+    expect([...app.$('heroCards').querySelectorAll('.hero-choice-power')].map((el) => el.textContent)).toEqual([
+      '+ turnos',
+      'Rebobinar',
+      'Ver destino',
+    ]);
     expect([...relics.querySelectorAll('input:checked')].map((r) => r.value)).toEqual(['lantern']);
     app.$('heroConfirm').click();
-    await until(() => shown(app, 'journey'));
-    expect(saved().run).toMatchObject({ relic: 'lantern', hero: 'jean', hints: 10 });
-    app.$('mapClose').click();
     await started;
+    await untilPlayable(app, 1);
+    expect(saved().run).toMatchObject({ relic: 'lantern', hero: 'jean', hints: 7 });
   });
 
   it('al cerrar la ciudad muestra al héroe de la partida y reparte 3 cartas del destino; elegir una la aplica una vez', async () => {
@@ -72,9 +76,9 @@ describe('interfaz: aventura', () => {
   it('«Continuar» retoma la partida guardada y pinta el HUD del nivel', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
-    await untilPlayable(app, 3);
-    expect(app.S.run).toMatchObject({ hero: 'van', level: 3, revive: 0 }); // restoreRun completa los campos que faltan
-    expect(app.$('lvl').textContent).toBe('3');
+    await untilPlayable(app, 2);
+    expect(app.S.run).toMatchObject({ hero: 'van', level: 2, revive: 0 }); // restoreRun completa los campos que faltan
+    expect(app.$('lvl').textContent).toBe('2');
     expect(app.$('lim').textContent).toBe(String(app.S.G.limit));
     expect(app.$('board').querySelectorAll('.piece').length).toBe(app.S.G.pieces.length);
   });
@@ -82,18 +86,18 @@ describe('interfaz: aventura', () => {
   it('ganar suma puntos y pasa al nivel siguiente', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
-    await untilPlayable(app, 3);
+    await untilPlayable(app, 2);
     app.session.win();
     expect(app.$('msg').textContent).toMatch(/\+\d+ puntos/);
-    await until(() => app.S.G?.n === 4, { timeout: 15000 });
+    await until(() => app.S.G?.n === 3, { timeout: 15000 });
     expect(app.S.run.score).toBeGreaterThan(50);
-    expect(saved().run.level).toBe(4);
+    expect(saved().run.level).toBe(3);
   });
 
   it('perder en los primeros niveles ofrece repetir gratis y el tablero vuelve a empezar', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
-    await untilPlayable(app, 3);
+    await untilPlayable(app, 2);
     app.S.G.moves = 4;
     app.session.fail('limit');
     expect(shown(app, 'rescue')).toBe(true);
@@ -105,8 +109,10 @@ describe('interfaz: aventura', () => {
     expect(app.S.busy).toBe(false);
   });
 
-  it('la oferta de revivir muestra el costo, conserva el foco y reinicia al aceptar', async () => {
-    const app = await bootApp({ save: { run: { ...savedRun.run, level: 11, hero: 'jean', score: 900 } } });
+  it('la oferta de revivir (con Fénix) muestra el costo, conserva el foco y reinicia al aceptar', async () => {
+    const app = await bootApp({
+      save: { run: { ...savedRun.run, level: 11, hero: 'jean', score: 900, fate: ['fenix'] } },
+    });
     app.$('bContinue').click();
     await untilPlayable(app, 11);
     app.S.G.moves = 4;
@@ -128,20 +134,20 @@ describe('interfaz: aventura', () => {
   it('«Guardar y salir» deja la partida guardada y libera el juego', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
-    await untilPlayable(app, 3);
+    await untilPlayable(app, 2);
     app.$('pSave').click();
     expect(app.S.run).toBeNull();
-    expect(saved().run.level).toBe(3);
+    expect(saved().run.level).toBe(2);
   });
 
   it('«Abandonar» borra la partida y guarda el récord', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
-    await untilPlayable(app, 3);
+    await untilPlayable(app, 2);
     app.$('pQuit').click();
     expect(app.S.run).toBeNull();
     expect(saved().run ?? null).toBeNull();
-    expect(saved().paths.c1).toMatchObject({ level: 3, runs: 1 });
+    expect(saved().paths.c1).toMatchObject({ level: 2, runs: 1 });
   });
 });
 
@@ -175,6 +181,6 @@ describe('interfaz: reto diario', () => {
     app.session.leaveDaily();
     expect(app.S.run).toBeNull();
     expect(document.body.classList.contains('daily-run')).toBe(false);
-    expect(saved().run.level).toBe(3);
+    expect(saved().run.level).toBe(2);
   });
 });

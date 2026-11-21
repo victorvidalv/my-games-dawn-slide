@@ -34,7 +34,6 @@ import {
   unclaimedAchievements,
 } from '../src/game/achievements.js';
 import { CHALLENGES } from '../src/game/daily.js';
-import { BONUS_KINDS } from '../src/game/minigames.js';
 import { HEROES } from '../src/game/heroes.js';
 import { DICTS } from '../src/i18n.js';
 import { bestAdventureRecord, mergePaths, mergeSaves } from '../src/game/save-merge.js';
@@ -73,7 +72,7 @@ describe('registro de logros y tienda', () => {
   it('las metas son alcanzables', () => {
     const goal = (id) => ACHIEVEMENTS.find((a) => a.id === id).goal;
     expect(goal('heroes')).toBe(HEROES.length);
-    expect(goal('mini9')).toBe(BONUS_KINDS.length);
+    expect(goal('mini9')).toBe(8);
     expect(goal('kinds')).toBe(CHALLENGES.length);
   });
 
@@ -95,7 +94,7 @@ describe('registro de logros y tienda', () => {
 
 describe('economía de logros y canje', () => {
   it('un logro cumplido queda pendiente hasta reclamarlo, suma puntos y permite canjear en la Tienda', () => {
-    const store = { paths: { c1: { level: 30 } }, stats: { boardsSolved: 1 } };
+    const store = { paths: { c1: { level: 10 } }, stats: { boardsSolved: 1 } };
     const fresh = claimAchievements(store, 100);
     expect(fresh.map((a) => a.id)).toEqual(['firstWin', 'city1', 'lv25']);
     // Aún no reclamados: saldo en 0 y 3 pendientes
@@ -230,11 +229,11 @@ describe('estadísticas', () => {
       'locks',
       'heavyBoards',
     ]);
-    const last = { ...plain, n: 20 };
+    const last = { ...plain, n: 6 };
     expect(boardStats(last, { firstLevel: 1, helpAt: 0 })).toEqual(['boardsSolved', 'cleanCity']);
-    expect(boardStats(last, { firstLevel: 1, helpAt: 14 })).toEqual(['boardsSolved']);
-    expect(boardStats(last, { firstLevel: 1, helpAt: 10 })).toEqual(['boardsSolved', 'cleanCity']);
-    expect(boardStats(last, { firstLevel: 15 })).toEqual(['boardsSolved']);
+    expect(boardStats(last, { firstLevel: 1, helpAt: 5 })).toEqual(['boardsSolved']);
+    expect(boardStats(last, { firstLevel: 1, helpAt: 3 })).toEqual(['boardsSolved', 'cleanCity']);
+    expect(boardStats(last, { firstLevel: 5 })).toEqual(['boardsSolved']);
   });
 
   it('caminos y retos diarios se leen de lo que ya guarda el juego', () => {
@@ -256,16 +255,16 @@ describe('guardado compatible con actualizaciones', () => {
     expect(earnedPoints(old)).toBe(35);
   });
 
-  it('una primera partida no llena de logros de relleno: llegar al 30 de Normal da solo unos pocos', () => {
+  it('una primera partida no llena de logros de relleno: llegar al 9 de Normal da solo unos pocos', () => {
     const store = {
-      paths: { c1: { level: 30, score: 9000 } },
+      paths: { c1: { level: 9, score: 9000 } },
       stats: {
-        boardsSolved: 29,
-        perfects: 17,
-        iceRock: 8,
+        boardsSolved: 8,
+        perfects: 5,
+        iceRock: 2,
         locks: 0,
-        heavyBoards: 3,
-        powersUsed: 20,
+        heavyBoards: 2,
+        powersUsed: 5,
         fateCards: 2,
         cleanCity: 1,
       },
@@ -276,7 +275,7 @@ describe('guardado compatible con actualizaciones', () => {
   it('un guardado antiguo (sin stats ni logros nuevos) se lee sin errores y los logros cumplidos se conceden', () => {
     const old = {
       best: { score: 0, level: 0 },
-      paths: { c1: { score: 900, level: 30, runs: 2 } },
+      paths: { c1: { score: 900, level: 10, runs: 2 } },
       stats: { perfects: 12 },
       ach: { city1: 5 },
     };

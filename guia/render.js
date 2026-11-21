@@ -1,10 +1,8 @@
 import { DAILY_TARGETS, STREAK_HINT_REWARDS } from '../src/game/daily.js';
-import { MAX_GRADE, maxPrize } from '../src/game/minigames.js';
 import { FIRST_ROTATED_LEVEL } from '../src/game/orientation.js';
 import { FATE_CARDS } from '../src/game/fate.js';
 import { fateArt } from '../src/ui/fate-art.js';
 import { RELICS } from '../src/game/relics.js';
-import { REVIVE_SHARE } from '../src/game/shop.js';
 import { WORLD } from '../src/data/lore.js';
 import { HERO_LORE } from '../src/data/story.js';
 import { tr } from '../src/i18n.js';
@@ -29,7 +27,7 @@ export function renderGuide(lang) {
     `<link rel="alternate" hreflang="${guides[code].htmlLang}" href="%SITE_URL%/${path}">`).join('\n');
   const chapters = [
     ['como-jugar', g.basics], ['retos-diarios', g.daily], ['pistas', g.hints],
-    ['tienda', g.shop], ['minijuegos', g.miniTitle], ['mecanicas', g.mechanics],
+    ['mecanicas', g.mechanics],
     ['maleficios', g.curseTitle], ['heroes', g.heroes], ['reliquias', g.relicsTitle], ['cartas-del-destino', g.fateTitle],
     ['historia', g.story], ['banda-sonora', g.sound],
   ];
@@ -54,7 +52,7 @@ export function renderGuide(lang) {
     ${fateArt(card)}
     <div><small>${kindName[card.kind]}</small><b>${tr(card.name, lang)}</b><span>${tr(card.gain, lang)}</span>${card.cost ? `<em>${tr(card.cost, lang)}</em>` : ''}</div>
   </li>`;
-  const relicIcons = { sun: '☀', purse: '◈', lantern: '✦' };
+  const relicIcons = { sun: '☀', purse: '⏳', lantern: '✦' };
   const relic = (r, index) => `<div class="mechanic relic relic-${r.id}"><dt><span aria-hidden="true">${relicIcons[r.id]}</span>${tr(r.name, lang)}<em>${tr(r.label, lang)}</em></dt><dd>${g.relicTips[index]}</dd></div>`;
   const streak = ({ days, hints }) =>
     `<span><b>${g.streakDays.replace('{d}', days)}</b>${g.streakHints.replace('{h}', hints)}</span>`;
@@ -123,25 +121,6 @@ export function renderGuide(lang) {
         <h2>${g.hints}</h2>
         <p>${g.hintTip}</p>
         <p>${g.earnHints}</p>
-      </section>
-
-      <section id="tienda" class="section feature-section">
-        <div>
-          <h2>${g.shop}</h2>
-          <p>${g.shopIntro}</p>
-          <p>${g.shopLimit}</p>
-          <p>${g.shopRevive.replace('{share}', Math.round(REVIVE_SHARE * 100)).replace('{purse}', Math.round(RELICS.find((r) => r.id === 'purse').revive * 100))}</p>
-        </div>
-        ${figure('shop', g.shopShot)}
-      </section>
-
-      <section id="minijuegos" class="section feature-section">
-        <div>
-          <h2>${g.miniTitle}</h2>
-          <p>${g.miniIntro}</p>
-          <p>${g.miniPrize.replace('{stars}', MAX_GRADE).replace('{first}', maxPrize(15)).replace('{last}', maxPrize(95))}</p>
-        </div>
-        ${figure('mini', g.miniShot)}
       </section>
 
       <section id="mecanicas" class="section">

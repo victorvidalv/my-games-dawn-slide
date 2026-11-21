@@ -59,10 +59,6 @@ const ART = {
     `<g transform="rotate(-35 32 32)"><rect x="6" y="24" width="24" height="16" rx="8" fill="none" stroke="${INK}" stroke-width="7"/><rect x="6" y="24" width="24" height="16" rx="8" fill="none" stroke="${a}" stroke-width="4"/>
     <rect x="34" y="24" width="24" height="16" rx="8" fill="none" stroke="${INK}" stroke-width="7"/><rect x="34" y="24" width="24" height="16" rx="8" fill="none" stroke="${a}" stroke-width="4"/>
     <rect x="20" y="25" width="24" height="14" rx="7" fill="none" stroke="${INK}" stroke-width="7"/><rect x="20" y="25" width="24" height="14" rx="7" fill="none" stroke="${b}" stroke-width="4"/></g>`,
-  /** Sello de oro de ocho puntas con lacre: los sellos. */
-  'gilded-seal': (a, b) =>
-    `<path d="M32 4l6.8 14.2 14.8-5.6-5.6 14.8L62.2 32 48 38.8l5.6 14.8-14.8-5.6L32 60l-6.8-14.2-14.8 5.6 5.6-14.8L1.8 32 16 25.2l-5.6-14.8 14.8 5.6z" fill="${a}"/>
-    <circle cx="32" cy="32" r="14" fill="${b}"/><path d="M32 22l7 10-7 10-7-10z" fill="#d6483f"/><path d="M28 27l2-3" stroke="#fff3d0" stroke-width="1.6"/>`,
   /** Tablero grande con la llave roja: los tableros largos. */
   'long-board': (a, b) =>
     `<rect x="8" y="8" width="48" height="48" rx="5" fill="${a}"/>
@@ -88,12 +84,6 @@ const ART = {
     `<path d="M14 14a26 26 0 0 0 0 36M50 14a26 26 0 0 1 0 36" fill="none" stroke="${a}" stroke-width="4"/>
     <path d="M21 20a17 17 0 0 0 0 24M43 20a17 17 0 0 1 0 24" fill="none" stroke="${b}" stroke-width="4"/>
     <circle cx="32" cy="32" r="9" fill="${a}"/><circle cx="29" cy="29" r="3" fill="#fff" stroke="none"/>`,
-  /** Balanza de latón: el mercader. */
-  mercader: (a, b) =>
-    `<path d="M32 10v40M20 54h24" stroke-width="3"/><path d="M12 18h40" stroke-width="3"/><circle cx="32" cy="10" r="3" fill="${GOLD}"/>
-    <path d="M12 18l-7 16h14zM52 18l-7 16h14z" fill="none" stroke-width="1.6"/>
-    <path d="M3 34c0 5 18 5 18 0z" fill="${a}"/><path d="M43 34c0 5 18 5 18 0z" fill="${b}"/>
-    <circle cx="9" cy="31" r="2.4" fill="${GOLD_LT}"/><circle cx="14" cy="31" r="2.4" fill="${GOLD_LT}"/>`,
   /** Bolsa con un farol asomando: pistas al tomarla. */
   bolsillo: (a, b) =>
     `<path d="M20 22h24l6 26c1 6-4 10-10 10H24c-6 0-11-4-10-10z" fill="${a}"/><path d="M22 22c-2-6 4-8 10-6 6-2 12 0 10 6" fill="${b}"/>
@@ -125,6 +115,16 @@ const ART = {
       )
       .join('')}
     <path d="M22 42h20" stroke="${b}" stroke-width="5"/><path d="M22 42h20" stroke-width="1.4"/>`,
+  /** Anillos enlazados con gema: vínculo con los Pactos. */
+  vinculo: (a, b) =>
+    `<circle cx="24" cy="34" r="14" fill="none" stroke="${a}" stroke-width="6"/><circle cx="24" cy="34" r="14" fill="none" stroke="${INK}" stroke-width="2"/>
+    <circle cx="40" cy="30" r="14" fill="none" stroke="${b}" stroke-width="6"/><circle cx="40" cy="30" r="14" fill="none" stroke="${INK}" stroke-width="2"/>
+    <path d="M32 18l4 6-4 6-4-6z" fill="${GOLD_LT}"/>`,
+  /** Ojo de cristal luminoso: lucidez (puntos por pistas guardadas). */
+  lucidez: (a, b) =>
+    `<path d="M6 32c8-13 18-18 26-18s18 5 26 18c-8 13-18 18-26 18S14 45 6 32z" fill="${b}"/>
+    <circle cx="32" cy="32" r="11" fill="${a}"/><circle cx="32" cy="32" r="5" fill="${GOLD_LT}"/>
+    <path d="M32 6v6M32 52v6M14 14l4 4M46 46l4 4M50 14l-4 4M18 46l-4 4" stroke="${a}" stroke-width="2"/>`,
 
   /* ───── Pactos ───── */
   /** Espada clavada sobre un ojo cerrado: el juramento (sin poder). */
@@ -137,16 +137,6 @@ const ART = {
     `<path d="M14 6h36l6 52H8z" fill="${b}" fill-opacity=".85"/><path d="M14 6h36l6 52H8z" fill="none" stroke-width="2.6"/>
     <path d="M32 30L22 6M32 30l14-24M32 30L12 46M32 30l20 14M32 30l-2 28" fill="none" stroke="${a}" stroke-width="1.8"/>
     <path d="M18 12l4 10" stroke="#fff" stroke-width="2"/>`,
-  /** Cofre con candado: la tienda cerrada. */
-  'pacto-mercante': (a, b) =>
-    `<path d="M8 28h48v26H8z" fill="${a}"/><path d="M8 28c0-12 10-18 24-18s24 6 24 18z" fill="${b}"/>
-    <path d="M8 36h48M20 28v26M44 28v26" stroke-width="1.6"/>
-    <rect x="24" y="32" width="16" height="14" rx="3" fill="${IRON}"/><path d="M27 32v-5a5 5 0 0 1 10 0v5" fill="none" stroke-width="3"/><circle cx="32" cy="39" r="2" fill="${INK}" stroke="none"/>`,
-  /** Sol tapado por una luna oscura con su corona de luz: el eclipse (los sellos no dan puntos). */
-  eclipse: (a, b) =>
-    `${[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((r) => `<path d="M32 4v8" stroke="${b}" stroke-width="2.4" transform="rotate(${r} 32 32)"/>`).join('')}
-    <circle cx="32" cy="32" r="17" fill="${GOLD_LT}"/><circle cx="37" cy="29" r="16" fill="${a}"/>
-    <path d="M28 20c4-2 9-2 13 1" fill="none" stroke="#ffffff55" stroke-width="1.6"/>`,
   /** Equilibrista sobre la cuerda: −2 turnos. */
   'cuerda-floja': (a, b) =>
     `<path d="M2 44c20 6 40 6 60 0" fill="none" stroke-width="2.2"/><path d="M4 44v16M60 44v16" stroke-width="3"/>
@@ -169,22 +159,16 @@ const ART = {
     <circle cx="22" cy="46" r="13" fill="${a}"/><circle cx="22" cy="46" r="8" fill="${b}"/>
     <path d="M14 36l7 9-3 4 6 8" fill="none" stroke="${INK}" stroke-width="2.4"/>
     <path d="M44 34a14 14 0 0 1 10 10M40 40a8 8 0 0 1 6 6" fill="none" stroke="${b}" stroke-width="2" stroke-dasharray="3 2"/>`,
-  /** Cofre abierto que rebosa monedas: el botín. */
-  botin: (a, b) =>
-    `<path d="M8 32h48v22H8z" fill="${a}"/><path d="M8 32L14 14h36l6 18z" fill="${b}"/>
-    <path d="M8 40h48M32 32v22" stroke-width="1.6"/>
-    ${[
-      [18, 28],
-      [27, 25],
-      [36, 26],
-      [45, 28],
-      [23, 20],
-      [40, 20],
-      [32, 17],
-    ]
-      .map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="5" ry="3.4" fill="${GOLD_LT}"/>`)
-      .join('')}
-    <rect x="28" y="36" width="8" height="8" rx="2" fill="${GOLD}"/>`,
+  /** Vórtice oscuro con estrella final: el abismo (tramo final). */
+  abismo: (a, b) =>
+    `<circle cx="32" cy="32" r="24" fill="${a}"/><circle cx="32" cy="32" r="16" fill="#1a0b24"/>
+    <path d="M12 24c8-10 32-10 40 0M12 40c8 10 32 10 40 0" fill="none" stroke="${b}" stroke-width="2.2"/>
+    <path d="M32 19l3.2 9.8L45 32l-9.8 3.2L32 45l-3.2-9.8L19 32l9.8-3.2z" fill="${GOLD_LT}"/>`,
+  /** Llamas gemelas cruzadas por un rayo: el frenesí (tableros largos, menos turnos). */
+  frenesi: (a, b) =>
+    `<path d="M32 6c12 10 20 20 18 34-1 10-8 18-18 18S15 50 14 40C12 26 20 16 32 6z" fill="${a}"/>
+    <path d="M32 18c7 7 11 14 10 23-1 6-5 11-10 11s-9-5-10-11c-1-9 3-16 10-23z" fill="${b}"/>
+    <path d="M36 10L24 32h10l-6 22 16-26H33z" fill="${GOLD_LT}"/>`,
 };
 
 /** SVG de la carta (sin marco): su emblema propio con sus colores. */

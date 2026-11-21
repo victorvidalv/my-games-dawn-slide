@@ -1,5 +1,5 @@
 /** Niveles por camino y nivel de dificultad máximo. */
-export const MAX_LEVEL = 100;
+export const MAX_LEVEL = 21;
 import { MAX_RATING, targetFor } from './targets.js';
 import { minFor } from './calibration.js';
 
@@ -63,11 +63,11 @@ export const WINDOW = 3;
 export const startHintsFor = (start = 1) => (pathKey(start) === 75 ? 2 : 3);
 
 /**
- * Factor de límite de movimientos: empieza holgado y se aprieta hasta el nivel 100, así la dificultad se siente subir.
- *   Normal ×2,2 → ×1,5 · Difícil ×1,85 → ×1,06 · Experto ×1,7 → ×1,04, con un margen mínimo de turnos de sobra
- *   (Normal 4, los demás 2): un error cuesta varios movimientos fijos, así que los tableros cortos necesitan margen absoluto.   (interpolación lineal entre el nivel 1 y el 100)
+ * Factor de límite de movimientos: empieza holgado y se aprieta hasta el nivel 21, así la dificultad se siente subir.
+ *   Normal ×2,1 → ×1,45 · Difícil ×1,75 → ×1,10 · Experto ×1,6 → ×1,05, con un margen mínimo de turnos de sobra
+ *   (Normal 4, los demás 2): un error cuesta varios movimientos fijos, así que los tableros cortos necesitan margen absoluto.
  */
-const LIMIT_FACTORS = { 1: [2.2, 1.5], 50: [1.85, 1.06], 75: [1.7, 1.04] };
+const LIMIT_FACTORS = { 1: [2.1, 1.45], 50: [1.75, 1.1], 75: [1.6, 1.05] };
 const MIN_SPARE = { 1: 4, 50: 2, 75: 2 };
 const limitFactor = (start = 1, level = 1) => {
   const [from, to] = byPath(LIMIT_FACTORS, start);

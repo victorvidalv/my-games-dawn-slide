@@ -1,4 +1,4 @@
-import { zoneIdx } from '../data/zones.js';
+import { zoneIdx, zoneStep } from '../data/zones.js';
 import { TUTORIAL_LEVELS, lettersAt } from '../engine/calibration.js';
 import { comboKey } from '../engine/decorate.js';
 
@@ -66,10 +66,10 @@ const INTRO_LEVELS = new Set(INTRO_LEVEL_LIST);
 /** Qué mecánicas contiene una familia (en el orden roca, pesada, candado, hielo). */
 export const mechanicsOfFamily = (family) => [...(lettersOfFamily(family) ?? '')].map((c) => LETTER_MECH[c]);
 
-/** Plan de un nivel (1..100): {family, city, step, intro, mechanics}. */
+/** Plan de un nivel (1..21): {family, city, step, intro, mechanics}. */
 export function levelPlan(level) {
   const city = zoneIdx(level);
-  const step = ((level - 1) % 10) + 1;
+  const step = zoneStep(level);
   const letters = [...'whgi'].filter((c) => lettersAt(level).includes(c)).join('');
   const family = familyOfLetters(letters);
   return {

@@ -5,7 +5,7 @@ import { bootApp } from './app.js';
 it('muestra la badge de logros pendientes en inicio, permite reclamar uno a uno y canjear cosméticos', async () => {
   const app = await bootApp({
     save: {
-      paths: { c1: { level: 50, score: 25000 } },
+      paths: { c1: { level: 12, score: 25000 } },
       stats: { boardsSolved: 1 },
     },
   });

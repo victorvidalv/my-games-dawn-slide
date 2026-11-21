@@ -6,9 +6,9 @@ import { levelPlan } from './mechanics.js';
 
 export const DAILY_TARGETS = [5, 8, 12];
 export const STREAK_HINT_REWARDS = [
-  { days: 3, hints: 3 },
-  { days: 5, hints: 5 },
-  { days: 7, hints: 8 },
+  { days: 3, hints: 1 },
+  { days: 5, hints: 2 },
+  { days: 7, hints: 3 },
 ];
 export const streakHintBonus = (days) =>
   STREAK_HINT_REWARDS.reduce((bonus, reward) => (days >= reward.days ? reward.hints : bonus), 0);
@@ -21,49 +21,59 @@ export const CHALLENGES = [
     name: 'Clásico',
     desc: 'Sin piezas especiales',
     families: ['plain'],
-    level: 4,
+    targets: [5, 8, 12],
+    ratings: [1, 60],
+    level: 1,
   },
   {
     id: 'frost',
-    unlock: 20,
+    unlock: 4,
     icon: 'ice',
     name: 'Rocas y hielo',
     desc: 'Un día rocas, otro hielo',
     families: ['walls', 'ice'],
-    level: 54,
+    targets: [6, 9, 13],
+    ratings: [15, 75],
+    level: 10,
   },
   {
     id: 'gears',
-    unlock: 30,
+    unlock: 8,
     icon: 'lock',
     name: 'Mecanismos',
     desc: 'Candados y piezas pesadas',
     families: ['combo_hg'],
-    level: 44,
+    targets: [7, 10, 14],
+    ratings: [25, 85],
+    level: 13,
   },
   {
     id: 'all',
-    unlock: 50,
+    unlock: 14,
     icon: 'crystal',
     name: 'Todo junto',
     desc: 'Todas las piezas especiales',
     families: ['combo_whgi'],
-    ratings: [88, 90],
-    level: 84,
+    targets: [8, 12, 16],
+    ratings: [50, 92],
+    level: 16,
   },
   {
     id: 'master',
-    unlock: 100,
+    unlock: 21,
     icon: 'crown',
     name: 'Maestro',
     desc: 'Todas las piezas, sin margen',
     families: ['combo_whgi'],
-    ratings: [98, 100],
-    level: 94,
+    targets: [10, 14, 18],
+    ratings: [75, 100],
+    level: 21,
     tight: true,
   },
 ];
 export const challengeById = (id) => CHALLENGES.find((c) => c.id === id) || CHALLENGES[0];
+export const challengeTargets = (challenge) => challenge?.targets || DAILY_TARGETS;
+export const todayFamily = (challenge, day) => challenge.families[day % challenge.families.length];
 
 /* ───────────── fechas (hora local del jugador) ───────────── */
 
@@ -92,15 +102,15 @@ export const isUnlocked = (challenge, maxLevel) => maxLevel >= challenge.unlock;
 
 /** Genera la etapa indicada con el mínimo exacto y la mecánica propia del reto. */
 export function buildDaily(challenge, day, { levels, special }, index = 0) {
-  const target = DAILY_TARGETS[index];
+  const target = challengeTargets(challenge)[index];
   const seed = hash32(day, CHALLENGES.indexOf(challenge) + 1, 9001 + index);
-  const family = challenge.families[day % challenge.families.length];
+  const family = todayFamily(challenge, day);
   const bank = family === 'plain' ? levels : special[family];
   const [lo, hi] = challenge.ratings || [1, 100];
   const ratings = Object.keys(bank)
     .map((i) => Number(i) + 1)
     .filter((r) => r >= lo && r <= hi && bank[r - 1]?.length && minReach(r) >= target)
-    .slice(0, 8);
+    .slice(0, 12);
   const rating = ratings[seed % ratings.length];
   const base = pickBoard(levels, rating, seed, index + 1, family, special);
   const built = buildLevel(base, { rating, target, rng: mulberry32(seed) });
@@ -184,6 +194,13 @@ export function writeDailyProgress(store, daily, progress) {
   };
 }
 
+const MEDAL_GLYPH = { gold: '🥇', silver: '🥈', bronze: '🥉' };
+
 /** Texto para compartir, sin desvelar la solución. */
-export const shareText = (challenge, day, result, streak) =>
-  `DAWNSLIDE · ${challenge.name} #${day} · ${result.moves}/${result.opt}${streak > 1 ? ` · ${streak}` : ''}`;
+export function shareText(challenge, day, result, streak, { name = challenge.name, streakUnit = '' } = {}) {
+  const boards = result.boards?.length
+    ? ` ${result.boards.map((b) => MEDAL_GLYPH[medalFor(b.moves, b.opt)]).join('')}`
+    : '';
+  const streakPart = streak > 1 ? ` · ${streak}${streakUnit ? ` ${streakUnit}` : ''}` : '';
+  return `DAWNSLIDE · ${name} #${day} · ${result.moves}/${result.opt}${boards}${streakPart}`;
+}

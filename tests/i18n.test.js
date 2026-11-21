@@ -6,7 +6,6 @@ import { EN } from '../src/i18n/en.js';
 import { CHAPTERS, HERO_LORE, HERO_TALK, HERO_TUTORIAL_TALK } from '../src/data/story.js';
 import { INSCRIPTIONS } from '../src/data/lore.js';
 import { HEROES } from '../src/game/heroes.js';
-import { SHOP_PERSONAS } from '../src/game/shop-personas.js';
 import { ZONES } from '../src/data/zones.js';
 
 /** Todos los textos de una estructura (cadenas anidadas en objetos y listas). */
@@ -100,10 +99,9 @@ describe('idioma: el inglés es el idioma por defecto y cubre la historia', () =
       ),
     ).toEqual([]);
   });
-  it('los héroes, las tiendas y las ciudades están traducidos', () => {
+  it('los héroes y las ciudades están traducidos', () => {
     const heroText = HEROES.flatMap((h) => [h.role, h.power, h.short, h.detail, h.quote]);
-    const shopText = Object.values(SHOP_PERSONAS).flatMap((p) => strings(p));
-    expect(missing([...heroText, ...shopText, ...ZONES.map((z) => z.n)])).toEqual([]);
+    expect(missing([...heroText, ...ZONES.map((z) => z.n)])).toEqual([]);
   });
   it('ninguna traducción está vacía', () => {
     for (const [es, en] of Object.entries(EN)) expect(en.trim().length, es).toBeGreaterThan(0);

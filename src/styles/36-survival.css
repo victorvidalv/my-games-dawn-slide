@@ -40,6 +40,11 @@
   --relic-y: 100%;
 }
 
+.survival-saved-copy {
+  flex: 1;
+  min-width: 0;
+}
+
 .survival-saved-info b {
   display: block;
   color: #fff3d6;
@@ -51,6 +56,21 @@
   margin-top: 2px;
   color: #f8d288;
   font: 650 12px/1.3 var(--font-ui);
+}
+
+.survival-saved-bar {
+  height: 6px;
+  margin-top: 7px;
+  border-radius: 99px;
+  background: #0d1526;
+  border: 1px solid #e7b96355;
+  overflow: hidden;
+}
+
+.survival-saved-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #d39528, #ffe39e);
 }
 
 #survivalContinue {
@@ -106,6 +126,24 @@
     transform 0.12s,
     border-color 0.15s,
     background 0.15s;
+}
+
+.challenge-route-card .route-tag {
+  display: inline-block;
+  margin-bottom: 3px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: #0d1526aa;
+  border: 1px solid #7dd3fc44;
+  color: #9dd4f5;
+  font: 800 9.5px/1 var(--font-ui);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.challenge-route-card.won .route-tag {
+  border-color: #86efac66;
+  color: #86efac;
 }
 
 .challenge-route-card .route-turns {
@@ -212,6 +250,26 @@
   font-variant-numeric: tabular-nums;
   color: #ffe39e;
   text-shadow: 0 2px 0 #091118;
+}
+
+.survival-reserve.low b {
+  color: #ffbe6b;
+}
+
+.survival-reserve.critical b {
+  color: #ff7a7a;
+}
+
+.survival-pace {
+  display: block;
+  margin-top: 1px;
+  font: 700 10.5px/1.1 var(--font-ui);
+  color: #a9d6f5;
+  font-variant-numeric: tabular-nums;
+}
+
+.survival-pace.over {
+  color: #ff9c7a;
 }
 
 .survival-run #app :is(.scores, .meter, .legend, .controls) {
@@ -386,6 +444,37 @@ body.survival-run .exit-arrow {
 
 #survivalEnd .tag {
   margin-bottom: 6px;
+}
+
+.survival-end-ico {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  margin: 4px auto 8px;
+  filter: drop-shadow(0 4px 0 #091118);
+}
+
+.survival-end-ico .ic {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#survivalEnd[data-status='won'] .survival-end-ico {
+  filter: drop-shadow(0 4px 0 #091118) drop-shadow(0 0 14px #ffd24a88);
+}
+
+.survival-end-actions {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.survival-end-actions button {
+  width: 100%;
+  margin: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {

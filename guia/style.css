@@ -103,7 +103,7 @@ section{scroll-margin-block:1.25rem}
 .fate-guide-card span{font-size:.86rem;color:#c8f0d2}
 .fate-guide-card em{font-style:normal;font-size:.84rem;color:#ffc4b8}
 .fate-guide-card em::before{content:'✕ '}
-.story{margin-top:24px;padding:clamp(24px,5vw,58px);border:1px solid var(--line);border-radius:16px;background:linear-gradient(90deg,#0b1722f7 0%,#0d1824e8 40%,#13243655 100%),url('/backgrounds/zone-10.webp') center 40%/cover}
+.story{margin-top:24px;padding:clamp(24px,5vw,58px);border:1px solid var(--line);border-radius:16px;background:linear-gradient(90deg,#0b1722f7 0%,#0d1824e8 40%,#13243655 100%),url('/backgrounds/zone-7.webp') center 40%/cover}
 .story>div{max-width:60ch}
 .story-art{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border:1px solid #ceae7388;border-radius:10px;box-shadow:0 12px 26px #050c1699}
 .story h2{margin-bottom:14px;font:750 1rem/1.1 var(--text)}
@@ -133,5 +133,5 @@ section{scroll-margin-block:1.25rem}
   .intro-copy{gap:12px}
   .languages a,.chapter-links a{padding-inline:8px}
   .hero .hero-copy{padding-inline:16px}
-  .story{background:linear-gradient(90deg,#0b1722f1,#0c1a27cc),url('/backgrounds/zone-10.webp') 58% center/cover}
+  .story{background:linear-gradient(90deg,#0b1722f1,#0c1a27cc),url('/backgrounds/zone-7.webp') 58% center/cover}
 }

@@ -8,26 +8,26 @@ const now = new Date('2026-11-18T10:00:00Z');
 const recordAt = now.getTime();
 const run = {
   mode: 'c',
-  level: 40,
+  level: 14,
   hero: 'van',
   start: 75,
   seed: 2147483647,
   hints: 17,
   score: 123456,
   adj: 2,
-  firstLevel: 21,
-  helpAt: 39,
+  firstLevel: 1,
+  helpAt: 13,
   streak: 4,
   revivesBought: 1,
-  fate: ['brillo', 'juramento', 'botin'],
+  fate: ['brillo', 'juramento', 'respiro'],
   fatePicked: 3,
   fateCityPaid: 3,
 };
 const snapshot = {
   paths: {
-    c1: { score: 600000, level: 100, runs: 4, recordAt },
-    c50: { score: 4200000000, level: 90, runs: 320 },
-    c75: { score: 123456, level: 40, runs: 1 },
+    c1: { score: 600000, level: 21, runs: 4, recordAt },
+    c50: { score: 4200000000, level: 18, runs: 320 },
+    c75: { score: 123456, level: 14, runs: 1 },
   },
   ach: { perf10: recordAt, perf50: recordAt, lv50: recordAt, day7: recordAt, ch250: recordAt, cosmetic30: recordAt },
   achClaimed: { perf10: recordAt, lv50: recordAt, ch250: recordAt },
@@ -157,8 +157,8 @@ describe('importar al guardado local', () => {
 
   it('preserva la aventura local hasta confirmar y combina máximos, logros, compras y Desafío al aceptar', async () => {
     const local = {
-      run: { ...run, level: 20 },
-      paths: { c1: { score: 750000, level: 93 } },
+      run: { ...run, level: 10 },
+      paths: { c1: { score: 750000, level: 19 } },
       ach: { clean: recordAt - 86400000 },
       achClaimed: { clean: recordAt - 86400000 },
       shopOwned: { 'board:slate': recordAt - 86400000 },
@@ -167,12 +167,12 @@ describe('importar al guardado local', () => {
     const { importProgress, store, disk } = await withLocal(local);
     const incoming = readSaveLink(exportSaveLink(snapshot), now);
     expect(importProgress(incoming)).toBe('confirm');
-    expect(store.run.level).toBe(20);
+    expect(store.run.level).toBe(10);
     expect(JSON.parse(disk.get(key))).toEqual(local);
     expect(importProgress(incoming, { replaceRun: true })).toBe('done');
     expect(store).toMatchObject({
-      run: { level: 40 },
-      paths: { c1: { score: 750000, level: 100 } },
+      run: { level: 14 },
+      paths: { c1: { score: 750000, level: 21 } },
       ach: { clean: local.ach.clean, perf10: recordAt, ch250: recordAt },
       achClaimed: { clean: local.achClaimed.clean, perf10: recordAt, ch250: recordAt },
       shopOwned: { 'board:slate': local.shopOwned['board:slate'], 'board:celestial': recordAt },

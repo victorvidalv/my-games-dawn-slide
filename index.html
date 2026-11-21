@@ -60,7 +60,7 @@
   <div class="top">
     <div class="lv" title="Nivel" aria-label="Nivel"><i class="bi level-ico" data-icon="flag" aria-hidden="true"></i><b id="lvl">1</b></div>
     <div class="scores"><div class="sc" title="Puntaje"><i class="bi score-ico" data-icon="trophy" aria-hidden="true"></i><b id="score" aria-label="Puntaje">0</b></div></div>
-    <div class="survival-reserve"><em id="survivalRouteTag"></em><span>Turnos restantes</span><b id="survivalTurns"></b></div>
+    <div class="survival-reserve" id="survivalReserve"><em id="survivalRouteTag"></em><span>Turnos restantes</span><b id="survivalTurns"></b><small id="survivalBoardPace" class="survival-pace"></small></div>
     <button class="fate-btn" id="bFate" type="button" hidden aria-label="Cartas del destino activas"><span class="fate-btn-stack" id="fateStack" aria-hidden="true"></span><b id="fateCount">0</b></button>
     <button class="snd-btn snd-hud" type="button"></button>
     <button class="menubtn" id="bMenu" aria-label="Menú y opciones"><span>☰</span><em>Menú</em></button>
@@ -78,7 +78,6 @@
 
   <div class="meter" id="meter">
     <div class="mrow"><span>Hecho <b id="mv">0</b></span><span class="left-chip" id="leftChip" role="status" hidden></span><span>Límite <b id="lim">–</b></span></div>
-    <div id="sealStatus" class="seal-status" role="status" hidden></div>
     <div class="barwrap">
       <div class="bar"><b class="pzone" id="pzone"></b><i id="fill"></i><span id="liaReserve" class="lia-reserve" hidden></span></div>
       <i class="bi crown" id="crown" data-icon="crown" title="Zona perfecta: termina sin pasarte del mínimo"></i>
@@ -110,7 +109,7 @@
     <button id="bUndo" hidden aria-hidden="true" tabindex="-1"></button>
     <button id="bPower" hidden><i class="bi" id="powerIcon"></i><span><b id="powerName"></b><small id="powerNote"></small></span></button>
     <button id="bHint"><i class="bi" data-icon="hint"></i> Pista <span class="badge" id="hintN">3</span></button>
-    <button id="bShop" aria-label="Tienda"><i class="bi" data-icon="purse"></i> <span>Tienda</span></button>
+    <button id="bDailyReset" hidden><i class="bi" data-icon="undo"></i> Reiniciar tablero</button>
   </div>
 </div>
 
@@ -142,6 +141,9 @@
      <ul class="fate-minis" id="fateOwnedList"></ul>
     </details>
     <div class="fate-offer" id="fateOffer" role="group" aria-labelledby="fateAsk"></div>
+    <div class="fate-reroll-row">
+     <button type="button" class="fate-reroll" id="fateReroll" hidden>↻ Cambiar cartas (1 por partida)</button>
+    </div>
    </div>
   </div>
  </div>
@@ -149,13 +151,8 @@
 <div class="modal" id="heroSelect" role="dialog" aria-modal="true" aria-labelledby="heroSelectTitle"><div class="card hero-selector">
  <div class="tag" id="heroPath" hidden></div><h2 id="heroSelectTitle">Elige tu compañero</h2>
  <div class="hero-cards" id="heroCards" role="radiogroup" aria-label="Elige un héroe"></div>
- <div class="hero-summary">
-  <div><i id="heroPowerIcon" aria-hidden="true"></i><span><small class="hero-ability-label">Poder</small><strong id="heroPowerShort"></strong></span></div>
-  <div><i id="heroRouteIcon" aria-hidden="true"></i><span><small class="hero-ability-label">Destino</small><strong id="heroRouteName">1 de 3 cartas por ciudad</strong></span></div>
- </div>
  <fieldset class="hero-relics"><legend class="hero-ability-label">Reliquia</legend><div class="relic-options" id="heroRelics"></div></fieldset>
- <div class="hero-start" id="heroStartBox"><span class="hero-ability-label" id="heroStartLabel">Empezar desde el nivel</span><div class="start-chips" id="heroStarts" role="radiogroup" aria-labelledby="heroStartLabel"></div><small id="heroStartNote"></small></div>
- <div class="hero-selector-actions"><button id="heroCancel">Menú</button><button class="primary" id="heroConfirm">Comenzar aventura ➜</button></div>
+  <div class="hero-selector-actions"><button id="heroCancel">Menú</button><button class="primary" id="heroConfirm">Comenzar aventura ➜</button></div>
 </div></div>
 <div class="modal" id="rescue" role="dialog" aria-modal="true" aria-labelledby="rescueTitle"><div class="card rescue-card"><img class="rescue-portrait" id="rescueHero" alt="Lía protege la aventura"><span class="rescue-heart" id="rescueIcon" aria-hidden="true"></span><div class="tag" id="rescueTag"></div><h2 id="rescueTitle">La aventura sigue</h2><p id="rescueText"></p><button class="primary" id="rescueContinue">Activar poder</button></div></div>
 <div class="modal" id="reviveOffer" role="dialog" aria-modal="true" aria-labelledby="reviveTitle">
@@ -206,13 +203,6 @@
 
 <button class="audio-recover" id="audioRecover" hidden>🔊 Toca para recuperar el sonido</button>
 <canvas id="fx"></canvas>
-<div id="journey">
-  <img class="tower-hero" id="towerHero" alt="" draggable="false">
-  <div class="mtag" id="mTag"></div>
-  <ol class="tower" id="mapTower" role="img"></ol>
-  <div class="mcap"><h2 id="mName"></h2><p id="mSub"></p></div>
-  <div class="jskip">Toca para continuar</div><button id="mapClose" class="map-close" hidden>← Volver al menú</button>
-</div>
 <div id="upd" role="alert">
   <div class="updico">⬆️</div>
   <div class="updt"><b>Nueva versión disponible</b><span>Actualiza para tener las últimas mejoras</span></div>
@@ -274,9 +264,10 @@
       <div class="survival-saved" id="survivalSaved" hidden>
         <div class="survival-saved-info">
           <span class="survival-saved-art challenge-relic-art" id="survivalSavedArt" aria-hidden="true"></span>
-          <div>
+          <div class="survival-saved-copy">
             <b id="survivalSavedTitle"></b>
             <small id="survivalStatus"></small>
+            <div class="survival-saved-bar" aria-hidden="true"><i id="survivalSavedBar"></i></div>
           </div>
         </div>
         <button type="button" class="primary" id="survivalContinue">Continuar</button>
@@ -372,31 +363,12 @@
  <div class="card pause-menu"><div class="pause-head"><img class="pause-hero" id="pauseHero" alt="" width="62" height="74"><div><div class="tag">DAWNSLIDE</div><h2 id="pauseTitle">Pausa</h2><p class="pause-context" id="pauseContext"></p></div></div>
   <div class="pause-actions">
    <button class="primary" id="pResume"><span>Continuar</span><span aria-hidden="true">→</span></button>
-   <button id="pProgress"><span>Ver progreso</span><svg class="pause-icon" viewBox="0 0 28 28" aria-hidden="true"><path d="M5 21l8-14 10 14M5 21h18"/><circle cx="5" cy="21" r="2"/><circle cx="13" cy="7" r="2"/><circle cx="23" cy="21" r="2"/></svg></button>
    <button id="pSound">Desactivar sonido</button>
    <button id="pSave"><span>Guardar y salir</span><svg class="pause-icon" viewBox="0 0 28 28" aria-hidden="true"><path d="M6 4h13l4 4v16H5V4h1Zm3 0v8h10V4M9 24v-9h10v9"/></svg></button>
    <button class="pause-end" id="pQuit"><span>Terminar</span><svg class="pause-icon" viewBox="0 0 28 28" aria-hidden="true"><path d="M5 13L14 5l9 8v11H5V13Zm6 11v-8h6v8"/></svg></button>
   </div>
   <p id="pauseSaveError" role="status" hidden>No se pudo guardar la partida.</p>
  </div>
-</div>
-
-<!-- Tienda: escena con el fondo y el mercader (los textos y las ayudas se dibujan encima) -->
-<div class="modal" id="shop" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
-  <div class="shop-world">
-    <div id="shopDiscount" class="shop-discount" hidden></div>
-    <div class="shop-scene">
-      <img class="shop-bg" id="shopBg" src="/tienda/fondo-tienda.webp" alt="" draggable="false">
-      <h2 class="shop-sign" id="shopTitle">Tienda de Don Dublón</h2>
-<div class="shop-list" id="shopList"></div>
-      <div class="shop-merchant" id="merchant"><img id="shopMerchant" src="/heroes/vendedor.webp" alt="Don Dublón, el mercader" draggable="false"></div>
-      <div class="shop-bubble" id="shopBubble" aria-live="polite"></div>
-      <div class="shop-counter">
-        <div class="shop-wallet"><span class="coin" aria-hidden="true"></span><span><small>TUS PUNTOS</small><b id="shopScore">0</b></span></div>
-        <button id="shopClose" class="primary">Salir</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- Guía: avisos de los primeros niveles y de cada pieza nueva -->
@@ -421,30 +393,17 @@
 </div>
 
 
-<!-- Parada de minijuego (niveles 15, 25, …, 95): tres juegos por héroe. El contenido del escenario lo dibuja src/ui/bonus.js -->
-<div class="modal" id="mini" role="dialog" aria-modal="true" aria-labelledby="miniTitle">
- <div class="mini-card">
-  <header class="mini-head">
-   <div class="mini-hero" id="miniHero" aria-hidden="true"></div>
-   <div class="mini-headcopy"><span class="mini-tag" id="miniTag"></span><h2 id="miniTitle"></h2></div>
-   <div class="mini-prize" id="miniPrize" role="img"><i class="bi" data-icon="hint" aria-hidden="true"></i><b id="miniMax">0</b></div>
-  </header>
-  <div class="mini-stage" id="miniStage">
-   <div class="mini-hud" id="miniHud"><span class="mini-left"><small id="miniLeftLabel"></small><b id="miniLeftValue"></b></span><div class="mini-bar"><i id="miniBar"></i></div><span class="mini-right" id="miniRight"></span></div>
-   <div class="mini-field" id="miniField"></div>
-   <p class="mini-status" id="miniStatus" role="status" aria-live="polite"></p>
-  </div>
-  <button type="button" class="mini-skip" id="miniSkip">Saltar reto (sin premio)</button>
- </div>
-</div>
-
 <!-- Resultado de un reto diario -->
 <div class="modal" id="survivalEnd" role="dialog" aria-modal="true" aria-labelledby="survivalEndTitle">
  <div class="card survival-end">
   <div class="tag" id="survivalEndTag"></div>
+  <i class="survival-end-ico" id="survivalEndIco" aria-hidden="true"></i>
   <h2 id="survivalEndTitle"></h2>
   <p id="survivalEndSummary"></p>
-  <button type="button" class="primary" id="survivalBack">Volver a Desafío</button>
+  <div class="survival-end-actions">
+   <button type="button" class="primary" id="survivalRetry">Reintentar</button>
+   <button type="button" id="survivalBack">Volver a Desafío</button>
+  </div>
  </div>
 </div>
 
@@ -465,15 +424,21 @@
  </div>
 </div>
 
-<!-- Final del camino (nivel 100) -->
+<!-- Final del camino (nivel 21) -->
 <div class="modal" id="finale">
   <div class="card finale" id="fCard">
     <div class="ending-panel"><img class="ending-portrait" id="fPortrait" alt=""><span class="ending-seal" id="fIco">🏆</span></div>
     <div class="tag" id="fTag"></div>
     <h2 id="fTitle"></h2>
-    <p class="ending-lore" id="fLore"></p><div class="ending-thanks" id="fThanks"></div><p id="fText"></p>
-    <div class="big" id="fScore"></div>
-    <div id="fRec"></div>
+    <div class="ending-thanks" id="fThanks"></div>
+    <div class="finale-score-box">
+      <small>PUNTAJE OBTENIDO</small>
+      <div class="big" id="fScore"></div>
+      <div id="fRec"></div>
+    </div>
+    <div class="run-build" id="fBuild" hidden></div>
+    <p class="ending-lore" id="fLore"></p>
+    <p id="fText"></p>
     <div class="fchal" id="fChal"></div>
     <div class="stack" id="fBtns"></div>
   </div>
@@ -503,6 +468,7 @@
      <div><small>RÉCORD</small><b id="overBest">0</b></div>
     </div>
    </section>
+   <div class="run-build" id="overBuild" hidden></div>
    <div class="over-bottom">
     <button class="over-home-btn" id="bToMenu">← Volver al inicio</button>
    </div>

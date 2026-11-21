@@ -8,12 +8,11 @@ import { paintAchBadge, renderAchievements } from './achievements.js';
 import { paintDailyHome, renderDaily } from './daily.js';
 import { routeById } from '../game/survival.js';
 import { paintSurvivalHome, renderSurvival } from './survival.js';
-import { PATHS, S, closeRun, discardRun, heroOf, holdBusy, pathOf, persist, setRun, store } from '../state.js';
+import { PATHS, S, closeRun, discardRun, heroOf, pathOf, persist, setRun, store } from '../state.js';
 import { restoreRun } from '../game/run-logic.js';
 import { bestAdventureRecord } from '../game/save-merge.js';
-import { startOptions } from '../game/starts.js';
+import { MAX_LEVEL } from '../engine/difficulty.js';
 import { syncHero } from './heroes.js';
-import { showMap } from './map.js';
 import { heroArt } from './story.js';
 /* ---------- Menú: elegir camino ---------- */
 const MODE_INFO = {
@@ -28,19 +27,11 @@ function renderPaths() {
   $('modeInfo').textContent = MODE_INFO[mode];
   PATHS.forEach((p) => {
     const rec = store.paths[mode + p.s],
-      lvl = rec ? rec.level : 0,
-      prog = lvl ? Math.max(4, lvl) : 0;
+      lvl = Math.min(MAX_LEVEL, rec ? rec.level : 0),
+      prog = lvl ? Math.max(4, Math.round((lvl / MAX_LEVEL) * 100)) : 0;
     const big = mode === 'c' ? (rec && rec.score ? rec.score.toLocaleString(numLocale()) : '—') : lvl ? lvl : '—';
     const lbl = mode === 'c' ? 'RÉCORD' : 'NIVEL MÁX.';
-    const txt = `${lvl >= 100 ? '👑 ' : ''}Nivel máx. ${lvl}/100`;
-    const opts = startOptions(lvl).slice(1),
-      flags = opts.map((o) => `<i class="pflag ${o.unlocked ? 'on' : 'off'}" title="${o.level}"></i>`).join(''),
-      flagsLabel = `Puntos de reinicio: ${
-        opts
-          .filter((o) => o.unlocked)
-          .map((o) => o.level)
-          .join(', ') || 'ninguno'
-      }`;
+    const txt = `${lvl >= MAX_LEVEL ? '👑 ' : ''}Nivel máx. ${lvl}/${MAX_LEVEL}`;
     const d = document.createElement('div');
     d.className = 'path';
     d.style.setProperty('--pc', p.c);
@@ -49,7 +40,7 @@ function renderPaths() {
     d.innerHTML = `<div class="pemo">${p.e}</div>
       <div class="pinfo"><b>${p.n}</b><small>${p.d}</small></div>
       <div class="pscore"><small>${lbl}</small><b>${big}</b></div>
-      <div class="pach"><div class="pbar"><i style="width:${prog}%"></i></div><span class="prow"><em>${txt}</em><b class="pflags" role="img" aria-label="${flagsLabel}">${flags}</b></span></div>`;
+      <div class="pach"><div class="pbar"><i style="width:${prog}%"></i></div><span class="prow"><em>${txt}</em></span></div>`;
     d.onkeydown = (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -114,8 +105,8 @@ function openPause() {
     ? `Desafío · ${routeById(survival.route).name} · Nivel ${S.run.level}`
     : daily
       ? `Reto diario · ${challengeById(daily.id).name}`
-      : `${heroOf().name} · Nivel ${S.run.level} de 100`;
-  $('pauseHero').hidden = $('pProgress').hidden = !!(daily || survival);
+      : `${heroOf().name} · Nivel ${S.run.level} de ${MAX_LEVEL}`;
+  $('pauseHero').hidden = !!(daily || survival);
   $('pSave').hidden = !!daily;
   $('pQuit').hidden = !!survival;
   $('pauseSaveError').hidden = true;
@@ -158,16 +149,6 @@ $('pause').addEventListener('keydown', (e) => {
     first.focus();
   }
 });
-$('pProgress').onclick = async () => {
-  if (!S.run || !S.G || S.G.done) return;
-  const session = S.run,
-    release = holdBusy();
-  $('pause').classList.remove('show');
-  const zone = zoneIdx(S.run.level);
-  await showMap(zone, zone, { overview: true });
-  release();
-  if (S.run === session && !S.G.done) openPause();
-};
 $('pSave').onclick = () => {
   if (!S.run || !S.G || S.G.done) return;
   if (S.run.survival) {

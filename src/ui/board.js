@@ -11,10 +11,8 @@ import { coachOnMove } from './coach.js';
 import { updateHeroHud } from './heroes.js';
 import { freeRetry } from '../game/shop.js';
 import { lowState, renderTurns } from './turns.js';
-import { renderSeal, processSealMove } from './seals.js';
 import { numLocale } from '../i18n.js';
 import { boardRotation, localDelta } from '../game/orientation.js';
-import { hideCurse, showCurse } from './curse.js';
 import { motes } from './fx.js';
 export const boardEl = $('board'),
   cellPx = () => boardEl.clientWidth / 6;
@@ -68,8 +66,6 @@ export function buildPieces() {
   S.G.rot = S.run?.survival ? 0 : boardRotation(S.run?.seed, S.G.n, S.G.tutorial || false);
   boardEl.parentElement.style.setProperty('--rot', S.G.rot + 'deg');
   boardEl.parentElement.dataset.rot = S.G.rot;
-  if (S.G.rot && !S.G.moves) showCurse(S.G.rot);
-  else hideCurse();
   S.G.gateLocked = {};
   S.G.wallEls = (S.G.walls || []).map(() => {
     const el = document.createElement('div');
@@ -229,7 +225,6 @@ export const layout = () => {
   placeStatic();
   syncSpecials(false);
   updateLinks();
-  renderSeal();
 };
 
 /** Hielo: dibuja el camino completo que recorrerá en cada sentido (hasta el tope); el del sentido del arrastre se resalta. */
@@ -386,7 +381,6 @@ export function afterMove() {
     playSurvivalTurn(won);
     return;
   }
-  processSealMove();
   updateHud();
   if (!S.run.daily) saveRun();
   coachOnMove();
@@ -465,8 +459,9 @@ export function updateHud() {
   $('meter').classList.toggle('danger', !prac && isLow(S.G.moves, S.G.limit));
   const { low, last } = lowState(); // pocos turnos: solo aviso visual, la música no cambia
   setTensionFx(low, last);
+  const resetBtn = $('bDailyReset');
+  if (resetBtn) resetBtn.disabled = S.busy || !S.G.moves;
   renderTurns();
-  renderSeal();
 }
 
 /* ---------- Victoria de nivel ---------- */

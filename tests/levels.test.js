@@ -132,8 +132,8 @@ describe('partida completa simulada (3 caminos × 100 niveles, con piezas especi
     });
   }
 
-  it('el aprendizaje funciona: los 7 primeros niveles de Normal son normales y suaves', () => {
-    for (const r of path(1).slice(0, 7)) {
+  it('el aprendizaje funciona: los 2 primeros niveles de Normal son normales y suaves', () => {
+    for (const r of path(1).slice(0, 2)) {
       expect(r.planFamily).toBe('plain');
       expect(r.walls).toBe(0);
       expect(r.kinds).toEqual([]);
@@ -141,36 +141,36 @@ describe('partida completa simulada (3 caminos × 100 niveles, con piezas especi
     }
   });
 
-  it('los cierres de ciudad (10, 20… 100) son tableros normales con dificultad controlada', () => {
+  it('los cierres de tramo (3, 6… 21) son tableros con dificultad controlada', () => {
     for (const start of STARTS) {
-      for (let level = 10; level <= 100; level += 10) {
+      for (let level = 3; level <= MAX_LEVEL; level += 3) {
         const r = path(start)[level - 1];
         expect(r.opt).toBeLessThanOrEqual(r.target + 3 + 2);
       }
     }
   });
 
-  it('la dificultad percibida real crece a lo largo de cada camino (mínimo medio por tramos de 10 niveles)', () => {
+  it('la dificultad percibida real crece a lo largo de cada camino (mínimo medio por tramos de 3 niveles)', () => {
     for (const start of STARTS) {
       let prev = 0;
-      for (let block = 0; block < 10; block++) {
+      for (let block = 0; block < 7; block++) {
         const avg =
           path(start)
-            .slice(block * 10, block * 10 + 10)
-            .reduce((a, r) => a + r.opt, 0) / 10;
-        expect(avg, `camino ${start}, tramo ${block + 1}`).toBeGreaterThanOrEqual(prev - 2.5); // en el tope (37) los tableros reales varían ±3
+            .slice(block * 3, block * 3 + 3)
+            .reduce((a, r) => a + r.opt, 0) / 3;
+        expect(avg, `camino ${start}, tramo ${block + 1}`).toBeGreaterThanOrEqual(prev - 2.5);
         prev = avg;
       }
     }
   });
 
-  it('en Normal, a partir del nivel 40 el mínimo medio ya exige pensar (≥ 10) y al final es desafiante (≥ 22)', () => {
+  it('en Normal, a mitad de partida ya exige pensar (≥ 10) y al final es desafiante (≥ 18)', () => {
     const avg = (from, to) =>
       path(1)
         .slice(from - 1, to)
         .reduce((a, r) => a + r.opt, 0) /
       (to - from + 1);
-    expect(avg(40, 49)).toBeGreaterThanOrEqual(10);
-    expect(avg(91, 100)).toBeGreaterThanOrEqual(22);
+    expect(avg(9, 14)).toBeGreaterThanOrEqual(10);
+    expect(avg(18, 21)).toBeGreaterThanOrEqual(18);
   });
 });

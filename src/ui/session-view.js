@@ -5,7 +5,7 @@
 import { HERO_TALK } from '../data/story.js';
 import { ZONES, zoneIdx } from '../data/zones.js';
 import { $ } from '../dom.js';
-import { DAILY_TARGETS, challengeById } from '../game/daily.js';
+import { challengeById, challengeTargets } from '../game/daily.js';
 import { baseScore } from '../engine/scoring.js';
 import { numLocale } from '../i18n.js';
 import { celebrate } from './achievements.js';
@@ -27,7 +27,10 @@ export function tipFor(G, heroId) {
   return TIPS[(G.n * 7) % TIPS.length];
 }
 
-export const setDailyMode = (on) => document.body.classList.toggle('daily-run', on);
+export const setDailyMode = (on) => {
+  document.body.classList.toggle('daily-run', on);
+  if ($('bDailyReset')) $('bDailyReset').hidden = !on;
+};
 export const setMessage = (text) => {
   $('msg').textContent = text;
 };
@@ -43,8 +46,11 @@ export function showScore(run) {
 /** HUD inicial de un tablero: nivel, mínimo, puntos base, puntaje, límite, deshacer y consejo. */
 export function renderLevelHud(run, G, heroId) {
   const prac = run.mode === 'p';
+  const dailyChallenge = run.daily && challengeById(run.daily.id);
+  const dailyTotal = dailyChallenge ? challengeTargets(dailyChallenge).length : 0;
+  const dailyPrev = run.daily?.boards?.[run.daily.index];
   $('lvl').textContent = run.daily
-    ? `${challengeById(run.daily.id).name} · ${run.daily.index + 1}/${DAILY_TARGETS.length}`
+    ? `${dailyChallenge.name} · ${run.daily.index + 1}/${dailyTotal}`
     : G.tutorial
       ? `${G.n} · TUTORIAL`
       : G.n;
@@ -55,7 +61,9 @@ export function renderLevelHud(run, G, heroId) {
   $('bUndo').disabled = !G.hist.length;
   setMessage(
     run.daily
-      ? 'Reto diario: saca la llave roja con los menos movimientos posibles.'
+      ? dailyPrev
+        ? `Mejorando ${dailyPrev.moves}/${dailyPrev.opt} · mínimo ${G.opt} movimientos.`
+        : `Tablero ${run.daily.index + 1} de ${dailyTotal} · mínimo ${G.opt} movimientos.`
       : G.n === 1
         ? 'Desliza los bloques y saca la llave roja ➜ Cada movimiento cuenta.'
         : tipFor(G, heroId),
@@ -64,7 +72,10 @@ export function renderLevelHud(run, G, heroId) {
 
 /** Título y subtítulo del cartel con que entra un tablero. */
 export function levelBannerText(run, G) {
-  if (run.daily) return ['Reto diario', challengeById(run.daily.id).name];
+  if (run.daily) {
+    const c = challengeById(run.daily.id);
+    return [c.name, `Tablero ${run.daily.index + 1} de ${challengeTargets(c).length}`];
+  }
   const title = G.tutorial ? 'Tutorial' : `Nivel ${G.n}`;
   return [title, ZONES[zoneIdx(G.n)].n];
 }

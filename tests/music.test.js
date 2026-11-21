@@ -24,8 +24,8 @@ const degreesOf = (e, n) => {
 };
 
 describe('temas musicales', () => {
-  it('hay un tema para cada una de las 10 ciudades, más menú y héroes', () => {
-    expect(ZONE_THEMES).toHaveLength(10);
+  it('hay un tema para cada una de las 7 zonas, más menú y héroes', () => {
+    expect(ZONE_THEMES).toHaveLength(7);
     expect(MENU_THEME.name).toBeTruthy();
     expect(HEROES_THEME.name).toBeTruthy();
   });
@@ -135,7 +135,7 @@ describe('temas musicales', () => {
       expect(th.swing, th.name).toBeLessThanOrEqual(0.33);
     }
     const bright = ['maj', 'lyd', 'mix'];
-    expect(ZONE_THEMES.filter((t) => bright.includes(t.sc)).length).toBeGreaterThanOrEqual(6);
+    expect(ZONE_THEMES.filter((t) => bright.includes(t.sc)).length).toBeGreaterThanOrEqual(4);
     for (const th of ALL_THEMES) expect(th.epic, th.name).toBeGreaterThanOrEqual(1);
     expect(MENU_THEME.epic).toBe(3);
     expect(HEROES_THEME.epic).toBe(3);
@@ -148,8 +148,8 @@ describe('temas musicales', () => {
     }
   });
 
-  it('capas por nivel: el nivel dentro de la ciudad decide la capa y cada capa suma algo sin quitar nada', () => {
-    expect([1, 2, 10, 11, 20, 21, 100].map(layerOfLevel)).toEqual([1, 2, 10, 1, 10, 1, 10]);
+  it('capas por nivel: cada tramo de 3 niveles sube 4 → 7 → 10 y cada capa suma algo sin quitar nada', () => {
+    expect([1, 2, 3, 4, 5, 6, 21].map(layerOfLevel)).toEqual([4, 7, 10, 4, 7, 10, 10]);
     const flags = (l) =>
       Object.entries(layersFor(l)).flatMap(([k, v]) =>
         v === true

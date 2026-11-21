@@ -10,11 +10,11 @@ import { heroArt } from './story.js';
 import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
-import { startOptions } from '../game/starts.js';
 import { RELICS } from '../game/relics.js';
-import { FATE_OFFER_BY_HERO, fateBlocks } from '../game/fate.js';
+import { fateBlocks } from '../game/fate.js';
 import { preloadAwakening } from './power-art.js';
 import { numLocale } from '../i18n.js';
+const HERO_POWER_TAG = { lia: '+ turnos', jean: 'Rebobinar', van: 'Ver destino' };
 export function syncHero(id = S.run?.hero) {
   const h = heroOf(id);
   document.documentElement.style.setProperty('--hero-color', h.color);
@@ -31,54 +31,16 @@ export function chooseHero(start, mode) {
       (relic, i) =>
         `<label class="relic-option" style="--relic-x:${i * 50}%"><input type="radio" name="heroRelic" value="${relic.id}" ${relic.id === selectedRelic.id ? 'checked' : ''}><span class="relic-card"><span class="relic-art" aria-hidden="true"></span><span><b>${relic.name}</b><small>${relic.label}</small></span></span></label>`,
     ).join('');
-    const reached = store.paths['c' + start]?.level || 0,
-      options = startOptions(reached);
-    let from = 1;
-    const renderStarts = () => {
-      const box = $('heroStarts');
-      box.innerHTML = options
-        .map(
-          (o) =>
-            `<button type="button" class="start-chip${o.level === from ? ' selected' : ''}${o.unlocked ? '' : ' locked'}" role="radio" aria-checked="${o.level === from}" data-level="${o.level}" ${o.unlocked ? '' : 'aria-disabled="true"'} aria-label="${o.level === 1 ? 'Desde el principio' : o.unlocked ? 'Empezar desde el nivel ' + o.level : 'Nivel ' + o.level + ' bloqueado: llega a él en este camino para desbloquearlo'}">${o.unlocked ? '' : icon('lock')}<b>${o.level === 1 ? 'Inicio' : 'Nivel ' + o.level}</b><small>${o.level === 1 ? 'Nivel 1' : o.unlocked ? 'Desbloqueado' : 'Alcanza el ' + o.level}</small></button>`,
-        )
-        .join('');
-      const next = options.find((o) => !o.unlocked);
-      $('heroStartNote').textContent = next
-        ? `Llega al nivel ${next.level} en este camino para poder empezar desde ahí.`
-        : 'Elige desde dónde quieres empezar.';
-      box.querySelectorAll('button').forEach(
-        (b) =>
-          (b.onclick = () => {
-            const o = options.find((x) => x.level === +b.dataset.level);
-            if (!o.unlocked) {
-              b.classList.remove('shake');
-              void b.offsetWidth;
-              b.classList.add('shake');
-              $('heroStartNote').textContent = `Alcanza el nivel ${o.level} en este camino para desbloquearlo.`;
-              return;
-            }
-            from = o.level;
-            renderStarts();
-            $('heroStarts').querySelector(`[data-level="${from}"]`).focus();
-            $('heroConfirm').textContent = from === 1 ? 'Comenzar aventura ➜' : `Comenzar desde el nivel ${from} ➜`;
-          }),
-      );
-    };
     $('heroPath').textContent = `${pathOf(start).n.toUpperCase()} · AVENTURA`;
     const render = () => {
       const h = heroOf(selected);
       modal.style.setProperty('--chosen', h.color);
       modal.style.setProperty('--hero-scene', cssUrl(heroArt(h.id, 'select')));
-      cards.innerHTML = HEROES.map(
-        (v) =>
-          `<button class="hero-choice ${v.id === selected ? 'selected' : ''}" role="radio" aria-checked="${v.id === selected}" tabindex="${v.id === selected ? 0 : -1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${v.short}"><img src="${heroArt(v.id, v.id === selected ? 'ready' : 'select')}" alt="${v.name}, ${v.role}" width="640" height="853"><span class="hero-choice-name">${v.name}</span><span class="hero-check" aria-hidden="true">✓</span></button>`,
-      ).join('');
-      $('heroPowerIcon').innerHTML = icon(h.icon);
-      $('heroPowerShort').textContent = h.id === 'lia' ? 'Más turnos' : h.power;
-      $('heroRouteIcon').innerHTML = icon('fate');
-      $('heroRouteName').textContent = `1 de ${FATE_OFFER_BY_HERO[h.id] ?? 3} cartas por ciudad`;
-      $('heroConfirm').textContent = from === 1 ? 'Comenzar aventura ➜' : `Comenzar desde el nivel ${from} ➜`;
-      renderStarts();
+      cards.innerHTML = HEROES.map((v) => {
+        const powerTag = HERO_POWER_TAG[v.id] || v.power;
+        return `<button class="hero-choice ${v.id === selected ? 'selected' : ''}" role="radio" aria-checked="${v.id === selected}" tabindex="${v.id === selected ? 0 : -1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${powerTag}"><img src="${heroArt(v.id, v.id === selected ? 'ready' : 'select')}" alt="${v.name}, ${v.role}" width="640" height="853"><span class="hero-choice-name"><b>${v.name}</b><small class="hero-choice-power">${powerTag}</small></span><span class="hero-check" aria-hidden="true">✓</span></button>`;
+      }).join('');
+      $('heroConfirm').textContent = 'Comenzar aventura ➜';
       cards.querySelectorAll('button').forEach(
         (b) =>
           (b.onclick = () => {
@@ -119,7 +81,7 @@ export function chooseHero(start, mode) {
     $('heroConfirm').onclick = () => {
       store.heroChoice = selected;
       persist();
-      close({ hero: selected, from, relic: relics.querySelector('input:checked').value });
+      close({ hero: selected, relic: relics.querySelector('input:checked').value });
     };
     render();
     modal.classList.add('show');
@@ -140,8 +102,12 @@ export function updateHeroHud() {
     h.id === 'lia'
       ? `+${bonusTurns('lia', S.G.opt, S.run.start, fateBlocks(S.run, 'power'))} turnos de reserva`
       : status.reason;
-  $('hintN').textContent = prac ? '∞' : S.run.hints;
-  $('bHint').setAttribute('aria-label', `Pista. ${S.run.hints} en reserva.`);
+  const hintsBlocked = fateBlocks(S.run, 'hints');
+  $('hintN').textContent = prac ? '∞' : hintsBlocked ? '✕' : S.run.hints;
+  $('bHint').setAttribute(
+    'aria-label',
+    hintsBlocked ? 'Pistas bloqueadas por tu pacto Temerario.' : `Pista. ${S.run.hints} en reserva.`,
+  );
   $('bHint').disabled = S.busy || !canHint(S.run, S.run.mode);
   $('bUndo').hidden = true;
   const button = $('bPower');

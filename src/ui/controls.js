@@ -3,21 +3,20 @@ import { $ } from '../dom.js';
 import { hintMove } from '../engine/solver.js';
 import { canHint, spendHint } from '../game/heroes.js';
 import { updateHeroHud } from './heroes.js';
-import { saveRun } from '../game/session.js';
+import { resetDailyBoard, saveRun } from '../game/session.js';
 import { S } from '../state.js';
 import { markHelped } from '../game/run-logic.js';
 import { burst } from './fx.js';
-import { openShop } from './shop.js';
 import { openMenu } from './menu.js';
 import { activatePower } from './powers.js';
 $('bPower').onclick = activatePower;
+if ($('bDailyReset')) $('bDailyReset').onclick = resetDailyBoard;
 $('bToMenu').onclick = () => {
   $('over').classList.remove('show');
   openMenu();
 };
 
 /* ---------- Botones del juego ---------- */
-$('bShop').onclick = openShop;
 $('bHint').onclick = () => {
   if (!S.run || S.run.survival || !S.G || S.G.done || S.busy || !canHint(S.run, S.run.mode, S.G.n)) return;
   const h = hintMove(S.G.pieces, S.G.pos, S.G.walls);

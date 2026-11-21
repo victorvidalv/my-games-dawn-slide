@@ -6,11 +6,11 @@ import { Music, setTensionFx } from '../audio/music.js';
 import { sfx, tone } from '../audio/sound.js';
 import { zoneIdx } from '../data/zones.js';
 import { calcGain } from '../engine/scoring.js';
-import { canStartAt, startHintsAt } from './starts.js';
+import { startHintsFor } from '../engine/difficulty.js';
 import { buildLevelAsync } from './level-builder.js';
 import {
-  DAILY_TARGETS,
   challengeById,
+  challengeTargets,
   currentStreak,
   dailyProgress,
   dayNumber,
@@ -25,7 +25,6 @@ import {
   buildSurvival,
   canUseChallengeRelic,
   newSurvival,
-  routeById,
   spendSurvivalTurn,
   survivalProgress,
   useChallengeHint,
@@ -57,15 +56,23 @@ import { startCoach } from '../ui/coach.js';
 import { showDailyResult } from '../ui/daily.js';
 import { countStat, markStat, pauseAchievementToasts, raiseStat } from '../ui/achievements.js';
 import { boardEl, buildPieces, fitBoard, layout, updateHud } from '../ui/board.js';
-import { isBonusLevel, showBonus } from '../ui/bonus.js';
-import { fateById, fateCityRewards, fateOffer, needsFatePick, pickFate } from './fate.js';
+import {
+  FATE_EVERY,
+  canRerollFate,
+  fateById,
+  fateCityRewards,
+  fateOffer,
+  needsFatePick,
+  pickFate,
+  rerollFate,
+} from './fate.js';
 import { baseScore } from '../engine/scoring.js';
 import { showFateDialog, syncFateHud } from '../ui/fate.js';
 import { endRun } from '../ui/finale.js';
 import { showResult } from '../ui/result.js';
 import { chooseHero, showRescue, showReviveOffer, syncHero } from '../ui/heroes.js';
 import { burst } from '../ui/fx.js';
-import { applyChallengeScenery, applyZone, renderStage, showMap } from '../ui/map.js';
+import { applyChallengeScenery, applyZone, renderStage } from '../ui/map.js';
 import { openMenu } from '../ui/menu.js';
 import { flashSurvivalTurns, setSurvivalMode, showSurvivalResult, updateSurvivalHud } from '../ui/survival.js';
 import { $ } from '../dom.js';
@@ -117,9 +124,8 @@ export async function startRun(start, mode) {
     openMenu('adv');
     return;
   }
-  const from = canStartAt(store.paths['c' + start]?.level || 0, picked.from) ? picked.from : 1;
   if (S.run) recordBest(true); // si abandonas, lo logrado cuenta
-  const hints = startHintsAt(start, from) + streakHintBonus(currentStreak(store.daily, dayNumber()));
+  const hints = startHintsFor(start) + streakHintBonus(currentStreak(store.daily, dayNumber()));
   setBoard(null);
   setRun(
     newAdventureRun({
@@ -127,7 +133,6 @@ export async function startRun(start, mode) {
       start,
       mode,
       hero: picked.hero,
-      from,
       hints,
       relic: picked.relic,
     }),
@@ -135,8 +140,7 @@ export async function startRun(start, mode) {
   markStat('heroes', picked.hero);
   syncHero();
   syncFateHud();
-  applyZone(zoneIdx(from));
-  S.run.travelFrom = zoneIdx(from);
+  applyZone(zoneIdx(1));
   saveRun();
   await resumeAdventure();
 }
@@ -144,7 +148,7 @@ export async function startRun(start, mode) {
 export async function startDaily(id, index) {
   const c = challengeById(id),
     day = dayNumber();
-  const entry = dailyEntry(dailyProgress(store, c.id, day), DAILY_TARGETS, index);
+  const entry = dailyEntry(dailyProgress(store, c.id, day), challengeTargets(c), index);
   if (entry.index < 0) {
     showDailyResult({ id: c.id, day });
     return;
@@ -166,6 +170,19 @@ export function leaveDaily() {
   setDailyMode(false);
   Music.stop(0.2);
   setTensionFx(0, false);
+}
+/** Reinicia el tablero actual del reto diario al instante (para buscar el oro sin gastar turnos). */
+export function resetDailyBoard() {
+  const { run, G } = S;
+  if (!run?.daily || !G || G.done || S.busy || !G.moves) return;
+  G.pos = G.start.slice();
+  G.moves = 0;
+  G.hist = [];
+  saveRun();
+  layout();
+  updateHud();
+  sfx.hint();
+  setMessage('Tablero reiniciado. ¡A por el oro!');
 }
 
 /* ---------- Desafío ---------- */
@@ -201,18 +218,17 @@ export function leaveSurvival() {
 function showSurvivalBoard() {
   const run = S.run;
   const G = buildSurvival(run.survival);
-  const route = routeById(run.survival.route);
   G.colors = Array.from({ length: 8 }, (_, i) => (i + G.n - 1) % 8);
   run.level = G.n;
   setBoard(G);
   $('lvl').textContent = `${G.n}/${G.total}`;
-  updateSurvivalHud(run.survival);
+  updateSurvivalHud(run.survival, G);
   applyChallengeScenery();
   syncFateHud();
   buildPieces();
   setMessage(
     G.n === 1
-      ? `Desafío ${route.turns} turnos: saca la llave roja. Cada movimiento gasta 1 turno.`
+      ? `Tablero 1 de ${G.total} · mínimo ${G.opt} movimientos. Cada paso gasta 1 turno.`
       : `Tablero ${G.n} de ${G.total} · mínimo ${G.opt} movimientos.`,
   );
   setBusy(false);
@@ -233,7 +249,7 @@ export function activateChallengeRelic() {
     run.survival = writeSurvival(store, useChallengeHint(run.survival));
     countStat('challengeRelicsUsed');
     persist();
-    updateSurvivalHud(run.survival);
+    updateSurvivalHud(run.survival, G);
     const p = G.pieces[h.i];
     const n = Math.abs(h.to - h.from);
     const dir = p.o === 'h' ? (h.to > h.from ? 'derecha' : 'izquierda') : h.to > h.from ? 'abajo' : 'arriba';
@@ -255,7 +271,7 @@ export function activateChallengeRelic() {
     G.hist = [];
     persist();
     layout();
-    updateSurvivalHud(run.survival);
+    updateSurvivalHud(run.survival, G);
     sfx.hint();
     boardEl.classList.remove('survival-clear');
     void boardEl.offsetWidth;
@@ -272,7 +288,7 @@ export function activateChallengeRelic() {
     G.hist.pop();
     persist();
     layout();
-    updateSurvivalHud(run.survival);
+    updateSurvivalHud(run.survival, G);
     sfx.move();
     setMessage('Último movimiento deshecho (+1 turno).');
   }
@@ -283,8 +299,11 @@ export function playSurvivalTurn(won) {
   const prevPos = G.hist.at(-1) || null;
   run.survival = writeSurvival(store, spendSurvivalTurn(run.survival, G.pos, won, prevPos));
   persist();
-  updateSurvivalHud(run.survival);
-  if (!won && run.survival.status === 'active') return;
+  updateSurvivalHud(run.survival, G);
+  if (!won && run.survival.status === 'active') {
+    if (G.moves > G.opt) setMessage(`Superaste el mínimo de este tablero (${G.moves}/${G.opt}).`);
+    return;
+  }
 
   haltBoard();
   lockBoard();
@@ -371,7 +390,7 @@ async function startLevel() {
 function fateDialog() {
   const session = S.run,
     done = session.pendingClear,
-    city = done.level / 10;
+    city = done.level / FATE_EVERY;
   if (!needsFatePick(session, done.level)) return Promise.resolve();
   const rewards = fateCityRewards(session, city, done.opt);
   if (rewards) saveRun();
@@ -380,8 +399,14 @@ function fateDialog() {
     hero: heroOf(),
     city,
     cards: fateOffer(session, city),
+    canReroll: canRerollFate(session, city),
     rewards,
     isActive: () => S.run === session,
+    onReroll: () => {
+      const next = rerollFate(session, city);
+      if (next) saveRun();
+      return next;
+    },
     onChoose: (id) => {
       const out = pickFate(session, id, city, baseScore(done.opt));
       if (out) countStat('fateCards', ...(fateById(id)?.kind === 'pact' ? ['pacts'] : []));
@@ -399,17 +424,6 @@ export async function resumeAdventure() {
     await advanceClear();
     return;
   }
-  if (S.run.bonus) {
-    await showBonus();
-    saveRun();
-  }
-  if (S.run.travelFrom !== undefined) {
-    const from = S.run.travelFrom,
-      to = zoneIdx(S.run.level);
-    await showMap(from, to, { travel: from !== to });
-    delete S.run.travelFrom;
-    saveRun();
-  }
   await startLevel();
 }
 async function advanceClear() {
@@ -423,12 +437,14 @@ async function advanceClear() {
   if (crossing) pauseAchievementToasts(true);
   try {
     if (kind === 'final') {
+      fateCityRewards(S.run, n / FATE_EVERY, done.opt);
+      saveRun();
       endRun(true);
       setBusy(false);
       return;
     }
     if (crossing) await fateDialog();
-    advanceRun(S.run, n, { bonus: isBonusLevel(n) });
+    advanceRun(S.run, n);
     saveRun();
     await resumeAdventure();
   } finally {
