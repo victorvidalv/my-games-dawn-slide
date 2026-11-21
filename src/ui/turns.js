@@ -140,58 +140,6 @@ export function renderTurns() {
   G.usedShown = used;
 }
 
-/** Efecto al comprar turnos: escarcha sobre el contador, cristales que aparecen uno a uno y destellos. */
-export function playBuyEffect() {
-  const m = $('meter');
-  flash(m, 'ice-buy', 1600);
-  flash($('bought'), 'arrive', 1400);
-  tone(880, 0.3, 'sine', 0.08);
-  [1175, 1568, 2093, 2637].forEach((f, i) => tone(f, 0.3, 'sine', 0.07, 0.06 * (i + 1)));
-  vib([20, 30, 20]);
-  if (!reduced()) {
-    const [x, y] = center(m);
-    burst(x, y, 54, ['#bfefff', '#7fd8ff', '#ffffff', '#9fb8ff'], 8);
-  }
-}
-
-/** Efecto de «rehacer»: el tablero se rebobina (piezas deslizan despacio, destello y reloj girando al revés). */
-export function playRewindEffect() {
-  const board = $('board');
-  board.classList.add('rewinding');
-  flash($('rewindFx'), 'go', 1100);
-  setTimeout(() => board.classList.remove('rewinding'), 900);
-  tone(1100, 0.55, 'sawtooth', 0.04, 0, -900);
-  tone(300, 0.5, 'triangle', 0.05, 0.1, 500);
-  vib([20, 40, 60]);
-  if (!reduced()) {
-    const [x, y] = center(board);
-    burst(x, y, 36, ['#7fe3ff', '#ffffff', '#43e0c1'], 7);
-  }
-}
-
-/** Efecto de «saltar nivel»: las piezas salen volando, flechas cruzan la pantalla. Devuelve una promesa al terminar. */
-export function playSkipEffect() {
-  const board = $('board');
-  board.classList.add('skipping');
-  flash($('skipFx'), 'go', 1300);
-  [392, 523, 659, 784, 1047].forEach((f, i) => tone(f, 0.22, 'triangle', 0.07, i * 0.07));
-  tone(200, 0.5, 'sawtooth', 0.04, 0, 900);
-  vib([30, 30, 60]);
-  if (!reduced()) {
-    const [x, y] = center(board);
-    burst(x, y, 40, ['#ffd24a', '#fff3b0', '#ff9a3c'], 9);
-  }
-  return new Promise((r) =>
-    setTimeout(
-      () => {
-        board.classList.remove('skipping');
-        r();
-      },
-      reduced() ? 400 : 1200,
-    ),
-  );
-}
-
 /** Efecto destacado y simple al activar el poder de revivir: destello, onda expansiva y sonido épico. */
 export function playReviveEffect(label = '¡PODER ACTIVADO!', hero = true) {
   const board = $('board');

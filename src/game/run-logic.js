@@ -247,14 +247,6 @@ export function applyDailyWin(daily, G, points) {
   return { next, totals: { moves, opt } };
 }
 
-/** Saltar nivel (tienda): sin puntos y sin racha, pero avanza como si se hubiera superado. */
-export function applySkip(run, G) {
-  run.streak = 0;
-  run.helpAt = G.n;
-  run.helped = true;
-  run.pendingClear = { level: G.n, gain: 0, moves: G.moves, opt: G.opt, skipped: true };
-}
-
 /**
  * Qué pasa al perder un tablero, en orden de preferencia. Aplica el rescate elegido sobre `run` y devuelve:
  * 'daily' (el reto se repite), 'retry' (reintento gratis), 'revive' (vida guardada), 'offer' (renacer pagando)

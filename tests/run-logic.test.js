@@ -9,7 +9,6 @@ import {
   advanceRun,
   applyAdventureWin,
   applyDailyWin,
-  applySkip,
   canSaveBoard,
   cityAfter,
   clearKind,
@@ -226,12 +225,6 @@ describe('victoria', () => {
     expect(d.boards[0].moves).toBe(7); // una marca peor no reemplaza a la mejor
     d.index = 1;
     expect(applyDailyWin(d, board({ moves: 5, opt: 4 }), 80)).toEqual({ next: -1, totals: { moves: 12, opt: 10 } });
-  });
-
-  it('saltar un nivel avanza sin puntos y corta la racha', () => {
-    const run = adventure({ streak: 3 });
-    applySkip(run, board());
-    expect(run).toMatchObject({ streak: 0, helpAt: 5, pendingClear: { level: 5, gain: 0, skipped: true } });
   });
 });
 

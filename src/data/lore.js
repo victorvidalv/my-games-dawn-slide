@@ -31,7 +31,7 @@ export const PEOPLES = [
     city: 3,
     trait: 'escribas de la corteza que escriben los nombres de los muertos en los árboles',
   },
-  { id: 'aluen', name: 'Aluen', city: 8, trait: 'tejedores de puentes bajo las estrellas' },
+  { id: 'aluen', name: 'Aluen', city: 5, trait: 'tejedores de puentes bajo las estrellas' },
 ];
 
 /** La frase grabada en los diez sellos; leída en orden revela por qué cerró Tri. */
@@ -50,13 +50,13 @@ export const INSCRIPTIONS = [
 
 /**
  * Retratos de la historia (public/historia/*.webp, 640×960). Se muestran en el diálogo de viaje del capítulo indicado
- * (índice de ciudad 0-9): los cuatro pueblos en su reino y Vhorn justo antes del Castillo Dorado.
+ * (tramos 1-6 de la aventura de 21 niveles): los cuatro pueblos en su reino y Vhorn justo antes del tramo final.
  */
 export const LORE_PORTRAITS = {
   1: { id: 'kogn', name: 'Los Kogn', caption: 'Navegantes de las mareas antiguas' },
   2: { id: 'sahrim', name: 'Los Sahrim', caption: 'Caravaneros que cuentan pozos como años' },
   3: { id: 'ennari', name: 'Los Ennari', caption: 'Escribas que escriben a sus muertos en la corteza' },
-  8: { id: 'aluen', name: 'Los Aluen', caption: 'Tejedores de puentes bajo las estrellas' },
-  9: { id: 'vhorn', name: 'Vhorn, el Apagador', caption: 'La sombra que apagó el Faro del Amanecer' },
+  5: { id: 'aluen', name: 'Los Aluen', caption: 'Tejedores de puentes bajo las estrellas' },
+  6: { id: 'vhorn', name: 'Vhorn, el Apagador', caption: 'La sombra que apagó el Faro del Amanecer' },
 };
 export const lorePortraitSrc = (id) => `historia/${id}.webp`;

@@ -5,7 +5,8 @@ import { buildAdventureLevel } from './build-adventure.js';
 /* Prepara el tablero de aventura en un Web Worker (level-worker.js) para no bloquear la animación en curso.
    Si el navegador no tiene workers o el hilo falla, se prepara aquí mismo, como antes. */
 let worker = null,
-  seq = 0;
+  seq = 0,
+  banksSent = null;
 const waiting = new Map();
 const failAll = () => {
   waiting.forEach((w) => w.reject(new Error('level worker')));
@@ -26,6 +27,7 @@ function getWorker() {
       e.preventDefault?.();
       worker.terminate();
       worker = false;
+      banksSent = null;
       failAll();
     };
   } catch {
@@ -44,11 +46,17 @@ async function buildHere(run, tips) {
   const d = run.daily;
   return d ? buildDaily(challengeById(d.id), d.day, banks, d.index) : buildAdventureLevel(run, banks);
 }
+/** Manda los bancos al hilo una sola vez (los mensajes llegan en orden: los tableros pedidos después ya los tienen). */
+const sendBanks = (w) =>
+  (banksSent ||= loadBanks().then(({ levelBank, specialBank }) => {
+    w.postMessage({ banks: { levels: levelBank.ratings, special: specialBank } });
+  }));
 /** Igual que buildAdventureLevel, pero sin bloquear el hilo principal. */
 export async function buildLevelAsync(run, tips = {}) {
   const w = typeof Worker !== 'undefined' && getWorker();
   if (w) {
     try {
+      await sendBanks(w);
       const id = ++seq,
         msg = { id, run: JSON.parse(JSON.stringify(run)), tips: JSON.parse(JSON.stringify(tips)) };
       return await new Promise((resolve, reject) => {

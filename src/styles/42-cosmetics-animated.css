@@ -36,6 +36,53 @@
   box-shadow: 0 0 10px #ffb84a99;
 }
 
+/* Miniaturas de la tienda: los tableros animados llevan su anillo en movimiento (también en modo ligero) */
+.ach-shop-card
+  .sw-board:is(
+    [data-board='celestial'],
+    [data-board='obsidian'],
+    [data-board='crimson'],
+    [data-board='tide'],
+    [data-board='sakura'],
+    [data-board='dawnfire']
+  )::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 4px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(from var(--spin), #0000 0 60%, var(--ring, #fff6d6) 75%, #0000 90%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.ach-shop-card .sw-board[data-board='celestial'] {
+  --ring: #ffe9ad;
+}
+.ach-shop-card .sw-board[data-board='obsidian'] {
+  --ring: #d8b4fe;
+}
+.ach-shop-card .sw-board[data-board='crimson'] {
+  --ring: #ffb04a;
+}
+.ach-shop-card .sw-board[data-board='tide'] {
+  --ring: #e6f8ff;
+}
+.ach-shop-card .sw-board[data-board='sakura'] {
+  --ring: #ffd1e1;
+}
+.ach-shop-card .sw-board[data-board='dawnfire'] {
+  --ring: #ffcf5a;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ach-shop-card .sw-board::after {
+    animation: spin-ring 3.2s linear infinite;
+  }
+}
+
 /* Marco en Aventura */
 body:not(.survival-run, .daily-run)[data-board='tide'] .frame {
   background:
@@ -120,19 +167,22 @@ body:not(.survival-run, .daily-run)[data-board='dawnfire'] .frame:is([data-rot='
 @media (prefers-reduced-motion: no-preference) {
   html:not(.lite)
     body:not(.survival-run, .daily-run)[data-board='tide']
-    .frame:is([data-rot='0'], [data-rot=''])::after {
+    .frame:is([data-rot='0'], [data-rot=''])::after,
+  body[data-board='tide'] .look-mini::after {
     animation:
       spin-ring 9s linear infinite,
       tide-drift 6s linear infinite;
   }
   html:not(.lite)
     body:not(.survival-run, .daily-run)[data-board='sakura']
-    .frame:is([data-rot='0'], [data-rot=''])::after {
+    .frame:is([data-rot='0'], [data-rot=''])::after,
+  body[data-board='sakura'] .look-mini::after {
     animation: petals-fall 9s linear infinite;
   }
   html:not(.lite)
     body:not(.survival-run, .daily-run)[data-board='dawnfire']
-    .frame:is([data-rot='0'], [data-rot=''])::after {
+    .frame:is([data-rot='0'], [data-rot=''])::after,
+  body[data-board='dawnfire'] .look-mini::after {
     animation: spin-ring 7s linear infinite;
   }
 }
@@ -394,30 +444,46 @@ body:not(.survival-run, .daily-run)[data-board='dawnfire'] .frame:is([data-rot='
 
 /* Animaciones de fichas y llaves (también en las miniaturas de la tienda) */
 @media (prefers-reduced-motion: no-preference) {
-  html:not(.lite) [data-pieces='frostedge'] .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+  :is(
+      html:not(.lite) [data-pieces='frostedge'],
+      [data-pieces='frostedge'] .look-mini,
+      .sw-real[data-pieces='frostedge']
+    )
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::after {
     animation: spin-ring 4.5s linear infinite;
   }
-  html:not(.lite) [data-pieces='neon'] .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+  :is(html:not(.lite) [data-pieces='neon'], [data-pieces='neon'] .look-mini, .sw-real[data-pieces='neon'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::after {
     animation: spin-ring 3s linear infinite;
   }
-  html:not(.lite) [data-pieces='ember'] .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+  :is(html:not(.lite) [data-pieces='ember'], [data-pieces='ember'] .look-mini, .sw-real[data-pieces='ember'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::after {
     animation:
       spin-ring 2.4s linear infinite,
       ember-flicker 1.3s ease-in-out infinite alternate;
   }
-  html:not(.lite) [data-pieces='ember'] .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::before {
+  :is(html:not(.lite) [data-pieces='ember'], [data-pieces='ember'] .look-mini, .sw-real[data-pieces='ember'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::before {
     animation: ember-rise 2.6s linear infinite;
   }
-  html:not(.lite) [data-key='phoenix'] .piece.red .face::before {
+  :is(html:not(.lite) [data-key='phoenix'], [data-key='phoenix'] .look-mini, .sw-real[data-key='phoenix'])
+    .piece.red
+    .face::before {
     animation: spin-ring 2.6s linear infinite;
   }
-  html:not(.lite) [data-key='phoenix'] .piece.red {
+  :is(html:not(.lite) [data-key='phoenix'], [data-key='phoenix'] .look-mini, .sw-real[data-key='phoenix']) .piece.red {
     animation: phoenix-glow 1.6s ease-in-out infinite alternate;
   }
-  html:not(.lite) [data-key='eclipse'] .piece.red .face::before {
+  :is(html:not(.lite) [data-key='eclipse'], [data-key='eclipse'] .look-mini, .sw-real[data-key='eclipse'])
+    .piece.red
+    .face::before {
     animation: spin-ring 6s linear infinite;
   }
-  html:not(.lite) [data-key='eclipse'] .piece.red {
+  :is(html:not(.lite) [data-key='eclipse'], [data-key='eclipse'] .look-mini, .sw-real[data-key='eclipse']) .piece.red {
     animation: eclipse-glow 3s ease-in-out infinite;
   }
 }

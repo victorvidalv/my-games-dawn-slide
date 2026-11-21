@@ -81,7 +81,9 @@ describe('mundo e historia: Thyes, año 4133', () => {
       const people = PEOPLES.find((x) => x.id === p.id);
       if (people) expect(Number(city)).toBe(people.city);
     }
-    expect(LORE_PORTRAITS[9].id).toBe('vhorn');
+    expect(LORE_PORTRAITS[6].id).toBe('vhorn');
+    // todos salen en un tramo que existe en la aventura de 21 niveles (el diálogo de cartas va de 1 a 6)
+    for (const city of Object.keys(LORE_PORTRAITS)) expect(Number(city)).toBeLessThanOrEqual(6);
   });
 
   it('en el tutorial de cada pieza, cada héroe se queja o desafía a Vhorn; Vhorn habla en los últimos tramos', () => {

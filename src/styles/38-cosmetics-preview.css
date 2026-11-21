@@ -896,17 +896,20 @@ body:not(.survival-run, .daily-run)[data-board='crimson'] .frame:is([data-rot='0
 @media (prefers-reduced-motion: no-preference) {
   html:not(.lite)
     body:not(.survival-run, .daily-run)[data-board='celestial']
-    .frame:is([data-rot='0'], [data-rot=''])::after {
+    .frame:is([data-rot='0'], [data-rot=''])::after,
+  body[data-board='celestial'] .look-mini::after {
     animation: ring-twinkle 2.6s ease-in-out infinite alternate;
   }
   html:not(.lite)
     body:not(.survival-run, .daily-run)[data-board='obsidian']
-    .frame:is([data-rot='0'], [data-rot=''])::after {
+    .frame:is([data-rot='0'], [data-rot=''])::after,
+  body[data-board='obsidian'] .look-mini::after {
     animation: ring-pulse 3.2s ease-in-out infinite;
   }
   html:not(.lite)
     body:not(.survival-run, .daily-run)[data-board='crimson']
-    .frame:is([data-rot='0'], [data-rot=''])::after {
+    .frame:is([data-rot='0'], [data-rot=''])::after,
+  body[data-board='crimson'] .look-mini::after {
     animation: ring-ember 1.9s ease-in-out infinite alternate;
   }
 }
@@ -962,11 +965,6 @@ body:not(.survival-run, .daily-run)[data-board='crimson'] .frame:is([data-rot='0
   box-shadow:
     inset 0 0 0 6px #0000,
     inset 0 0 0 8px #ffffff55;
-}
-
-html.lite .ach-shop-card.r-legendary::after,
-html.lite .ach-shop-card .sw::before {
-  animation: none !important;
 }
 
 /* En las tarjetas, «Animado» va bajo la rareza para que no choquen en pantallas angostas */

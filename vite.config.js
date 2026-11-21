@@ -54,12 +54,15 @@ export default defineConfig({
       registerType: 'prompt',
       injectRegister: false,
       manifestFilename: 'manifest.webmanifest',
-      injectManifest: { globPatterns: ['**/*.{js,css,html,webp,png,gif,webmanifest}'] },
+      // La guía (guia/) es un sitio aparte: sus páginas e imágenes no se precachean para el juego (~1 MB menos al instalar).
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,webp,png,gif,webmanifest}'],
+        globIgnores: ['guia/**', 'en/**', 'zh/**', 'melodies.html'],
+      },
       manifest: {
         name: 'DAWNSLIDE',
         short_name: 'DAWNSLIDE',
-        description:
-          'Open the road across the seven realms of Tri. A block puzzle, three heroes and 21 levels.',
+        description: 'Open the road across the seven realms of Tri. A block puzzle, three heroes and 21 levels.',
         lang: 'en',
         start_url: './',
         scope: './',

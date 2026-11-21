@@ -117,7 +117,11 @@
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
       linear-gradient(116deg, #fff0 0 14%, #ffffff66 14.5% 26%, #fff0 26.5% 33%, #ffffff38 33.5% 38%, #fff0 38.5%),
-      linear-gradient(180deg, color-mix(in oklab, var(--a) 78%, #ffffff) 0 48%, color-mix(in oklab, var(--b) 82%, #c9f6ff) 100%);
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 78%, #ffffff) 0 48%,
+        color-mix(in oklab, var(--b) 82%, #c9f6ff) 100%
+      );
     box-shadow:
       0 3px 0 #120e14,
       0 6px 12px color-mix(in oklab, var(--a) 30%, #00000066),
@@ -327,7 +331,11 @@
     background:
       repeating-linear-gradient(60deg, color-mix(in oklab, var(--b) 28%, #0000) 0 1.5px, #0000 1.5px 10px),
       repeating-linear-gradient(-60deg, color-mix(in oklab, var(--b) 28%, #0000) 0 1.5px, #0000 1.5px 10px),
-      linear-gradient(180deg, color-mix(in oklab, var(--a) 30%, #fff4d8) 0 46%, color-mix(in oklab, var(--a) 48%, #e4cc9a) 100%);
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 30%, #fff4d8) 0 46%,
+        color-mix(in oklab, var(--a) 48%, #e4cc9a) 100%
+      );
     box-shadow:
       0 3px 0 #120e14,
       0 6px 12px color-mix(in oklab, var(--a) 32%, #00000066),
@@ -764,7 +772,15 @@
 @scope ([data-key='crystal']) {
   .piece.red .face {
     background:
-      linear-gradient(116deg, #ffffffee 0 13%, #fff0 13.5% 40%, #ffffff99 40.5% 47%, #fff0 47.5% 68%, #ffffff55 68.5% 72%, #fff0 72.5%),
+      linear-gradient(
+        116deg,
+        #ffffffee 0 13%,
+        #fff0 13.5% 40%,
+        #ffffff99 40.5% 47%,
+        #fff0 47.5% 68%,
+        #ffffff55 68.5% 72%,
+        #fff0 72.5%
+      ),
       linear-gradient(90deg, #ff99b866, #ffe48a66 25%, #8affd266 50%, #7ad8ff66 75%, #c89aff66),
       linear-gradient(160deg, #ffffff, #b4ecff 50%, #5cb8e6);
     box-shadow:
@@ -809,8 +825,7 @@
     background:
       linear-gradient(118deg, #ffffff55 0 9%, #fff0 9.5% 46%, #ffffff26 46.5% 51%, #fff0 51.5%),
       repeating-linear-gradient(128deg, #0000 0 9px, #c47cffaa 9px 10.5px, #0000 10.5px 22px),
-      radial-gradient(ellipse at 72% 80%, #ff4d8877, #0000 58%),
-      linear-gradient(160deg, #3c2658, #140c24 58%, #07040d);
+      radial-gradient(ellipse at 72% 80%, #ff4d8877, #0000 58%), linear-gradient(160deg, #3c2658, #140c24 58%, #07040d);
     box-shadow:
       0 4px 0 #08040e,
       0 0 20px #b87aff99,
@@ -855,8 +870,7 @@
       radial-gradient(circle at 88% 22%, #ffe9ad 0 1.3px, #0000 2px),
       radial-gradient(circle at 46% 86%, #fff 0 0.9px, #0000 1.5px),
       radial-gradient(ellipse at 72% 28%, #ff7ad077, #0000 50%),
-      radial-gradient(ellipse at 24% 42%, #5ed8ff66, #0000 55%),
-      linear-gradient(160deg, #6e46e0, #2a1778 55%, #0f0730);
+      radial-gradient(ellipse at 24% 42%, #5ed8ff66, #0000 55%), linear-gradient(160deg, #6e46e0, #2a1778 55%, #0f0730);
     box-shadow:
       0 4px 0 #0a061c,
       0 0 20px #9c7cffaa,
@@ -982,9 +996,10 @@
     animation: none !important;
   }
 }
-html.lite :is([data-pieces], [data-key]) .piece .face::before,
-html.lite :is([data-pieces], [data-key]) .piece .face::after,
-html.lite :is([data-pieces], [data-key]) .piece.red {
+/* En modo ligero se paran en el tablero, pero no en la tienda (miniaturas y vista previa): ahí se ve lo que se compra */
+html.lite :is([data-pieces], [data-key]) .piece:not(:is(.sw-real, .look-mini) .piece) .face::before,
+html.lite :is([data-pieces], [data-key]) .piece:not(:is(.sw-real, .look-mini) .piece) .face::after,
+html.lite :is([data-pieces], [data-key]) .piece.red:not(:is(.sw-real, .look-mini) .piece) {
   animation: none !important;
 }
 

@@ -12,13 +12,11 @@ import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
 import { RELICS } from '../game/relics.js';
 import { fateBlocks } from '../game/fate.js';
-import { preloadAwakening } from './power-art.js';
 import { numLocale } from '../i18n.js';
 const HERO_POWER_TAG = { lia: '+ turnos', jean: 'Rebobinar', van: 'Ver destino' };
 export function syncHero(id = S.run?.hero) {
   const h = heroOf(id);
   document.documentElement.style.setProperty('--hero-color', h.color);
-  if (h.id !== 'lia' && !matchMedia('(prefers-reduced-motion: reduce)').matches) preloadAwakening(h.id).catch(() => {});
 }
 export function chooseHero(start, mode) {
   return new Promise((resolve) => {

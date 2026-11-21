@@ -48,8 +48,6 @@ const undoStackOf = (p) => (Array.isArray(p.undoStack) ? p.undoStack : Array.isA
 /** Deshacer gastados en este tablero (los guardados antiguos solo sabían si se había usado). */
 const undoCountOf = (p) => (Number.isInteger(p.undoCount) ? p.undoCount : p.undoUsedBoard ? UNDO_PER_BOARD : 0);
 
-export const SURVIVAL_LEVELS = routes['150'].length;
-export const SURVIVAL_TURNS = routes['150'].reduce((sum, level) => sum + level.opt, 0);
 const ROUTE_VERSION = 2;
 
 export const routeById = (id) => CHALLENGE_ROUTES.find((route) => route.id === String(id)) || CHALLENGE_ROUTES[0];

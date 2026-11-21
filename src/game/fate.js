@@ -324,7 +324,6 @@ export function deckOf(run) {
 
 /** Cartas elegidas (objetos), en el orden en que se tomaron. */
 export const fateCards = (run) => (run?.fate || []).map(fateById).filter(Boolean);
-export const hasFate = (run, id) => !!run?.fate?.includes(id);
 
 /**
  * Las cartas que ofrece el cierre del tramo `city` (1..6 = tras los niveles 3, 6, 9, 12, 15, 18): 3 cartas.

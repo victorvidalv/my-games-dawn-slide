@@ -38,7 +38,6 @@ import {
   advanceRun,
   applyAdventureWin,
   applyDailyWin,
-  applySkip,
   canSaveBoard,
   clearKind,
   dailyAttempt,
@@ -52,7 +51,7 @@ import {
   updateBest,
 } from './run-logic.js';
 import { S, closeRun, gainNow, haltBoard, heroOf, persist, rkey, setBoard, setBusy, setRun, store } from '../state.js';
-import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
+import { playReviveEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { showDailyResult } from '../ui/daily.js';
 import { countStat, markStat, pauseAchievementToasts, raiseStat, updateStats } from '../ui/achievements.js';
@@ -584,18 +583,6 @@ export function fail(why) {
     default:
       triggerGameOver(why);
   }
-}
-/** Saltar nivel (tienda): sin puntos, sin racha; avanza como si se hubiera superado. */
-export function skipLevel() {
-  if (!S.G || S.G.done) return;
-  haltBoard();
-  lockBoard();
-  applySkip(S.run, S.G);
-  recordBest();
-  saveRun();
-  setTensionFx(0, false);
-  setMessage('Nivel saltado. Sin puntos.');
-  playSkipEffect().then(() => advanceClear());
 }
 function triggerGameOver(why) {
   haltBoard();
