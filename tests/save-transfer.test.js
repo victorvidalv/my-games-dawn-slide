@@ -11,7 +11,6 @@ const run = {
   level: 40,
   hero: 'van',
   start: 75,
-  route: 'brave',
   seed: 2147483647,
   hints: 17,
   score: 123456,
@@ -20,7 +19,9 @@ const run = {
   helpAt: 39,
   streak: 4,
   revivesBought: 1,
-  bossRetry: { level: 40, used: 1 },
+  fate: ['brillo', 'juramento', 'botin'],
+  fatePicked: 3,
+  fateCityPaid: 3,
 };
 const snapshot = {
   paths: {
@@ -72,7 +73,7 @@ const snapshot = {
   run,
 };
 
-describe('enlaces de transferencia v3', () => {
+describe('enlaces de transferencia v4 (con las cartas del destino)', () => {
   it.each(['sun', 'purse', 'lantern'])('transfiere la reliquia %s con las pistas restantes', (relic) => {
     const link = exportSaveLink({ ...snapshot, run: { ...run, relic, hints: 4 } });
     expect(new TextEncoder().encode(link).length).toBeLessThan(QR_MAX_BYTES);
@@ -108,12 +109,19 @@ describe('enlaces de transferencia v3', () => {
       run: null,
       daily: { last: -1 },
     });
-    const crossing = { ...run, level: 10, firstLevel: 1, helpAt: 3, pendingClear: { level: 10, routeChosen: true } };
-    expect(readSaveLink(exportSaveLink({ run: crossing }), now).run).toMatchObject({
+    const crossing = {
+      ...run,
       level: 10,
-      route: 'brave',
-      pendingClear: { level: 10, routeChosen: true },
-    });
+      firstLevel: 1,
+      helpAt: 3,
+      fate: [],
+      fatePicked: 0,
+      fateCityPaid: 0,
+      pendingClear: { level: 10 },
+    };
+    const back = readSaveLink(exportSaveLink({ run: crossing }), now).run;
+    expect(back).toMatchObject({ level: 10, fate: [], fatePicked: 0, pendingClear: { level: 10 } });
+    expect(back.route).toBeUndefined();
     expect(readSaveLink(exportSaveLink({ run: { ...run, daily: {} } }), now).run).toBeNull();
   });
 

@@ -84,34 +84,7 @@ body::before {
   stroke: #ffcf6b;
   filter: drop-shadow(0 0 4px #ffcf6b);
 }
-.route-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.route-option {
-  text-align: left;
-  padding: 13px;
-  white-space: normal;
-  border: 2px solid transparent;
-  background: #ffffff0d;
-  box-shadow: none;
-}
-.route-option[aria-pressed='true'] {
-  border-color: #ffcf6b;
-  background: #ffcf6b16;
-}
-.route-option strong,
-.route-option small {
-  display: block;
-}
-.route-option small {
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.5;
-  margin-top: 6px;
-  color: #d0d8ed;
-}
+
 .route-explain {
   min-height: 48px;
   font-size: 13px !important;
@@ -151,9 +124,6 @@ body::before {
   }
   .travel-card p {
     margin: 6px 0;
-  }
-  .route-option {
-    padding: 9px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

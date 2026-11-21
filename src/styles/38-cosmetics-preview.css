@@ -835,12 +835,8 @@
 }
 
 /* ======================== Cosméticos animados en el tablero ======================== */
-/* Un anillo (máscara: solo el marco, no el tablero) con su propio brillo. Fuera en Desafío, Diario, jefes y tableros girados. */
-body:not(.survival-run, .daily-run, .boss-fight):is(
-    [data-board='celestial'],
-    [data-board='obsidian'],
-    [data-board='crimson']
-  )
+/* Un anillo (máscara: solo el marco, no el tablero) con su propio brillo. Fuera en Desafío, Diario y tableros girados. */
+body:not(.survival-run, .daily-run):is([data-board='celestial'], [data-board='obsidian'], [data-board='crimson'])
   .frame:is([data-rot='0'], [data-rot=''])::after {
   content: '';
   position: absolute;
@@ -867,8 +863,7 @@ body:not(.survival-run, .daily-run)[data-board='celestial'] .frame {
     linear-gradient(155deg, #2d3e61, #192440 55%, #0f172b);
 }
 
-body:not(.survival-run, .daily-run, .boss-fight)[data-board='celestial']
-  .frame:is([data-rot='0'], [data-rot=''])::after {
+body:not(.survival-run, .daily-run)[data-board='celestial'] .frame:is([data-rot='0'], [data-rot=''])::after {
   background:
     radial-gradient(circle at 20% 4%, #fff 0 1.4px, #0000 2px),
     radial-gradient(circle at 50% 97%, #ffe9ad 0 1.6px, #0000 2.2px),
@@ -880,8 +875,7 @@ body:not(.survival-run, .daily-run, .boss-fight)[data-board='celestial']
 }
 
 /* Obsidiana real (épica): runas violetas que laten */
-body:not(.survival-run, .daily-run, .boss-fight)[data-board='obsidian']
-  .frame:is([data-rot='0'], [data-rot=''])::after {
+body:not(.survival-run, .daily-run)[data-board='obsidian'] .frame:is([data-rot='0'], [data-rot=''])::after {
   background:
     repeating-linear-gradient(60deg, #d8b4fe55 0 1.5px, #0000 1.5px 11px),
     repeating-linear-gradient(-60deg, #c084fc33 0 1px, #0000 1px 13px),
@@ -889,7 +883,7 @@ body:not(.survival-run, .daily-run, .boss-fight)[data-board='obsidian']
 }
 
 /* Forja carmesí (épica): brasas que respiran en el metal */
-body:not(.survival-run, .daily-run, .boss-fight)[data-board='crimson'] .frame:is([data-rot='0'], [data-rot=''])::after {
+body:not(.survival-run, .daily-run)[data-board='crimson'] .frame:is([data-rot='0'], [data-rot=''])::after {
   background:
     radial-gradient(circle at 10% 96%, #ffb04a 0 2px, #0000 4px),
     radial-gradient(circle at 60% 3%, #ffd24a 0 1.5px, #0000 3px),
@@ -901,17 +895,17 @@ body:not(.survival-run, .daily-run, .boss-fight)[data-board='crimson'] .frame:is
 
 @media (prefers-reduced-motion: no-preference) {
   html:not(.lite)
-    body:not(.survival-run, .daily-run, .boss-fight)[data-board='celestial']
+    body:not(.survival-run, .daily-run)[data-board='celestial']
     .frame:is([data-rot='0'], [data-rot=''])::after {
     animation: ring-twinkle 2.6s ease-in-out infinite alternate;
   }
   html:not(.lite)
-    body:not(.survival-run, .daily-run, .boss-fight)[data-board='obsidian']
+    body:not(.survival-run, .daily-run)[data-board='obsidian']
     .frame:is([data-rot='0'], [data-rot=''])::after {
     animation: ring-pulse 3.2s ease-in-out infinite;
   }
   html:not(.lite)
-    body:not(.survival-run, .daily-run, .boss-fight)[data-board='crimson']
+    body:not(.survival-run, .daily-run)[data-board='crimson']
     .frame:is([data-rot='0'], [data-rot=''])::after {
     animation: ring-ember 1.9s ease-in-out infinite alternate;
   }

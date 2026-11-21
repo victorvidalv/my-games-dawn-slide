@@ -1,7 +1,7 @@
 import { decodeBoard, mutate } from './board.js';
 import { analyze, maxDistance } from './solver.js';
 import { mulberry32 } from './rng.js';
-import { braveExtra, curve, WINDOW } from './difficulty.js';
+import { curve, WINDOW } from './difficulty.js';
 import { hash32 } from './rng.js';
 import { boardInterest, pickInteresting, INTEREST_MAX_TARGET } from './interest.js';
 
@@ -91,13 +91,12 @@ export function varyBoard(board, rating, seed, { tries = 8, changes = 3 } = {}) 
 /**
  * Elige el estado inicial de un tablero para el nivel.
  *  - adj: ajuste adaptativo (-2..+2) según la eficiencia del jugador en niveles anteriores.
- *  - brave: ruta aventurera → usa la siguiente distancia mayor disponible.
  * Entre los estados con ese mínimo NO elige al azar: toma uno de los más interesantes (pickInteresting), así ningún nivel es «despeja y sal».
  * Devuelve {pieces, pos, walls, opt} donde opt = movimientos mínimos reales del estado elegido.
  */
 export function buildLevel(
   board,
-  { rating, adj = 0, brave = false, rng = Math.random, boost = 0, withAnalysis = false, target = curve(rating).target },
+  { rating, adj = 0, rng = Math.random, withAnalysis = false, target = curve(rating).target },
 ) {
   const walls = board.walls || [];
   const an = analyze(board.pieces, board.pos, 600000, walls);
@@ -114,14 +113,8 @@ export function buildLevel(
     byDist.get(d).push(k);
   }
   const ds = [...byDist.keys()];
-  const want = Math.max(1, target + adj + boost);
-  const normal = ds.reduce((a, b) => (Math.abs(b - want) < Math.abs(a - want) ? b : a));
-  const higher = ds.filter((v) => v > normal);
-  const wantBrave = normal + braveExtra(normal); // ruta aventurera: más movimientos, el más cercano disponible
-  const opt =
-    brave && higher.length
-      ? higher.reduce((a, b) => (Math.abs(b - wantBrave) < Math.abs(a - wantBrave) ? b : a))
-      : normal;
+  const want = Math.max(1, target + adj);
+  const opt = ds.reduce((a, b) => (Math.abs(b - want) < Math.abs(a - want) ? b : a));
   // entre los estados a esa distancia se queda con uno de los que más hacen pensar (dependencias, sentidos variados, trampas)
   const { key } = pickInteresting(board.pieces, byDist.get(opt), an, walls, { rng });
   const pos = [];
@@ -131,7 +124,6 @@ export function buildLevel(
     pos,
     walls,
     opt,
-    ...(brave ? { normalOpt: normal } : {}),
     ...(withAnalysis ? { analysis: an } : {}),
   };
 }

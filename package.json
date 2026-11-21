@@ -21,7 +21,6 @@
     "simulate": "node scripts/simulate-heroes.mjs",
     "melodies:html": "node scripts/build-melodies.mjs",
     "simulate:seals": "node scripts/simulate-seals.mjs",
-    "simulate:bosses": "node scripts/simulate-bosses.mjs",
     "calibrator": "node tools/calibrator/server.mjs",
     "calibrate": "node scripts/calibrate.mjs"
   },

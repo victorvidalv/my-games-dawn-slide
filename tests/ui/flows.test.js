@@ -23,7 +23,7 @@ describe('interfaz: aventura', () => {
     expect(relics.querySelector('input:checked').value).toBe('sun');
     relics.querySelector('[value="lantern"]').click();
     app.$('heroCards').querySelector('[data-hero="jean"]').click();
-    expect(app.$('heroRouteName').textContent).toBe('Camino del Péndulo');
+    expect(app.$('heroRouteName').textContent).toBe('1 de 3 cartas por ciudad');
     expect([...relics.querySelectorAll('input:checked')].map((r) => r.value)).toEqual(['lantern']);
     app.$('heroConfirm').click();
     await until(() => shown(app, 'journey'));
@@ -32,23 +32,35 @@ describe('interfaz: aventura', () => {
     await started;
   });
 
-  it('muestra al héroe de la partida al elegir camino, incluso al cambiar de personaje', async () => {
+  it('al cerrar la ciudad muestra al héroe de la partida y reparte 3 cartas del destino; elegir una la aplica una vez', async () => {
     const app = await bootApp();
     const { HEROES } = await import('../../src/game/heroes.js');
-    const { showTravelDialog } = await import('../../src/ui/session-view.js');
+    const { fateOffer } = await import('../../src/game/fate.js');
+    const { showFateDialog } = await import('../../src/ui/fate.js');
     for (const hero of HEROES) {
-      const picked = showTravelDialog({
-        run: { pendingClear: { level: 10 } },
+      const run = { seed: 9, mode: 'c', fate: [], fatePicked: 0, pendingClear: { level: 10 } };
+      const cards = fateOffer(run, 1);
+      const chosen = [];
+      const picked = showFateDialog({
+        run,
         hero,
-        onChoose: () => {},
+        city: 1,
+        cards,
+        rewards: null,
+        onChoose: (id) => chosen.push(id),
         isActive: () => true,
       });
       await until(() => shown(app, 'travel'));
       const portrait = app.$('travelHero');
       expect(portrait.getAttribute('src')).toBe(`heroes/${hero.id}-route.webp`);
       expect(portrait.alt).toBe(hero.name);
-      app.$('routeNormal').click();
+      const buttons = [...app.$('fateOffer').querySelectorAll('.fate-card')];
+      expect(buttons.map((b) => b.dataset.card)).toEqual(cards.map((c) => c.id));
+      for (const b of buttons) expect(b.querySelector('svg.fate-art')).toBeTruthy();
+      buttons[1].click();
+      buttons[0].click(); // un segundo toque no elige otra
       await picked;
+      expect(chosen).toEqual([cards[1].id]);
     }
   });
 

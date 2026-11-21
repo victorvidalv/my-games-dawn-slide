@@ -187,21 +187,36 @@ describe('generador', () => {
 });
 
 describe('puntaje y límite de movimientos', () => {
+  it('los puntos base dependen solo de los movimientos mínimos del tablero (55 por movimiento + 50)', () => {
+    expect(baseScore(2)).toBe(160);
+    expect(baseScore(11)).toBe(655);
+    expect(baseScore(19)).toBe(1095);
+    expect(baseScore(37)).toBe(2085);
+    for (let opt = 2; opt < 37; opt++) expect(baseScore(opt + 1)).toBeGreaterThan(baseScore(opt));
+    expect(calcGain(12, 12, 0).base).toBe(baseScore(12));
+  });
   it('mínimo exacto = perfecto (+20%)', () => {
-    const g = calcGain(1, 5, 5, 0);
+    const g = calcGain(5, 5, 0);
     expect(g.eff).toBe(1);
-    expect(g.perfect).toBe(Math.round(baseScore(1) * 0.2));
+    expect(g.perfect).toBe(Math.round(baseScore(5) * 0.2));
   });
   it('al doble del mínimo no hay puntos', () => {
-    expect(calcGain(10, 10, 5, 0).pts).toBe(0);
+    expect(calcGain(10, 5, 0).pts).toBe(0);
   });
   it('la racha multiplica hasta ×1.5', () => {
-    expect(calcGain(10, 4, 4, 0).mult).toBeCloseTo(1.1);
-    expect(calcGain(10, 4, 4, 99).mult).toBeCloseTo(1.5);
+    expect(calcGain(4, 4, 0).mult).toBeCloseTo(1.1);
+    expect(calcGain(4, 4, 99).mult).toBeCloseTo(1.5);
   });
-  it('el bono del camino heroico suma ese porcentaje a los puntos', () => {
-    const base = gainFor(10, 4, 4, 0).total;
-    expect(gainFor(10, 4, 4, 0, { bonus: 0.25 }).total).toBe(base + Math.round(base * 0.25));
+  it('las reglas de las cartas cambian el bono de Perfecto, el tope de la racha y la eficiencia que la mantiene', () => {
+    expect(calcGain(4, 4, 0, { perfect: 0.35 }).perfect).toBe(Math.round(baseScore(4) * 0.35));
+    expect(calcGain(4, 4, 99, { streakCap: 7 }).mult).toBeCloseTo(1.7);
+    expect(calcGain(12, 10, 0).mult).toBe(1); // 80 % de eficiencia: sin racha normalmente
+    expect(calcGain(12, 10, 0, { streakEff: 0.8 }).mult).toBeCloseTo(1.1);
+  });
+  it('el bono (positivo o negativo) suma ese porcentaje a los puntos', () => {
+    const base = gainFor(4, 4, 0).total;
+    expect(gainFor(4, 4, 0, { bonus: 0.25 }).total).toBe(base + Math.round(base * 0.25));
+    expect(gainFor(4, 4, 0, { bonus: -0.15 }).total).toBe(base + Math.round(base * -0.15));
   });
   it('estado del contador: ok → pocos → último turno → sin turnos (ya no se puede mover)', () => {
     expect(moveStatus(3, 10)).toBe('ok');

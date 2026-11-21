@@ -150,7 +150,7 @@ export const REWARDS = {
     { id: 's0', name: 'Contrarreloj', price: 50, rarity: 'rare' },
     { id: 'z8', name: 'Un puente entre estrellas', price: 55, rarity: 'rare' },
     { id: 's1', name: 'Amanecer de acero', price: 80, rarity: 'epic' },
-    { id: 'boss', name: 'El guardián del umbral', price: 85, rarity: 'epic' },
+    { id: 'fate', name: 'Marcha del destino', price: 85, rarity: 'epic' },
     { id: 'z9', name: 'El regreso del amanecer', price: 95, rarity: 'epic' },
     { id: 's2', name: 'Cumbre astral', price: 110, rarity: 'epic' },
   ],
@@ -212,7 +212,7 @@ export const COUNTERS = [
   'mini5',
   'iceRock',
   'locks',
-  'bosses',
+  'fateCards',
   'cleanCity',
   'boardsSolved',
   'heavyBoards',
@@ -280,7 +280,6 @@ export function boardStats(board, run = {}) {
   if (board.walls?.length || board.pieces?.some((p) => p.kind === 'ice')) out.push('iceRock');
   if (board.pieces?.some((p) => p.kind === 'gate')) out.push('locks');
   if (board.pieces?.some((p) => p.kind === 'heavy')) out.push('heavyBoards');
-  if (board.plan?.boss) out.push('bosses');
   if (n % 10 === 0 && (run.firstLevel ?? Infinity) <= n - 9 && (run.helpAt || 0) < n - 9) out.push('cleanCity');
   return out;
 }
@@ -520,13 +519,13 @@ export const ACHIEVEMENTS = [
     goal: 5,
   },
   {
-    id: 'boss1',
+    id: 'fate1',
     group: 'mastery',
     tier: 'bronze',
     points: 15,
-    name: 'Primer guardián',
-    desc: 'Vence a tu primer jefe',
-    stat: 'bosses',
+    name: 'Primera carta',
+    desc: 'Elige tu primera carta del destino',
+    stat: 'fateCards',
     goal: 1,
   },
   {
@@ -620,24 +619,24 @@ export const ACHIEVEMENTS = [
     goal: 25,
   },
   {
-    id: 'bosses3',
+    id: 'fate9',
     group: 'mastery',
     tier: 'silver',
     points: 30,
-    name: 'Cazador novato',
-    desc: 'Vence a 3 jefes',
-    stat: 'bosses',
-    goal: 3,
+    name: 'Mano completa',
+    desc: 'Elige 9 cartas del destino',
+    stat: 'fateCards',
+    goal: 9,
   },
   {
-    id: 'bosses',
+    id: 'fate27',
     group: 'mastery',
     tier: 'silver',
     points: 45,
-    name: 'Cazador de guardianes',
-    desc: 'Vence a 5 jefes',
-    stat: 'bosses',
-    goal: 5,
+    name: 'Lector del destino',
+    desc: 'Elige 27 cartas del destino',
+    stat: 'fateCards',
+    goal: 27,
   },
   {
     id: 'clean',
@@ -680,14 +679,14 @@ export const ACHIEVEMENTS = [
     goal: 75,
   },
   {
-    id: 'bosses15',
+    id: 'fate81',
     group: 'mastery',
     tier: 'gold',
     points: 95,
-    name: 'Azote del umbral',
-    desc: 'Vence a 15 jefes',
-    stat: 'bosses',
-    goal: 15,
+    name: 'Tejedor del destino',
+    desc: 'Elige 81 cartas del destino',
+    stat: 'fateCards',
+    goal: 81,
   },
   {
     id: 'clean5',

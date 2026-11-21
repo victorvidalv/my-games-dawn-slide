@@ -10,6 +10,7 @@ import { zoneIdx } from '../data/zones.js';
 import { clearRewards, snapshotRescue } from './heroes.js';
 import { relicFor } from './relics.js';
 import { canPaidRevive, hasRevive, shopBoardKey, useFreeRetry, useRevive } from './shop.js';
+import { fateDeck, keepsStreak } from './fate.js';
 
 const copyRows = (rows) => rows.map((p) => p.slice());
 
@@ -36,24 +37,45 @@ export function newAdventureRun({ seed, start, mode = 'c', hero, from, hints, re
     streak: 0,
     recBroken: false,
     firstLevel: from,
+    fateDeck: fateDeck(seed),
+    fate: [],
+    fatePicked: Math.min(9, Math.floor((from - 1) / 10)), // al empezar más adelante, las ciudades saltadas no ofrecen carta
   };
 }
 
-/** Partida guardada lista para continuar: rellena los campos que faltan en guardados antiguos. */
-export const restoreRun = (saved) => ({
-  start: 1,
-  mode: 'c',
-  hero: 'lia',
-  lifeUsed: false,
-  revive: 0,
-  revivesBought: 0,
-  undoUsedAt: 0,
-  undoUsedLevel: 0,
-  undoUsedCount: 0,
-  vanAwardedAt: 0,
-  recBroken: false,
-  ...saved,
-});
+/**
+ * Partida guardada lista para continuar: rellena los campos que faltan en guardados antiguos. Las partidas de antes de
+ * las cartas del destino empiezan a recibirlas en la próxima ciudad que cierren; los campos del camino heroico y de los
+ * jefes (que ya no existen) se descartan.
+ */
+export function restoreRun(saved) {
+  const run = {
+    start: 1,
+    mode: 'c',
+    hero: 'lia',
+    lifeUsed: false,
+    revive: 0,
+    revivesBought: 0,
+    undoUsedAt: 0,
+    undoUsedLevel: 0,
+    undoUsedCount: 0,
+    vanAwardedAt: 0,
+    recBroken: false,
+    ...saved,
+  };
+  for (const k of ['route', 'routeZone', 'bossSeen', 'bossRetry', 'heroicHintLevel', 'heroicHintCount', 'enterPending'])
+    delete run[k];
+  if (run.pendingClear) delete run.pendingClear.routeChosen;
+  if (run.board) {
+    delete run.board.timeLimit;
+    delete run.board.timeLeft;
+  }
+  if (!run.daily && !run.survival) {
+    run.fate = Array.isArray(run.fate) ? run.fate : [];
+    run.fatePicked ??= Math.min(9, Math.floor(((run.pendingClear?.level ?? run.level) - 1) / 10));
+  }
+  return run;
+}
 
 /** Partida de reto diario: sin héroe, sin vidas y con la ruta normal. */
 export function newDailyRun({ challenge, day, index, boards, attempt }) {
@@ -76,8 +98,6 @@ export function newDailyRun({ challenge, day, index, boards, attempt }) {
     undoUsedCount: 0,
     vanAwardedAt: 0,
     recBroken: false,
-    route: 'normal',
-    routeZone: zoneIdx(challenge.level),
   };
 }
 
@@ -137,8 +157,6 @@ export function snapshotBoard(G) {
     opt: G.opt,
     limit: G.limit,
     bought: G.bought || 0,
-    timeLimit: G.timeLimit || 0,
-    timeLeft: Math.ceil(G.timeLeft || 0),
     tutorial: G.tutorial || null,
     moves: G.moves,
     hist: copyRows(G.hist),
@@ -154,47 +172,17 @@ export function storeBoard(run, G) {
   run.board = snapshotBoard(G);
 }
 
-/** El jefe se presenta solo la primera vez que se entra a su tablero, sin movimientos y sin rescates pendientes. */
-export const needsBossIntro = (run, G) =>
-  !!(G.plan?.boss && !G.tutorial && G.moves === 0 && run.bossSeen !== G.n && !run.rescue && !run.pendingRevive);
-
-/** Antes del nivel 11 no se puede ir por la ruta heroica (salvo que ya se eligiera). Devuelve si cambió algo. */
-export function normalizeRoute(run) {
-  let changed = false;
-  if (run.enterPending) {
-    delete run.enterPending;
-    Object.assign(run, { route: 'normal', routeZone: 0, travelFrom: 0 });
-    changed = true;
-  }
-  if (run.level <= 10 && !run.pendingClear?.routeChosen && run.route !== 'normal') {
-    run.route = 'normal';
-    run.routeZone = 0;
-    changed = true;
-  }
-  return changed;
-}
-
 /** Ciudad (0-9) cuyo capítulo se abre al superar el nivel `level`. */
 export const cityAfter = (level) => Math.min(9, Math.floor(level / 10));
-
-/** El viaje entre ciudades solo se ofrece tras los niveles 10, 20… 90 cuando aún no se eligió la ruta. */
-export const needsTravelChoice = (run) =>
-  !!run?.pendingClear && run.pendingClear.level % 10 === 0 && run.pendingClear.level < 100;
-
-/** Aplica la ruta elegida en el viaje ('normal' o 'brave') y marca el capítulo como visto. */
-export function chooseRoute(run, choice, city) {
-  Object.assign(run, { route: choice, routeZone: city, storyChapterSeen: city, storySeen: city * 10 + 1 });
-  if (run.pendingClear) run.pendingClear.routeChosen = true;
-}
 
 /** Suma un tablero superado a la aventura: puntos, racha, dificultad adaptativa, pistas y avance pendiente. */
 export function applyAdventureWin(run, G, gain) {
   run.score += gain.total;
   run.cleared = (run.cleared || 0) + 1;
-  run.streak = gain.eff >= 0.9 ? (run.streak || 0) + 1 : 0;
+  run.streak = keepsStreak(run, gain.eff) ? (run.streak || 0) + 1 : 0;
   run.adj = Math.max(-2, Math.min(run.level < 10 ? 1 : 2, run.adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
   clearRewards(run, G.n);
-  run.pendingClear = { level: G.n, gain: gain.total, moves: G.moves, opt: G.opt, routeChosen: false };
+  run.pendingClear = { level: G.n, gain: gain.total, moves: G.moves, opt: G.opt };
 }
 
 /**
@@ -216,7 +204,7 @@ export function applyDailyWin(daily, G, points) {
 export function applySkip(run, G) {
   run.streak = 0;
   run.helpAt = G.n;
-  run.pendingClear = { level: G.n, gain: 0, moves: G.moves, opt: G.opt, routeChosen: false, skipped: true };
+  run.pendingClear = { level: G.n, gain: 0, moves: G.moves, opt: G.opt, skipped: true };
 }
 
 /**
@@ -230,7 +218,7 @@ export function resolveFail(run, G, why) {
     run.rescue = { ...snapshotRescue(G), kind: 'daily' };
     return 'daily';
   }
-  if (useFreeRetry(run, G, why)) return 'retry';
+  if (useFreeRetry(run, G)) return 'retry';
   if (hasRevive(run)) {
     useRevive(run, G);
     return 'revive';
@@ -242,7 +230,7 @@ export function resolveFail(run, G, why) {
   return 'gameover';
 }
 
-/** Tras pagar el renacer el tablero vuelve a su inicio, sin los turnos comprados y con el reloj completo. */
+/** Tras pagar el renacer el tablero vuelve a su inicio, sin los turnos comprados. */
 export function resetBoardForRevive(G) {
   Object.assign(G, {
     pos: G.start.slice(),
@@ -251,7 +239,6 @@ export function resetBoardForRevive(G) {
     done: false,
     limit: G.limit - (G.bought || 0),
     bought: 0,
-    timeLeft: G.timeLimit || 0,
   });
 }
 

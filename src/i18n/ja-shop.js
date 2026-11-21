@@ -4,10 +4,8 @@ export const JA_SHOP = {
   'Una compra por tablero': '1ボードにつき1回',
   'Ya compraste turnos para este tablero.': 'このボードの追加手数は購入済みです。',
   'Ya rehiciste este tablero.': 'このボードはもうやり直しました。',
-  'Los jefes no se pueden saltar.': 'ボスはスキップできません。',
   'Ya usaste el salto de esta ciudad.': 'この街のスキップは使用済みです。',
   'Un paquete por tablero': '1ボードにつき1パック',
-  'Un salto por ciudad · fuera de jefes': '1つの街で1回まで · ボスを除く',
   Maela: 'Maela',
   'El Mercader': '商人',
   'El Tasador de Runas': 'ルーン鑑定士',
@@ -110,5 +108,4 @@ export const JA_SHOP = {
   'Vuelve cuando la tentación pese más que el bolsillo.': '誘惑が財布より重くなったら、またおいで。',
   'Aún no has movido nada. ¿Qué voy a rebobinar? ¿Tu optimismo?':
     'まだ何も動かしてないじゃないか。何を巻き戻すんだい？あんたの楽観かい？',
-  'Camino de las Runas · −33 %': 'ルーンの道 · −33%',
 };

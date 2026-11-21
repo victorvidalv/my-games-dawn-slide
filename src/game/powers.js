@@ -1,38 +1,36 @@
 import { encode, N } from '../engine/board.js';
 import { byPath } from '../engine/difficulty.js';
-import { isHeroic, powerFactor } from './routes.js';
-import { isBossLevel } from './mechanics.js';
+import { fateBlocks, fatePowerShare, fatePowerUses } from './fate.js';
 import { analyze, expand } from '../engine/solver.js';
 
-/** Jean rebobina ~33 % de los movimientos hechos, mínimo 3 (o todos si lleva menos); `power` = 0,5 en el camino heroico (≈17 %, mínimo 2). */
+/** Jean rebobina ~33 % de los movimientos hechos, mínimo 3 (o todos si lleva menos). */
 export const REWIND_SHARE = 1 / 3;
 export const REWIND_MIN = 3;
 export const rewindCount = (moves, power = 1) =>
   Math.min(moves, Math.max(Math.round(REWIND_MIN * power), Math.round(moves * REWIND_SHARE * power)));
-/** Destino de Juth: ejecuta ~25 % de los pasos que faltan (en su camino heroico, entero), con un mínimo de 1; nunca el último (siempre deja uno al jugador). */
+/** Destino de Juth: ejecuta ~25 % de los pasos que faltan, con un mínimo de 1; nunca el último (siempre deja uno al jugador). */
 export const DESTINY_SHARE = 0.25;
 export const JUTH_MIN_REMAINING = 3; // usable solo si quedan al menos 4 pasos (con menos no hace nada)
 export const destinyCount = (left, share = DESTINY_SHARE) =>
   left > JUTH_MIN_REMAINING ? Math.min(left - 1, Math.max(1, Math.round(left * share))) : 0;
 /**
- * Parte de los tableros en los que el poder de cada héroe está listo (repartidos de forma pareja; el primer tablero y los
- * jefes siempre, y nunca dos descansos seguidos). Cada héroe tiene su camino: Juth guía en Normal (nunca descansa), Jean
- * domina Difícil y Lía, con su reserva, Experto.
+ * Parte de los tableros en los que el poder de cada héroe está listo (repartidos de forma pareja; el primer tablero siempre,
+ * y nunca dos descansos seguidos). Cada héroe tiene su camino: Juth guía en Normal (nunca descansa), Jean domina Difícil y
+ * Lía, con su reserva, Experto. `extra` = parte extra de la carta Carga.
  */
 export const POWER_READY_SHARE = {
   jean: { 1: 0.85, 50: 0.75, 75: 0.65 },
   van: { 1: 1, 50: 0.65, 75: 0.7 },
 };
-export const powerReady = (level = 1, start = 1, hero = 'jean') => {
-  const k = byPath(POWER_READY_SHARE[hero] || POWER_READY_SHARE.jean, start);
+export const powerReady = (level = 1, start = 1, hero = 'jean', extra = 0) => {
+  const k = Math.min(1, byPath(POWER_READY_SHARE[hero] || POWER_READY_SHARE.jean, start) + extra);
   return level <= 1 || Math.floor(level * k + 1e-9) > Math.floor((level - 1) * k + 1e-9);
 };
 /** En tableros largos (mínimo ≥ JEAN_LONG_BOARD) Jean puede rebobinar dos veces. */
 export const JEAN_LONG_BOARD = 14;
-/** `heroicBoss`: jefe dentro del Camino del Péndulo, donde Jean tiene un rebobinado extra. */
-export const powerUses = (hero, opt = 0, heroicBoss = false) =>
-  hero === 'jean' ? (opt >= JEAN_LONG_BOARD ? 2 : 1) + (heroicBoss ? 1 : 0) : 1;
-const runUses = (run, G) => powerUses(run?.hero, G?.opt, isHeroic(run) && isBossLevel(G?.n) && !G?.tutorial);
+/** `extra`: usos extra (carta Eco del poder en el último tablero de cada ciudad). */
+export const powerUses = (hero, opt = 0, extra = 0) => (hero === 'jean' && opt >= JEAN_LONG_BOARD ? 2 : 1) + extra;
+const runUses = (run, G) => powerUses(run?.hero, G?.opt, G?.tutorial ? 0 : fatePowerUses(run, G?.n));
 
 const plans = new WeakMap();
 /** One graph analysis per position, shared by the button and activation; respects all special pieces. */
@@ -85,21 +83,23 @@ function powerUsed(run, G) {
 
 export function powerState(run, G) {
   if (!run || !G || G.done) return { ok: false, reason: 'Sin tablero' };
+  if (fateBlocks(run, 'power')) return { ok: false, reason: 'Apagado por tu Juramento' };
   if (run.hero === 'lia') return { ok: false, reason: 'Reserva automática' };
   if (powerUsed(run, G)) return { ok: false, reason: 'Usado · próximo tablero' };
-  if (!powerReady(G.n, run.start, run.hero)) return { ok: false, reason: 'Descansa · listo en el próximo tablero' };
+  if (!powerReady(G.n, run.start, run.hero, fatePowerShare(run)))
+    return { ok: false, reason: 'Descansa · listo en el próximo tablero' };
   if (run.hero === 'jean') {
     const left = usesLeft(run, G);
     return G.hist.length
       ? {
           ok: true,
-          count: rewindCount(G.hist.length, powerFactor(run)),
+          count: rewindCount(G.hist.length),
           reason: left > 1 ? `${left} usos en este tablero` : '1 uso por tablero',
         }
       : { ok: false, reason: 'Mueve una pieza primero' };
   }
   if (run.hero !== 'van') return { ok: false, reason: 'Sin poder' };
-  const plan = destinyPlan(G, DESTINY_SHARE * powerFactor(run));
+  const plan = destinyPlan(G, DESTINY_SHARE);
   if (plan && G.limit - G.moves < plan.steps.length)
     return { ok: false, reason: `Necesitas ${plan.steps.length} turnos` };
   return plan

@@ -41,9 +41,6 @@ export const MECHANICS = {
   },
 };
 
-/** Nivel jefe al cierre de cada una de las 10 ciudades (10, 20, ..., 100). */
-export const isBossLevel = (level) => level >= 10 && level % 10 === 0;
-
 /**
  * CALENDARIO DE MECÁNICAS (1..100): lo decide el calibrador (`tools/calibrator`) y lo optimiza `npm run calibrate`
  * (src/data/calibration.json). Cada mecánica llega con su tutorial en un nivel propio, nunca dos novedades a la vez, y después vuelve
@@ -69,7 +66,7 @@ const INTRO_LEVELS = new Set(INTRO_LEVEL_LIST);
 /** Qué mecánicas contiene una familia (en el orden roca, pesada, candado, hielo). */
 export const mechanicsOfFamily = (family) => [...(lettersOfFamily(family) ?? '')].map((c) => LETTER_MECH[c]);
 
-/** Plan de un nivel (1..100): {family, city, step, intro, boss, mechanics}. */
+/** Plan de un nivel (1..100): {family, city, step, intro, mechanics}. */
 export function levelPlan(level) {
   const city = zoneIdx(level);
   const step = ((level - 1) % 10) + 1;
@@ -81,7 +78,6 @@ export function levelPlan(level) {
     city,
     step,
     intro: INTRO_LEVELS.has(level),
-    boss: isBossLevel(level),
     mechanics: mechanicsOfFamily(family),
   };
 }

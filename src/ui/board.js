@@ -6,8 +6,6 @@ import { $ } from '../dom.js';
 import { fail, playSurvivalTurn, saveRun, win } from '../game/session.js';
 import { S, gainNow, pathOf, rkey, store } from '../state.js';
 import { applyMove } from '../game/run-logic.js';
-import { heroicPath, isHeroic } from '../game/routes.js';
-import { icon } from './icons.js';
 import { zoneIdx } from '../data/zones.js';
 import { coachOnMove } from './coach.js';
 import { updateHeroHud } from './heroes.js';
@@ -72,7 +70,6 @@ export function buildPieces() {
   boardEl.parentElement.dataset.rot = S.G.rot;
   if (S.G.rot && !S.G.moves) showCurse(S.G.rot);
   else hideCurse();
-  boardEl.classList.toggle('is-boss', !!S.G.plan?.boss);
   S.G.gateLocked = {};
   S.G.wallEls = (S.G.walls || []).map(() => {
     const el = document.createElement('div');
@@ -409,7 +406,7 @@ export function afterMove() {
       $('msg').textContent = 'Vas por encima del mínimo. En práctica no pasa nada: ¡sigue!';
     return;
   }
-  const retry = S.run.daily || freeRetry(S.run, S.G.n, !!S.G.plan?.boss && !S.G.tutorial);
+  const retry = S.run.daily || freeRetry(S.run, S.G.n);
   if (status === 'last') {
     $('msg').textContent = retry
       ? 'ÚLTIMO MOVIMIENTO: si la llave no sale ahora, repites el tablero.'
@@ -450,29 +447,7 @@ export function recLine() {
   $('scoreMax').textContent = Math.max(rec.score, S.run.score).toLocaleString(numLocale());
   $('scMax').classList.toggle('broken', !!S.run.recBroken);
 }
-export function syncRouteStyle() {
-  const brave = isHeroic(S.run),
-    path = heroicPath(S.run?.hero);
-  document.body.classList.toggle('adventure-route', brave);
-  const level = S.run?.level || 1,
-    first = Math.floor((level - 1) / 10) * 10 + 1,
-    last = Math.min(100, first + 9);
-  $('routeName').textContent = brave ? path.name : 'AVANZAR';
-  $('routeIcon').innerHTML = brave ? icon(path.icon) : '⌁';
-  $('routeScope').textContent = `NIV. ${first}–${last}`;
-  $('routeReward').textContent = brave ? path.benefit : 'Habitual';
-  $('routeStatus').setAttribute(
-    'aria-label',
-    brave ? `${path.name}. Más difícil. ${path.benefit}. Niveles ${first} a ${last}.` : 'Dificultad habitual',
-  );
-  $('heroicBadge').hidden = !brave;
-  $('heroicIcon').innerHTML = icon(path.icon);
-  $('heroicBenefit').textContent = `Camino heroico · ${path.benefit}`;
-  $('heroicBadge').setAttribute('aria-label', brave ? `${path.name}: ${path.benefit}` : '');
-}
-
 export function updateHud() {
-  syncRouteStyle();
   updateHeroHud();
   $('mv').textContent = S.G.moves;
   const f = $('fill'),

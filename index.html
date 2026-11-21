@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <title>DAWNSLIDE · Block puzzle adventure with three heroes</title>
-<meta name="description" content="A free sliding-block puzzle adventure with roguelite elements. Free the red key, choose among three heroes and try new routes across 100 levels.">
+<meta name="description" content="A free sliding-block puzzle adventure with roguelite elements. Free the red key, choose among three heroes and collect fate cards across 100 levels.">
 <meta name="keywords" content="sliding block puzzle, unblock puzzle, free browser game, puzzle adventure, red key, three heroes, PWA game, juego de bloques, rompecabezas">
 <meta name="author" content="DAWNSLIDE">
 <meta name="robots" content="index,follow,max-image-preview:large">
@@ -20,7 +20,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DAWNSLIDE">
 <meta property="og:title" content="DAWNSLIDE · Block puzzle adventure with three heroes">
-<meta property="og:description" content="Free the red key in a sliding-block puzzle adventure with roguelite elements. Pick a hero, try new routes and unlock rewards across runs.">
+<meta property="og:description" content="Free the red key in a sliding-block puzzle adventure with roguelite elements. Pick a hero, collect fate cards and unlock rewards across runs.">
 <meta property="og:url" content="%SITE_URL%/">
 <meta property="og:image" content="%SITE_URL%/og-image.jpg">
 <meta property="og:image:width" content="1200">
@@ -32,7 +32,7 @@
 <meta property="og:locale:alternate" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="DAWNSLIDE · Block puzzle adventure with three heroes">
-<meta name="twitter:description" content="Free the red key in a sliding-block puzzle adventure with roguelite elements. Try new boards and choose your route.">
+<meta name="twitter:description" content="Free the red key in a sliding-block puzzle adventure with roguelite elements. Try new boards and choose your fate cards.">
 <meta name="twitter:image" content="%SITE_URL%/og-image.jpg">
 <script type="application/ld+json">
 {
@@ -40,7 +40,7 @@
   "@type": "VideoGame",
   "name": "DAWNSLIDE",
   "url": "%SITE_URL%/",
-  "description": "A free sliding-block puzzle adventure with roguelite elements. Choose from three heroes, play different boards across runs and take on heroic routes through ten cities.",
+  "description": "A free sliding-block puzzle adventure with roguelite elements. Choose from three heroes, play different boards across runs and shape each run with fate cards through ten cities.",
   "image": "%SITE_URL%/og-image.jpg",
   "genre": ["Puzzle", "Adventure"],
   "gamePlatform": ["Web browser", "Android", "iOS"],
@@ -55,13 +55,13 @@
 <link rel="preload" as="image" href="/backgrounds/cover-dawn.webp" fetchpriority="high">
 </head>
 <body>
-<div id="bossAmbient" aria-hidden="true"></div>
 <noscript><main style="font:16px/1.5 Georgia,serif;max-width:640px;margin:10vh auto;padding:0 20px;color:#f6e6bd;background:#1a1528"><h1>DAWNSLIDE</h1><p>A free sliding-block puzzle adventure with roguelite elements. Choose one of three heroes, free the red key and explore ten cities across one hundred levels. Available in English, Spanish, Chinese and Japanese.</p><p>Please enable JavaScript to play.</p></main></noscript>
 <div id="app">
   <div class="top">
     <div class="lv" title="Nivel" aria-label="Nivel"><i class="bi level-ico" data-icon="flag" aria-hidden="true"></i><b id="lvl">1</b></div>
     <div class="scores"><div class="sc" title="Puntaje"><i class="bi score-ico" data-icon="trophy" aria-hidden="true"></i><b id="score" aria-label="Puntaje">0</b></div></div>
     <div class="survival-reserve"><em id="survivalRouteTag"></em><span>Turnos restantes</span><b id="survivalTurns"></b></div>
+    <button class="fate-btn" id="bFate" type="button" hidden aria-label="Cartas del destino activas"><span class="fate-btn-stack" id="fateStack" aria-hidden="true"></span><b id="fateCount">0</b></button>
     <button class="snd-btn snd-hud" type="button"></button>
     <button class="menubtn" id="bMenu" aria-label="Menú y opciones"><span>☰</span><em>Menú</em></button>
   </div>
@@ -72,13 +72,11 @@
     <div class="sc max" id="scMax"><small id="maxLbl">MÁXIMO</small><b id="scoreMax">0</b></div>
     <div class="prog stage"><span class="sname" id="sname"></span><div class="segs" id="segs"></div></div>
     <div class="hero-hud"><img id="heroHudImg" alt="" width="30" height="34"><b id="heroHudName"></b><span id="heroHudPower"></span></div>
-    <div class="route-status" id="routeStatus"><span id="routeIcon" aria-hidden="true">🌿</span><strong id="routeName">RUTA TRANQUILA</strong><small id="routeScope">NIV. 1–10</small><span class="route-reward" id="routeReward">Normal</span></div>
     <span>Mínimo <b id="mn">–</b> · Restan <b id="left">–</b></span>
     <div class="pot"><span>Base <b id="base">0</b></span><span>Premio posible <b id="pot">+0</b></span></div>
   </div>
 
   <div class="meter" id="meter">
-    <div class="heroic-badge" id="heroicBadge" hidden><i id="heroicIcon" aria-hidden="true"></i><span id="heroicBenefit"></span></div>
     <div class="mrow"><span>Hecho <b id="mv">0</b></span><span class="left-chip" id="leftChip" role="status" hidden></span><span>Límite <b id="lim">–</b></span></div>
     <div id="sealStatus" class="seal-status" role="status" hidden></div>
     <div class="barwrap">
@@ -86,7 +84,6 @@
       <i class="bi crown" id="crown" data-icon="crown" title="Zona perfecta: termina sin pasarte del mínimo"></i>
     </div>
     <div id="liaReserveLabel" class="reserve-label" hidden></div>
-    <div class="boss-timer" id="bossTimer" role="timer" aria-label="Tiempo restante" hidden><i class="bt-ico" aria-hidden="true">⏳</i><div class="bt-bar"><i id="btFill"></i></div><b id="btText">0:00</b></div>
     <div class="bought" id="bought" hidden><span class="bl"><i class="bi" data-icon="crystal"></i> TURNOS COMPRADOS</span><span class="pips" id="boughtPips"></span><span class="bq">quedan <b id="boughtLeft">0</b></span></div>
   </div>
 
@@ -124,25 +121,22 @@
   <img class="travel-hero" id="travelHero" alt="" draggable="false">
   <div class="travel-shell">
    <header class="travel-head">
+    <p class="fate-chapter" id="fateChapter"></p>
     <h2 class="travel-heading" id="travelTitle"></h2>
     <p class="travel-inscription" id="travelInscription"></p>
     <div class="travel-lore-chip" id="travelLoreChip" hidden><img id="travelChipImg" alt="" width="44" height="44"><div><b id="travelChipName"></b><span id="travelChipLine"></span></div></div>
    </header>
    <div class="travel-bottom">
-    <p class="travel-ask">Próximos 10 niveles</p>
-    <div class="route-options" id="routeOptions">
-     <button class="route-option" id="routeNormal"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21c0-5 6-5 6-9s-5-3-5-8"/><path d="M14 4h5v5"/><path d="M19 4l-6 6"/></svg></span><span class="choice-copy"><strong>Camino normal</strong><small>Dificultad habitual</small></span></button>
-     <button class="route-option brave" id="routeBrave"><span class="choice-icon" id="routeBraveIcon" aria-hidden="true"></span><span class="choice-copy"><strong id="routeBraveName"></strong><span class="route-perk" id="routePerk"></span></span></button>
-    </div>
+    <p class="fate-ask" id="fateAsk">Elige una carta del destino</p>
+    <p class="fate-sub" id="fateSub">Se suma a las que ya tienes. Las otras dos no vuelven.</p>
+    <p class="fate-rewards" id="fateRewards" hidden></p>
+    <details class="fate-owned" id="fateOwned" hidden>
+     <summary><b id="fateOwnedTitle">Tus cartas</b><span class="fate-icons" id="fateOwnedIcons" aria-hidden="true"></span><span class="fate-owned-more">Ver efectos</span></summary>
+     <div class="fate-totals" id="fateOwnedTotals"></div>
+     <ul class="fate-minis" id="fateOwnedList"></ul>
+    </details>
+    <div class="fate-offer" id="fateOffer" role="group" aria-labelledby="fateAsk"></div>
    </div>
-  </div>
-  <!-- textos e imágenes que ya no se muestran (las paradas llevan poco texto), conservados para el código -->
-  <div class="travel-legacy" hidden>
-   <span class="tag" id="travelTag"></span><span class="travel-cleared" id="routeSummary"></span><span class="travel-seal" id="travelSeal"></span>
-   <img id="travelPlace" alt="">
-   <figure id="travelLore" hidden><img id="travelLoreImg" alt=""><figcaption><b id="travelLoreName"></b><span id="travelLoreCap"></span></figcaption></figure>
-   <ul id="travelText"></ul>
-   <img id="travelPortrait" alt=""><p id="travelHeroLine"></p>
   </div>
  </div>
 </div>
@@ -151,7 +145,7 @@
  <div class="hero-cards" id="heroCards" role="radiogroup" aria-label="Elige un héroe"></div>
  <div class="hero-summary">
   <div><i id="heroPowerIcon" aria-hidden="true"></i><span><small class="hero-ability-label">Poder</small><strong id="heroPowerShort"></strong></span></div>
-  <div><i id="heroRouteIcon" aria-hidden="true"></i><span><small class="hero-ability-label">Heroico · nivel 11</small><strong id="heroRouteName"></strong></span></div>
+  <div><i id="heroRouteIcon" aria-hidden="true"></i><span><small class="hero-ability-label">Destino</small><strong id="heroRouteName">1 de 3 cartas por ciudad</strong></span></div>
  </div>
  <fieldset class="hero-relics"><legend class="hero-ability-label">Reliquia</legend><div class="relic-options" id="heroRelics"></div></fieldset>
  <div class="hero-start" id="heroStartBox"><span class="hero-ability-label" id="heroStartLabel">Empezar desde el nivel</span><div class="start-chips" id="heroStarts" role="radiogroup" aria-labelledby="heroStartLabel"></div><small id="heroStartNote"></small></div>
@@ -192,26 +186,13 @@
  </div>
 </div>
 
-<!-- Presentación del jefe de ciudad (niveles 10, 20, ..., 100) -->
-<div class="modal" id="bossIntro" role="dialog" aria-modal="true" aria-labelledby="bossName">
- <div class="boss-stage">
-  <img class="boss-backdrop" id="bossArt" alt="" draggable="false">
-  <div class="boss-vignette" aria-hidden="true"></div>
-  <div class="boss-fx boss-embers" aria-hidden="true"></div>
-  <div class="boss-shell">
-   <h2 class="boss-name" id="bossName"></h2>
-   <footer class="boss-bottom">
-    <p class="boss-lore" id="bossLore"></p>
-    <div class="boss-conditions">
-     <ul class="boss-goals" id="bossGoals" aria-label="Objetivo del duelo"></ul>
-     <p class="boss-attempts" id="bossAttempts"></p>
-    </div>
-    <button class="primary boss-fight" id="bossFight">Iniciar</button>
-   </footer>
-  </div>
- </div>
-</div>
-
+<div class="modal" id="fatePanel" role="dialog" aria-modal="true" aria-labelledby="fatePanelTitle"><div class="card fate-panel">
+ <div class="tag">Cartas del destino</div><h2 id="fatePanelTitle">Tu destino</h2>
+ <div class="fate-totals" id="fateTotals"></div>
+ <ul class="fate-minis fate-hand" id="fateHand"></ul>
+ <p class="fate-empty" id="fateEmpty" hidden>Aún no tienes cartas. Al cerrar cada ciudad eliges 1 de 3.</p>
+ <button class="primary" id="fatePanelClose">Volver al tablero</button>
+</div></div>
 <div class="modal" id="storyBook" role="dialog" aria-modal="true" aria-labelledby="storyTitle"><article class="storybook">
  <div class="book-illustration"><img class="book-scenery" id="storyScene" alt=""><div class="book-series"><small>LAS CRÓNICAS DE LA LLAVE ROJA</small>El Faro<br>del Amanecer<small style="margin-top:10px">LA SOMBRA DE VHORN · THYES, AÑO 4133</small></div><img class="book-portrait" id="storyPortrait" alt=""></div>
  <div class="book-leaf"><div class="book-chapter" id="storyChapter"></div><h2 id="storyTitle"></h2><p class="book-copy" id="storyBody"></p><p class="book-action" id="storyAction"></p><blockquote class="book-quote" id="storyQuote"></blockquote><div class="book-seal" id="storySeal"></div><div class="book-track" id="storyTrack"></div><button class="primary book-play" id="storyPlay">Abrir el camino ➜</button><nav class="book-pagination" aria-label="Páginas de la aventura"><button id="storyPrevious" aria-label="Página anterior">←</button><span id="storyPage"></span><button id="storyNext" aria-label="Página siguiente">→</button></nav></div>

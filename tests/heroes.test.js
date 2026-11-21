@@ -23,18 +23,25 @@ describe('Lía · turnos de reserva', () => {
   it('solo Lía recibe turnos extra: 40 % del mínimo en Normal, 20 % en Difícil y 25 % en Experto', () => {
     expect(bonusTurns('lia', 8)).toBe(3);
     expect(bonusTurns('lia', 40)).toBe(16);
-    expect(bonusTurns('lia', 40, false, 1, 50)).toBe(8);
-    expect(bonusTurns('lia', 40, false, 1, 75)).toBe(10);
+    expect(bonusTurns('lia', 40, 50)).toBe(8);
+    expect(bonusTurns('lia', 40, 75)).toBe(10);
     expect(bonusTurns('lia', 2)).toBe(1);
     expect(bonusTurns('jean', 40)).toBe(0);
     expect(bonusTurns('van', 40)).toBe(0);
+    expect(bonusTurns('lia', 40, 1, true), 'Juramento apaga la reserva').toBe(0);
   });
   it('heroLimit suma el bonus de su camino al límite normal y no cambia para el resto de héroes', () => {
     for (const opt of [2, 7, 20, 37])
       for (const start of [1, 50, 75]) {
         expect(heroLimit('jean', opt, start)).toBe(moveLimit(opt, start));
-        expect(heroLimit('lia', opt, start)).toBe(moveLimit(opt, start) + bonusTurns('lia', opt, false, 1, start));
+        expect(heroLimit('lia', opt, start)).toBe(moveLimit(opt, start) + bonusTurns('lia', opt, start));
       }
+  });
+  it('las cartas del destino suman o restan turnos, pero el límite nunca baja de mínimo + 1', () => {
+    expect(heroLimit('jean', 10, 1, 1, { fate: 3 })).toBe(moveLimit(10) + 3);
+    expect(heroLimit('jean', 10, 1, 1, { fate: -2 })).toBe(moveLimit(10) - 2);
+    expect(heroLimit('jean', 2, 75, 100, { fate: -2 })).toBe(3);
+    expect(heroLimit('lia', 10, 1, 1, { noPower: true })).toBe(moveLimit(10));
   });
 });
 

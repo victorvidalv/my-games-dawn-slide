@@ -91,9 +91,8 @@ describe('idioma: el inglés es el idioma por defecto y cubre la historia', () =
     expect(tr('Pista')).toBe('Hint');
     expect(tr('Te quedan 3 turnos.')).toBe('You have 3 turns left.');
     expect(tr('Sello de Corazón')).toBe('Heart Seal');
-    expect(tr('Camino heroico · +15 % de puntos · poderes a la mitad · tienda −30 %')).toBe(
-      'Heroic path · +15 % points · half-strength powers · shop −30 %',
-    );
+    expect(tr('Carta del destino 3 de 9')).toBe('Fate card 3 of 9');
+    expect(tr('Tu destino · 4 de 9')).toBe('Your fate · 4 of 9');
     expect(tr('Perfecto · +480 puntos · Una puerta menos.')).toBe('Perfect · +480 points · One door fewer.');
   });
   it('lo que ya está en inglés o no tiene letras se deja igual', () => {

@@ -24,6 +24,12 @@ const BODIES = {
   /** Sello de oro: estrella de ocho puntas con gema (el gran premio). */
   seal3: `<path d="M16 1.8l3.4 7.1 7.4-2.8-2.8 7.4 7.1 3.4-7.1 3.4 2.8 7.4-7.4-2.8L16 30.2l-3.4-7.1-7.4 2.8 2.8-7.4L1.8 16l7.1-3.4-2.8-7.4 7.4 2.8z" fill="#e9b73a" stroke="#172731" stroke-width="2"/><circle cx="16" cy="16" r="7" fill="#f8de8a" stroke="#9a6b16" stroke-width="1.6"/><path d="M16 11.2l3.4 4.8-3.4 4.8-3.4-4.8z" fill="#d6483f" stroke="#7a1e1a" stroke-width="1.2"/><path d="M14.2 14l1.2-1.6" stroke="#fff3d0" stroke-width="1.2"/>`,
   seal: `<path d="M10 3h12l7 7v12l-7 7H10l-7-7V10z" fill="#b58a4e" stroke="#172731" stroke-width="2"/><path d="M11.5 6.5h9l5 5v9l-5 5h-9l-5-5v-9z" fill="#e4cf9b"/><path d="M16 9l7 7-7 7-7-7z" fill="#344b50" stroke="#8f6336"/><circle cx="16" cy="14" r="2.2" fill="#d27c5d" stroke="none"/><path d="M16 16v4m0-1h2" stroke="#e8c884" stroke-width="1.5"/>`,
+  /** Abanico de tres cartas con una estrella: las cartas del destino. */
+  fate: `<rect x="5" y="8" width="13" height="19" rx="2" fill="#8e3b5f" transform="rotate(-18 11.5 17.5)"/>
+    <rect x="14" y="8" width="13" height="19" rx="2" fill="#5fd0e6" transform="rotate(16 20.5 17.5)"/>
+    <rect x="9.5" y="5" width="13" height="20" rx="2" fill="${PAPER}"/>
+    <path d="M16 9.5l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" fill="${BRASS}" stroke-width="1.2"/>
+    <path d="M12 21h8" stroke="${BRASS_DK}" stroke-width="1.4"/>`,
   /** Farol con llama: la pista. */
   hint: `<path d="M16 2.8v3" /><circle cx="16" cy="3.3" r="1.5" fill="${BRASS}"/>
     <path d="M10.2 9h11.6l-2.2-3.6h-7.2z" fill="${BRASS_DK}"/>
@@ -100,7 +106,7 @@ const BODIES = {
     <path d="M16 9.5v13M10.4 12.7l11.2 6.6M21.6 12.7l-11.2 6.6" stroke="#185978" stroke-width="1.8"/>
     <circle cx="16" cy="16" r="2.2" fill="#e9fcff" stroke="#185978" stroke-width="1.2"/>`,
 
-  /** Corona: los jefes. */
+  /** Corona: la zona perfecta del medidor. */
   crown: `<path d="M4.6 24.2L3.2 10.6l6.6 5.6L16 6.4l6.2 9.8 6.6-5.6-1.4 13.6z" fill="#f3c75a"/>
     <rect x="4.6" y="24.2" width="22.8" height="3.6" rx="1.4" fill="${BRASS_DK}"/>
     <circle cx="16" cy="19.6" r="1.8" fill="${RED}"/><circle cx="9.8" cy="20.6" r="1.3" fill="#7fd8e8"/><circle cx="22.2" cy="20.6" r="1.3" fill="#7fd8e8"/>

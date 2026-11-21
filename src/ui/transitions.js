@@ -2,8 +2,8 @@ import { sfx } from '../audio/sound.js';
 
 /* ============================ Transiciones entre escenas ============================
    Un telón de tinta cruza la pantalla en diagonal (con filo dorado), se cambia la escena por detrás y el telón sale
-   por el otro lado: así nada «salta». Variantes: 'ink' (entre niveles), 'gold' (paradas / elegir camino) y 'boss'
-   (alarma roja con rótulo antes del jefe). Todo dura décimas de segundo y se omite con «reducir movimiento». */
+   por el otro lado: así nada «salta». Variantes: 'ink' (entre niveles) y 'gold' (paradas / elegir carta del destino).
+   Todo dura décimas de segundo y se omite con «reducir movimiento». */
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 let veil = null;
@@ -27,9 +27,8 @@ export async function wipeIn(kind = 'ink', label = '') {
   el.classList.remove('out', 'in');
   void el.offsetWidth;
   el.classList.add('in');
-  if (kind === 'boss') sfx.bossAlarm();
-  else sfx.whoosh(true);
-  await wait(kind === 'boss' ? 760 : 240);
+  sfx.whoosh(true);
+  await wait(240);
 }
 
 /** Descubre la pantalla (no hace falta esperarla). */
@@ -65,7 +64,7 @@ export function playLevelScenery() {
 /** Rótulo breve al empezar un tablero: «NIVEL 12 · Valle Esmeralda». No bloquea el juego. */
 let banner = null;
 let bannerTimer = 0;
-export function levelBanner(title, sub = '', boss = false) {
+export function levelBanner(title, sub = '') {
   if (reduced()) return;
   if (!banner) {
     banner = document.createElement('div');
@@ -76,7 +75,6 @@ export function levelBanner(title, sub = '', boss = false) {
   }
   banner.querySelector('b').textContent = title;
   banner.querySelector('span').textContent = sub;
-  banner.classList.toggle('boss', boss);
   banner.classList.remove('go');
   void banner.offsetWidth;
   banner.classList.add('go');

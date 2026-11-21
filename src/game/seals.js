@@ -3,7 +3,7 @@ import { analyze, expand } from '../engine/solver.js';
 import { baseScore, calcGain } from '../engine/scoring.js';
 import { hash32 } from '../engine/rng.js';
 import { sealAt } from '../engine/calibration.js';
-import { heroicPoints } from './routes.js';
+import { fateSeal } from './fate.js';
 import { relicPoints } from './relics.js';
 
 /** Niveles con sello (y su tipo) según el calibrador. */
@@ -28,14 +28,15 @@ const sealTierOf = (extra, occupied = false) => {
   return s >= 4 ? 3 : s >= 2 ? 2 : 1;
 };
 export const sealTier = (seal) => Math.max(1, Math.min(3, seal?.tier || 2)); // los sellos guardados antes de existir los tipos cuentan como plata
-export const sealPoints = (rate, opt, required, tier = 2) =>
+export const sealPoints = (opt, required, tier = 2) =>
   Math.round(
-    baseScore(rate) * SEAL_TIERS[tier - 1].mult +
-      Math.max(0, calcGain(rate, opt, opt, 0).total - calcGain(rate, required, opt, 0).total),
+    baseScore(opt) * SEAL_TIERS[tier - 1].mult +
+      Math.max(0, calcGain(opt, opt, 0).total - calcGain(required, opt, 0).total),
   );
 /** Tipo de sello que se intenta colocar en un nivel (el del calibrador; el motor lo baja si el tablero no da para tanto rodeo). */
 export const requestedSealTier = (level) => sealAt(level)?.tier ?? 1;
-export const sealReward = (run, seal) => relicPoints(run, Math.round(seal.value * (1 + heroicPoints(run))));
+/** Premio de un sello: su valor, más Sello dorado y la reliquia. */
+export const sealReward = (run, seal) => relicPoints(run, Math.round(seal.value * (1 + fateSeal(run))));
 export const sealLimit = (seal, base) => (seal ? Math.max(base, seal.requiredMoves + 1) : base);
 
 /** A slide crosses every cell in its swept footprint, including intermediate cells on ice. */
@@ -178,7 +179,6 @@ export function planSeal({
   walls = [],
   opt,
   limit,
-  rate,
   level,
   seed = 0,
   analysis,
@@ -210,7 +210,7 @@ export function planSeal({
     piece: chosen.piece,
     cell: chosen.cell,
     tier,
-    value: sealPoints(rate, opt, chosen.required, tier),
+    value: sealPoints(opt, chosen.required, tier),
     requiredMoves: chosen.required,
     extraMoves: chosen.extra,
     collected: false,

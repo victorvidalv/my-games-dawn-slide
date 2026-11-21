@@ -5,7 +5,8 @@ import { MERCHANT_LINES, SHOP_NOTES } from '../data/merchant.js';
 import { SHOP_ITEMS, availability, buy, extraTurns, itemById, priceOf } from '../game/shop.js';
 import { saveRun, skipLevel } from '../game/session.js';
 import { S, holdBusy } from '../state.js';
-import { shopDiscount } from '../game/routes.js';
+import { shopDiscount } from '../game/run-points.js';
+import { fateBlocks } from '../game/fate.js';
 import { layout, recLine, updateHud } from './board.js';
 import { updateHeroHud } from './heroes.js';
 import { countStat } from './achievements.js';
@@ -17,7 +18,7 @@ import { numLocale } from '../i18n.js';
 const fmt = (n) => n.toLocaleString(numLocale());
 /** Nombre con los turnos reales que da en este tablero (son un % del límite). */
 const nameOf = (item) => (item.share ? `+${extraTurns(item.id, S.G.limit)} turnos` : item.name); // la cifra real, nunca un porcentaje
-const priceNow = (id) => priceOf(id, S.G.rate, S.run.start, S.run);
+const priceNow = (id) => priceOf(id, S.G.opt, S.run.start, S.run);
 
 /** Refleja en pantalla la compra ya cobrada. */
 function applyEffects(id) {
@@ -88,14 +89,16 @@ function say(text, mood) {
 
 function render() {
   $('shopScore').textContent = fmt(S.run.score);
-  const discount = shopDiscount(S.run);
+  const discount = Number(shopDiscount(S.run).toFixed(3));
+  const pct = fmt(Number(Math.abs(discount * 100).toFixed(1)));
   $('shopDiscount').hidden = !discount;
-  $('shopDiscount').textContent = `Descuento en tienda · −${fmt(Number((discount * 100).toFixed(1)))} %`;
+  $('shopDiscount').textContent =
+    discount > 0 ? `Descuento en tienda · −${pct} %` : `Recargo en tienda por tu Botín · +${pct} %`;
   $('shopList').innerHTML = SHOP_ITEMS.map((i) => {
     const a = availability(i.id, { run: S.run, G: S.G });
     return `<button class="shop-item${a.ok ? '' : ' off'}" data-id="${i.id}" aria-disabled="${!a.ok}">
       <span class="ico">${icon(i.icon)}</span><span><b>${nameOf(i)}</b><small>${a.ok || !a.reason ? shortOf(i.id) : a.reason}</small></span>
-      <span class="price">${discount ? `<del>${fmt(priceOf(i.id, S.G.rate, S.run.start))}</del>` : ''}${fmt(priceNow(i.id))}</span></button>`;
+      <span class="price">${discount ? `<del>${fmt(priceOf(i.id, S.G.opt, S.run.start))}</del>` : ''}${fmt(priceNow(i.id))}</span></button>`;
   }).join('');
 }
 
@@ -120,7 +123,8 @@ export function openShop() {
   render();
   modal.classList.add('show');
   sfx.merchantBell();
-  say(merchantLine('greet'), 'happy');
+  if (fateBlocks(S.run, 'shop')) say('Tu Pacto mercante cerró la tienda. Hoy no puedo venderte nada.', 'nope');
+  else say(merchantLine('greet'), 'happy');
   $('shopClose').onclick = close;
   const list = $('shopList');
   const lineFor = (b) => {

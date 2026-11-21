@@ -1,10 +1,10 @@
-import { BOSS_RULES } from '../src/game/bosses.js';
 import { DAILY_TARGETS, STREAK_HINT_REWARDS } from '../src/game/daily.js';
 import { MAX_GRADE, maxPrize } from '../src/game/minigames.js';
 import { FIRST_ROTATED_LEVEL } from '../src/game/orientation.js';
-import { HEROIC_BENEFITS, HEROIC_PATHS } from '../src/game/routes.js';
+import { FATE_CARDS } from '../src/game/fate.js';
+import { fateArt } from '../src/ui/fate-art.js';
 import { RELICS } from '../src/game/relics.js';
-import { BOSS_FREE_RETRIES, REVIVE_SHARE } from '../src/game/shop.js';
+import { REVIVE_SHARE } from '../src/game/shop.js';
 import { WORLD } from '../src/data/lore.js';
 import { HERO_LORE } from '../src/data/story.js';
 import { tr } from '../src/i18n.js';
@@ -15,7 +15,6 @@ export const guidePaths = { es: 'guia/', en: 'guia/en/', ja: 'guia/ja/', zh: 'gu
 export const guideEntries = Object.fromEntries(
   Object.entries(guidePaths).map(([lang, path]) => [lang, path + 'index.html']),
 );
-const timedBosses = Object.entries(BOSS_RULES).filter(([, rule]) => rule.seconds);
 
 export function renderGuide(lang) {
   const g = { ...guides[lang], ...extraChapters[lang] };
@@ -31,8 +30,8 @@ export function renderGuide(lang) {
   const chapters = [
     ['como-jugar', g.basics], ['retos-diarios', g.daily], ['pistas', g.hints],
     ['tienda', g.shop], ['minijuegos', g.miniTitle], ['mecanicas', g.mechanics],
-    ['maleficios', g.curseTitle], ['heroes', g.heroes], ['reliquias', g.relicsTitle], ['caminos-heroicos', g.heroicTitle],
-    ['jefes', g.bosses], ['historia', g.story], ['banda-sonora', g.sound],
+    ['maleficios', g.curseTitle], ['heroes', g.heroes], ['reliquias', g.relicsTitle], ['cartas-del-destino', g.fateTitle],
+    ['historia', g.story], ['banda-sonora', g.sound],
   ];
   const figure = (level, [caption, alt], eager = false) => `<figure class="capture">
     <a class="capture-link" href="${up}capturas/${lang}-${level}.webp" aria-label="${g.zoom} · ${caption}">
@@ -50,10 +49,11 @@ export function renderGuide(lang) {
       <blockquote>${tr(HERO_LORE[file].quote, lang)}</blockquote>
     </div>
   </article>`;
-  const route = ([key, file], index) => `<div class="route-guide hero-${key}">
-    <dt><span>${g.routeNames[index]}</span><strong aria-label="${g.bonusPoints} +${Math.round(HEROIC_BENEFITS.points[file] * 100)}%">+${Math.round(HEROIC_BENEFITS.points[file] * 100)}%</strong></dt>
-    <dd>${g[key][0]} · ${g.heroPaths[index]}<br><span class="route-perk">${g.perkLabel}${lang === 'ja' || lang === 'zh' ? '：' : ': '}${tr(HEROIC_PATHS[file].perk, lang)}</span></dd>
-  </div>`;
+  const kindName = { blessing: tr('Bendición', lang), pact: tr('Pacto', lang) };
+  const fateCard = (card) => `<li class="fate-guide-card is-${card.kind}" style="--fa:${card.hue[0]};--fb:${card.hue[1]}">
+    ${fateArt(card)}
+    <div><small>${kindName[card.kind]}</small><b>${tr(card.name, lang)}</b><span>${tr(card.gain, lang)}</span>${card.cost ? `<em>${tr(card.cost, lang)}</em>` : ''}</div>
+  </li>`;
   const relicIcons = { sun: '☀', purse: '◈', lantern: '✦' };
   const relic = (r, index) => `<div class="mechanic relic relic-${r.id}"><dt><span aria-hidden="true">${relicIcons[r.id]}</span>${tr(r.name, lang)}<em>${tr(r.label, lang)}</em></dt><dd>${g.relicTips[index]}</dd></div>`;
   const streak = ({ days, hints }) =>
@@ -175,28 +175,11 @@ export function renderGuide(lang) {
         <dl class="relic-grid">${RELICS.map(relic).join('')}</dl>
       </section>
 
-      <section id="caminos-heroicos" class="section feature-section">
-        <div>
-          <h2>${g.heroicTitle}</h2>
-          <p>${g.heroicIntro}</p>
-          <p>${g.heroicPerks}</p>
-          <dl class="route-guide-list">${heroes.map(route).join('')}</dl>
-        </div>
-        ${figure('route', g.routeShot)}
-      </section>
-
-      <section id="jefes" class="section bosses">
-        <div>
-          <h2>${g.bosses}</h2>
-          <p>${g.bossIntro.replace('{attempts}', BOSS_FREE_RETRIES + 1)}</p>
-          <p>${g.retry.replace('{retries}', BOSS_FREE_RETRIES)}</p>
-        </div>
-        ${figure(100, g.bossShot)}
-        <table>
-          <caption>${g.clock}</caption>
-          <thead><tr><th scope="row">${g.level}</th>${timedBosses.map(([level]) => `<th scope="col">${level}</th>`).join('')}</tr></thead>
-          <tbody><tr><th scope="row">${g.seconds}</th>${timedBosses.map(([, rule]) => `<td>${Math.floor(rule.seconds / 60)}:${String(rule.seconds % 60).padStart(2, '0')}</td>`).join('')}</tr></tbody>
-        </table>
+      <section id="cartas-del-destino" class="section fate-guide">
+        <h2>${g.fateTitle}</h2>
+        <p class="section-intro">${g.fateIntro}</p>
+        <p class="section-intro">${g.fatePacts}</p>
+        <ul class="fate-guide-grid">${FATE_CARDS.map(fateCard).join('')}</ul>
       </section>
 
       <section id="historia" class="section story feature-section">

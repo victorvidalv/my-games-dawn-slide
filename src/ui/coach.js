@@ -42,8 +42,7 @@ const DEMO = {
     '<div class="mini meter-demo"><div class="mbar"><i></i><u></u></div><div class="mlbl"><span>Mínimo 5</span><span>Límite 10</span></div></div>',
   tools: `<div class="mini tools-demo"><span>${icon('stars')}</span><span>${icon('hint')}</span><span>${icon('purse')}</span></div>`,
   hero: '<div class="mini hero-demo"></div>',
-  boss: '<div class="mini boss-demo"><span class="bd-skull">☠</span><b>+30 %</b></div>',
-  bosstime: '<div class="mini boss-demo"><span>⏳</span><div class="bd-bar"><i></i></div><b>1:30</b></div>',
+  fate: '<div class="mini fate-demo"><i></i><i></i><i></i></div>',
   seal: `<div class="mini tools-demo"><span>${icon('seal1')}</span><b>→</b><span>${icon('seal2')}</span><b>→</b><span>${icon('seal3')}</span></div>`,
   wall: '<div class="mini"><div class="wall demo"><i></i></div><div class="mp red bump"></div></div>',
   gate: '<div class="mini gate-demo"><div class="plate demo"><i><span class="lock-shut">🔒</span><span class="lock-free">🔓</span></i></div><div class="mp blk slide-onto"></div><div class="mp gate-p"><span class="lock-shut">🔒</span><span class="lock-free">🔓</span></div></div>',
@@ -92,17 +91,12 @@ function tipFor(id) {
       demo: 'seal',
       glow: '#sealStatus',
     },
-    boss: {
-      tag: 'JEFE DE LA CIUDAD',
-      title: 'Un guardián te cierra el paso',
-      text: 'Cada ciudad termina con un jefe: un tablero más difícil, con menos margen y <b>+30 % de puntos</b>. Cada jefe presiona de una forma distinta: <b>turnos ajustados</b> o <b>contrarreloj</b>. Mira el aviso antes de empezar.',
-      demo: 'boss',
-    },
-    bosstime: {
-      tag: 'CONTRARRELOJ',
-      title: 'La barra de tiempo',
-      text: 'Este jefe tiene <b>tiempo limitado</b>: la barra baja mientras piensas y mueves, y se detiene en la pausa, la tienda, los poderes y los avisos. Si llega a cero, pierdes el tablero. Con menos de 10 segundos suena un tictac.',
-      demo: 'bosstime',
+    fate: {
+      tag: 'CARTAS DEL DESTINO',
+      title: 'Tu destino se acumula',
+      text: 'Al cerrar cada ciudad eliges <b>1 de 3 cartas</b>. Sus efectos se <b>suman</b> hasta el final de la partida y las que no eliges no vuelven. Toca el botón de cartas, arriba, para ver las que tienes activas y lo que suman.',
+      demo: 'fate',
+      glow: '#bFate',
     },
     hero: {
       tag: 'TU HÉROE',
@@ -185,12 +179,11 @@ export function startCoach() {
     if (G.n >= 3) queue.push('tools');
     if (G.n >= 4) queue.push('hero');
   }
-  if (G.plan?.boss && !G.tutorial) queue.push('boss');
-  if (G.timeLimit > 0) queue.push('bosstime');
+  if (run.fate?.length) queue.push('fate');
   if (G.seal) queue.push('seal');
   queue.push(...mechanicsPresent(G));
   if (G.rot) queue.push('curse'); // tablero con maleficio: se explica la primera vez
-  // Una sola explicación general por nivel: lo que hace falta YA para jugar este tablero (arrastrar, piezas nuevas, jefe, maleficio)
+  // Una sola explicación general por nivel: lo que hace falta YA para jugar este tablero (arrastrar, piezas nuevas, cartas, maleficio)
   // se enseña siempre; las demás (puntos, ayudas, héroe, sellos) esperan su turno si ya hay otra ventana en este nivel.
   const pending = queue.filter((id) => !store.tips[id]);
   const urgent = pending.filter((id) => !CAN_WAIT.includes(id));

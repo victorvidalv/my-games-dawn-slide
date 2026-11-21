@@ -4,7 +4,7 @@ import { TUTORIALS } from './mechanics.js';
 import { hasCurse } from '../engine/calibration.js';
 
 /**
- * Maleficio: los niveles con el tablero girado los decide el calibrador (irregulares, nunca en jefes ni en tutoriales de piezas);
+ * Maleficio: los niveles con el tablero girado los decide el calibrador (irregulares, nunca en cierres de ciudad ni en tutoriales de piezas);
  * el primero lleva su tutorial. El resto de niveles mantienen la salida a la derecha, así que el giro es una sorpresa.
  */
 export const FIRST_ROTATED_LEVEL = TUTORIALS.curse.level;

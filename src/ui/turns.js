@@ -3,10 +3,9 @@ import { $ } from '../dom.js';
 import { isLow, isWon, movesLeft } from '../engine/rules.js';
 import { S } from '../state.js';
 import { bonusTurns } from '../game/heroes.js';
-import { powerFactor } from '../game/routes.js';
+import { fateBlocks } from '../game/fate.js';
 import { reserveState } from '../game/powers.js';
 import { burst } from './fx.js';
-import { bossCapFor } from '../game/bosses.js';
 import { freeRetry } from '../game/shop.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -32,7 +31,7 @@ export function lowState() {
 function announceLow(last) {
   const G = S.G;
   const left = movesLeft(G.moves, G.limit);
-  const retry = S.run.daily || freeRetry(S.run, G.n, !!G.plan?.boss && !G.tutorial);
+  const retry = S.run.daily || freeRetry(S.run, G.n);
   $('lowTitle').textContent = last ? '¡Último movimiento!' : `Te quedan ${left} movimientos`;
   $('lowSub').textContent = last
     ? retry
@@ -68,7 +67,7 @@ function liaToast(left) {
 export function renderTurns() {
   const G = S.G;
   const bought = G.bought || 0;
-  const reserve = bonusTurns(S.run.hero, G.opt, bossCapFor(G.n), powerFactor(S.run), S.run.start);
+  const reserve = bonusTurns(S.run.hero, G.opt, S.run.start, fateBlocks(S.run, 'power'));
   const segment = $('liaReserve'),
     label = $('liaReserveLabel');
   segment.hidden = label.hidden = !reserve;

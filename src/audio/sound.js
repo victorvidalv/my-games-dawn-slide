@@ -154,14 +154,22 @@ export const sfx = {
   land: () => {
     noise(0.03, 0.04, 1700, 'bandpass', 0.1);
   },
-  bossAlarm: () => {
-    [0, 0.28].forEach((d) => {
-      tone(58, 0.34, 'sawtooth', 0.11, d, -6, 620);
-      tone(87, 0.3, 'sawtooth', 0.06, d, -6, 900);
-      noise(0.12, 0.1, 260, 'lowpass', d);
+  /** Cartas del destino: se reparten (tres roces de papel en la tonalidad) y se elige una (campanada dorada). */
+  fateDeal: () => {
+    [0, 0.12, 0.24].forEach((d, i) => {
+      noise(0.09, 0.05, 4200, 'highpass', d, -2000);
+      tone(keyHz(i * 2, 2), 0.18, 'triangle', 0.035, d + 0.02, 0, 3800);
     });
-    noise(0.7, 0.07, 300, 'bandpass', 0.1, 3400);
-    tone(41, 1, 'triangle', 0.12, 0.5, -8);
+  },
+  fatePick: () => {
+    [0, 2, 4, 7].forEach((k, i) => tone(keyHz(k, 1), 0.5, 'sine', 0.07, i * 0.07, 0, 3600));
+    tone(keyHz(0, 0), 0.9, 'triangle', 0.09, 0, 0, 800);
+    noise(0.4, 0.05, 6000, 'highpass', 0.25, 2600);
+  },
+  fatePact: () => {
+    tone(keyHz(0, -1), 0.9, 'sawtooth', 0.05, 0, -6, 500);
+    [0, 3, 6].forEach((k, i) => tone(keyHz(k, 1), 0.45, 'triangle', 0.05, 0.08 + i * 0.09, 0, 2200));
+    noise(0.5, 0.05, 420, 'lowpass', 0.05);
   },
   routePick: () => {
     [0, 1, 2, 3, 4].forEach((k, i) => tone(keyHz(k, 1), 0.34, 'sine', 0.07, i * 0.055, 0, 3600));
@@ -270,7 +278,7 @@ export const sfx = {
     tone(keyHz(j + 3, 1), 0.18, 'triangle', 0.03, 0.03, 0, 4200);
     noise(0.07, 0.03, 5200, 'highpass');
   },
-  /* Jefe: el golpe de la presentación y el salto al tablero */
+  /* Trueno grave: el golpe de una aparición */
   thunder: () => {
     noise(0.9, 0.16, 180, 'lowpass', 0);
     tone(48, 1, 'sawtooth', 0.1, 0.02, -18);
@@ -327,32 +335,6 @@ export const sfx = {
   bump: () => {
     noise(0.04, 0.07, 420, 'lowpass');
     tone(130, 0.08, 'sine', 0.07, 0, -20);
-  },
-  bossEntrance: (city = 0) => {
-    const motifs = [
-      [2, 0],
-      [0, 2, 0],
-      [0, 1, 2],
-      [2, 1, 0],
-      [0, 0, 2],
-      [2, 3, 0],
-      [2, 0, 2],
-      [0, 2, 3],
-      [1, 2, 0],
-      [2, 1, 3],
-    ];
-    const wind = [510, 650, 720, 570, 430, 910, 670, 380, 830, 540];
-    noise(0.7, 0.045, wind[city], 'bandpass', 0, 400);
-    tone(keyHz(0, 0), 0.8, 'sine', 0.065, 0.07, 0, 380);
-    motifs[city].forEach((note, i) => {
-      tone(keyHz(note, 2), 0.49, 'sine', 0.052, 0.21 + i * 0.16, 0, 2000);
-      tone(keyHz(note, 3), 0.22, 'sine', 0.017, 0.21 + i * 0.16, 0, 3100);
-    });
-  },
-  bossStart: () => {
-    noise(0.35, 0.055, 780, 'bandpass', 0, -420);
-    tone(keyHz(0, 1), 0.32, 'triangle', 0.058, 0.1, 0, 950);
-    tone(keyHz(0, 0), 0.38, 'sine', 0.08, 0.12, 0, 450);
   },
   plate: () => {
     tone(330, 0.1, 'triangle', 0.08);

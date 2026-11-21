@@ -3,7 +3,7 @@
  * funciones puras sobre el objeto `run` (la aventura en curso), sin DOM, y están cubiertas por tests.
  */
 import { moveLimit, byPath } from '../engine/difficulty.js';
-import { HEROIC_BENEFITS, heroicHintsLeft, heroicPowerFactor, useHeroicHint } from './routes.js';
+import { fateBlocks } from './fate.js';
 
 /* Ojo: el identificador interno de Juth sigue siendo 'van' (imágenes heroes/van*.webp y partidas guardadas). Solo cambia el nombre que se ve. */
 export const HEROES = [
@@ -60,26 +60,18 @@ const isPractice = (mode) => mode === 'p';
 const LIA_TURNS_SHARE = { 1: 0.4, 50: 0.2, 75: 0.25 };
 const LIA_MIN_TURNS = 1;
 
-/** En los jefes la reserva de Lía se reduce a la mitad: si no, el límite de turnos ajustado de un jefe no apretaría nunca. */
-export const BOSS_RESERVE = 0.5;
-/** Turnos extra que da el héroe sobre el límite base (solo Lía): una parte del mínimo `opt` del tablero según el camino. */
-export const bonusTurns = (heroId, opt, boss = false, power = 1, start = 1) => {
-  if (heroId !== 'lia') return 0;
-  const share = byPath(LIA_TURNS_SHARE, start);
-  return Math.max(LIA_MIN_TURNS, Math.round(opt * share * power * (boss ? BOSS_RESERVE : 1)));
+/** Turnos extra que da el héroe sobre el límite base (solo Lía): una parte del mínimo `opt` del tablero según el camino. `off` = poder apagado (Juramento). */
+export const bonusTurns = (heroId, opt, start = 1, off = false) => {
+  if (heroId !== 'lia' || off) return 0;
+  return Math.max(LIA_MIN_TURNS, Math.round(opt * byPath(LIA_TURNS_SHARE, start)));
 };
 
-/** Lía pierde parte del margen base en la Brasa y conserva su reserva personal. */
-export function heroBaseLimit(hero, opt, start, level, heroic, boss) {
-  const base = moveLimit(opt, start, level, false, boss);
-  if (!heroic || hero !== 'lia') return base;
-  return opt + Math.min(base - opt - 1, Math.round((base - opt) * HEROIC_BENEFITS.liaMargin));
-}
-
-/** Límite de movimientos de un tablero de mínimo `opt` para ese héroe, camino y jefe. */
-export const heroLimit = (heroId, opt, start = 1, level = 1, brave = false, boss = false) =>
-  heroBaseLimit(heroId, opt, start, level, brave, boss) +
-  bonusTurns(heroId, opt, boss, heroicPowerFactor(heroId, brave), start);
+/**
+ * Límite de movimientos de un tablero de mínimo `opt` para ese héroe y camino. `fate` = turnos de las cartas del destino
+ * (pueden ser negativos) y `noPower` apaga la reserva de Lía. Nunca baja de mínimo + 1.
+ */
+export const heroLimit = (heroId, opt, start = 1, level = 1, { fate = 0, noPower = false } = {}) =>
+  Math.max(opt + 1, moveLimit(opt, start, level) + bonusTurns(heroId, opt, start, noPower) + fate);
 
 /** Foto del tablero para repetirlo desde el principio con 0 movimientos (la usa el revivir). */
 export function snapshotRescue(G) {
@@ -96,16 +88,15 @@ export function snapshotRescue(G) {
   };
 }
 
-/* ───────────── Pistas: reserva de todos + pistas del camino heroico de Lía ───────────── */
+/* ───────────── Pistas: la reserva de la partida ───────────── */
 
 /**
- * Gasta primero una pista gratuita del camino heroico de Lía; después, la reserva.
- * El poder de Juth es independiente de las pistas.
- * Devuelve {ok, free}. (ok=false si no hay ninguna.) En Práctica no gasta nada.
+ * Gasta una pista de la reserva (el poder de Juth es independiente de las pistas).
+ * Devuelve {ok, free}. (ok=false si no hay ninguna o un Pacto las apaga.) En Práctica no gasta nada.
  */
-export function spendHint({ run, mode, level }) {
+export function spendHint({ run, mode }) {
   if (isPractice(mode)) return { ok: true, free: true };
-  if (useHeroicHint(run, level)) return { ok: true, free: true };
+  if (fateBlocks(run, 'hints')) return { ok: false, free: false };
   if ((run.hints || 0) > 0) {
     run.hints--;
     return { ok: true, free: false };
@@ -113,9 +104,8 @@ export function spendHint({ run, mode, level }) {
   return { ok: false, free: false };
 }
 
-/** ¿Se puede pedir una pista ahora? (gratis o de la reserva) */
-export const canHint = (run, mode, level) =>
-  isPractice(mode) || heroicHintsLeft(run, level) > 0 || (run?.hints || 0) > 0;
+/** ¿Se puede pedir una pista ahora? */
+export const canHint = (run, mode) => isPractice(mode) || (!fateBlocks(run, 'hints') && (run?.hints || 0) > 0);
 
 /**
  * Pistas ganadas al completar `level`; suma a run.hints y devuelve cuántas.

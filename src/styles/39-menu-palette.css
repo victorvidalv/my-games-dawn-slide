@@ -241,17 +241,6 @@ button.danger {
   color: #f3e3ff;
 }
 
-/* Elegir camino: el normal en jade, el heroico en carmesí (como Aventura) */
-#travel .route-option {
-  --route-paint: linear-gradient(150deg, #2f8a78 0 24%, #1c5f56 24.75% 83%, #0f3833 84%);
-}
-#travel .route-option.brave {
-  --route-paint: linear-gradient(150deg, #c23a30 0 24%, #8a1c22 24.75% 83%, #4a0d14 84%);
-}
-#travel .route-option small::after {
-  color: #9fe8d4;
-}
-
 /* Elegir héroe: el tono del héroe se mezcla con el índigo (antes con pizarra) */
 .hero-selector {
   --portrait-tone: color-mix(in srgb, var(--chosen, #e0b04f) 22%, #1a1f47);

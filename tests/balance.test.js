@@ -4,12 +4,10 @@ import { hintEvery } from '../src/game/heroes.js';
 import { POWER_READY_SHARE, powerReady } from '../src/game/powers.js';
 import { maxPrize, bonusPrize } from '../src/game/minigames.js';
 import { MAX_REVIVES, REVIVE_SHARE } from '../src/game/shop.js';
-import { braveExtra, moveLimit } from '../src/engine/difficulty.js';
-import { HEROIC_BENEFITS } from '../src/game/routes.js';
 
 /**
  * Equilibrio del juego con el modelo de src/game/balance.js (determinista). Los rangos salen de `npm run simulate`:
- * son anchas a propósito, pero detectan un cambio que rompa la progresión de cada camino, los poderes o el camino heroico.
+ * son anchas a propósito, pero detectan un cambio que rompa la progresión de cada camino, los poderes, la tienda o los sellos.
  * Habilidad: 0,4 casual · 0,6 media · 0,8 buena · 0,92 experta.
  */
 const RUNS = 250;
@@ -54,7 +52,7 @@ describe('curva de dificultad de cada camino (simulación)', () => {
   it('también para el jugador experto: Normal ≥ Difícil y Experto queda bastante por debajo', () => {
     const [n, d, e] = [NORMAL, DIFICIL, EXPERTO].map((s) => reach(s, 0.92));
     expect(n).toBeGreaterThanOrEqual(d - 4); // con los mínimos calibrados, Normal y Difícil acaban casi igual para el experto
-    expect(d - e).toBeGreaterThan(5);
+    expect(d - e).toBeGreaterThan(4); // sin jefes, el experto llega algo más lejos en Experto
   });
 
   it('alcance esperado por camino: Normal se puede completar con maña; en Experto solo los muy buenos llegan lejos', () => {
@@ -85,7 +83,7 @@ describe('curva de dificultad de cada camino (simulación)', () => {
 });
 
 describe('equilibrio de los poderes de héroe (simulación)', () => {
-  it('los tres poderes ayudan de verdad en cada camino (≥ 7,5 niveles extra de media; con los jefes más duros y la reserva de Lía a la mitad en ellos)', () => {
+  it('los tres poderes ayudan de verdad en cada camino (≥ 7,5 niveles extra de media)', () => {
     for (const start of PATHS)
       for (const hero of HEROES) expect(uplift(hero, start), `${hero} camino ${start}`).toBeGreaterThanOrEqual(7.5);
   });
@@ -116,7 +114,7 @@ describe('equilibrio de los poderes de héroe (simulación)', () => {
     });
   });
 
-  it('Jean/Juth descansan en algunos tableros (nunca en el primero, en un jefe ni dos seguidos)', () => {
+  it('Jean/Juth descansan en algunos tableros (nunca en el primero, en el cierre de una ciudad ni dos seguidos)', () => {
     expect(POWER_READY_SHARE).toEqual({ jean: { 1: 0.85, 50: 0.75, 75: 0.65 }, van: { 1: 1, 50: 0.65, 75: 0.7 } });
     const ready = (s, hero) => Array.from({ length: 100 }, (_, i) => powerReady(i + 1, s, hero)).filter(Boolean).length;
     expect(ready(NORMAL, 'van')).toBe(100);
@@ -126,74 +124,10 @@ describe('equilibrio de los poderes de héroe (simulación)', () => {
         expect(Math.abs(ready(s, hero) - 100 * share), `${hero} ${s}`).toBeLessThanOrEqual(1);
         expect(powerReady(1, s, hero)).toBe(true);
         for (let level = 2; level <= 100; level++) {
-          if (level % 10 === 0) expect(powerReady(level, s, hero), `${hero} ${s} jefe ${level}`).toBe(true);
+          if (level % 10 === 0) expect(powerReady(level, s, hero), `${hero} ${s} cierre ${level}`).toBe(true);
           expect(powerReady(level, s, hero) || powerReady(level - 1, s, hero), `${hero} ${s} ${level}`).toBe(true);
         }
       }
-  });
-});
-
-describe('camino heroico (simulación)', () => {
-  const avgOver = (skill, hero) => {
-    let dl = 0;
-    let pr = 0;
-    for (const start of PATHS) {
-      const a = averageRuns({ hero, start, skill, runs: RUNS });
-      const b = averageRuns({ hero, start, skill, runs: RUNS, route: 'brave' });
-      dl += b.cleared - a.cleared;
-      pr += b.score / Math.max(1, a.score);
-    }
-    return { levels: dl / PATHS.length, points: pr / PATHS.length };
-  };
-
-  it('es un riesgo real pero no un castigo: pierde a lo sumo unos pocos niveles y al jugador experto le da más puntos con cualquier héroe', () => {
-    for (const hero of HEROES) {
-      const g = avgOver(0.92, hero);
-      expect(g.levels, `${hero} niveles`).toBeGreaterThan(-9);
-      expect(g.points, `${hero} puntos`).toBeGreaterThan(1.05); // más puntos por nivel compensan que los poderes valgan la mitad
-    }
-    for (const hero of HEROES) expect(avgOver(0.6, hero).levels, `${hero} jugador medio`).toBeGreaterThan(-12);
-  });
-
-  it('las variantes heroicas añaden riesgo y lo compensan con puntos', () => {
-    const lia = avgOver(0.8, 'lia');
-    const jean = avgOver(0.8, 'jean');
-    const juth = avgOver(0.8, 'van');
-    for (const g of [lia, jean, juth]) {
-      expect(g.levels).toBeLessThan(0); // cada variante añade dificultad
-      expect(g.levels).toBeGreaterThan(-12); // pero no es un castigo
-    }
-    expect(
-      Math.max(lia.levels, jean.levels, juth.levels) - Math.min(lia.levels, jean.levels, juth.levels),
-    ).toBeLessThan(6); // parecidos entre héroes
-    for (const g of [lia, jean, juth]) expect(g.points).toBeGreaterThan(1.0);
-  });
-
-  it('con tienda, el descuento heroico de Juth abarata sus compras sin hacerle perder niveles', () => {
-    const play = () =>
-      PATHS.map((start) =>
-        averageRuns({ hero: 'van', start, skill: 0.8, runs: RUNS, shop: true, route: 'brave' }),
-      ).reduce((a, r) => ({ cleared: a.cleared + r.cleared, spent: a.spent + r.spent }), { cleared: 0, spent: 0 });
-    const withDiscount = play();
-    const discount = HEROIC_BENEFITS.shop.van;
-    HEROIC_BENEFITS.shop.van = 0;
-    let without;
-    try {
-      without = play();
-    } finally {
-      HEROIC_BENEFITS.shop.van = discount;
-    }
-    expect(withDiscount.spent).toBeLessThan(without.spent * 0.85);
-    expect(withDiscount.cleared).toBeGreaterThanOrEqual(without.cleared - 0.5);
-  });
-
-  it('el tablero heroico pide más movimientos y su límite es más estricto', () => {
-    expect(braveExtra(2)).toBe(1);
-    expect(braveExtra(37)).toBe(4);
-    for (const opt of [15, 30, 37])
-      expect(moveLimit(opt + braveExtra(opt), 1, 50, true)).toBeLessThan(
-        moveLimit(opt + braveExtra(opt), 1, 50, false),
-      );
   });
 });
 
@@ -207,13 +141,13 @@ describe('economía de pistas y sellos (simulación)', () => {
     expect(bonusPrize(1, 95, EXPERTO)).toBeGreaterThanOrEqual(1); // cualquier estrella da al menos una pista
   });
 
-  it('los sellos opcionales son un riesgo con premio: dan entre un 8 % y un 25 % de los puntos y cuestan algunos niveles', () => {
+  it('los sellos opcionales son un riesgo con premio: dan entre un 8 % y un 28 % de los puntos y cuestan algunos niveles', () => {
     for (const start of PATHS) {
       const con = averageRuns({ hero: 'none', start, skill: 0.8, runs: RUNS });
       const sin = averageRuns({ hero: 'none', start, skill: 0.8, runs: RUNS, seals: false });
       const share = con.sealPts / con.score;
       expect(share, `camino ${start}`).toBeGreaterThan(0.08);
-      expect(share, `camino ${start}`).toBeLessThan(0.25);
+      expect(share, `camino ${start}`).toBeLessThan(0.28);
       expect(sin.cleared - con.cleared, `camino ${start}`).toBeLessThan(14);
     }
   });

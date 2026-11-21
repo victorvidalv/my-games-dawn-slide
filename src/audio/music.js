@@ -8,7 +8,7 @@ import {
   MENU_THEME,
   SCALES,
   ZONE_THEMES,
-  bossThemeFor,
+  FATE_THEME,
   cityThemeFor,
   chordMidi,
   entryAt,
@@ -17,7 +17,6 @@ import {
   sectionAt,
   shiftEntry,
 } from './themes.js';
-import { isBossLevel } from '../game/mechanics.js';
 import { SURVIVAL_TRACK_BARS, shuffleSurvivalTracks } from './themes-survival.js';
 
 /* ============================ Música procedural ============================
@@ -68,7 +67,7 @@ export const Music = (() => {
     const d = noiseBuf.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   }
-  const vol = () => (muted ? 0 : (theme.boss ? 0.35 : 0.28) * duckLv);
+  const vol = () => (muted ? 0 : (theme.march ? 0.35 : 0.28) * duckLv);
   function osc(type, f, t, dur, v, a = 0.006, filt = 0, det = 0) {
     const o = AC.createOscillator(),
       g = AC.createGain();
@@ -393,11 +392,11 @@ export const Music = (() => {
   };
 
   /**
-   * Producción «épica» de los jefes (tema con `boss: true`): coro y cuerdas sostenidas con un bordón grave, timbales y bombo de taiko
+   * Producción «épica» de la marcha del destino (tema con `march: true`): coro y cuerdas sostenidas con un bordón grave, timbales y bombo de taiko
    * en cada tiempo, metales en acordes de poder, trémolo de cuerdas, platillos en cada frase y, antes de cada sección, un
    * crescendo de redobles y ruido ascendente. Se oye claramente distinta del resto de la música del juego.
    */
-  function bossLayer(th, st, t, bar, sd, chord, firstOfBar) {
+  function marchLayer(th, st, t, bar, sd, chord, firstOfBar) {
     const root = chord[0],
       fifth = chord[2],
       low = Math.max(root - 12, 26);
@@ -506,7 +505,7 @@ export const Music = (() => {
     const chord = chordMidi(th, ent(src, st)); // [fundamental, 3ª, 5ª, 7ª, …]
     const firstOfBar = chordMidi(th, ent(src, 0));
     const nextRoot = chordMidi(th, ent(nextSrc, 0))[0];
-    const L = layersFor(Math.max(1, Math.min(th.boss ? LAYERS_PER_CITY : sec.cap, layerNow + sec.lift))); // el jefe nunca se aligera: orquesta completa en todas las secciones
+    const L = layersFor(Math.max(1, Math.min(th.march ? LAYERS_PER_CITY : sec.cap, layerNow + sec.lift))); // la marcha nunca se aligera: orquesta completa en todas las secciones
     const last = k === sec.bars - 1,
       building = sec.drums === 'build' || (!!sec.build && last);
     const rise = building ? (sec.drums === 'build' ? (k * 16 + st) / (sec.bars * 16) : st / 16) : 0; // 0→1 a lo largo del redoble
@@ -568,7 +567,7 @@ export const Music = (() => {
         );
     }
     // base épica: timbal grave en cada compás y trompas largas al empezar cada frase
-    if (!th.boss && L.drums === 'full' && !sec.drums) {
+    if (!th.march && L.drums === 'full' && !sec.drums) {
       if (st === 0) timpani(t, bassReg(firstOfBar[0]) - 12, k % 4 === 0 ? 0.06 : 0.038);
       if (st === 0 && k % 4 === 0) [0, 2].forEach((i) => voice('horn', firstOfBar[i], t, sd * 14, 0.011));
       if (k % 4 === 3 && st >= 12 && st % 2 === 0) timpani(t, bassReg(chord[2]) - 12, 0.03 + 0.006 * (st - 12));
@@ -585,7 +584,7 @@ export const Music = (() => {
     const cho = th.choir;
     if (cho && sec.chorus && !building) {
       const big = sec.id === 'final' ? 1.25 : 1,
-        cv = (th.boss ? 0.048 : 0.042) * big;
+        cv = (th.march ? 0.048 : 0.042) * big;
       if (st === 0) {
         firstOfBar.slice(0, 3).forEach((m, i) => choir(choirReg(m), t + i * 0.012, sd * 15, cv, cho.vowel));
         choir(bassReg(firstOfBar[0]) + 12, t, sd * 15, cv * 0.9, 'oh');
@@ -600,7 +599,7 @@ export const Music = (() => {
       if (st % 4 === 2) noise(t, 0.06, 0.011, 6800); // pandereta en los contratiempos: el estribillo «salta»
     } else if (cho && sec.id === 'bridge' && st === 0) {
       firstOfBar.slice(0, 3).forEach((m, i) => choir(choirReg(m), t + i * 0.02, sd * 15, 0.028, 'oo'));
-    } else if (cho && th.epic >= 3 && sec.id === 'verse2' && st === 0 && !th.boss) {
+    } else if (cho && th.epic >= 3 && sec.id === 'verse2' && st === 0 && !th.march) {
       [0, 2].forEach((i) => choir(choirReg(firstOfBar[i]), t, sd * 15, 0.024, 'oo')); // menú y héroes: el coro ya asoma en la 2.ª estrofa
     }
 
@@ -621,7 +620,7 @@ export const Music = (() => {
       if (st === 0 && k % 4 === 0) timpani(t, bassReg(firstOfBar[0]) - 12, 0.06);
     } else drums(th, st, t, k, E, sec.drums || L.drums, L.tutti);
 
-    if (th.boss && L.orchestra && hasLead) bossLayer(th, st, t, k, sd, chord, firstOfBar);
+    if (th.march && L.orchestra && hasLead) marchLayer(th, st, t, k, sd, chord, firstOfBar);
 
     // capa épica: timbal en las frases y metales que refuerzan la melodía
     if (E >= 2 && L.orchestra) {
@@ -689,7 +688,7 @@ export const Music = (() => {
   }
   /** Cambia de tema entrando al inicio de un compás. */
   function useTheme(nt) {
-    if (nt !== theme) step = (nt.boss ? 4 : 0) * 16; // canción nueva: desde su intro (el jefe entra directo a la estrofa)
+    if (nt !== theme) step = (nt.march ? 4 : 0) * 16; // canción nueva: desde su intro (la marcha entra directo a la estrofa)
     theme = nt;
     setSfxKey(nt);
     baseBpm = nt.bpm;
@@ -752,7 +751,7 @@ export const Music = (() => {
     setLevel(n, hero) {
       survivalQueue = null;
       const city = zoneIdx(n);
-      useTheme(isBossLevel(n) ? bossThemeFor(city) : cityThemeFor(city, hero));
+      useTheme(cityThemeFor(city, hero));
       layerNext = layerOfLevel(n);
       if (!playing) layerNow = layerNext;
     },
@@ -774,10 +773,10 @@ export const Music = (() => {
       }
       this.start();
     },
-    /** Música fuera de partida: 'menu' (menú principal) o 'heroes' (elección de héroe). Arranca si hace falta. */
+    /** Música fuera de partida: 'menu' (menú principal), 'heroes' (elección de héroe) o 'fate' (cartas del destino). */
     scene(name) {
       survivalQueue = null;
-      useTheme(name === 'heroes' ? HEROES_THEME : menuTheme);
+      useTheme(name === 'heroes' ? HEROES_THEME : name === 'fate' ? FATE_THEME : menuTheme);
       layerNext = LAYERS_PER_CITY;
       if (!playing) layerNow = layerNext;
       tempoNow = baseBpm;

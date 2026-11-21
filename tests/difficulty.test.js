@@ -9,7 +9,10 @@ import {
   targetFor,
   ratingForMin,
 } from '../src/engine/difficulty.js';
-import { levelPlan, mechanicsOfFamily, isBossLevel } from '../src/game/mechanics.js';
+import { levelPlan, mechanicsOfFamily } from '../src/game/mechanics.js';
+
+/** Cierre de ciudad (10, 20 … 100): el calendario calibrado le da un tablero algo más largo antes de elegir carta. */
+const isCityEnd = (level) => level >= 10 && level % 10 === 0;
 import { TUTORIAL_LEVELS, hasCurse, minFor } from '../src/engine/calibration.js';
 import { calcGain, gainFor } from '../src/engine/scoring.js';
 
@@ -17,9 +20,9 @@ const PATHS = { Normal: 1, Difícil: 50, Experto: 75 };
 const targetAt = (start, level) => curve(rateAt(start, level)).target;
 
 describe('dificultad: la curva calibrada se siente apropiada', () => {
-  it('en Normal los mínimos parten de 3 y suben un movimiento cada 3 niveles (los jefes, 2 más desde el 20)', () => {
+  it('en Normal los mínimos parten de 3 y suben un movimiento cada 3 niveles (los cierres de ciudad, 2 más desde el 20)', () => {
     for (let l = 1; l <= MAX_LEVEL; l++) {
-      const want = Math.min(37, 3 + Math.floor((l - 1) / 3) + (isBossLevel(l) && l >= 20 ? 2 : 0));
+      const want = Math.min(37, 3 + Math.floor((l - 1) / 3) + (isCityEnd(l) && l >= 20 ? 2 : 0));
       expect(minFor(1, l), `nivel ${l}`).toBe(want);
       expect(targetAt(1, l), `nivel ${l}`).toBe(want);
     }
@@ -51,12 +54,12 @@ describe('dificultad: la curva calibrada se siente apropiada', () => {
       expect(targetAt(75, l)).toBeGreaterThanOrEqual(targetAt(50, l));
     }
   });
-  it('la dificultad solo baja justo después de un jefe (que es 2 más duro) y no da saltos bruscos', () => {
+  it('la dificultad solo baja justo después de un cierre de ciudad (que es 2 más duro) y no da saltos bruscos', () => {
     for (const start of Object.values(PATHS)) {
       for (let l = 2; l <= MAX_LEVEL; l++) {
         const d = targetAt(start, l) - targetAt(start, l - 1);
         expect(d, `camino ${start}, nivel ${l}`).toBeLessThanOrEqual(5);
-        if (!isBossLevel(l - 1)) expect(d, `camino ${start}, nivel ${l}`).toBeGreaterThanOrEqual(0);
+        if (!isCityEnd(l - 1)) expect(d, `camino ${start}, nivel ${l}`).toBeGreaterThanOrEqual(0);
         else expect(d, `camino ${start}, nivel ${l}`).toBeGreaterThanOrEqual(-3);
       }
     }
@@ -78,14 +81,14 @@ describe('dificultad: la curva calibrada se siente apropiada', () => {
     }
     expect(minReach(30)).toBe(curve(30).target);
   });
-  it('el límite es el doble en Normal y se vuelve más estricto en Difícil, Experto y en jefes', () => {
+  it('el límite es el doble en Normal y se vuelve más estricto en Difícil y Experto', () => {
     expect(moveLimit(20)).toBe(40);
     expect(moveLimit(20, 1)).toBe(40);
     expect(moveLimit(20, 50)).toBeLessThan(moveLimit(20, 1));
     expect(moveLimit(20, 75)).toBeLessThan(moveLimit(20, 50));
     expect(moveLimit(20, 75)).toBeGreaterThan(20);
-    expect(moveLimit(20, 1, 10, false, true)).toBeLessThan(moveLimit(20, 1, 10, false, false));
-    expect(moveLimit(20, 1, 10, false, true)).toBeGreaterThan(20);
+    expect(moveLimit(20, 1, 100)).toBeLessThan(moveLimit(20, 1, 1));
+    expect(moveLimit(20, 1, 100)).toBeGreaterThan(20);
   });
 });
 
@@ -110,13 +113,13 @@ describe('calendario de piezas especiales (calibrado)', () => {
         plans.slice(c * 10, c * 10 + 10).filter((p) => p.family === 'plain').length,
         `tramo ${c + 1}`,
       ).toBeGreaterThanOrEqual(1);
-    for (let l = 1; l <= 100; l++) expect(plans[l - 1].boss, `nivel ${l}`).toBe(l % 10 === 0);
+    for (let l = 1; l <= 100; l++) expect(plans[l - 1].boss, `nivel ${l}: ya no hay jefes`).toBeUndefined();
   });
   it('las mecánicas no se repiten seguidas: nunca la misma mezcla en dos niveles especiales consecutivos ni tres especiales pegados', () => {
     let run = 0;
     for (let l = 1; l <= 100; l++) {
       run = plans[l - 1].family === 'plain' ? 0 : run + 1;
-      if (!plans[l - 1].boss) expect(run, `nivel ${l}`).toBeLessThanOrEqual(3);
+      if (!isCityEnd(l)) expect(run, `nivel ${l}`).toBeLessThanOrEqual(3);
     }
     let prev = null;
     for (let l = 1; l <= 100; l++) {
@@ -125,7 +128,7 @@ describe('calendario de piezas especiales (calibrado)', () => {
       // salvo la práctica en solitario de una pieza recién llegada (los 8 niveles tras su tutorial), nunca la misma mezcla seguida
       const single = plans[l - 1].mechanics.length === 1 ? plans[l - 1].mechanics[0] : null;
       const practising = single && l - TUTORIAL_LEVELS[single] <= 8;
-      if (!plans[l - 1].boss && l > TUTORIAL_LEVELS.heavy && !practising)
+      if (!isCityEnd(l) && l > TUTORIAL_LEVELS.heavy && !practising)
         expect(f === prev, `nivel ${l}: ${f} repetida`).toBe(false);
       prev = f;
     }
@@ -144,7 +147,7 @@ describe('calendario de piezas especiales (calibrado)', () => {
       for (let l = TUTORIAL_LEVELS[m] + 1; l <= TUTORIAL_LEVELS[m] + 4; l++)
         expect(hasCurse(l), `nivel ${l}`).toBe(false);
   });
-  it('las mezclas crecen: pocas al principio y todas juntas al final (el jefe 100 lleva las cuatro)', () => {
+  it('las mezclas crecen: pocas al principio y todas juntas al final (el nivel 100 lleva las cuatro)', () => {
     const avg = (a, b) => {
       const s = plans.slice(a - 1, b).filter((p) => p.mechanics.length);
       return s.reduce((x, p) => x + p.mechanics.length, 0) / s.length;
@@ -174,8 +177,8 @@ describe('calendario de piezas especiales (calibrado)', () => {
     expect(mechanicsOfFamily('combo_whgi')).toEqual(ORDER);
   });
   it('calcGain y gainFor coinciden sin bonos extra', () => {
-    const base = calcGain(40, 15, 15, 0).total;
-    const g = gainFor(40, 15, 15, 0);
+    const base = calcGain(15, 15, 0).total;
+    const g = gainFor(15, 15, 0);
     expect(g.total).toBe(base);
   });
 });

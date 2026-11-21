@@ -4,8 +4,8 @@
  * su tamaño (1, 2, 3… mecánicas), dónde caen el maleficio y los sellos— y OPTIMIZA el reparto:
  *   · cada mecánica se explica con su tutorial en el nivel marcado y no se usa antes de él;
  *   · las mecánicas no se repiten seguidas: cada nivel especial elige las que hace más que no salen (y la recién llegada vuelve enseguida);
- *   · el tamaño de las mezclas sube con el nivel y, pasado el 80, se usan todas juntas (los jefes cargan la mezcla máxima de su momento);
- *   · maleficio y sellos nunca coinciden con jefes ni con tutoriales, ni se pegan entre sí;
+ *   · el tamaño de las mezclas sube con el nivel y, pasado el 80, se usan todas juntas (los cierres de ciudad cargan la mezcla máxima de su momento);
+ *   · maleficio y sellos nunca coinciden con cierres de ciudad ni con tutoriales, ni se pegan entre sí;
  *   · se comprueba que existan tableros de cada combinación a la dificultad pedida (si no, se cambia por otra combinación del mismo tamaño);
  *   · turnos mínimos: Normal parte de 3 y sube 1 cada 3 niveles (jefes +2); Difícil y Experto siguen las preferencias, siempre ascendentes.
  *   node scripts/optimize-calibration.mjs
@@ -19,6 +19,7 @@ const { targetFor } = await import('../src/engine/targets.js');
 
 const ORDER = ['wall', 'heavy', 'gate', 'ice'];
 const LETTER = { wall: 'w', heavy: 'h', gate: 'g', ice: 'i' };
+/** Cierre de ciudad (10, 20 … 100): el tablero que precede a la elección de cartas del destino. */
 const isBoss = (l) => l % 10 === 0;
 const get = (l) => PREF[l];
 

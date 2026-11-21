@@ -1,16 +1,5 @@
 /* Inglés: historia (capítulos, héroes, pueblos, inscripciones) y nombres de las ciudades. */
 export const EN_STORY = {
-  '«¿Listo? Mi farol apuesta por ti.»': '“Ready? My lantern is rooting for you.”',
-  '«¡A toda vela, que corre el reloj!»': '“Full sail! The clock is ticking!”',
-  '«Tengo mil llaves. ¿Probamos la tuya?»': '“I have a thousand keys. Shall we try yours?”',
-  '«¡Desliza con estilo! Yo pongo las hojas.»': '“Slide in style! I’ll bring the leaves.”',
-  '«¡Mis relojes siempre se adelantan!»': '“My clocks are always running fast!”',
-  '«¡Que el hielo no te quite la sonrisa!»': '“Don’t let the ice freeze your smile!”',
-  '«¡Con un tironcito se desenreda todo!»': '“One little tug and it all untangles!”',
-  '«¡Este puzle está recién salido del horno!»': '“This puzzle is fresh out of the forge!”',
-  '«¿Dónde dejé la salida? Ah, ya sé.»': '“Where did I leave the exit? Ah, right.”',
-  '«¡Que suene la campana del último reto!»': '“Ring the bell for the final challenge!”',
-  Iniciar: 'Start',
   /* ciudades */
   'Valle Esmeralda': 'Emerald Valley',
   'Puerto de las Velas': 'Harbor of Sails',
@@ -326,35 +315,7 @@ export const EN_STORY = {
   '«Una sola jugada acorta todo el códice.»': '“One single move shortens the whole codex.”',
 
   /* jefes de ciudad (10..100) */
-  'El Vigía de la Bruma': 'The Mist Watcher',
-  'Guardián del Primer Umbral': 'Guardian of the First Threshold',
-  '«Nadie cruza la niebla mientras mis piedras sigan en pie.»':
-    '“No one crosses the mist while my stones still stand.”',
-  'Rocas fijas · Turnos ajustados': 'Fixed rocks · Tight turns',
-  'El Farero Ciego': 'The Blind Lighthouse Keeper',
-  'Guardián del Puerto Oscuro': 'Guardian of the Dark Harbor',
-  'Piezas pesadas · Turnos ajustados': 'Heavy pieces · Tight turns',
-  'El Carcelero de Duna': 'The Dune Jailer',
-  'Guardián de las Arenas': 'Guardian of the Sands',
-  'Candados y placas · Turnos ajustados': 'Padlocks & plates · Tight turns',
-  'La Dama del Ocaso': 'The Lady of Dusk',
-  'Guardián del Bosque Caído': 'Guardian of the Fallen Woods',
-  'Piezas de hielo · Turnos ajustados': 'Ice pieces · Tight turns',
-  'El Maestro Relojero': 'The Master Clockmaker',
-  'Guardián de la Torre Parada': 'Guardian of the Halted Tower',
-  'El Juez de Escarcha': 'The Frost Judge',
-  'Guardián del Paso Helado': 'Guardian of the Frozen Pass',
-  'El Tejedor de Cerezos': 'The Cherry-Blossom Weaver',
-  'Guardián del Jardín Mudo': 'Guardian of the Silent Garden',
-  'Mecanismo doble · Turnos ajustados': 'Dual mechanism · Tight turns',
-  'El Forjador de Ceniza': 'The Ash Forger',
-  'Guardián de la Fragua Fría': 'Guardian of the Cold Forge',
-  'El Escriba del Olvido': 'The Scribe of Oblivion',
-  'Guardián del Archivo Borrado': 'Guardian of the Erased Archive',
-  'Todas las trampas · Turnos ajustados': 'All traps · Tight turns',
   'Vhorn, la Sombra del Faro': 'Vhorn, Shadow of the Beacon',
-  'Guardián del Último Umbral': 'Guardian of the Final Threshold',
-  'Duelo final · Todas las piezas': 'Final duel · All pieces',
 
   /* finales y derrota */
   '¡Los sellos ceden!': 'The seals give way!',

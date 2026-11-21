@@ -12,7 +12,6 @@ import { PATHS, S, closeRun, discardRun, heroOf, holdBusy, pathOf, persist, setR
 import { restoreRun } from '../game/run-logic.js';
 import { bestAdventureRecord } from '../game/save-merge.js';
 import { startOptions } from '../game/starts.js';
-import { syncRouteStyle } from './board.js';
 import { syncHero } from './heroes.js';
 import { showMap } from './map.js';
 import { heroArt } from './story.js';
@@ -64,7 +63,6 @@ function renderPaths() {
 /* ---------- Ventana de confirmación con diseño propio ---------- */
 import { ICON_NAMES, icon } from './icons.js';
 import { lang, numLocale, setLang } from '../i18n.js';
-import { leaveBossPhase } from './boss-phase.js';
 export function ask({ ico = '❓', title, text, yes = 'Aceptar', no = 'Cancelar', danger = false }) {
   return new Promise((res) => {
     $('askIco').innerHTML = ICON_NAMES.includes(ico) ? icon(ico) : ico;
@@ -310,12 +308,10 @@ $('menu').addEventListener('keydown', (e) => {
   $('menuBack').click();
 });
 export function openMenu(view = 'home') {
-  syncRouteStyle();
   renderPaths();
   renderDaily(); // también fuera de su sección: marca si el reto de hoy está pendiente
   const active = S.run && S.G && !S.G.done,
     canCont = Number.isFinite(store.run?.level) && !active;
-  if (!active) leaveBossPhase(); // el menú principal no lleva el ambiente de jefe
   const b = $('bContinue');
   b.style.display = canCont ? '' : 'none';
   if (canCont) b.innerHTML = continueLabel(store.run);

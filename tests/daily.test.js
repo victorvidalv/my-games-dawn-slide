@@ -103,11 +103,10 @@ describe('retos diarios: el tablero del día', () => {
         bought: 0,
         seal: null,
         tutorial: null,
-        timeLimit: 0,
         daily: c.id,
         n: c.level,
       });
-      expect(G.plan.boss).toBe(false);
+      expect(G.plan.boss).toBeUndefined();
     }
   });
   it('cada reto trae las piezas que promete', () => {

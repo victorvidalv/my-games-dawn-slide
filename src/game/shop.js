@@ -1,10 +1,10 @@
 import { zoneIdx } from '../data/zones.js';
-import { isBossLevel } from './mechanics.js';
 import { snapshotRescue } from './heroes.js';
 import { byPath } from '../engine/difficulty.js';
 
-import { shopDiscount } from './routes.js';
+import { shopDiscount } from './run-points.js';
 import { relicFor } from './relics.js';
+import { fateBlocks, fateReviveShare, fateRevives } from './fate.js';
 
 import { baseScore } from '../engine/scoring.js';
 
@@ -13,9 +13,12 @@ const PATH_PRICE = { 1: 1, 50: 1.15, 75: 1.3 };
 export const pathPrice = (start = 1) => byPath(PATH_PRICE, start);
 /** Revivir al caer (fuera de tienda): cuesta 33 % de tus puntos actuales (20 % con la Bolsa mercante) y solo 1 vez por partida. */
 export const REVIVE_SHARE = 0.33;
-/** Parte de los puntos que cuesta revivir en esta partida. */
-export const reviveShare = (run) => relicFor(run)?.revive ?? REVIVE_SHARE;
+/** Parte de los puntos que cuesta revivir en esta partida (la más baja entre la reliquia y las cartas). */
+export const reviveShare = (run) =>
+  Math.min(relicFor(run)?.revive ?? REVIVE_SHARE, fateReviveShare(run) || REVIVE_SHARE);
 export const MAX_REVIVES = 1;
+/** Revivir pagados que permite la partida (Fénix suma uno). */
+export const maxRevives = (run) => MAX_REVIVES + fateRevives(run);
 
 export const SHOP_ITEMS = [
   { id: 'hint', icon: 'hint', name: 'Pista', levels: 0.6, detail: 'Una pista que te enseña el mejor movimiento.' },
@@ -55,9 +58,9 @@ export const SHOP_ITEMS = [
 
 export const itemById = (id) => SHOP_ITEMS.find((i) => i.id === id);
 
-/** Precio en puntos de un objeto: niveles × valor de un nivel de esa dificultad × camino (redondeado a la decena). */
-export const priceOf = (id, rating = 1, start = 1, run = null) => {
-  const normal = Math.round((itemById(id).levels * baseScore(rating) * pathPrice(start)) / 10) * 10;
+/** Precio en puntos de un objeto: niveles × puntos base del tablero (según su mínimo `opt`) × camino (redondeado a la decena). */
+export const priceOf = (id, opt = 1, start = 1, run = null) => {
+  const normal = Math.round((itemById(id).levels * baseScore(opt) * pathPrice(start)) / 10) * 10;
   const discountBasisPoints = Math.round(shopDiscount(run) * 10000);
   return Math.round((normal * (10000 - discountBasisPoints)) / 10000);
 };
@@ -75,19 +78,18 @@ export const shopBoardKey = (G) => (G.tutorial ? `${G.n}:${G.tutorial}` : G.n);
 export function availability(id, { run, G }) {
   if (!run || !G || G.done) return { ok: false, reason: 'No hay un tablero en juego.' };
   if (run.mode === 'p') return { ok: false, reason: 'En Práctica todo es gratis.' };
+  if (fateBlocks(run, 'shop')) return { ok: false, reason: 'Tu Pacto mercante cerró la tienda.' };
   if (id === 'hint' && run.hintPurchaseBoard === shopBoardKey(G)) {
     return { ok: false, reason: 'Ya compraste una pista para este tablero.' };
   }
   if (itemById(id).share && (run.turnPackBoard === shopBoardKey(G) || G.bought > 0)) {
     return { ok: false, reason: 'Ya compraste turnos para este tablero.' };
   }
-  if (id === 'skip') {
-    if (isBossLevel(G.n)) return { ok: false, reason: 'Los jefes no se pueden saltar.' };
-    if (run.lastSkipZone === zoneIdx(G.n)) return { ok: false, reason: 'Ya usaste el salto de esta ciudad.' };
-  }
+  if (id === 'skip' && run.lastSkipZone === zoneIdx(G.n))
+    return { ok: false, reason: 'Ya usaste el salto de esta ciudad.' };
   if (id === 'redo' && run.redoBoard === shopBoardKey(G)) return { ok: false, reason: 'Ya rehiciste este tablero.' };
   if (id === 'redo' && !G.moves) return { ok: false, reason: 'Aún no has movido nada.' };
-  const price = priceOf(id, G.rate, run.start, run);
+  const price = priceOf(id, G.opt, run.start, run);
   if ((run.score || 0) < price) return { ok: false, reason: 'No te alcanzan los puntos.', price };
   return { ok: true, price };
 }
@@ -123,9 +125,13 @@ export function buy(id, { run, G }) {
 /** Costo en puntos (33 %, o 20 % con la Bolsa) de revivir tras perder con `score` puntos actuales. */
 export const reviveCost = (score = 0, run = null) => Math.round(Math.max(0, score || 0) * reviveShare(run));
 
-/** ¿Puede revivir pagando el 33 % de sus puntos actuales? (una sola vez por aventura, nunca en Práctica). */
+/** ¿Puede revivir pagando el 33 % de sus puntos actuales? (una vez por aventura —dos con Fénix—, nunca en Práctica ni con Temerario). */
 export const canPaidRevive = (run, mode = run?.mode) =>
-  !!run && mode !== 'p' && (run.revivesBought || 0) < MAX_REVIVES && reviveCost(run.score, run) > 0;
+  !!run &&
+  mode !== 'p' &&
+  !fateBlocks(run, 'revive') &&
+  (run.revivesBought || 0) < maxRevives(run) &&
+  reviveCost(run.score, run) > 0;
 
 /** Cobra el 33 % de los puntos actuales y marca el único revivir de la partida. */
 export function payRevive(run) {
@@ -138,31 +144,16 @@ export function payRevive(run) {
 }
 
 export const FREE_RETRY_UNTIL = 9;
-export const BOSS_FREE_RETRIES = 2;
 
-/** Cada jefe tiene su propio cupo de reintentos en esta aventura. */
-export function bossRetriesLeft(run, level) {
-  if (!run || run.daily || run.mode === 'p' || !isBossLevel(level)) return 0;
-  const used = run.bossRetry?.level === level ? run.bossRetry.used || 0 : 0;
-  return Math.max(0, BOSS_FREE_RETRIES - used);
-}
-
-export function freeRetry(run, level, boss = false) {
-  if (boss) return bossRetriesLeft(run, level) > 0;
-  return !!run && !run.daily && run.mode !== 'p' && (run.start || 1) === 1 && level <= FREE_RETRY_UNTIL;
-}
+/** Los primeros niveles del camino Normal se pueden repetir gratis (para aprender). */
+export const freeRetry = (run, level) =>
+  !!run && !run.daily && run.mode !== 'p' && (run.start || 1) === 1 && level <= FREE_RETRY_UNTIL;
 
 /** Prepara el mismo tablero para repetirlo sin coste. La derrota corta la racha de la aventura. */
-export function useFreeRetry(run, G, why) {
-  const boss = !!G.plan?.boss && !G.tutorial;
-  if (!freeRetry(run, G.n, boss)) return false;
-  const snapshot = snapshotRescue(G);
-  if (boss) {
-    const used = BOSS_FREE_RETRIES - bossRetriesLeft(run, G.n);
-    run.bossRetry = { level: G.n, used: used + 1 };
-  }
+export function useFreeRetry(run, G) {
+  if (!freeRetry(run, G.n)) return false;
   run.streak = 0;
-  run.rescue = boss ? { ...snapshot, kind: 'boss', why } : { ...snapshot, kind: 'learn' };
+  run.rescue = { ...snapshotRescue(G), kind: 'learn' };
   return true;
 }
 

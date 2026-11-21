@@ -50,12 +50,16 @@ describe('Jean: ~33 % de los movimientos hechos, mínimo 3', () => {
     beginPower(short, { ...rewindBoard(12), opt: 13 });
     expect(powerState(short, { ...rewindBoard(12), opt: 13 }).ok).toBe(false);
   });
-  it('en el jefe de su camino heroico Jean tiene un rebobinado extra', () => {
-    const boss = { ...rewindBoard(12), n: 20, opt: 10 };
-    const heroic = { ...run('jean'), route: 'brave', mode: 'c' };
-    expect(powerState(heroic, boss).reason).toBe('2 usos en este tablero');
-    expect(powerState({ ...run('jean'), mode: 'c' }, boss).reason).toBe('1 uso por tablero');
-    expect(powerState(heroic, { ...boss, n: 19 }).reason).toBe('1 uso por tablero');
+  it('con Eco del poder Jean tiene un rebobinado extra en el último tablero de cada ciudad', () => {
+    const last = { ...rewindBoard(12), n: 20, opt: 10 };
+    const eco = { ...run('jean'), mode: 'c', fate: ['power-echo'] };
+    expect(powerState(eco, last).reason).toBe('2 usos en este tablero');
+    expect(powerState({ ...run('jean'), mode: 'c' }, last).reason).toBe('1 uso por tablero');
+    expect(powerState(eco, { ...last, n: 19 }).reason).toBe('1 uso por tablero');
+  });
+  it('Juramento apaga el poder del héroe', () => {
+    const oath = { ...run('jean'), mode: 'c', fate: ['juramento'] };
+    expect(powerState(oath, rewindBoard(12))).toEqual({ ok: false, reason: 'Apagado por tu Juramento' });
   });
   it('un uso antiguo de Jean cuenta como poder gastado en ese tablero', () => {
     expect(powerState({ ...run('jean'), undoUsedLevel: 8, undoUsedCount: 1 }, rewindBoard(4)).ok).toBe(false);

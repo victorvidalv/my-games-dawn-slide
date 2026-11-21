@@ -10,15 +10,11 @@ import {
   applyDailyWin,
   applySkip,
   canSaveBoard,
-  chooseRoute,
   cityAfter,
   clearKind,
   dailyEntry,
-  needsBossIntro,
-  needsTravelChoice,
   newAdventureRun,
   newDailyRun,
-  normalizeRoute,
   resetBoardForRevive,
   resolveFail,
   restoreDailyAttempt,
@@ -74,7 +70,11 @@ describe('crear partidas', () => {
       hints: 4,
       streak: 0,
       lifeUsed: false,
+      fate: [],
+      fatePicked: 2, // empezó en el 21: las ciudades 1 y 2 ya no ofrecen carta
     });
+    expect(run.fateDeck).toHaveLength(27);
+    expect(newAdventureRun({ seed: 7, start: 1, hero: 'van', from: 1, hints: 4 }).fatePicked).toBe(0);
   });
 
   it('el Farol suma sus pistas a las del camino y la racha diaria (no las reemplaza)', () => {
@@ -84,7 +84,7 @@ describe('crear partidas', () => {
     expect(newAdventureRun({ seed: 7, start: 1, hero: 'lia', from: 1, hints: 18, relic: 'sun' }).hints).toBe(18);
   });
 
-  it('el reto diario no tiene héroe ni vidas y va por la ruta normal', () => {
+  it('el reto diario no tiene héroe, ni vidas, ni cartas del destino', () => {
     const run = newDailyRun({
       challenge: { id: 'classic', level: 34 },
       day: 900,
@@ -98,9 +98,9 @@ describe('crear partidas', () => {
       hero: 'none',
       lifeUsed: true,
       hints: 0,
-      route: 'normal',
-      routeZone: 3,
     });
+    expect(run.fate).toBeUndefined();
+    expect(run.route).toBeUndefined();
     expect(run.daily).toEqual({ id: 'classic', day: 900, index: 1, boards: [null, null, null], attempt: null });
   });
 
@@ -116,9 +116,10 @@ describe('crear partidas', () => {
 
 describe('guardado del tablero', () => {
   it('copia el tablero sin compartir referencias', () => {
-    const G = board({ timeLeft: 4.2 });
+    const G = board();
     const snap = snapshotBoard(G);
-    expect(snap).toMatchObject({ level: 5, pos: [1, 2], moves: 3, timeLeft: 5, tutorial: null });
+    expect(snap).toMatchObject({ level: 5, pos: [1, 2], moves: 3, tutorial: null });
+    expect(snap.timeLeft).toBeUndefined();
     G.pos[0] = 9;
     G.hist[0][0] = 9;
     G.pieces[0].x = 9;
@@ -193,44 +194,11 @@ describe('guardado del tablero', () => {
   });
 });
 
-describe('presentación y rutas', () => {
-  it('el jefe se presenta una sola vez y nunca sobre un rescate', () => {
-    const G = board({ moves: 0, plan: { boss: true } });
-    expect(needsBossIntro(adventure(), G)).toBe(true);
-    expect(needsBossIntro(adventure({ bossSeen: 5 }), G)).toBe(false);
-    expect(needsBossIntro(adventure({ rescue: {} }), G)).toBe(false);
-    expect(needsBossIntro(adventure(), { ...G, moves: 1 })).toBe(false);
-    expect(needsBossIntro(adventure(), { ...G, tutorial: 'ice' })).toBe(false);
-  });
-
-  it('antes del nivel 11 la ruta vuelve a ser la normal', () => {
-    const run = adventure({ level: 4, route: 'brave', routeZone: 2 });
-    expect(normalizeRoute(run)).toBe(true);
-    expect(run).toMatchObject({ route: 'normal', routeZone: 0 });
-    expect(normalizeRoute(run)).toBe(false);
-    const later = adventure({ level: 14, route: 'brave' });
-    expect(normalizeRoute(later)).toBe(false);
-    const entering = adventure({ level: 14, enterPending: true });
-    expect(normalizeRoute(entering)).toBe(true);
-    expect(entering).toMatchObject({ route: 'normal', routeZone: 0, travelFrom: 0 });
-    expect(entering.enterPending).toBeUndefined();
-  });
-
-  it('el viaje se ofrece al cerrar cada ciudad menos la última', () => {
-    expect(needsTravelChoice({ pendingClear: { level: 20 } })).toBe(true);
-    expect(needsTravelChoice({ pendingClear: { level: 21 } })).toBe(false);
-    expect(needsTravelChoice({ pendingClear: { level: 100 } })).toBe(false);
-    expect(needsTravelChoice({})).toBe(false);
+describe('cierre de ciudad', () => {
+  it('cityAfter da la ciudad que se abre al superar un nivel', () => {
     expect(cityAfter(20)).toBe(2);
-    const run = adventure({ pendingClear: { level: 20 } });
-    chooseRoute(run, 'brave', 2);
-    expect(run).toMatchObject({
-      route: 'brave',
-      routeZone: 2,
-      storyChapterSeen: 2,
-      storySeen: 21,
-      pendingClear: { routeChosen: true },
-    });
+    expect(cityAfter(9)).toBe(0);
+    expect(cityAfter(100)).toBe(9);
   });
 });
 
@@ -239,7 +207,7 @@ describe('victoria', () => {
     const run = adventure({ score: 100, streak: 2 });
     applyAdventureWin(run, board({ n: 5, moves: 6 }), { total: 250, eff: 0.95 });
     expect(run).toMatchObject({ score: 350, cleared: 1, streak: 3, adj: 1 });
-    expect(run.pendingClear).toEqual({ level: 5, gain: 250, moves: 6, opt: 6, routeChosen: false });
+    expect(run.pendingClear).toEqual({ level: 5, gain: 250, moves: 6, opt: 6 });
   });
 
   it('una victoria floja corta la racha y baja la dificultad, con tope en −2', () => {
@@ -325,9 +293,9 @@ describe('derrota', () => {
   });
 
   it('renacer reinicia el tablero y devuelve los turnos comprados', () => {
-    const G = board({ bought: 3, limit: 15, timeLimit: 60, timeLeft: 2, done: true });
+    const G = board({ bought: 3, limit: 15, done: true });
     resetBoardForRevive(G);
-    expect(G).toMatchObject({ pos: [0, 0], moves: 0, hist: [], done: false, limit: 12, bought: 0, timeLeft: 60 });
+    expect(G).toMatchObject({ pos: [0, 0], moves: 0, hist: [], done: false, limit: 12, bought: 0 });
   });
 });
 
@@ -361,6 +329,26 @@ describe('rescates, movimientos y partidas guardadas', () => {
       mode: 'c',
       revive: 0,
       recBroken: false,
+      fate: [],
+      fatePicked: 2,
     });
+  });
+  it('una partida guardada con camino heroico o jefe pierde esos campos y sigue con cartas desde la próxima ciudad', () => {
+    const run = restoreRun({
+      level: 20,
+      seed: 1,
+      route: 'brave',
+      routeZone: 1,
+      bossSeen: 20,
+      bossRetry: { level: 20, used: 1 },
+      pendingClear: { level: 20, routeChosen: false },
+      board: { level: 20, timeLimit: 60, timeLeft: 30 },
+    });
+    expect(run.route).toBeUndefined();
+    expect(run.bossSeen).toBeUndefined();
+    expect(run.bossRetry).toBeUndefined();
+    expect(run.pendingClear).toEqual({ level: 20 });
+    expect(run.board).toEqual({ level: 20 });
+    expect(run.fatePicked).toBe(1); // la carta de la ciudad 2 sigue pendiente
   });
 });

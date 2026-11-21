@@ -76,17 +76,14 @@ section{scroll-margin-block:1.25rem}
 .relic dt{flex-wrap:wrap;font-size:1.08rem}
 .relic dt em{flex-basis:100%;margin-left:35px;text-align:left;color:var(--accent);font-style:normal;font-weight:700;font-size:.92rem}
 .relic-sun{--accent:#f0c86a}.relic-purse{--accent:#e3a27a}.relic-lantern{--accent:#8fd6ef}
-.route-perk{color:var(--accent);font-weight:650}
+
 .streak-rewards{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
 .streak-rewards span{display:grid;gap:1px;min-width:92px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:#182d39;text-align:center}
 .streak-rewards b{color:var(--muted);font-size:.8rem;font-weight:650;text-transform:uppercase;letter-spacing:.05em}
 .streak-rewards span{color:var(--gold);font-weight:800}
 .hero-lia{--accent:#9fdfc1}.hero-jean{--accent:#8cd3ed}.hero-juth{--accent:#dbc2ef}
-.daily,.bosses,.feature-section{display:grid;align-items:start;gap:20px clamp(16px,4vw,42px);grid-template-columns:minmax(0,.8fr) minmax(0,1.25fr)}
-.bosses table{grid-column:1/-1;width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;text-align:center}
-.bosses caption{color:var(--gold);font-weight:730;text-align:left;margin-bottom:7px}
-.bosses th,.bosses td{padding:8px 4px;border:1px solid var(--line);background:#0d1c27;font-size:clamp(.73rem,2.5vw,.96rem)}
-.bosses th[scope=row]{text-align:left;padding-left:9px}
+.daily,.feature-section {display:grid;align-items:start;gap:20px clamp(16px,4vw,42px);grid-template-columns:minmax(0,.8fr) minmax(0,1.25fr)}
+
 .daily{margin-top:24px;padding:clamp(18px,4vw,36px);border:1px solid #e3bb6e66;border-radius:16px;background:linear-gradient(135deg,#25414a,#162937 65%);box-shadow:0 12px 28px #070c134d}
 .daily-targets{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
 .daily-targets span{display:grid;place-items:center;min-width:48px;min-height:43px;padding:0 8px;color:#1a2428;background:linear-gradient(#f4d698,#cd9d56);border:1px solid #f7dd9d;border-radius:9px 7px 10px 7px;box-shadow:0 4px 0 #34271a;font:800 1.55rem/1 var(--title)}
@@ -96,12 +93,16 @@ section{scroll-margin-block:1.25rem}
 .feature-section{align-items:center}
 #tienda .capture{width:min(100%,510px);justify-self:center;border-color:#d6ad70ad}
 #maleficios .capture{border-color:#ba9bebad}
-#caminos-heroicos .capture{border-color:#e7c379ad}
-.route-guide-list{display:grid;gap:7px;margin-top:14px}
-.route-guide{padding:8px 11px;border-left:2px solid var(--accent);background:#182c37}
-.route-guide dt{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:750}
-.route-guide strong{color:var(--accent);white-space:nowrap}
-.route-guide dd{color:var(--muted);font-size:.9rem}
+.fate-guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:18px 0 0;padding:0;list-style:none}
+.fate-guide-card{display:grid;grid-template-columns:64px 1fr;gap:11px;align-items:center;padding:10px 12px;border:1px solid color-mix(in srgb,var(--fa) 70%,#fff3);border-radius:10px;background:linear-gradient(135deg,color-mix(in srgb,var(--fa) 34%,#13232f),#13232f 70%)}
+.fate-guide-card.is-pact{background:linear-gradient(135deg,color-mix(in srgb,var(--fa) 40%,#1a0d14),#1a0d14 72%);border-color:#d9604f88}
+.fate-guide-card .fate-art{width:64px;height:64px;padding:4px;border-radius:9px;background:linear-gradient(170deg,var(--fb),var(--fa));fill:none}
+.fate-guide-card div{display:grid;gap:2px;min-width:0}
+.fate-guide-card small{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fate-guide-card b{font:700 1.05rem/1.15 var(--title)}
+.fate-guide-card span{font-size:.86rem;color:#c8f0d2}
+.fate-guide-card em{font-style:normal;font-size:.84rem;color:#ffc4b8}
+.fate-guide-card em::before{content:'✕ '}
 .story{margin-top:24px;padding:clamp(24px,5vw,58px);border:1px solid var(--line);border-radius:16px;background:linear-gradient(90deg,#0b1722f7 0%,#0d1824e8 40%,#13243655 100%),url('/backgrounds/zone-10.webp') center 40%/cover}
 .story>div{max-width:60ch}
 .story-art{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border:1px solid #ceae7388;border-radius:10px;box-shadow:0 12px 26px #050c1699}
@@ -128,7 +129,7 @@ section{scroll-margin-block:1.25rem}
   .chapter-links{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:660px){
-  .intro-grid,.daily,.mechanics-grid,.bosses,.feature-section,.soundtrack,.hero-grid,.relic-grid{grid-template-columns:minmax(0,1fr)}
+  .intro-grid,.daily,.mechanics-grid,.feature-section,.soundtrack,.hero-grid,.relic-grid {grid-template-columns:minmax(0,1fr)}
   .intro-copy{gap:12px}
   .languages a,.chapter-links a{padding-inline:8px}
   .hero .hero-copy{padding-inline:16px}

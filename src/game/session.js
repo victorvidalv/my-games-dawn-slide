@@ -40,15 +40,11 @@ import {
   applyDailyWin,
   applySkip,
   canSaveBoard,
-  chooseRoute,
   clearKind,
   dailyAttempt,
   dailyEntry,
-  needsBossIntro,
-  needsTravelChoice,
   newAdventureRun,
   newDailyRun,
-  normalizeRoute,
   resetBoardForRevive,
   resolveFail,
   restoreDailyAttempt,
@@ -60,10 +56,11 @@ import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { showDailyResult } from '../ui/daily.js';
 import { countStat, markStat, pauseAchievementToasts } from '../ui/achievements.js';
-import { boardEl, buildPieces, fitBoard, layout, syncRouteStyle, updateHud } from '../ui/board.js';
+import { boardEl, buildPieces, fitBoard, layout, updateHud } from '../ui/board.js';
 import { isBonusLevel, showBonus } from '../ui/bonus.js';
-import { showBossIntro } from '../ui/boss.js';
-import { onBossTimeUp, preloadBossArt, syncBossPhase, syncBossTimer } from '../ui/boss-phase.js';
+import { fateCityRewards, fateOffer, needsFatePick, pickFate } from './fate.js';
+import { baseScore } from '../engine/scoring.js';
+import { showFateDialog, syncFateHud } from '../ui/fate.js';
 import { endRun } from '../ui/finale.js';
 import { showResult } from '../ui/result.js';
 import { chooseHero, showRescue, showReviveOffer, syncHero } from '../ui/heroes.js';
@@ -83,11 +80,10 @@ import {
   setMessage,
   revivedMessage,
   showRevivedHud,
-  showTravelDialog,
   unlockBoard,
   winMessage,
 } from '../ui/session-view.js';
-import { boardSwapDone, boardSwapOut, levelBanner, playLevelScenery, wipeIn, wipeOut } from '../ui/transitions.js';
+import { boardSwapDone, boardSwapOut, levelBanner, playLevelScenery, wipeOut } from '../ui/transitions.js';
 
 /* ---------- Guardado ---------- */
 export function saveRun() {
@@ -138,10 +134,9 @@ export async function startRun(start, mode) {
   );
   markStat('heroes', picked.hero);
   syncHero();
-  syncRouteStyle();
+  syncFateHud();
   applyZone(zoneIdx(from));
-  saveRun();
-  Object.assign(S.run, { route: 'normal', routeZone: zoneIdx(from), travelFrom: zoneIdx(from) });
+  S.run.travelFrom = zoneIdx(from);
   saveRun();
   await resumeAdventure();
 }
@@ -159,7 +154,7 @@ export async function startDaily(id, index) {
   setBoard(null);
   setRun(newDailyRun({ challenge: c, day, ...entry }));
   syncHero();
-  syncRouteStyle();
+  syncFateHud();
   applyZone(zoneIdx(c.level));
   await startLevel();
 }
@@ -213,7 +208,7 @@ function showSurvivalBoard() {
   $('lvl').textContent = `${G.n}/${G.total}`;
   updateSurvivalHud(run.survival);
   applyChallengeScenery();
-  syncBossPhase();
+  syncFateHud();
   buildPieces();
   setMessage(
     G.n === 1
@@ -323,9 +318,8 @@ async function startLevel() {
   restoreDailyAttempt(G, run.daily);
   setSurvivalMode(false);
   setDailyMode(!!run.daily);
-  // El telón dorado abre la presentación; entre tableros las piezas se disuelven en su sitio.
-  if (needsBossIntro(run, G)) await wipeIn('gold');
-  else await boardSwapOut();
+  // Entre tableros las piezas se disuelven en su sitio.
+  await boardSwapOut();
   if (S.run !== run) {
     wipeOut();
     boardSwapDone();
@@ -336,8 +330,7 @@ async function startLevel() {
   renderLevelHud(run, G, heroOf().id);
   applyZone(zoneIdx(G.n));
   renderStage();
-  syncBossPhase();
-  if (G.n % 10 >= 7) preloadBossArt(Math.ceil(G.n / 10) * 10); // la ilustración del próximo jefe ya está lista cuando llegas
+  syncFateHud();
   buildPieces();
   boardSwapDone();
   updateHud();
@@ -359,38 +352,42 @@ async function startLevel() {
     return;
   }
   delete run.pendingRevive;
-  if (needsBossIntro(run, G)) {
-    run.bossSeen = G.n;
-    saveRun();
-    const intro = showBossIntro(G.n);
-    wipeOut(); // la presentación aparece detrás del telón de alarma
-    await intro;
-    if (!S.run || S.G?.done) return;
-  } else {
-    wipeOut();
-    sfx.levelIn();
-    if (!G.moves) levelBanner(...levelBannerText(run, G), !!G.plan?.boss);
-  }
+  wipeOut();
+  sfx.levelIn();
+  if (!G.moves) levelBanner(...levelBannerText(run, G));
   playLevelScenery();
   setBusy(false);
   unlockBoard();
   updateHud();
   saveRun();
-  syncBossTimer();
   startCoach(); // avisos y guía de los primeros niveles / mecánicas nuevas
 }
 
 /* ---------- Avance entre niveles ---------- */
-function travelDialog() {
-  if (!needsTravelChoice(S.run)) return Promise.resolve();
-  const session = S.run;
-  return showTravelDialog({
+/**
+ * Cierre de ciudad: primero pagan las cartas que ya tienes (Brújula, Cosecha) y después se elige 1 de 3 cartas del destino.
+ * Las dos cosas se guardan al instante, así recargar a mitad de la elección no repite ni pierde nada.
+ */
+function fateDialog() {
+  const session = S.run,
+    done = session.pendingClear,
+    city = done.level / 10;
+  if (!needsFatePick(session, done.level)) return Promise.resolve();
+  const rewards = fateCityRewards(session, city, done.opt);
+  if (rewards) saveRun();
+  return showFateDialog({
     run: session,
     hero: heroOf(),
+    city,
+    cards: fateOffer(session, city),
+    rewards,
     isActive: () => S.run === session,
-    onChoose: (choice, city) => {
-      chooseRoute(session, choice, city);
+    onChoose: (id) => {
+      const out = pickFate(session, id, city, baseScore(done.opt));
+      if (out) countStat('fateCards');
       saveRun();
+      syncFateHud();
+      return out;
     },
   });
 }
@@ -398,7 +395,6 @@ let advancingClear = false;
 export async function resumeAdventure() {
   if (!S.run) return;
   setBusy(true);
-  if (normalizeRoute(S.run)) saveRun();
   if (S.run.pendingClear) {
     await advanceClear();
     return;
@@ -431,7 +427,7 @@ async function advanceClear() {
       setBusy(false);
       return;
     }
-    if (crossing && !done.routeChosen) await travelDialog();
+    if (crossing) await fateDialog();
     advanceRun(S.run, n, { bonus: isBonusLevel(n) });
     saveRun();
     await resumeAdventure();
@@ -452,7 +448,7 @@ export function win() {
   const run = S.run,
     G = S.G;
   if (clearKind(G.n) === 'crossing') pauseAchievementToasts(true);
-  countStat(...boardStats(G, run)); // logros: perfectos, mecánicas, jefes, ciudad sin ayuda
+  countStat(...boardStats(G, run)); // logros: perfectos, mecánicas, ciudad sin ayuda
   const gain = gainNow(),
     previous = run.score;
   applyAdventureWin(run, G, gain);
@@ -503,7 +499,7 @@ function winDaily() {
   const run = S.run,
     G = S.G,
     d = run.daily;
-  const gain = calcGain(G.rate, G.moves, G.opt, 0);
+  const gain = calcGain(G.moves, G.opt, 0);
   const { next, totals } = applyDailyWin(d, G, gain.total);
   const out =
     totals && recordDaily((store.daily ||= emptyDaily()), d.id, d.day, totals.moves, totals.opt, d.boards.slice());
@@ -530,8 +526,6 @@ function winDaily() {
 }
 
 /* ---------- Derrota ---------- */
-/** Los jefes comparten el flujo de derrota para tiempo y turnos. */
-onBossTimeUp(() => fail('time'));
 export function fail(why) {
   if (S.G.done) return;
   switch (resolveFail(S.run, S.G, why)) {
@@ -594,7 +588,6 @@ async function offerPaidRevive(why) {
       setBusy(false);
       layout();
       updateHud();
-      syncBossTimer();
       Music.duck(1);
       playReviveEffect('¡RENACER!', false);
       setMessage(revivedMessage(r.cost));

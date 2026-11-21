@@ -18,7 +18,6 @@ import {
   curve,
   minReach,
   rateAt,
-  braveExtra,
   pickBoard,
   buildLevel,
   varyBoard,
@@ -159,7 +158,7 @@ const tasks = {
     const plan = levelPlan(level);
     const base = pickBoard(bank.ratings, rating, seed, level, plan.family, special);
     const board = varyBoard(base, rating, hash32(seed, level, 7));
-    const lvl = buildLevel(board, { rating, adj, brave: false, rng: mulberry32(level) });
+    const lvl = buildLevel(board, { rating, adj, rng: mulberry32(level) });
     const walls = lvl.walls || [];
     const an = analyze(lvl.pieces, lvl.pos, 600000, walls);
     const out = {
@@ -168,7 +167,6 @@ const tasks = {
       rating,
       planFamily: plan.family,
       family: base.family,
-      boss: plan.boss,
       opt: lvl.opt,
       target: curve(rating).target,
       kinds: kindsOf(lvl.pieces),
@@ -218,20 +216,16 @@ const tasks = {
     const clamp = (x) => Math.max(lo, Math.min(hi, x));
     const rows = [];
     for (const adj of [-2, -1, 0, 1, 2]) {
-      for (const brave of [false, true]) {
-        const lvl = buildLevel(board, { rating, adj, brave, rng: mulberry32(adj + 9) });
-        const an = analyze(lvl.pieces, lvl.pos, 600000);
-        const normal = clamp(Math.max(1, target + adj));
-        rows.push({
-          adj,
-          brave,
-          opt: lvl.opt,
-          real: an?.dist.get(an.k0),
-          valid: isValidState(lvl.pieces, lvl.pos),
-          won0: isWon(lvl.pos),
-          expected: brave ? (normal < hi ? Math.min(hi, normal + braveExtra(normal)) : normal) : normal,
-        });
-      }
+      const lvl = buildLevel(board, { rating, adj, rng: mulberry32(adj + 9) });
+      const an = analyze(lvl.pieces, lvl.pos, 600000);
+      rows.push({
+        adj,
+        opt: lvl.opt,
+        real: an?.dist.get(an.k0),
+        valid: isValidState(lvl.pieces, lvl.pos),
+        won0: isWon(lvl.pos),
+        expected: clamp(Math.max(1, target + adj)),
+      });
     }
     const plain = buildLevel(pickBoard(bank.ratings, rating, 5, 1), { rating, rng: mulberry32(rating) });
     return { rating, target, minReach: minReach(rating), rows, plainOpt: plain.opt };
@@ -267,10 +261,7 @@ const tasks = {
         c.minGain = FAMILIES[family]?.minGain ?? 0;
         Object.assign(c, checkStates({ pieces: d.pieces, walls: wallsD }, an, sample));
         // nivel construido sobre ese tablero: mínimo exacto, límite = 2×, y la pista lleva a la salida en `opt` pasos
-        const lvl = buildLevel(
-          { ...d, walls: wallsD },
-          { rating, adj: 0, brave: rating % 2 === 1, rng: mulberry32(rating) },
-        );
+        const lvl = buildLevel({ ...d, walls: wallsD }, { rating, adj: 0, rng: mulberry32(rating) });
         const la = analyze(lvl.pieces, lvl.pos, 600000, lvl.walls);
         c.lvlOpt = lvl.opt;
         c.lvlReal = la?.dist.get(la.k0);

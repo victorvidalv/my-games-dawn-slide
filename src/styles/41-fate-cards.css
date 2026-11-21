@@ -1,0 +1,578 @@
+/* ======================== Cartas del destino ========================
+   Cada carta: marco de tinta, fondo con sus dos colores (--fa intenso, --fb claro), su emblema propio, nombre, efecto
+   y, en los Pactos, el costo en rojo sobre un fondo oscuro con trama. Se reparten girando y la elegida brilla. */
+
+.fate-card {
+  --w: clamp(96px, 29vw, 172px);
+  position: relative;
+  display: block;
+  width: var(--w);
+  aspect-ratio: 5 / 7.6;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--w) * 0.08);
+  background: none;
+  color: #1c1208;
+  font: inherit;
+  text-align: center;
+  cursor: default;
+  perspective: 900px;
+  -webkit-tap-highlight-color: transparent;
+}
+button.fate-card {
+  cursor: pointer;
+}
+.fate-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto auto auto;
+  justify-items: center;
+  align-items: start;
+  gap: calc(var(--w) * 0.03);
+  padding: calc(var(--w) * 0.07) calc(var(--w) * 0.07) calc(var(--w) * 0.08);
+  border-radius: inherit;
+  border: 2px solid #1c1208;
+  background:
+    radial-gradient(ellipse 70% 42% at 50% 34%, color-mix(in srgb, var(--fb) 80%, #fff) 0 40%, transparent 72%),
+    repeating-linear-gradient(135deg, #ffffff12 0 2px, transparent 2px 9px),
+    linear-gradient(170deg, var(--fb) 0%, color-mix(in srgb, var(--fa) 55%, var(--fb)) 46%, var(--fa) 100%);
+  box-shadow:
+    inset 0 0 0 calc(var(--w) * 0.025) #fff6dc,
+    inset 0 0 0 calc(var(--w) * 0.04) color-mix(in srgb, var(--fa) 70%, #1c1208),
+    0 6px 0 #091118,
+    0 12px 26px #000a;
+  overflow: hidden;
+}
+/* Pacto: fondo oscuro con trama y un borde carmesí que late. */
+.fate-card.is-pact .fate-face {
+  color: #fbeede;
+  background:
+    radial-gradient(ellipse 70% 42% at 50% 34%, color-mix(in srgb, var(--fa) 75%, #fff) 0 34%, transparent 70%),
+    repeating-linear-gradient(45deg, #ffffff0c 0 1.5px, transparent 1.5px 8px),
+    repeating-linear-gradient(-45deg, #0000003a 0 1.5px, transparent 1.5px 8px),
+    linear-gradient(170deg, color-mix(in srgb, var(--fa) 60%, #1a0d14), #1a0d14 92%);
+  box-shadow:
+    inset 0 0 0 calc(var(--w) * 0.025) #e8b25f,
+    inset 0 0 0 calc(var(--w) * 0.045) #5c1622,
+    0 6px 0 #091118,
+    0 12px 26px #000a,
+    0 0 0 1px #d9604f66;
+}
+.fate-corner {
+  position: absolute;
+  top: calc(var(--w) * 0.06);
+  left: calc(var(--w) * 0.08);
+  font: 900 calc(var(--w) * 0.085) / 1 var(--font-book, Georgia, serif);
+  opacity: 0.7;
+}
+.fate-kind {
+  justify-self: end;
+  margin-right: calc(var(--w) * -0.01);
+  padding: 2px calc(var(--w) * 0.05);
+  border-radius: 999px;
+  font:
+    800 max(8px, calc(var(--w) * 0.058)) / 1.2 system-ui,
+    sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #fff6dccc;
+  color: #4b3414;
+  border: 1px solid #1c120855;
+}
+.is-pact .fate-kind {
+  background: #5c1622;
+  color: #ffd8c9;
+  border-color: #e8b25f88;
+}
+.fate-emblem {
+  display: grid;
+  place-items: center;
+  width: 64%;
+  aspect-ratio: 1;
+  margin-top: calc(var(--w) * 0.01);
+}
+.fate-art {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 3px 0 #1c120855);
+}
+.fate-name {
+  align-self: end;
+  font: 900 max(12px, calc(var(--w) * 0.105)) / 1.05 var(--font-book, Georgia, serif);
+  text-shadow: 0 1px 0 #fff8;
+}
+.is-pact .fate-name {
+  color: #ffe3a6;
+  text-shadow: 0 2px 0 #000;
+}
+.fate-gain,
+.fate-cost,
+.fate-muted-note {
+  font:
+    700 max(9.5px, calc(var(--w) * 0.068)) / 1.22 system-ui,
+    sans-serif;
+  text-wrap: balance;
+}
+.fate-gain {
+  color: #183a1f;
+}
+.is-pact .fate-gain {
+  color: #b9f5c4;
+}
+.fate-cost {
+  padding: 2px calc(var(--w) * 0.04);
+  border-radius: 6px;
+  color: #ffd4cc;
+  background: #8e1f2acc;
+  border: 1px solid #ff9c8a66;
+}
+.fate-cost::before {
+  content: '✕ ';
+  font-weight: 900;
+}
+.fate-muted-note {
+  color: #5b4a3a;
+  font-style: italic;
+}
+.fate-card.is-muted .fate-face {
+  filter: grayscale(0.75) brightness(0.85);
+}
+
+/* ---------- La elección al cerrar la ciudad ---------- */
+.fate-chapter {
+  margin: 0 0 6px;
+  font:
+    800 10px/1.3 system-ui,
+    sans-serif;
+  letter-spacing: 0.12em;
+  color: #e9d9ae;
+  opacity: 0.85;
+  text-shadow: 0 1px 0 #091118;
+}
+#travel .travel-hero {
+  bottom: clamp(230px, 40dvh, 330px);
+  height: clamp(170px, calc(100dvh - 560px), 560px);
+}
+.fate-ask {
+  margin: 0;
+  font: 800 clamp(19px, 5vw, 26px) / 1.15 var(--font-book, Georgia, serif);
+  color: #f5ce74;
+  text-shadow: 0 2px 0 #091118;
+}
+.fate-sub,
+.fate-rewards {
+  margin: 4px 0 0;
+  font:
+    600 13px/1.35 system-ui,
+    sans-serif;
+  color: #e9e0c8;
+  text-shadow: 0 1px 0 #091118;
+}
+.fate-rewards {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #1d3a2bcc;
+  border: 1px solid #86efac66;
+  color: #c8f7d4;
+}
+.fate-rewards[hidden] {
+  display: none;
+}
+.fate-offer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: clamp(8px, 2.6vw, 20px);
+  margin-top: 14px;
+  perspective: 1200px;
+}
+.fate-offer .fate-card {
+  opacity: 0;
+  transform: translateY(60px) rotateY(180deg) scale(0.85);
+  transition:
+    transform 560ms cubic-bezier(0.2, 0.9, 0.25, 1.15) calc(var(--i) * 140ms),
+    opacity 300ms ease calc(var(--i) * 140ms),
+    filter 300ms ease;
+}
+#travel.fate-dealt .fate-offer .fate-card {
+  opacity: 1;
+  transform: translateY(0) rotate(calc((var(--i) - 1) * 3deg));
+}
+#travel.fate-dealt .fate-offer .fate-card:is(:hover, :focus-visible):not(:disabled) {
+  transform: translateY(-12px) scale(1.05);
+  transition-delay: 0s;
+  z-index: 2;
+}
+.fate-offer .fate-card:focus-visible {
+  outline: none;
+}
+.fate-offer .fate-card:focus-visible .fate-face {
+  outline: 3px solid #fff2ba;
+  outline-offset: 3px;
+}
+#travel.fate-dealt .fate-offer .fate-card.picked {
+  transform: translateY(-22px) scale(1.12);
+  transition-delay: 0s;
+  z-index: 3;
+}
+.fate-card.picked .fate-face {
+  animation: fate-glow 1s ease-out both;
+}
+#travel.fate-dealt .fate-offer .fate-card.unpicked {
+  opacity: 0;
+  transform: translateY(46px) rotate(calc((var(--i) - 1) * 9deg)) scale(0.8);
+  filter: grayscale(1) brightness(0.4);
+  transition-delay: 0s;
+  transition-duration: 700ms;
+}
+@keyframes fate-glow {
+  0% {
+    box-shadow:
+      inset 0 0 0 3px #fff6dc,
+      0 0 0 0 #ffe38a;
+  }
+  45% {
+    box-shadow:
+      inset 0 0 0 3px #fff6dc,
+      0 0 0 10px #ffe38a66,
+      0 0 46px 14px color-mix(in srgb, var(--fa) 70%, #fff);
+  }
+  100% {
+    box-shadow:
+      inset 0 0 0 3px #fff6dc,
+      0 0 0 4px #ffe38a,
+      0 0 30px 6px color-mix(in srgb, var(--fa) 60%, #fff);
+  }
+}
+@media (min-aspect-ratio: 11/10) {
+  #travel .travel-hero {
+    bottom: 0;
+    height: min(88dvh, 850px);
+  }
+  .fate-offer {
+    justify-content: flex-start;
+  }
+  .fate-card {
+    --w: clamp(104px, 15vw, 178px);
+  }
+}
+@media (max-height: 640px) {
+  .fate-card {
+    --w: clamp(88px, 24vw, 132px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fate-offer .fate-card,
+  #travel.fate-dealt .fate-offer .fate-card {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+  .fate-card.picked .fate-face {
+    animation: none;
+    box-shadow: 0 0 0 4px #ffe38a;
+  }
+}
+
+/* ---------- Cartas ya elegidas (sobre la oferta) ---------- */
+.fate-owned {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #0a151ed9;
+  border: 1px solid #d4af6455;
+}
+.fate-owned[hidden] {
+  display: none;
+}
+.fate-owned summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+}
+.fate-owned summary::-webkit-details-marker {
+  display: none;
+}
+.fate-owned[open] summary {
+  margin-bottom: 8px;
+}
+.fate-icons {
+  display: flex;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+  overflow: hidden;
+}
+.fate-icons i {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 1px;
+  border-radius: 5px;
+  border: 1px solid #1c1208;
+  background: linear-gradient(170deg, var(--fb), var(--fa));
+}
+.fate-icons i.is-muted {
+  filter: grayscale(0.85) brightness(0.75);
+}
+.fate-icons .fate-art {
+  filter: none;
+}
+.fate-owned-more {
+  flex: none;
+  font:
+    700 11px/1 system-ui,
+    sans-serif;
+  color: #e9d9ae;
+}
+.fate-owned-more::after {
+  content: ' ▾';
+}
+.fate-owned[open] .fate-owned-more::after {
+  content: ' ▴';
+}
+.fate-owned summary b {
+  flex: none;
+  margin: 0;
+  font:
+    800 11px/1.2 system-ui,
+    sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f5ce74;
+}
+.fate-owned .fate-totals {
+  justify-content: flex-start;
+  margin-bottom: 8px;
+  gap: 4px;
+}
+.fate-owned .fate-chip {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+.fate-minis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 5px;
+  max-height: min(30dvh, 230px);
+  margin: 0;
+  padding: 0 2px 0 0;
+  list-style: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.fate-mini {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 8px 5px 5px;
+  border-radius: 9px;
+  border: 1.5px solid #1c1208;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--fa) 38%, #13232f), #13232f 85%);
+  color: #f3e5c2;
+}
+.fate-mini.is-pact {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--fa) 45%, #1a0d14), #1a0d14 80%);
+  border-color: #d9604f99;
+}
+.fate-mini.is-muted {
+  filter: grayscale(0.8) brightness(0.8);
+}
+.fate-mini-art {
+  display: block;
+  width: 42px;
+  height: 42px;
+  padding: 2px;
+  border-radius: 7px;
+  background: linear-gradient(170deg, var(--fb), var(--fa));
+}
+.fate-mini-art .fate-art {
+  filter: none;
+}
+.fate-mini-copy {
+  display: grid;
+  min-width: 0;
+  text-align: left;
+}
+.fate-mini-copy b {
+  font: 800 12px/1.15 var(--font-book, Georgia, serif);
+}
+.fate-mini-copy small,
+.fate-mini-copy em {
+  font:
+    600 10px/1.2 system-ui,
+    sans-serif;
+}
+.fate-mini-copy small {
+  color: #c8f0d2;
+}
+.fate-mini-copy em {
+  font-style: normal;
+  color: #ffc4b8;
+}
+.fate-mini-muted {
+  font:
+    italic 600 10.5px/1.2 system-ui,
+    sans-serif;
+  color: #d8cdb4;
+}
+.fate-mini-copy em::before {
+  content: '✕ ';
+}
+
+/* ---------- Botón del HUD: la pila de cartas activas ---------- */
+.fate-btn {
+  flex: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 10px 0 8px;
+  border-radius: 14px;
+  border: 2px solid #1c1208;
+  background: linear-gradient(180deg, #3a2b52, #23193a);
+  color: #ffe3a6;
+  box-shadow:
+    0 3px 0 #091118,
+    inset 0 1px 0 #ffffff22;
+}
+.fate-btn[hidden] {
+  display: none;
+}
+.fate-btn b {
+  font: 900 18px/1 var(--font-book, Georgia, serif);
+}
+.fate-btn-stack {
+  position: relative;
+  width: 26px;
+  height: 30px;
+}
+.fate-btn-stack i {
+  position: absolute;
+  inset: 3px 6px;
+  border-radius: 3px;
+  border: 1.5px solid #1c1208;
+  background: linear-gradient(170deg, var(--fb), var(--fa));
+  transform: rotate(-14deg) translateX(-4px);
+}
+.fate-btn-stack i:nth-child(2) {
+  transform: rotate(0deg);
+}
+.fate-btn-stack i:nth-child(3) {
+  transform: rotate(14deg) translateX(4px);
+}
+.fate-btn.pulse {
+  animation: fate-pulse 900ms ease-out;
+}
+@keyframes fate-pulse {
+  35% {
+    transform: scale(1.18);
+    box-shadow:
+      0 3px 0 #091118,
+      0 0 0 6px #ffe38a66;
+  }
+}
+.daily-run .fate-btn,
+.survival-run .fate-btn {
+  display: none;
+}
+
+/* ---------- Panel de cartas activas ---------- */
+.fate-panel {
+  width: min(94vw, 520px);
+  max-height: 92dvh;
+  overflow-y: auto;
+  text-align: center;
+}
+.fate-panel h2 {
+  margin: 4px 0 10px;
+}
+.fate-totals {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.fate-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font:
+    700 12px/1.3 system-ui,
+    sans-serif;
+  border: 1px solid #ffffff2a;
+  background: #ffffff12;
+  color: #f3e5c2;
+}
+.fate-chip.is-points,
+.fate-chip.is-good {
+  background: #1d3a2b;
+  border-color: #86efac55;
+  color: #c8f7d4;
+}
+.fate-chip.is-turns {
+  background: #1d2f45;
+  border-color: #7dd3fc55;
+  color: #cdeeff;
+}
+.fate-chip.is-bad {
+  background: #4a1720;
+  border-color: #fda4af55;
+  color: #ffd4cc;
+}
+.fate-minis.fate-hand {
+  grid-template-columns: 1fr;
+  max-height: none;
+  margin-bottom: 16px;
+  text-align: left;
+}
+.fate-hand .fate-mini {
+  grid-template-columns: 52px 1fr;
+  padding: 7px 10px 7px 7px;
+}
+.fate-hand .fate-mini-art {
+  width: 52px;
+  height: 52px;
+}
+.fate-hand .fate-mini-copy b {
+  font-size: 15px;
+}
+.fate-hand .fate-mini-copy small,
+.fate-hand .fate-mini-copy em {
+  font-size: 12.5px;
+}
+.fate-empty {
+  opacity: 0.8;
+}
+
+/* ---------- Demostración del consejo ---------- */
+.mini.fate-demo {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.mini.fate-demo i {
+  position: absolute;
+  width: 34px;
+  height: 50px;
+  border-radius: 5px;
+  border: 2px solid #1c1208;
+  background: linear-gradient(170deg, #fff1c1, #e3a33b);
+  transform: rotate(-16deg) translateX(-22px);
+}
+.mini.fate-demo i:nth-child(2) {
+  background: linear-gradient(170deg, #f2c6d8, #8e3b5f);
+  transform: translateY(-6px);
+}
+.mini.fate-demo i:nth-child(3) {
+  background: linear-gradient(170deg, #e0fbff, #5fd0e6);
+  transform: rotate(16deg) translateX(22px);
+}

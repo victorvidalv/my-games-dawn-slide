@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import levelBank from '../src/data/levels.json';
 import specialBank from '../src/data/special.json';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
-import { levelPlan, isBossLevel } from '../src/game/mechanics.js';
+import { levelPlan } from '../src/game/mechanics.js';
 import { N, analyze, decode, expand, isValidState, minMoves, slideRange, hintMove } from '../src/engine/index.js';
 
 const run = (level, start = 1) => ({
@@ -10,7 +10,6 @@ const run = (level, start = 1) => ({
   hero: 'lia',
   start,
   level,
-  route: 'normal',
   mode: 'c',
   adj: 0,
   hints: 3,
@@ -56,8 +55,8 @@ describe('mecánicas: los 100 niveles', () => {
         expect(isValidState(G.pieces, G.pos, G.walls), `${label}: estado válido`).toBe(true);
         expect(minMoves(G.pieces, G.pos, G.walls), `${label}: mínimo`).toBe(G.opt);
         expect(G.limit, `${label}: límite`).toBeGreaterThan(G.opt);
-        const plan = levelPlan(level);
-        expect(G.plan?.boss ?? plan.boss, label).toBe(isBossLevel(level));
+        expect(G.plan.boss, `${label}: sin jefes`).toBeUndefined();
+        expect(G.timeLimit, `${label}: sin contrarreloj`).toBeUndefined();
         // la salida no está cerrada: siempre hay una pista que acerca a la meta
         const hint = hintMove(G.pieces, G.pos, G.walls);
         if (G.opt > 0) expect(hint, `${label}: pista`).not.toBeNull();
@@ -71,11 +70,12 @@ describe('mecánicas: los 100 niveles', () => {
     }
   }, 600000);
 
-  it('los jefes (10…100) tienen tablero de jefe, más exigente, con límite ajustado', () => {
+  it('los cierres de ciudad (10…100) son tableros normales, con el límite habitual de su camino', () => {
     for (let level = 10; level <= 100; level += 10) {
       const G = build(level);
-      expect(levelPlan(level).boss, `nivel ${level}`).toBe(true);
+      expect(levelPlan(level).boss, `nivel ${level}`).toBeUndefined();
       expect(G.opt, `nivel ${level}`).toBeGreaterThan(2);
+      expect(G.limit, `nivel ${level}`).toBeGreaterThanOrEqual(G.opt + 2);
     }
   });
 });

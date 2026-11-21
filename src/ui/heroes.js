@@ -2,19 +2,17 @@ import { Music, setTensionFx } from '../audio/music.js';
 import { $, cssUrl } from '../dom.js';
 import { saveRun } from '../game/session.js';
 import { HEROES, canHint, bonusTurns } from '../game/heroes.js';
-import { bossRetriesLeft, reviveCost, reviveShare } from '../game/shop.js';
+import { reviveCost, reviveShare } from '../game/shop.js';
 import { S, haltBoard, heroOf, pathOf, persist, setBusy, store } from '../state.js';
 import { acceptRescue } from '../game/run-logic.js';
 import { boardEl, layout, updateHud } from './board.js';
-import { syncBossTimer } from './boss-phase.js';
 import { heroArt } from './story.js';
 import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
 import { startOptions } from '../game/starts.js';
 import { RELICS } from '../game/relics.js';
-import { heroicPath, heroicHintsLeft, powerFactor } from '../game/routes.js';
-import { bossCapFor } from '../game/bosses.js';
+import { fateBlocks } from '../game/fate.js';
 import { preloadAwakening } from './power-art.js';
 import { numLocale } from '../i18n.js';
 export function syncHero(id = S.run?.hero) {
@@ -77,9 +75,7 @@ export function chooseHero(start, mode) {
       ).join('');
       $('heroPowerIcon').innerHTML = icon(h.icon);
       $('heroPowerShort').textContent = h.id === 'lia' ? 'Más turnos' : h.power;
-      const path = heroicPath(h.id);
-      $('heroRouteIcon').innerHTML = icon(path.icon);
-      $('heroRouteName').textContent = path.name;
+      $('heroRouteIcon').innerHTML = icon('fate');
       $('heroConfirm').textContent = from === 1 ? 'Comenzar aventura ➜' : `Comenzar desde el nivel ${from} ➜`;
       renderStarts();
       cards.querySelectorAll('button').forEach(
@@ -141,12 +137,15 @@ export function updateHeroHud() {
   const status = powerState(S.run, S.G);
   $('heroHudPower').textContent =
     h.id === 'lia'
-      ? `+${bonusTurns('lia', S.G.opt, bossCapFor(S.G.n), powerFactor(S.run), S.run.start)} turnos de reserva`
+      ? `+${bonusTurns('lia', S.G.opt, S.run.start, fateBlocks(S.run, 'power'))} turnos de reserva`
       : status.reason;
-  const free = heroicHintsLeft(S.run, S.G.n);
-  $('hintN').textContent = prac ? '∞' : free ? `${free} gratis` : S.run.hints;
-  $('bHint').setAttribute('aria-label', `Pista. ${free} gratis en este tablero y ${S.run.hints} en reserva.`);
-  $('bHint').disabled = S.busy || !canHint(S.run, S.run.mode, S.G.n);
+  const silenced = !prac && fateBlocks(S.run, 'hints');
+  $('hintN').textContent = prac ? '∞' : silenced ? '✕' : S.run.hints;
+  $('bHint').setAttribute(
+    'aria-label',
+    silenced ? 'Pista. Apagada por tu Pacto de Silencio.' : `Pista. ${S.run.hints} en reserva.`,
+  );
+  $('bHint').disabled = S.busy || !canHint(S.run, S.run.mode);
   $('bUndo').hidden = true;
   const button = $('bPower');
   button.hidden = h.id === 'lia';
@@ -161,8 +160,7 @@ export function updateHeroHud() {
 export function showRescue(kind = S.run?.rescue?.kind || 'lia') {
   const revive = kind === 'revive',
     daily = kind === 'daily',
-    boss = kind === 'boss',
-    learn = kind === 'learn' || daily || boss,
+    learn = kind === 'learn' || daily,
     h = heroOf();
   haltBoard();
   boardEl.classList.add('board-lock');
@@ -172,42 +170,26 @@ export function showRescue(kind = S.run?.rescue?.kind || 'lia') {
   $('rescueHero').hidden = daily;
   $('rescueHero').alt = learn ? h.name : revive ? `${h.name} te da otra oportunidad` : 'Lía protege la aventura';
   $('rescueIcon').innerHTML = icon(learn ? 'undo' : revive ? 'flame' : 'heart');
-  if (boss) {
-    const left = bossRetriesLeft(S.run, S.G.n);
-    $('rescueTag').textContent = 'JEFE · REINTENTO GRATIS';
-    $('rescueTitle').textContent = S.run.rescue.why === 'time' ? 'Se acabó el tiempo' : 'Te quedaste sin movimientos';
-    $('rescueText').textContent =
-      left === 1
-        ? 'Después de este reintento te quedará uno gratis.'
-        : 'Este es tu último reintento gratis contra este jefe.';
-  } else {
-    $('rescueTag').textContent = daily
-      ? 'RETO DIARIO · SIN PENALIZACIÓN'
-      : learn
-        ? 'PRIMEROS PASOS · SIN PENALIZACIÓN'
-        : revive
-          ? 'REVIVIR · COMPRADO CON TUS PUNTOS'
-          : 'PODER DE LÍA · UNA VEZ POR PARTIDA';
-    $('rescueTitle').textContent = learn
-      ? 'Te quedaste sin movimientos'
-      : revive
-        ? '¡Otra oportunidad!'
-        : 'La aventura sigue';
-    $('rescueText').textContent = daily
-      ? 'Puedes repetir este tablero. Se conservan los que ya resolviste.'
-      : learn
-        ? 'En los primeros niveles puedes repetir el tablero sin gastar puntos ni pistas. Fíjate en el límite antes de mover.'
-        : revive
-          ? `Pagaste por revivir. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.${S.run.revive > 0 ? ` Te queda ${S.run.revive} revivir guardado.` : ''}`
-          : 'Lía te da una segunda oportunidad. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.';
-  }
-  $('rescueContinue').textContent = boss
-    ? 'Reintentar gratis'
+  $('rescueTag').textContent = daily
+    ? 'RETO DIARIO · SIN PENALIZACIÓN'
     : learn
-      ? 'Repetir tablero'
+      ? 'PRIMEROS PASOS · SIN PENALIZACIÓN'
       : revive
-        ? 'Revivir'
-        : 'Activar poder';
+        ? 'REVIVIR · COMPRADO CON TUS PUNTOS'
+        : 'PODER DE LÍA · UNA VEZ POR PARTIDA';
+  $('rescueTitle').textContent = learn
+    ? 'Te quedaste sin movimientos'
+    : revive
+      ? '¡Otra oportunidad!'
+      : 'La aventura sigue';
+  $('rescueText').textContent = daily
+    ? 'Puedes repetir este tablero. Se conservan los que ya resolviste.'
+    : learn
+      ? 'En los primeros niveles puedes repetir el tablero sin gastar puntos ni pistas. Fíjate en el límite antes de mover.'
+      : revive
+        ? `Pagaste por revivir. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.${S.run.revive > 0 ? ` Te queda ${S.run.revive} revivir guardado.` : ''}`
+        : 'Lía te da una segunda oportunidad. Repites este mismo tablero desde cero y conservas tus puntos y tus pistas.';
+  $('rescueContinue').textContent = learn ? 'Repetir tablero' : revive ? 'Revivir' : 'Activar poder';
   $('rescue').classList.add('show');
   $('rescueContinue').focus();
   $('rescueContinue').onclick = () => {
@@ -220,7 +202,6 @@ export function showRescue(kind = S.run?.rescue?.kind || 'lia') {
     $('bUndo').disabled = true;
     layout();
     updateHud();
-    syncBossTimer();
     Music.duck(1);
     playReviveEffect(learn ? '¡OTRA VEZ!' : revive ? '¡RENACER!' : '¡PODER DE LÍA!', !revive);
     $('msg').textContent = learn

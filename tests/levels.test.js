@@ -51,11 +51,11 @@ describe('construcción de niveles (mínimos exactos)', () => {
     );
   }, 600000);
 
-  it('el mínimo anunciado es el real y respeta ajuste adaptativo y ruta aventurera', () => {
+  it('el mínimo anunciado es el real y respeta el ajuste adaptativo', () => {
     expect(builds.length).toBeGreaterThan(30);
     for (const b of builds) {
       for (const r of b.rows) {
-        const id = `dif ${b.rating} adj ${r.adj} brave ${r.brave}`;
+        const id = `dif ${b.rating} adj ${r.adj}`;
         expect(r.valid, id).toBe(true);
         expect(r.won0, `${id}: no puede empezar ganado`).toBe(false);
         expect(r.real, id).toBe(r.opt);
@@ -123,7 +123,7 @@ describe('partida completa simulada (3 caminos × 100 niveles, con piezas especi
         expect(r.optReal, id).toBe(r.opt);
         expect(r.moves, id).toBe(r.opt);
         expect(moveStatus(r.moves, moveLimit(r.opt, start, r.level))).not.toBe('over');
-        expect(calcGain(r.rating, r.moves, r.opt, streak).eff).toBe(1);
+        expect(calcGain(r.moves, r.opt, streak).eff).toBe(1);
         streak++;
       }
       expect(fallbacks, 'niveles que tuvieron que usar un tablero normal por falta de la familia').toBeLessThanOrEqual(
@@ -141,11 +141,10 @@ describe('partida completa simulada (3 caminos × 100 niveles, con piezas especi
     }
   });
 
-  it('todos los niveles 10 de ciudad tienen modo jefe, su familia y dificultad controlada', () => {
+  it('los cierres de ciudad (10, 20… 100) son tableros normales con dificultad controlada', () => {
     for (const start of STARTS) {
       for (let level = 10; level <= 100; level += 10) {
         const r = path(start)[level - 1];
-        expect(r.boss).toBe(true);
         expect(r.opt).toBeLessThanOrEqual(r.target + 3 + 2);
       }
     }

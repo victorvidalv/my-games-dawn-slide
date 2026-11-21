@@ -30,9 +30,7 @@ import './styles/23-powers.css';
 import './styles/24-heroic-paths.css';
 import './styles/25-seals.css';
 import './styles/26-handmade.css';
-import './styles/27-boss-lore.css';
-import './styles/28-boss-polish.css';
-import './styles/29-boss-phase.css';
+import './styles/27-travel-feedback.css';
 import './styles/30-curse.css';
 import './styles/31-polish.css';
 import './styles/32-menus.css';
@@ -43,6 +41,7 @@ import './styles/37-achievements-shop.css';
 import './styles/38-cosmetics-preview.css';
 import './styles/39-menu-palette.css';
 import './styles/40-piece-key-skins.css';
+import './styles/41-fate-cards.css';
 import './styles/35-lite.css'; // modo ligero automático (src/ui/perf.js): siempre la última
 import './ui/transitions.js';
 import './ui/achievements.js';

@@ -5,7 +5,7 @@
  */
 import { Music } from '../audio/music.js';
 import { sfx } from '../audio/sound.js';
-import { HEROES_THEME, MENU_THEME, ZONE_THEMES, bossThemeFor } from '../audio/themes.js';
+import { FATE_THEME, HEROES_THEME, MENU_THEME, ZONE_THEMES } from '../audio/themes.js';
 import { SURVIVAL_TRACKS } from '../audio/themes-survival.js';
 import { $ } from '../dom.js';
 import {
@@ -73,7 +73,7 @@ const SURVIVAL_BY_ID = {
 };
 
 const themeOf = (id) => {
-  if (id === 'boss') return bossThemeFor(0);
+  if (id === 'fate') return FATE_THEME;
   if (id === 'heroes') return HEROES_THEME;
   if (SURVIVAL_BY_ID[id]) return SURVIVAL_BY_ID[id];
   if (id?.startsWith('z')) return ZONE_THEMES[Number(id.slice(1))] || MENU_THEME;

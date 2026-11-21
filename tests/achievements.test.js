@@ -209,18 +209,18 @@ describe('economía equilibrada: rarezas, cofres y precios justos', () => {
 describe('estadísticas', () => {
   it('contadores y colecciones se guardan en store.stats y se rechazan nombres desconocidos', () => {
     const store = {};
-    bumpStat(store, 'bosses');
-    bumpStat(store, 'bosses', 2);
+    bumpStat(store, 'fateCards');
+    bumpStat(store, 'fateCards', 2);
     expect(markStat(store, 'heroes', 'lia')).toBe(true);
     expect(markStat(store, 'heroes', 'lia')).toBe(false);
     markStat(store, 'heroes', 'jean');
-    expect(statsOf(store)).toMatchObject({ bosses: 3, heroes: 2 });
+    expect(statsOf(store)).toMatchObject({ fateCards: 3, heroes: 2 });
     expect(() => bumpStat(store, 'nope')).toThrow();
     expect(() => markStat(store, 'perfects', 'x')).toThrow();
     expect(COUNTERS.some((c) => COLLECTIONS.includes(c))).toBe(false);
   });
 
-  it('un tablero resuelto suma tableros, perfectos, mecánicas, jefes y ciudad sin ayuda', () => {
+  it('un tablero resuelto suma tableros, perfectos, mecánicas y ciudad sin ayuda', () => {
     const plain = { n: 3, moves: 9, opt: 8, pieces: [{}], walls: [] };
     expect(boardStats(plain)).toEqual(['boardsSolved']);
     expect(boardStats({ ...plain, moves: 8 })).toEqual(['boardsSolved', 'perfects']);
@@ -231,11 +231,11 @@ describe('estadísticas', () => {
       'locks',
       'heavyBoards',
     ]);
-    const boss = { ...plain, n: 20, plan: { boss: true } };
-    expect(boardStats(boss, { firstLevel: 1, helpAt: 0 })).toEqual(['boardsSolved', 'bosses', 'cleanCity']);
-    expect(boardStats(boss, { firstLevel: 1, helpAt: 14 })).toEqual(['boardsSolved', 'bosses']);
-    expect(boardStats(boss, { firstLevel: 1, helpAt: 10 })).toEqual(['boardsSolved', 'bosses', 'cleanCity']);
-    expect(boardStats(boss, { firstLevel: 15 })).toEqual(['boardsSolved', 'bosses']);
+    const last = { ...plain, n: 20 };
+    expect(boardStats(last, { firstLevel: 1, helpAt: 0 })).toEqual(['boardsSolved', 'cleanCity']);
+    expect(boardStats(last, { firstLevel: 1, helpAt: 14 })).toEqual(['boardsSolved']);
+    expect(boardStats(last, { firstLevel: 1, helpAt: 10 })).toEqual(['boardsSolved', 'cleanCity']);
+    expect(boardStats(last, { firstLevel: 15 })).toEqual(['boardsSolved']);
   });
 
   it('caminos y retos diarios se leen de lo que ya guarda el juego', () => {
@@ -282,7 +282,7 @@ describe('guardado compatible con actualizaciones', () => {
       ach: { city1: 15, day1: 30 },
       achClaimed: { day1: 35 },
       shopOwned: { 'board:slate': 60 },
-      stats: { perfects: 2, bosses: 1, heroes: ['jean'] },
+      stats: { perfects: 2, fateCards: 1, heroes: ['jean'] },
       daily: {
         solved: 1,
         gold: 0,
@@ -303,7 +303,7 @@ describe('guardado compatible con actualizaciones', () => {
       achMilestones: { 5: 9 },
       shopEco: 2,
     });
-    expect(m.stats).toEqual({ perfects: 30, bosses: 1, heroes: ['jean', 'lia', 'van'] });
+    expect(m.stats).toEqual({ perfects: 30, fateCards: 1, heroes: ['jean', 'lia', 'van'] });
   });
 });
 

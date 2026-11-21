@@ -218,23 +218,24 @@ describe('secuenciador (con audio simulado)', () => {
     Music.stop(0.1);
   });
 
-  it('los niveles jefe (10, 20… 100) suenan con la marcha del jefe, en otra tonalidad en cada ciudad, y los demás con el tema de su ciudad', () => {
+  it('los cierres de ciudad (10, 20… 100) suenan con el tema de su ciudad; la marcha suena al elegir carta', () => {
     const names = {};
-    for (const level of [9, 10, 20, 100, 11]) {
+    for (const level of [9, 10, 20, 11]) {
       Music.setLevel(level);
       Music.start();
       play(2300);
       names[level] = Music.themeName;
     }
-    expect(names[10]).toBe('El guardián del umbral');
-    expect(names[20]).toBe(names[10]);
-    expect(names[100]).toBe(names[10]);
-    expect(names[9]).not.toBe(names[10]);
-    expect(names[11]).not.toBe(names[10]);
+    expect(names[10]).toBe(names[9]);
+    expect(names[10]).not.toBe('Marcha del destino');
+    expect(names[20]).not.toBe('Marcha del destino');
+    Music.scene('fate');
+    play(2300);
+    expect(Music.themeName).toBe('Marcha del destino');
     Music.stop(0.1);
   });
 
-  it('la música de jefe es épica: mucho más llena que la de la ciudad con todas sus capas, sin infrasonidos ni chillidos', () => {
+  it('la marcha del destino es épica: mucho más llena que la de la ciudad con todas sus capas, sin infrasonidos ni chillidos', () => {
     const measure = (go) => {
       Music.stop(0);
       go();
@@ -251,15 +252,10 @@ describe('secuenciador (con audio simulado)', () => {
       Music.setLevel(9);
       Music.setLayer(10);
     });
-    const boss = measure(() => Music.setLevel(10));
-    expect(boss.osc, 'densidad de sonido').toBeGreaterThan(city.osc * 1.35);
-    expect(boss.min).toBeGreaterThan(25);
-    expect(boss.max).toBeLessThan(9000);
-    for (const level of [20, 50, 100]) {
-      const b = measure(() => Music.setLevel(level));
-      expect(b.osc, `jefe ${level}`).toBeGreaterThan(city.osc * 1.35);
-      expect(b.min, `jefe ${level}`).toBeGreaterThan(25);
-    }
+    const march = measure(() => Music.scene('fate'));
+    expect(march.osc, 'densidad de sonido').toBeGreaterThan(city.osc * 1.35);
+    expect(march.min).toBeGreaterThan(25);
+    expect(march.max).toBeLessThan(9000);
     Music.stop(0.1);
   });
 

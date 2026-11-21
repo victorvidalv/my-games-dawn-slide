@@ -4,10 +4,8 @@ export const EN_SHOP = {
   'Una compra por tablero': 'One purchase per board',
   'Ya compraste turnos para este tablero.': 'You already bought moves for this board.',
   'Ya rehiciste este tablero.': 'You already restarted this board.',
-  'Los jefes no se pueden saltar.': 'Bosses cannot be skipped.',
   'Ya usaste el salto de esta ciudad.': 'You already used this city’s skip.',
   'Un paquete por tablero': 'One pack per board',
-  'Un salto por ciudad · fuera de jefes': 'One skip per city · except bosses',
   /* La Candilera (Lía) */
   Maela: 'Maela',
   'El Mercader': 'The Merchant',
@@ -113,5 +111,4 @@ export const EN_SHOP = {
   'Vuelve cuando la tentación pese más que el bolsillo.': 'Come back when temptation weighs more than your pocket.',
   'Aún no has movido nada. ¿Qué voy a rebobinar? ¿Tu optimismo?':
     "You haven't moved anything yet. What am I going to rewind? Your optimism?",
-  'Camino de las Runas · −33 %': 'Path of the Runes · −33 %',
 };

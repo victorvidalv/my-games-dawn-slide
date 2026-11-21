@@ -12,7 +12,6 @@ import {
   sealPoints,
   maxSealAdjustment,
 } from '../src/game/seals.js';
-import { HEROIC_BENEFITS } from '../src/game/routes.js';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { heroLimit, snapshotRescue } from '../src/game/heroes.js';
 import { buy, payRevive } from '../src/game/shop.js';
@@ -66,16 +65,14 @@ it('atravesar una casilla intermedia de hielo recoge el sello; mover otra pieza 
 });
 
 for (const start of [1, 50, 75])
-  for (const route of ['normal', 'brave'])
-    it(`certifica recogida y salida en ${start}/${route} sin alterar el mínimo`, () => {
-      const r = run({ start, route, level: 39 });
+  for (const fate of [[], ['cuerda-floja']])
+    it(`certifica recogida y salida en ${start}${fate.length ? ' con −2 turnos' : ''} sin alterar el mínimo`, () => {
+      const r = run({ start, level: 39, fate });
       const G = buildAdventureLevel(r, { levels, special, tips, withProof: true });
       expect(G.seal).toBeTruthy();
       expect(G.seal.piece).toBeGreaterThan(0);
       expect(verifySealProof(G, G.seal, G.sealProof, G.limit)).toBe(true);
-      expect(G.limit).toBeLessThanOrEqual(
-        heroLimit(r.hero, G.opt, start, r.level, route === 'brave') + maxSealAdjustment(G.opt),
-      );
+      expect(G.limit).toBeLessThanOrEqual(heroLimit(r.hero, G.opt, start, r.level) + maxSealAdjustment(G.opt));
       expect(minMoves(G.pieces, G.pos, G.walls)).toBe(G.opt);
       expect(G.seal.requiredMoves).toBeLessThan(G.limit);
       const [row, col] = G.seal.cell;
@@ -92,9 +89,9 @@ it('no coloca objetivos que exijan seguir moviendo después de haber salido', ()
   expect(planSeal({ ...solved, opt: 0, limit: 3, rate: 1, level: 5 })).toBeNull();
 });
 
-it('el premio escala con la dificultad y compensa parte del desvío', () => {
-  expect(sealPoints(75, 20, 23)).toBeGreaterThan(sealPoints(10, 20, 23));
-  expect(sealPoints(40, 10, 12)).toBeGreaterThan(sealPoints(40, 10, 10));
+it('el premio escala con los movimientos mínimos del tablero y compensa parte del desvío', () => {
+  expect(sealPoints(20, 23)).toBeGreaterThan(sealPoints(10, 13));
+  expect(sealPoints(10, 12)).toBeGreaterThan(sealPoints(10, 10));
 });
 
 it('se guarda y se cobra una vez, incluso tras rebobinar, rehacer o revivir', () => {
@@ -129,13 +126,11 @@ it('se guarda y se cobra una vez, incluso tras rebobinar, rehacer o revivir', ()
   expect(loaded.sealClaims[G.n]).toBe(total);
 });
 
-it('el bono heroico también se aplica al sello (según el héroe) y coincide con el importe mostrado', () => {
-  const seal = { value: 100 },
-    B = HEROIC_BENEFITS;
-  expect(sealReward(run({ route: 'brave' }), seal)).toBe(Math.round(100 * (1 + B.points.jean)));
-  expect(sealReward(run({ hero: 'lia', route: 'brave' }), seal)).toBe(Math.round(100 * (1 + B.points.lia)));
+it('Sello dorado y la reliquia se aplican al sello y coinciden con el importe mostrado', () => {
+  const seal = { value: 100 };
   expect(sealReward(run(), seal)).toBe(100);
-  expect(sealReward(run({ route: 'brave', relic: 'sun' }), seal)).toBe(Math.round(145 * 1.15));
+  expect(sealReward(run({ fate: ['gilded-seal'] }), seal)).toBe(150);
+  expect(sealReward(run({ fate: ['gilded-seal'], relic: 'sun' }), seal)).toBe(Math.round(150 * 1.15));
 });
 
 it('restaura el mismo tablero y sello sin regenerar, también en partidas antiguas sin sello', () => {
@@ -191,7 +186,7 @@ const anyBoard = (family, from = 40) => {
 for (const family of ['plain', 'walls', 'gates', 'heavy', 'ice', 'combo_hg', 'combo_gi'])
   it(`certifica el sello con reglas ${family} incluso con límite experto`, () => {
     const { raw, rating } = anyBoard(family);
-    const built = buildLevel(decodeBoard(raw), { rating, brave: true, rng: mulberry32(46), withAnalysis: true });
+    const built = buildLevel(decodeBoard(raw), { rating, rng: mulberry32(46), withAnalysis: true });
     const L = SEAL_LEVELS.at(-1),
       limit = heroLimit('jean', built.opt, 75, L, true);
     const planned = planSeal({ ...built, rate: rating, level: L, limit, analysis: built.analysis, withProof: true });

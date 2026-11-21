@@ -38,7 +38,6 @@ async function gameDefaults() {
   const { rotatedLevels } = await src('game/orientation.js');
   const { SEAL_LEVELS, requestedSealTier } = await src('game/seals.js');
   const { rateAt, targetFor } = await src('engine/difficulty.js');
-  const { bossRating } = await src('game/bosses.js');
   const curse = rotatedLevels(7);
   const rows = [];
   for (let level = 1; level <= 100; level++) {
@@ -50,7 +49,7 @@ async function gameDefaults() {
       const tutorial = seal ? present && level === SEAL_LEVELS[0] : TUTORIALS[id]?.level === level;
       r[id] = tutorial ? 2 : present ? 1 : 0;
     }
-    [r.min_normal, r.min_hard, r.min_expert] = [1, 50, 75].map((s) => targetFor(bossRating(level, rateAt(s, level))));
+    [r.min_normal, r.min_hard, r.min_expert] = [1, 50, 75].map((s) => targetFor(rateAt(s, level)));
     rows.push(r);
   }
   return rows;

@@ -1,7 +1,7 @@
 <!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DAWNSLIDE · Calibrador</title>
 <style>
-:root{--bg:#14101f;--card:#211a33;--line:#3a2f55;--gold:#f0cf86;--ok:#4fd1a1;--tut:#ffb454;--boss:#d95b43}
+:root{--bg:#14101f;--card:#211a33;--line:#3a2f55;--gold:#f0cf86;--ok:#4fd1a1;--tut:#ffb454;--boss:#7b84e8}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#efe6ff;font:13px/1.35 system-ui,sans-serif;padding:12px}
 h1{margin:0;font-size:21px;color:var(--gold)}p.s{margin:2px 0 8px;color:#bfb2dd}
 .bar{position:sticky;top:0;z-index:6;background:var(--bg);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid var(--line)}
@@ -29,7 +29,6 @@ td.note input{width:140px;background:#0e0a18;color:#ddd;border:1px solid #3a2f55
 <script type="module">
 import { moveLimit, targetFor } from '/src/engine/difficulty.js';
 import { calcGain } from '/src/engine/scoring.js';
-import { bossCapFor } from '/src/game/bosses.js';
 const MECH=[['wall','Roca','🪨'],['heavy','Pesada','⚖️'],['gate','Candado','🔒'],['ice','Hielo','❄️'],['curse','Maleficio','🌀'],['seal1','Sello bronce','🥉'],['seal2','Sello plata','🥈'],['seal3','Sello oro','🥇']];
 const PATHS=[[1,'min_normal','Normal','#43e0c1'],[50,'min_hard','Difícil','#ffd24a'],[75,'min_expert','Experto','#ff7aa8']];
 let rows=await (await fetch('/api/levels')).json();
@@ -51,8 +50,8 @@ function draw(){
    +PATHS.map(([,,n,c])=>`<th class="grp" style="color:${c}">${n}<br>límite · pts perfecto</th>`).join('')+'<th>Tablero</th><th>Avisos</th><th>Nota</th></tr>'
   +rows.map((r,i)=>{
     const boss=r.level%10===0;
-    const calc=PATHS.map(([s,k])=>{const m=r[k],rt=ratingOf(m),lim=moveLimit(m,s,r.level,false,boss?bossCapFor(r.level):false);return `<td class="calc"><b>${lim}</b> · ${fmt(calcGain(rt,m,m,0).total)}</td>`}).join('');
-    return `<tr class="${boss?'boss ':''}${boss?'dec':''}"><td class="lv">${r.level}${boss?' ☠':''}</td>`
+    const calc=PATHS.map(([s,k])=>{const m=r[k],rt=ratingOf(m),lim=moveLimit(m,s,r.level);return `<td class="calc"><b>${lim}</b> · ${fmt(calcGain(m,m,0).total)}</td>`}).join('');
+    return `<tr class="${boss?'boss ':''}${boss?'dec':''}"><td class="lv">${r.level}${boss?' ✦':''}</td>`
      +MECH.map(([id])=>`<td class="c s${r[id]}" data-l="${r.level}" data-f="${id}">${r[id]===2?'★':r[id]===1?'✓':''}</td>`).join('')
      +PATHS.map(([,k])=>`<td class="n"><input type="number" min="1" max="99" value="${r[k]}" data-l="${r.level}" data-f="${k}"></td>`).join('')
      +calc+`<td class="fam">${famOf(r)}${r.curse?' · girado':''}</td><td class="warn">${warns(i)}</td>`
@@ -84,9 +83,9 @@ async function showResult(){
     const prefSeal=p.seal3?3:p.seal2?2:p.seal1?1:0;if(prefSeal!==seal){changes++;notes.push('sello '+prefSeal+'→'+seal)}
     const mins=[[mn,p.min_normal],[mh,p.min_hard],[me,p.min_expert]];
     const minCells=mins.map(([a,b])=>`<td class="n ${a!==b?'ch':''}">${a}${a!==b?` <s style="color:#8f82b3">${b}</s>`:''}</td>`).join('');
-    const calc=[1,50,75].map((s,k)=>{const mm=mins[k][0],rt=ratingOf(mm);return `<td class="calc"><b>${moveLimit(mm,s,p.level,false,boss?bossCapFor(p.level):false)}</b> · ${fmt(calcGain(rt,mm,mm,0).total)}</td>`}).join('');
+    const calc=[1,50,75].map((s,k)=>{const mm=mins[k][0],rt=ratingOf(mm);return `<td class="calc"><b>${moveLimit(mm,s,p.level)}</b> · ${fmt(calcGain(mm,mm,0).total)}</td>`}).join('');
     const fam=m?[...m].map(c=>Object.keys(LET).find(k=>LET[k]===c)).join(' + '):'normal';
-    return `<tr class="${boss?'boss dec':''}"><td class="lv">${p.level}${boss?' ☠':''}</td>${cells}<td class="c ${cs&&prefCurse?'s1':cs?'add':prefCurse?'del':''}">${p.level===T.curse?'★':cs?'🌀':prefCurse?'✗':''}</td>`
+    return `<tr class="${boss?'boss dec':''}"><td class="lv">${p.level}${boss?' ✦':''}</td>${cells}<td class="c ${cs&&prefCurse?'s1':cs?'add':prefCurse?'del':''}">${p.level===T.curse?'★':cs?'🌀':prefCurse?'✗':''}</td>`
       +`<td class="c ${seal&&prefSeal===seal?'s1':seal?'add':prefSeal?'del':''}">${seal?['🥉','🥈','🥇'][seal-1]+(sealTut?'★':''):prefSeal?'✗':''}</td>${minCells}${calc}<td class="fam">${fam}${cs?' · girado':''}</td><td class="warn" style="color:#ffd89a">${notes.join(' · ')}</td></tr>`}).join('');
   box.innerHTML=`<p class="s">Así quedó el juego (<code>src/data/calibration.json</code>). <span style="color:var(--ok)">verde</span> = como pediste · <span style="color:#7ab8ff">azul</span> = lo añadió el optimizador · <span style="color:#ff9a8a">✗ rojo</span> = lo quitó. Mínimos: valor final y, tachado, tu preferencia. <b>${changes}</b> diferencias con tus marcas. Tutoriales: ${Object.entries(T).map(([k,v])=>k+' '+v).join(' · ')}.</p>`
    +`<table><tr><th>Nivel</th>${MECH.slice(0,5).map(([,n,e])=>`<th>${e}<br>${n}</th>`).join('')}<th>🌀<br>Maleficio</th><th>Sello</th>`

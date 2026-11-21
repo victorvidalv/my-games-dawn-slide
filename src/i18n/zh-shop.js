@@ -4,10 +4,8 @@ export const ZH_SHOP = {
   'Una compra por tablero': '每块棋盘限购一次',
   'Ya compraste turnos para este tablero.': '你已经为这块棋盘购买了额外步数。',
   'Ya rehiciste este tablero.': '这块棋盘已经重来过了。',
-  'Los jefes no se pueden saltar.': '无法跳过首领关卡。',
   'Ya usaste el salto de esta ciudad.': '你已经用过这座城市的跳过机会。',
   'Un paquete por tablero': '每块棋盘限购一份',
-  'Un salto por ciudad · fuera de jefes': '每座城市可跳过一关 · 首领除外',
   Maela: 'Maela',
   'El Mercader': '商人',
   'El Tasador de Runas': '符文鉴定师',
@@ -91,5 +89,4 @@ export const ZH_SHOP = {
   'Tú decides. El oro no huye de Thyes… ni yo de mi caja.': '你决定。金子不会逃离 Thyes……我也不会离开我的钱箱。',
   'Vuelve cuando la tentación pese más que el bolsillo.': '等诱惑比口袋更重的时候再来吧。',
   'Aún no has movido nada. ¿Qué voy a rebobinar? ¿Tu optimismo?': '你还什么都没动。我要倒回什么？你的乐观吗？',
-  'Camino de las Runas · −33 %': '符文之路 · −33%',
 };

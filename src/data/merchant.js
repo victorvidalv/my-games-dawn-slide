@@ -65,5 +65,5 @@ export const SHOP_NOTES = {
   moves3: 'Un paquete por tablero',
   moves: 'Un paquete por tablero',
   redo: 'Empieza de cero con 0 movimientos',
-  skip: 'Un salto por ciudad · fuera de jefes',
+  skip: 'Un salto por ciudad',
 };

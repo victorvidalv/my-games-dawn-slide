@@ -121,11 +121,9 @@ export function buildDaily(challenge, day, { levels, special }, index = 0) {
     family: base.family,
     tutorial: null,
     seal: null,
-    timeLimit: 0,
-    timeLeft: 0,
     done: false,
     els: [],
-    plan: { ...levelPlan(challenge.level), boss: false },
+    plan: levelPlan(challenge.level),
     daily: challenge.id,
   };
 }

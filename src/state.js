@@ -1,5 +1,5 @@
 import { heroById } from './game/heroes.js';
-import { routeGain } from './game/routes.js';
+import { runGain } from './game/run-points.js';
 import { mergeSaves } from './game/save-merge.js';
 /* ============================ Estado y guardado ============================ */
 /* Los puntajes viven SIEMPRE en localStorage (clave estable entre versiones, con copia de respaldo) */
@@ -22,6 +22,26 @@ if (store.run) {
   if (!Number.isFinite(store.run.hints)) store.run.hints = 3;
 }
 if (!store.paths) store.paths = {};
+/* La marcha de los jefes (que ya no existen) pasó a ser la «Marcha del destino»: quien la tenía la conserva. */
+for (const box of [store.shopOwned, store.shopPaid])
+  if (box && Object.hasOwn(box, 'music:boss')) {
+    box['music:fate'] = box['music:boss'];
+    delete box['music:boss'];
+  }
+if (store.look?.music === 'boss') store.look.music = 'fate';
+/* Los logros de jefes pasaron a ser de cartas del destino: se conservan los ganados y sus puntos. */
+const ACH_RENAMED = { boss1: 'fate1', bosses3: 'fate9', bosses: 'fate27', bosses15: 'fate81' };
+for (const box of [store.ach, store.achClaimed])
+  if (box)
+    for (const [from, to] of Object.entries(ACH_RENAMED))
+      if (Object.hasOwn(box, from)) {
+        box[to] ??= box[from];
+        delete box[from];
+      }
+if (store.stats && Object.hasOwn(store.stats, 'bosses')) {
+  store.stats.fateCards = Math.max(Number(store.stats.fateCards) || 0, Number(store.stats.bosses) || 0);
+  delete store.stats.bosses;
+}
 if (store.best && store.best.score > 0 && !store.paths.c1)
   store.paths.c1 = { score: store.best.score, level: store.best.level, runs: 0 }; // migra récords antiguos
 /* Tres caminos de 100 niveles. 's' = dificultad inicial (1-100); sube de forma lineal hasta 100 en el nivel 100 */
@@ -74,8 +94,8 @@ export function holdBusy() {
   };
 }
 export const heroOf = (id = S.run?.hero) => heroById(id);
-/** Puntos que dan `moves` movimientos en el tablero actual (incluye racha, bono de ruta heroica y bono de jefe). */
-export const gainNow = (moves = S.G.moves) => routeGain(S.run, S.G.rate, moves, S.G.opt, S.run.streak || 0, S.G.n);
+/** Puntos que dan `moves` movimientos en el tablero actual (incluye racha, cartas del destino y reliquia). */
+export const gainNow = (moves = S.G.moves) => runGain(S.run, moves, S.G.opt, S.run.streak || 0, S.G);
 export function persist(next = store) {
   try {
     const merged = mergeSaves(next, readStore()); // recoge avances de otras pestañas

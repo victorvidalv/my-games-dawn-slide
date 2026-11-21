@@ -1,4 +1,3 @@
-import { zoneIdx } from '../data/zones.js';
 import { MAX_LEVEL } from '../engine/difficulty.js';
 import { QR_MAX_BYTES } from '../qr.js';
 import {
@@ -10,10 +9,9 @@ import {
   rewardKey,
 } from './achievements.js';
 import { dayNumber, emptyDaily } from './daily.js';
-import { isBossLevel } from './mechanics.js';
 import { relicFor } from './relics.js';
-import { HEROIC_BENEFITS } from './routes.js';
-import { BOSS_FREE_RETRIES, MAX_REVIVES } from './shop.js';
+import { MAX_REVIVES } from './shop.js';
+import { FATE_CARDS, FATE_PICKS } from './fate.js';
 import {
   CHALLENGE_RELICS,
   CHALLENGE_ROUTES,
@@ -26,6 +24,13 @@ import {
 const BASE_VERSION = 1;
 const RELIC_VERSION = 2;
 const V3_VERSION = 3;
+/** v4 = v3 sin jefes ni camino heroico, con las cartas del destino de la partida en curso. */
+const V4_VERSION = 4;
+/* Lo que guardaban v1-v3 de los jefes y del camino heroico (ya no existen): se lee para validar y se descarta. */
+const LEGACY_BOSS_RETRIES = 2;
+const LEGACY_HEROIC_HINTS = 1;
+const legacyBossLevel = (level) => level >= 10 && level % 10 === 0;
+const FATE_IDS = FATE_CARDS.map((c) => c.id);
 const BASE_URL = 'https://dawnslide.com/';
 const PREFIX = '#s=';
 const MAX_TOKEN_LENGTH = QR_MAX_BYTES - BASE_URL.length - PREFIX.length - 1;
@@ -90,6 +95,7 @@ const V3_CHALLENGE_ROUTES = CHALLENGE_ROUTES.map((r) => r.id);
 const V3_CHALLENGE_RELICS = CHALLENGE_RELICS.map((r) => r.id);
 const V3_LOOKS = Object.fromEntries(REWARD_TYPES.map((type) => [type, REWARDS[type].map((r) => r.id)]));
 
+// 'brave' y 'routeChosen' eran del camino heroico: se conservan sus bits para leer los enlaces v1-v3.
 const RUN_FLAGS = [
   'brave',
   'lifeUsed',
@@ -156,7 +162,7 @@ export function exportSaveLink(store = {}) {
   };
   const writeV = (value, max = UINT32) => writeVarint(bytes, value, max);
 
-  write(V3_VERSION);
+  write(V4_VERSION);
 
   // 1. Caminos de Aventura (solo los que tienen avance)
   const pathRecords = PATHS.map((path) => store.paths?.['c' + path] || null);
@@ -232,11 +238,9 @@ export function exportSaveLink(store = {}) {
     const relic = relicFor(run);
     const pending = run.pendingClear?.level === level;
     const flags = {
-      brave: run.route === 'brave',
       lifeUsed: run.lifeUsed,
       paidRevive: run.revivesBought > 0,
       pendingClear: pending,
-      routeChosen: pending && level % 10 === 0 && level < MAX_LEVEL && run.pendingClear.routeChosen,
       sealClaimed: Object.hasOwn(run.sealClaims || {}, level),
       bonus: run.bonus,
       recBroken: run.recBroken,
@@ -254,9 +258,13 @@ export function exportSaveLink(store = {}) {
     write(bounded(run.firstLevel || level, level));
     write(bounded(run.helpAt, level));
     write(bounded(run.streak, MAX_LEVEL));
-    write(isBossLevel(level) && run.bossRetry?.level === level ? bounded(run.bossRetry.used, BOSS_FREE_RETRIES) : 0);
-    write(run.heroicHintLevel === level ? bounded(run.heroicHintCount, HEROIC_BENEFITS.liaHints) : 0);
+    write(bounded(run.fatePicked, FATE_PICKS));
+    write(bounded(run.fateCityPaid, FATE_PICKS));
     write(run.revive);
+    write(bounded(run.revivesBought, 2));
+    const fate = (run.fate || []).filter((id) => FATE_IDS.includes(id)).slice(0, FATE_PICKS);
+    write(fate.length);
+    fate.forEach((id) => write(FATE_IDS.indexOf(id)));
   }
 
   write(checksum(bytes), 4);
@@ -308,7 +316,8 @@ export function readSaveHash(hash, now = new Date()) {
   };
 
   const version = read();
-  if (version === V3_VERSION) return readV3(read, readV, () => offset === end, now);
+  if (version === V3_VERSION || version === V4_VERSION)
+    return readV3(read, readV, () => offset === end, now, version === V4_VERSION);
   if (version !== BASE_VERSION && version !== RELIC_VERSION) invalid();
 
   // Decodificador heredado v1 / v2
@@ -359,10 +368,10 @@ export function readSaveHash(hash, now = new Date()) {
     const firstLevel = read(1, level, 1),
       helpAt = read(1, level),
       streak = read(1, MAX_LEVEL);
-    const bossRetries = read(1, isBossLevel(level) ? BOSS_FREE_RETRIES : 0);
-    const heroicHints = read(1, HEROIC_BENEFITS.liaHints),
-      revive = read();
-    if (flags.has('routeChosen') && (!flags.has('pendingClear') || !isBossLevel(level) || level === MAX_LEVEL))
+    read(1, legacyBossLevel(level) ? LEGACY_BOSS_RETRIES : 0);
+    read(1, LEGACY_HEROIC_HINTS);
+    const revive = read();
+    if (flags.has('routeChosen') && (!flags.has('pendingClear') || !legacyBossLevel(level) || level === MAX_LEVEL))
       invalid();
     run = buildRun({
       hero,
@@ -377,8 +386,6 @@ export function readSaveHash(hash, now = new Date()) {
       streak,
       revive,
       flags,
-      bossRetries,
-      heroicHints,
       relic: version === RELIC_VERSION ? RELICS[read(1, RELICS.length - 1)] : undefined,
     });
   } else if (version === RELIC_VERSION) invalid();
@@ -386,7 +393,7 @@ export function readSaveHash(hash, now = new Date()) {
   return { paths, ach, stats, daily, look, tips, run };
 }
 
-function readV3(read, readV, atEnd, now) {
+function readV3(read, readV, atEnd, now, v4 = false) {
   const ts = now.getTime();
   const maxSec = Math.floor(ts / 1000) + 86400;
 
@@ -533,10 +540,23 @@ function readV3(read, readV, atEnd, now) {
     const firstLevel = read(1, level, 1);
     const helpAt = read(1, level);
     const streak = read(1, MAX_LEVEL);
-    const bossRetries = read(1, isBossLevel(level) ? BOSS_FREE_RETRIES : 0);
-    const heroicHints = read(1, HEROIC_BENEFITS.liaHints);
+    let fatePicked, fateCityPaid, revivesBought, fate;
+    if (v4) {
+      fatePicked = read(1, FATE_PICKS);
+      fateCityPaid = read(1, FATE_PICKS);
+    } else {
+      read(1, legacyBossLevel(level) ? LEGACY_BOSS_RETRIES : 0);
+      read(1, LEGACY_HEROIC_HINTS);
+    }
     const revive = read();
-    if (flags.has('routeChosen') && (!flags.has('pendingClear') || !isBossLevel(level) || level === MAX_LEVEL))
+    if (v4) {
+      revivesBought = read(1, 2);
+      fate = Array.from({ length: read(1, FATE_PICKS) }, () => FATE_IDS[read(1, FATE_IDS.length - 1)]);
+      if (new Set(fate).size !== fate.length || fate.length > fatePicked) invalid();
+    } else if (
+      flags.has('routeChosen') &&
+      (!flags.has('pendingClear') || !legacyBossLevel(level) || level === MAX_LEVEL)
+    )
       invalid();
     run = buildRun({
       hero: HEROES[heroIdx],
@@ -551,9 +571,8 @@ function readV3(read, readV, atEnd, now) {
       streak,
       revive,
       flags,
-      bossRetries,
-      heroicHints,
       relic: hasRelic ? RELICS[relicIdx] : undefined,
+      fate: v4 ? { fate, fatePicked, fateCityPaid, revivesBought } : null,
     });
   }
   if (!atEnd()) invalid();
@@ -587,9 +606,8 @@ function buildRun({
   streak,
   revive,
   flags,
-  bossRetries,
-  heroicHints,
   relic,
+  fate = null,
 }) {
   const run = {
     mode: 'c',
@@ -604,18 +622,22 @@ function buildRun({
     helpAt,
     streak,
     revive,
-    route: level > 10 ? (flags.has('brave') ? 'brave' : 'normal') : 'normal',
-    routeZone: zoneIdx(level),
     lifeUsed: flags.has('lifeUsed'),
     revivesBought: flags.has('paidRevive') ? MAX_REVIVES : 0,
     recBroken: flags.has('recBroken'),
   };
   if (relic) run.relic = relic;
-  if (flags.has('pendingClear')) run.pendingClear = { level, routeChosen: flags.has('routeChosen') };
+  if (flags.has('pendingClear')) run.pendingClear = { level };
   if (flags.has('bonus')) run.bonus = 1;
   if (flags.has('sealClaimed')) run.sealClaims = { [level]: 0 };
-  if (bossRetries) run.bossRetry = { level, used: bossRetries };
-  if (heroicHints) Object.assign(run, { heroicHintLevel: level, heroicHintCount: heroicHints });
-  if (level === 10 && flags.has('routeChosen') && flags.has('brave')) run.route = 'brave';
+  if (fate) {
+    Object.assign(run, { fate: fate.fate, fatePicked: fate.fatePicked, fateCityPaid: fate.fateCityPaid });
+    if (fate.revivesBought) run.revivesBought = fate.revivesBought;
+  } else {
+    // Antes de las cartas: si ya se eligió la ruta de esta ciudad, su carta se da por elegida.
+    const before = (level - 1) / 10;
+    run.fate = [];
+    run.fatePicked = Math.min(FATE_PICKS, Math.floor(flags.has('routeChosen') ? level / 10 : before));
+  }
   return run;
 }

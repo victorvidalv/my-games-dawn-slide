@@ -520,15 +520,14 @@ const HEROES_DATA = {
 };
 
 /**
- * Jefes de ciudad (niveles 10, 20, …, 100): marcha dramática en menor armónico, más rápida y con orquesta completa.
- * Cada jefe la toca en una tonalidad distinta (`bossThemeFor`), para que suene a duelo y no se repita igual.
+ * Cartas del destino (cierre de cada ciudad): marcha dramática en menor armónico, más rápida y con orquesta completa.
  */
-const BOSS_DATA = {
-  name: 'El guardián del umbral',
+const FATE_DATA = {
+  name: 'Marcha del destino',
   choir: { vowel: 'oh', chant: [0, 8], clap: [] },
   ownChorus: true,
   hook: { s: [0, 2, 3, 6, 8, 10, 11, 14], n: [0, 0, 2, 0, 1, 1, 3, 2], voice: 'pizz', oct: 0, v: 0.024 },
-  boss: true,
+  march: true,
   epic: 3,
   bpm: 134,
   sc: 'hmin',
@@ -680,19 +679,5 @@ export const cityThemeFor = (city, hero) =>
   (Object.hasOwn(CITY_REPERTOIRES, hero) ? CITY_REPERTOIRES[hero] : ZONE_THEMES)[city];
 export const MENU_THEME = build(MENU_DATA);
 export const HEROES_THEME = build(HEROES_DATA);
-export const BOSS_THEME = build(BOSS_DATA);
-export const ALL_THEMES = [...Object.values(CITY_REPERTOIRES).flat(), MENU_THEME, HEROES_THEME, BOSS_THEME];
-
-const BOSS_ROOT_STEP = [0, 2, 3, 5, 7, -2, 1, 4, -1, 0]; // semitonos sobre la tónica base, por ciudad
-const bossCache = new Map();
-/** Tema del jefe de la ciudad `city` (0-9): la misma marcha en otra tonalidad y un poco más rápida cuanto más avanzas. */
-export function bossThemeFor(city) {
-  const c = Math.max(0, Math.min(9, city));
-  if (!bossCache.has(c))
-    bossCache.set(c, {
-      ...BOSS_THEME,
-      root: BOSS_THEME.root + BOSS_ROOT_STEP[c],
-      bpm: Math.min(136, BOSS_THEME.bpm - 4 + c),
-    });
-  return bossCache.get(c);
-}
+export const FATE_THEME = build(FATE_DATA);
+export const ALL_THEMES = [...Object.values(CITY_REPERTOIRES).flat(), MENU_THEME, HEROES_THEME, FATE_THEME];

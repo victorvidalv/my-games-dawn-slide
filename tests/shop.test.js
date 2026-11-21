@@ -12,7 +12,6 @@ import {
   payRevive,
   hasRevive,
   useRevive,
-  bossRetriesLeft,
   freeRetry,
   useFreeRetry,
   FREE_RETRY_UNTIL,
@@ -25,16 +24,16 @@ import { baseScore } from '../src/engine/scoring.js';
 
 const mk = (score, over = {}) => ({
   run: { score, hints: 3, mode: 'c', spent: 0 },
-  G: { n: 10, rate: 10, opt: 5, limit: 10, moves: 4, hist: [[1], [2]], pos: [3], start: [0], done: false, ...over },
+  G: { n: 10, rate: 10, opt: 10, limit: 10, moves: 4, hist: [[1], [2]], pos: [3], start: [0], done: false, ...over },
 });
 
 describe('tienda: precios proporcionales', () => {
   it('incluye pista, +5 %, +10 % de turnos, rehacer y saltar (sin revivir)', () => {
     expect(SHOP_ITEMS.map((i) => i.id)).toEqual(['hint', 'moves3', 'moves', 'redo', 'skip']);
   });
-  it('el precio es N niveles de esa dificultad: sube con el nivel y es proporcional a lo que se gana', () => {
+  it('el precio es N tableros de puntos base: sube con los movimientos mínimos y es proporcional a lo que se gana', () => {
     const levels = { hint: 0.6, redo: 1, moves3: 1, moves: 1.8, skip: 4 };
-    for (const rating of [1, 25, 50, 100]) {
+    for (const rating of [2, 12, 20, 37]) {
       for (const [id, n] of Object.entries(levels))
         expect(priceOf(id, rating)).toBe(Math.round((n * baseScore(rating) * pathPrice(1)) / 10) * 10);
     }
@@ -165,7 +164,7 @@ describe('tienda: compras', () => {
   it('un tablero de una versión anterior conserva su compra de turnos', () => {
     expect(buy('moves', mk(100000, { bought: 1 })).ok).toBe(false);
   });
-  it('cobra un solo salto por ciudad y no deja saltar jefes', () => {
+  it('cobra un solo salto por ciudad (también en el último tablero de la ciudad)', () => {
     const session = mk(100000, { n: 9 });
     const r = buy('skip', session);
     expect(r.ok).toBe(true);
@@ -265,7 +264,6 @@ describe('primeros pasos: en la primera ciudad del camino Normal se repite el ta
     expect(FREE_RETRY_UNTIL).toBe(9);
     for (let l = 1; l <= 9; l++) expect(freeRetry(run, l)).toBe(true);
     expect(freeRetry(run, 10)).toBe(false);
-    expect(freeRetry(run, 5, true)).toBe(false);
     expect(freeRetry({ start: 50, mode: 'c' }, 3)).toBe(false);
     expect(freeRetry({ start: 75, mode: 'c' }, 3)).toBe(false);
     expect(freeRetry({ start: 1, mode: 'p' }, 3)).toBe(false);
@@ -277,48 +275,5 @@ describe('primeros pasos: en la primera ciudad del camino Normal se repite el ta
     useFreeRetry(run, G);
     expect(run).toMatchObject({ score: 900, hints: 2, streak: 0, revive: 0 });
     expect(run.rescue).toMatchObject({ kind: 'learn', level: 3, start: [0], opt: 4 });
-  });
-});
-
-describe('reintentos gratis de jefe', () => {
-  const boss = {
-    n: 20,
-    plan: { boss: true },
-    rate: 15,
-    pieces: [{ o: 'h', len: 2, fix: 2 }],
-    start: [0],
-    pos: [3],
-    opt: 6,
-    moves: 12,
-    limit: 12,
-    bought: 2,
-    timeLimit: 180,
-    timeLeft: 0,
-  };
-  it('comparte el cupo entre derrotas por tiempo y por turnos, conserva puntos y pistas, y cuenta por jefe', () => {
-    const initial = { start: 50, mode: 'c', score: 900, hints: 2, streak: 4, revive: 1 };
-    expect(bossRetriesLeft(initial, 20)).toBe(2);
-    expect(useFreeRetry(initial, boss, 'time')).toBe(true);
-    expect(initial).toMatchObject({
-      score: 900,
-      hints: 2,
-      streak: 0,
-      revive: 1,
-      rescue: { level: 20, kind: 'boss', why: 'time', start: [0], limit: 10 },
-    });
-    const resumed = JSON.parse(JSON.stringify(initial));
-    delete resumed.rescue;
-    expect(bossRetriesLeft(resumed, 20)).toBe(1);
-    expect(useFreeRetry(resumed, boss, 'limit')).toBe(true);
-    expect(resumed.rescue.why).toBe('limit');
-    expect(freeRetry(resumed, 20, true)).toBe(false);
-    expect(useFreeRetry(resumed, boss, 'time')).toBe(false);
-    expect(resumed.rescue.why).toBe('limit');
-    expect(bossRetriesLeft(resumed, 30)).toBe(2);
-  });
-  it('excluye práctica, retos diarios y tableros que no son jefes', () => {
-    expect(bossRetriesLeft({ mode: 'p' }, 20)).toBe(0);
-    expect(bossRetriesLeft({ mode: 'c', daily: {} }, 20)).toBe(0);
-    expect(bossRetriesLeft({ mode: 'c' }, 21)).toBe(0);
   });
 });

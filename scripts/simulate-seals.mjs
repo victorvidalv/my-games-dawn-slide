@@ -68,7 +68,7 @@ if (!isMainThread) {
         truncated = 0,
         maxAdded = 0;
       for (const hero of ['lia', 'jean', 'van']) {
-        const baseLimit = heroLimit(hero, G.opt, job.start, job.level, job.route === 'brave');
+        const baseLimit = heroLimit(hero, G.opt, job.start, job.level);
         if (baseLimit < steps) throw Error('Base level exceeds hero allowance');
         if (!isSealLevel(job.level)) continue;
         const planned = planSeal({
@@ -146,11 +146,8 @@ if (!isMainThread) {
   const jobs = [];
   for (let s = 0; s < seeds; s++)
     for (const start of [1, 50, 75])
-      for (const route of ['normal', 'brave'])
-        for (const level of full ? Array.from({ length: 100 }, (_, i) => i + 1) : SEAL_LEVELS) {
-          if (route === 'brave' && level <= 10) continue;
-          jobs.push({ seed: 46001 + s * 7919, start, route, level });
-        }
+      for (const level of full ? Array.from({ length: 100 }, (_, i) => i + 1) : SEAL_LEVELS)
+        jobs.push({ seed: 46001 + s * 7919, start, level });
   const report = {
     version: 46,
     mode: full ? 'full' : 'seal-levels',
@@ -171,9 +168,7 @@ if (!isMainThread) {
   let next = 0,
     done = 0;
   const t0 = performance.now();
-  console.log(
-    `Checking ${jobs.length} real boards across three difficulties, both routes and all heroes (${count} workers).`,
-  );
+  console.log(`Checking ${jobs.length} real boards across three difficulties and all heroes (${count} workers).`);
   await new Promise((resolve) => {
     function feed(w) {
       if (next < jobs.length) w.postMessage(jobs[next++]);
