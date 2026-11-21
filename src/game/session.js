@@ -55,10 +55,10 @@ import { S, closeRun, gainNow, haltBoard, heroOf, persist, rkey, setBoard, setBu
 import { playReviveEffect, playSkipEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { showDailyResult } from '../ui/daily.js';
-import { countStat, markStat, pauseAchievementToasts } from '../ui/achievements.js';
+import { countStat, markStat, pauseAchievementToasts, raiseStat } from '../ui/achievements.js';
 import { boardEl, buildPieces, fitBoard, layout, updateHud } from '../ui/board.js';
 import { isBonusLevel, showBonus } from '../ui/bonus.js';
-import { fateCityRewards, fateOffer, needsFatePick, pickFate } from './fate.js';
+import { fateById, fateCityRewards, fateOffer, needsFatePick, pickFate } from './fate.js';
 import { baseScore } from '../engine/scoring.js';
 import { showFateDialog, syncFateHud } from '../ui/fate.js';
 import { endRun } from '../ui/finale.js';
@@ -365,7 +365,7 @@ async function startLevel() {
 
 /* ---------- Avance entre niveles ---------- */
 /**
- * Cierre de ciudad: primero pagan las cartas que ya tienes (Brújula, Cosecha) y después se elige 1 de 3 cartas del destino.
+ * Cierre de ciudad: primero pagan las cartas que ya tienes (Brújula, Cosecha) y después se elige 1 carta del destino (entre 2 o 3, según el héroe).
  * Las dos cosas se guardan al instante, así recargar a mitad de la elección no repite ni pierde nada.
  */
 function fateDialog() {
@@ -384,7 +384,7 @@ function fateDialog() {
     isActive: () => S.run === session,
     onChoose: (id) => {
       const out = pickFate(session, id, city, baseScore(done.opt));
-      if (out) countStat('fateCards');
+      if (out) countStat('fateCards', ...(fateById(id)?.kind === 'pact' ? ['pacts'] : []));
       saveRun();
       syncFateHud();
       return out;
@@ -452,6 +452,7 @@ export function win() {
   const gain = gainNow(),
     previous = run.score;
   applyAdventureWin(run, G, gain);
+  raiseStat('bestRunStreak', run.streak);
   recordBest();
   saveRun();
   setTensionFx(0, false);

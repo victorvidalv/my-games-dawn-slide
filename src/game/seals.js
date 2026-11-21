@@ -3,7 +3,7 @@ import { analyze, expand } from '../engine/solver.js';
 import { baseScore, calcGain } from '../engine/scoring.js';
 import { hash32 } from '../engine/rng.js';
 import { sealAt } from '../engine/calibration.js';
-import { fateSeal } from './fate.js';
+import { fateBlocks, fateSeal } from './fate.js';
 import { relicPoints } from './relics.js';
 
 /** Niveles con sello (y su tipo) según el calibrador. */
@@ -36,7 +36,8 @@ export const sealPoints = (opt, required, tier = 2) =>
 /** Tipo de sello que se intenta colocar en un nivel (el del calibrador; el motor lo baja si el tablero no da para tanto rodeo). */
 export const requestedSealTier = (level) => sealAt(level)?.tier ?? 1;
 /** Premio de un sello: su valor, más Sello dorado y la reliquia. */
-export const sealReward = (run, seal) => relicPoints(run, Math.round(seal.value * (1 + fateSeal(run))));
+export const sealReward = (run, seal) =>
+  fateBlocks(run, 'seals') ? 0 : relicPoints(run, Math.round(seal.value * (1 + fateSeal(run))));
 export const sealLimit = (seal, base) => (seal ? Math.max(base, seal.requiredMoves + 1) : base);
 
 /** A slide crosses every cell in its swept footprint, including intermediate cells on ice. */

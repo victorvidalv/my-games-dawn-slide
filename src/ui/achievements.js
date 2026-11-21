@@ -18,6 +18,7 @@ import {
   TIERS,
   achBalance,
   bumpStat,
+  raiseStat as raiseStore,
   buyShopItem,
   claimAchievements,
   claimedCount,
@@ -177,6 +178,13 @@ export function checkAchievements({ silent = false } = {}) {
 export function countStat(...names) {
   if (!names.length) return;
   for (const name of names) bumpStat(store, name);
+  persist();
+  checkAchievements();
+}
+
+/** Sube una marca máxima (p. ej. la mejor racha de una partida) y comprueba si se desbloqueó algún logro. */
+export function raiseStat(name, value) {
+  if (!raiseStore(store, name, value)) return;
   persist();
   checkAchievements();
 }

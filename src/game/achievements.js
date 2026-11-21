@@ -220,6 +220,10 @@ export const COUNTERS = [
   'powersUsed',
   'challengeBoards',
   'challengeRelicsUsed',
+  'pacts',
+  'goldSeals',
+  'legacyAchPoints',
+  'bestRunStreak', // marca máxima (se sube con raiseStat, no se suma)
 ];
 
 export const COLLECTIONS = ['heroes', 'paths', 'mini5Kinds', 'challengeRelics', 'challengeRoutesPlayed'];
@@ -257,6 +261,52 @@ export const STATS = {
 
 export const statsOf = (store = {}) =>
   Object.fromEntries(Object.entries(STATS).map(([k, read]) => [k, read(store || {})]));
+
+/**
+ * Pone al día los logros de un guardado antiguo (se llama al cargar y al importar; se puede repetir sin efecto):
+ *   · los de jefes pasaron a ser de cartas del destino (mismos puntos);
+ *   · los que se quitaron por ser relleno del inicio conservan sus puntos como «puntos heredados», que siguen sumando
+ *     para canjear en la Tienda de logros.
+ */
+const ACH_RENAMED = { boss1: 'fate1', bosses3: 'fate9', bosses: 'fate27', bosses15: 'fate81' };
+export const ACH_RETIRED = { lv5: 10, lv20: 15, lv35: 30, lv65: 40, perf1: 10, fate1: 15, boards10: 15 };
+export function migrateAchievements(store) {
+  if (!store) return false;
+  let changed = false;
+  for (const box of [store.ach, store.achClaimed])
+    if (box)
+      for (const [from, to] of Object.entries(ACH_RENAMED))
+        if (Object.hasOwn(box, from)) {
+          box[to] ??= box[from];
+          delete box[from];
+          changed = true;
+        }
+  if (store.stats && Object.hasOwn(store.stats, 'bosses')) {
+    store.stats.fateCards = Math.max(Number(store.stats.fateCards) || 0, Number(store.stats.bosses) || 0);
+    delete store.stats.bosses;
+    changed = true;
+  }
+  let legacy = 0;
+  for (const [id, points] of Object.entries(ACH_RETIRED)) {
+    if (store.ach?.[id] || store.achClaimed?.[id]) legacy += points;
+    if (store.ach) delete store.ach[id];
+    if (store.achClaimed) delete store.achClaimed[id];
+  }
+  if (legacy) {
+    const stats = (store.stats ||= {});
+    stats.legacyAchPoints = (Number(stats.legacyAchPoints) || 0) + legacy;
+    changed = true;
+  }
+  return changed;
+}
+
+/** Guarda el valor más alto visto de una marca (p. ej. la mejor racha de una partida). Devuelve true si subió. */
+export function raiseStat(store, name, value) {
+  const stats = (store.stats ||= {});
+  if (!(Number(value) > (Number(stats[name]) || 0))) return false;
+  stats[name] = Number(value);
+  return true;
+}
 
 export function bumpStat(store, name, by = 1) {
   if (!COUNTERS.includes(name)) throw new Error(`unknown counter: ${name}`);
@@ -307,14 +357,14 @@ export const ACHIEVEMENTS = [
     goal: 1,
   },
   {
-    id: 'lv5',
+    id: 'hard10',
     group: 'adventure',
     tier: 'bronze',
     points: 10,
-    name: 'Calentando motores',
-    desc: 'Llega al nivel 5 en Aventura',
-    stat: 'maxLevel',
-    goal: 5,
+    name: 'Umbral difícil',
+    desc: 'Llega al nivel 10 en el camino Difícil',
+    stat: 'hardLevel',
+    goal: 10,
   },
   {
     id: 'city1',
@@ -327,14 +377,14 @@ export const ACHIEVEMENTS = [
     goal: 11,
   },
   {
-    id: 'lv20',
+    id: 'expert10',
     group: 'adventure',
     tier: 'bronze',
     points: 15,
-    name: 'Segunda ciudad',
-    desc: 'Llega al nivel 20 en Aventura',
-    stat: 'maxLevel',
-    goal: 20,
+    name: 'Umbral experto',
+    desc: 'Llega al nivel 10 en el camino Experto',
+    stat: 'expertLevel',
+    goal: 10,
   },
   {
     id: 'heroes2',
@@ -357,14 +407,14 @@ export const ACHIEVEMENTS = [
     goal: 25,
   },
   {
-    id: 'lv35',
+    id: 'hard75',
     group: 'adventure',
     tier: 'silver',
     points: 30,
-    name: 'Horizonte lejano',
-    desc: 'Llega al nivel 35 en Aventura',
-    stat: 'maxLevel',
-    goal: 35,
+    name: 'Cumbre difícil',
+    desc: 'Llega al nivel 75 en el camino Difícil',
+    stat: 'hardLevel',
+    goal: 75,
   },
   {
     id: 'lv50',
@@ -377,14 +427,14 @@ export const ACHIEVEMENTS = [
     goal: 50,
   },
   {
-    id: 'lv65',
+    id: 'expert50',
     group: 'adventure',
     tier: 'silver',
     points: 40,
-    name: 'Tierras altas',
-    desc: 'Llega al nivel 65 en Aventura',
-    stat: 'maxLevel',
-    goal: 65,
+    name: 'Acero templado',
+    desc: 'Llega al nivel 50 en el camino Experto',
+    stat: 'expertLevel',
+    goal: 50,
   },
   {
     id: 'lv75',
@@ -499,13 +549,13 @@ export const ACHIEVEMENTS = [
 
   // ===== 2. Maestría (20: 5 simples, 10 medios, 5 difíciles) =====
   {
-    id: 'perf1',
+    id: 'pact1',
     group: 'mastery',
     tier: 'bronze',
     points: 10,
-    name: 'Primer perfecto',
-    desc: 'Resuelve 1 tablero en el mínimo',
-    stat: 'perfects',
+    name: 'Primer pacto',
+    desc: 'Elige tu primer Pacto del destino',
+    stat: 'pacts',
     goal: 1,
   },
   {
@@ -514,18 +564,18 @@ export const ACHIEVEMENTS = [
     tier: 'bronze',
     points: 15,
     name: 'Buen ojo',
-    desc: 'Resuelve 5 tableros en el mínimo',
+    desc: 'Resuelve 25 tableros en el mínimo',
     stat: 'perfects',
-    goal: 5,
+    goal: 25,
   },
   {
-    id: 'fate1',
+    id: 'goldSeal1',
     group: 'mastery',
     tier: 'bronze',
     points: 15,
-    name: 'Primera carta',
-    desc: 'Elige tu primera carta del destino',
-    stat: 'fateCards',
+    name: 'Sello de oro',
+    desc: 'Recoge tu primer sello de oro',
+    stat: 'goldSeals',
     goal: 1,
   },
   {
@@ -534,9 +584,9 @@ export const ACHIEVEMENTS = [
     tier: 'bronze',
     points: 15,
     name: 'Primer deshielo',
-    desc: 'Resuelve 5 tableros con rocas o hielo',
+    desc: 'Resuelve 15 tableros con rocas o hielo',
     stat: 'iceRock',
-    goal: 5,
+    goal: 15,
   },
   {
     id: 'locks5',
@@ -544,9 +594,9 @@ export const ACHIEVEMENTS = [
     tier: 'bronze',
     points: 15,
     name: 'Primera cerradura',
-    desc: 'Resuelve 5 tableros con candados',
+    desc: 'Resuelve 15 tableros con candados',
     stat: 'locks',
-    goal: 5,
+    goal: 15,
   },
   {
     id: 'perf10',
@@ -554,9 +604,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 25,
     name: 'Pulso firme',
-    desc: 'Resuelve 10 tableros en el mínimo',
+    desc: 'Resuelve 50 tableros en el mínimo',
     stat: 'perfects',
-    goal: 10,
+    goal: 50,
   },
   {
     id: 'perf25',
@@ -564,9 +614,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 35,
     name: 'Trazo limpio',
-    desc: 'Resuelve 25 tableros en el mínimo',
+    desc: 'Resuelve 100 tableros en el mínimo',
     stat: 'perfects',
-    goal: 25,
+    goal: 100,
   },
   {
     id: 'perf50',
@@ -574,9 +624,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 50,
     name: 'Sin un paso de más',
-    desc: 'Resuelve 50 tableros en el mínimo',
+    desc: 'Resuelve 150 tableros en el mínimo',
     stat: 'perfects',
-    goal: 50,
+    goal: 150,
   },
   {
     id: 'icerock',
@@ -584,9 +634,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 35,
     name: 'Rompehielos',
-    desc: 'Resuelve 25 tableros con rocas o hielo',
+    desc: 'Resuelve 40 tableros con rocas o hielo',
     stat: 'iceRock',
-    goal: 25,
+    goal: 40,
   },
   {
     id: 'locks',
@@ -594,9 +644,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 35,
     name: 'Cerrajero',
-    desc: 'Resuelve 25 tableros con candados',
+    desc: 'Resuelve 40 tableros con candados',
     stat: 'locks',
-    goal: 25,
+    goal: 40,
   },
   {
     id: 'heavy10',
@@ -604,9 +654,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 25,
     name: 'Brazo firme',
-    desc: 'Resuelve 10 tableros con bloques pesados',
+    desc: 'Resuelve 15 tableros con bloques pesados',
     stat: 'heavyBoards',
-    goal: 10,
+    goal: 15,
   },
   {
     id: 'heavy25',
@@ -614,9 +664,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 35,
     name: 'Peso pluma',
-    desc: 'Resuelve 25 tableros con bloques pesados',
+    desc: 'Resuelve 40 tableros con bloques pesados',
     stat: 'heavyBoards',
-    goal: 25,
+    goal: 40,
   },
   {
     id: 'fate9',
@@ -644,9 +694,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 50,
     name: 'Sin ayuda',
-    desc: 'Supera una ciudad entera sin pistas ni saltos',
+    desc: 'Supera 3 ciudades enteras sin pistas ni saltos',
     stat: 'cleanCity',
-    goal: 1,
+    goal: 3,
   },
   {
     id: 'perf100',
@@ -654,9 +704,9 @@ export const ACHIEVEMENTS = [
     tier: 'gold',
     points: 100,
     name: 'Perfección absoluta',
-    desc: 'Resuelve 100 tableros en el mínimo',
+    desc: 'Resuelve 300 tableros en el mínimo',
     stat: 'perfects',
-    goal: 100,
+    goal: 300,
   },
   {
     id: 'perf200',
@@ -664,9 +714,9 @@ export const ACHIEVEMENTS = [
     tier: 'gold',
     points: 130,
     name: 'Mente maestra',
-    desc: 'Resuelve 200 tableros en el mínimo',
+    desc: 'Resuelve 500 tableros en el mínimo',
     stat: 'perfects',
-    goal: 200,
+    goal: 500,
   },
   {
     id: 'icerock75',
@@ -674,9 +724,9 @@ export const ACHIEVEMENTS = [
     tier: 'gold',
     points: 85,
     name: 'Señor del glaciar',
-    desc: 'Resuelve 75 tableros con rocas o hielo',
+    desc: 'Resuelve 120 tableros con rocas o hielo',
     stat: 'iceRock',
-    goal: 75,
+    goal: 120,
   },
   {
     id: 'fate81',
@@ -694,9 +744,9 @@ export const ACHIEVEMENTS = [
     tier: 'gold',
     points: 110,
     name: 'Sabiduría pura',
-    desc: 'Supera 5 ciudades sin pistas ni saltos',
+    desc: 'Supera 10 ciudades sin pistas ni saltos',
     stat: 'cleanCity',
-    goal: 5,
+    goal: 10,
   },
 
   // ===== 3. Desafío (20: 5 simples, 10 medios, 5 difíciles) =====
@@ -1105,13 +1155,13 @@ export const ACHIEVEMENTS = [
 
   // ===== 5. Colección (20: 5 simples, 10 medios, 5 difíciles) =====
   {
-    id: 'boards10',
+    id: 'streak10',
     group: 'collection',
     tier: 'bronze',
     points: 15,
-    name: 'Diez llaves',
-    desc: 'Resuelve 10 tableros en Aventura',
-    stat: 'boardsSolved',
+    name: 'Mano firme',
+    desc: 'Encadena una racha de 10 tableros en una partida',
+    stat: 'bestRunStreak',
     goal: 10,
   },
   {
@@ -1120,9 +1170,9 @@ export const ACHIEVEMENTS = [
     tier: 'bronze',
     points: 10,
     name: 'Primera chispa',
-    desc: 'Activa el poder de un héroe por primera vez',
+    desc: 'Activa el poder de un héroe 10 veces',
     stat: 'powersUsed',
-    goal: 1,
+    goal: 10,
   },
   {
     id: 'shop1',
@@ -1140,9 +1190,9 @@ export const ACHIEVEMENTS = [
     tier: 'bronze',
     points: 15,
     name: 'Primer botín',
-    desc: 'Alcanza 5.000 puntos en una partida',
+    desc: 'Alcanza 25.000 puntos en una partida',
     stat: 'bestScore',
-    goal: 5000,
+    goal: 25000,
   },
   {
     id: 'cosmetic1',
@@ -1210,9 +1260,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 25,
     name: 'Despertar',
-    desc: 'Activa el poder de un héroe 15 veces',
+    desc: 'Activa el poder de un héroe 40 veces',
     stat: 'powersUsed',
-    goal: 15,
+    goal: 40,
   },
   {
     id: 'power25',
@@ -1220,9 +1270,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 45,
     name: 'Fuerza interior',
-    desc: 'Activa el poder de un héroe 75 veces',
+    desc: 'Activa el poder de un héroe 150 veces',
     stat: 'powersUsed',
-    goal: 75,
+    goal: 150,
   },
   {
     id: 'shop5',
@@ -1240,9 +1290,9 @@ export const ACHIEVEMENTS = [
     tier: 'silver',
     points: 35,
     name: 'Tesoro del amanecer',
-    desc: 'Alcanza 50.000 puntos en una partida',
+    desc: 'Alcanza 100.000 puntos en una partida',
     stat: 'bestScore',
-    goal: 50000,
+    goal: 100000,
   },
   {
     id: 'cosmetic5',
@@ -1280,9 +1330,9 @@ export const ACHIEVEMENTS = [
     tier: 'gold',
     points: 95,
     name: 'Fortuna real',
-    desc: 'Alcanza 120.000 puntos en una partida',
+    desc: 'Alcanza 300.000 puntos en una partida',
     stat: 'bestScore',
-    goal: 120000,
+    goal: 300000,
   },
   {
     id: 'cosmetic15',
@@ -1355,6 +1405,7 @@ export function earnedPoints(store = {}) {
   const claimed = store?.achClaimed || {};
   const opened = store?.achMilestones || {};
   return (
+    (Number(store?.stats?.legacyAchPoints) || 0) +
     ACHIEVEMENTS.reduce((sum, a) => sum + (claimed[a.id] ? a.points : 0), 0) +
     MILESTONES.reduce((sum, m) => sum + (opened[m.n] ? m.points : 0), 0)
   );

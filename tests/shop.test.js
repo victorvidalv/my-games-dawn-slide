@@ -128,15 +128,25 @@ describe('tienda: compras', () => {
     buy('hint', expert);
     expect(1e6 - expert.run.score).toBeGreaterThan(1e6 - normal.run.score);
   });
-  it('rehacer: vuelve al inicio con 0 movimientos y conserva los turnos comprados', () => {
+  it('rehacer: vuelve al inicio con 0 movimientos y conserva el límite', () => {
     const { run, G } = mk(100000);
-    buy('moves', { run, G });
     const limit = G.limit;
     expect(buy('redo', { run, G }).ok).toBe(true);
     expect(G.moves).toBe(0);
     expect(G.hist).toEqual([]);
     expect(G.pos).toEqual(G.start);
     expect(G.limit).toBe(limit);
+  });
+  it('solo una compra por tablero, sea lo que sea (también tras recargar); en el tablero siguiente se puede volver a comprar', () => {
+    const { run, G } = mk(100000);
+    expect(buy('hint', { run, G }).ok).toBe(true);
+    const reloaded = JSON.parse(JSON.stringify(run));
+    for (const id of ['hint', 'moves3', 'moves', 'redo', 'skip'])
+      expect(availability(id, { run: reloaded, G }), id).toMatchObject({
+        ok: false,
+        reason: 'Ya compraste algo en este tablero.',
+      });
+    expect(buy('moves', { run, G: { ...G, n: G.n + 1, bought: 0 } }).ok).toBe(true);
   });
   it('rehacer solo se puede comprar una vez por tablero, aunque se recargue', () => {
     const { run, G } = mk(100000);

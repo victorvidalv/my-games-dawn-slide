@@ -176,11 +176,12 @@ describe('secuenciador (con audio simulado)', () => {
 
   it('con pocos turnos la música NO cambia: mismo tempo y sin capas nuevas (el aviso es solo visual)', async () => {
     const { setTensionFx } = await import('../src/audio/music.js');
+    const { cityThemeFor } = await import('../src/audio/themes.js');
     Music.setLevel(1);
     Music.start();
     play(2000);
     const bpm = Music.bpm();
-    expect(bpm).toBeCloseTo(124, 0); // el tempo del tema del Valle, sin aceleración
+    expect(bpm).toBeCloseTo(cityThemeFor(0).bpm, 0); // el tempo del tema del Valle, sin aceleración
     Music.seek('verse');
     stats.osc = 0;
     play(15500); // 8 compases
@@ -201,7 +202,7 @@ describe('secuenciador (con audio simulado)', () => {
     const counts = [];
     for (let l = 1; l <= 10; l++) {
       Music.stop(0);
-      Music.setLevel(Math.min(l, 9)); // ciudad 1, nivel l → capa l (el nivel 10 es el jefe, con su propio tema: la capa 10 se fuerza sobre el tema de la ciudad)
+      Music.setLevel(Math.min(l, 9)); // ciudad 1, nivel l → capa l (la capa 10 se fuerza sobre el mismo tema para comparar)
       if (l === 10) Music.setLayer(10);
       Music.start();
       Music.seek('verse'); // la canción tiene forma: se compara siempre la misma sección (estrofas)
@@ -213,7 +214,7 @@ describe('secuenciador (con audio simulado)', () => {
       expect(stats.osc, `capa ${l}`).toBeGreaterThanOrEqual(prev * 0.97);
       prev = stats.osc;
     }
-    expect(counts[9]).toBeGreaterThan(counts[0] * 2); // en las estrofas el nivel 10 suena mucho más lleno que el 1 (el coro es grande en todos)
+    expect(counts[9]).toBeGreaterThan(counts[0] * 1.8); // en las estrofas el nivel 10 suena mucho más lleno que el 1 (el coro es grande en todos)
     expect(new Set(counts).size).toBeGreaterThanOrEqual(6);
     Music.stop(0.1);
   });

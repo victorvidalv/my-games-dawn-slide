@@ -1,5 +1,5 @@
 /**
- * Idiomas: inglés, español, chino (simplificado) y japonés.
+ * Idiomas: inglés, español y chino (simplificado).
  *
  * El código y los datos del juego están escritos en español (idioma de origen). Los demás idiomas se aplican en el navegador
  * con un traductor de la interfaz: cada texto que aparece en pantalla (también los que el juego genera después: mensajes,
@@ -16,18 +16,16 @@
  */
 import { EN } from './i18n/en.js';
 import { ZH } from './i18n/zh.js';
-import { JA } from './i18n/ja.js';
 
 const KEY = 'slideslay.lang';
-export const LANGS = ['en', 'es', 'zh', 'ja'];
+export const LANGS = ['en', 'es', 'zh'];
 /** Diccionario de cada idioma traducido (el español es el idioma de origen y no necesita ninguno). */
-export const DICTS = { en: EN, zh: ZH, ja: JA };
+export const DICTS = { en: EN, zh: ZH };
 /** Datos de cada idioma: etiqueta HTML (`lang`), formato de números y nombre propio para el selector. */
 export const LANG_INFO = {
   en: { html: 'en', locale: 'en-US', name: 'English' },
   es: { html: 'es', locale: 'de-DE', name: 'Español' }, // de-DE: separador de miles con punto también por debajo de 10.000
   zh: { html: 'zh-Hans', locale: 'zh-CN', name: '中文' },
-  ja: { html: 'ja', locale: 'ja-JP', name: '日本語' },
 };
 /** Idioma del juego que corresponde a una lista de preferencias del navegador («es-CL», «zh-TW», «ja»…), o inglés. */
 export function detectLang(preferred = []) {

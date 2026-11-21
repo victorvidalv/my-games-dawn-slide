@@ -164,13 +164,13 @@ describe('partida completa simulada (3 caminos × 100 niveles, con piezas especi
     }
   });
 
-  it('en Normal, a partir del nivel 30 el mínimo medio ya exige pensar (≥ 10) y al final es desafiante (≥ 30)', () => {
+  it('en Normal, a partir del nivel 40 el mínimo medio ya exige pensar (≥ 10) y al final es desafiante (≥ 22)', () => {
     const avg = (from, to) =>
       path(1)
         .slice(from - 1, to)
         .reduce((a, r) => a + r.opt, 0) /
       (to - from + 1);
-    expect(avg(30, 39)).toBeGreaterThanOrEqual(10);
-    expect(avg(91, 100)).toBeGreaterThanOrEqual(30);
+    expect(avg(40, 49)).toBeGreaterThanOrEqual(10);
+    expect(avg(91, 100)).toBeGreaterThanOrEqual(22);
   });
 });

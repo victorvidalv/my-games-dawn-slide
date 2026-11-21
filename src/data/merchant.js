@@ -62,8 +62,8 @@ export const MERCHANT_LINES = {
 /** Nota corta bajo cada artículo de la tienda. */
 export const SHOP_NOTES = {
   hint: 'Una compra por tablero',
-  moves3: 'Un paquete por tablero',
-  moves: 'Un paquete por tablero',
-  redo: 'Empieza de cero con 0 movimientos',
+  moves3: 'Una compra por tablero',
+  moves: 'Una compra por tablero',
+  redo: 'Empieza de cero · una compra por tablero',
   skip: 'Un salto por ciudad',
 };

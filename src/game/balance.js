@@ -3,6 +3,8 @@ import { curve, moveLimit, rateAt, startHintsFor, MAX_LEVEL } from '../engine/di
 import { calcGain } from '../engine/scoring.js';
 import { hintEvery, CITY_EVERY, bonusTurns } from './heroes.js';
 import { MAX_REVIVES, REVIVE_SHARE, priceOf, extraTurns } from './shop.js';
+import { fateDeck, fateById, fateCityRewards, fatePoints, fateRules, fateTotals, keepsStreak } from './fate.js';
+import { levelPlan } from './mechanics.js';
 import { rewindCount, DESTINY_SHARE, JUTH_MIN_REMAINING, destinyCount, powerReady, powerUses } from './powers.js';
 import { SEAL_LEVELS, maxSealDetour, requestedSealTier, sealPoints } from './seals.js';
 import { bonusPrize, isBonusLevel } from './minigames.js';
@@ -55,17 +57,27 @@ function sealPlan(level, d, seed = 0) {
 const minigameGrade = (skill, u) => Math.max(0, Math.min(5, Math.round(2.8 + 1.4 * skill + (u - 0.5) * 3)));
 
 /**
- * Jugador que usa la tienda (`shop = {score}`): cerca del límite compra el paquete más barato que le permita seguir,
+ * Jugador que usa la tienda (`shop = {score}`), con UNA compra por tablero: cerca del límite compra el paquete más barato que le permita seguir,
  * y si no le quedan pistas en un tablero duro compra una, pero solo si le sobran puntos (MODEL.shopReserve veces el precio).
  */
 export function playBoard(
   rng,
-  { hero, skill, d, start = 1, level = 1, hints, shop = null, seal = false, powers = {} },
+  { hero, skill, d, start = 1, level = 1, hints, shop = null, seal = false, powers = {}, fate = null },
 ) {
   const destinyShare = DESTINY_SHARE;
-  let limit =
+  const ft = fate ? fateTotals(fate) : null;
+  const noPower = !!ft?.noPower;
+  const fateTurns = ft
+    ? Math.max(-2, Math.min(3, ft.turns + (/[hi]/.test(levelPlan(level).letters) ? ft.heavyIce : 0)))
+    : 0;
+  let limit = Math.max(
+    d + 1,
     moveLimit(d, start, level) +
-    (powers.liaTurns && hero === 'lia' ? Math.max(1, Math.round(d * powers.liaTurns)) : bonusTurns(hero, d, start));
+      (powers.liaTurns && hero === 'lia'
+        ? Math.max(1, Math.round(d * powers.liaTurns))
+        : bonusTurns(hero, d, start, noPower)) +
+      fateTurns,
+  );
   let extra = 0;
   if (seal) {
     // rodeo para recoger el sello: más movimientos y, si hace falta, más límite
@@ -76,7 +88,8 @@ export function playBoard(
   let spent = 0;
   let boughtTurns = 0;
   let boughtHints = 0;
-  const priceRun = { mode: 'c', hero };
+  const priceRun = fate || { mode: 'c', hero };
+  if (ft?.noShop) shop = null;
   const afford = (id, reserve = 1) => shop && shop.score - spent >= priceOf(id, d, start, priceRun) * reserve;
   const pay = (id) => {
     spent += priceOf(id, d, start, priceRun);
@@ -84,14 +97,15 @@ export function playBoard(
   const err = Math.min(0.85, (1 - skill) * MODEL.err * (1 + need / 25));
   let moves = 0;
   let h = hints;
-  const ready = powerReady(level, start, hero); // en algunos tableros el poder descansa (según héroe y camino)
-  let rewind = hero === 'jean' && ready ? powerUses(hero, d) : 0; // una vez por tablero, dos en los largos
+  const ready = !noPower && powerReady(level, start, hero, ft?.powerShare || 0); // a veces el poder descansa
+  const echo = ft && level % 10 === 0 ? ft.lastPower : 0; // Eco del poder: uso extra en el último tablero de la ciudad
+  let rewind = hero === 'jean' && ready ? powerUses(hero, d, echo) : 0; // una vez por tablero, dos en los largos
   let destiny = hero === 'van' && ready;
   let safe = 0; // pasos protegidos por «Trazar destino»
   for (let step = 0; step < need; step++) {
     if (safe > 0) safe--;
     else if (rng() < err) {
-      if (boughtHints < 1 && h === 0 && need >= MODEL.hintMinD && afford('hint', MODEL.shopReserve)) {
+      if (!boughtHints && !boughtTurns && h === 0 && need >= MODEL.hintMinD && afford('hint', MODEL.shopReserve)) {
         pay('hint');
         h++;
         boughtHints++;
@@ -118,7 +132,7 @@ export function playBoard(
     }
     moves += 1;
     const minimumToContinue = moves + (step < need - 1 ? 1 : 0);
-    if (minimumToContinue > limit && !boughtTurns) {
+    if (minimumToContinue > limit && !boughtTurns && !boughtHints) {
       const id = ['moves3', 'moves'].find((x) => limit + extraTurns(x, limit) >= minimumToContinue && afford(x));
       if (id) {
         pay(id);
@@ -132,6 +146,36 @@ export function playBoard(
 }
 
 /**
+ * Cómo elige carta el jugador simulado: la que más le ayuda a llegar lejos (turnos, revivir, poder, pistas) y, a igualdad,
+ * la que da más puntos. Los Pactos que le quitan ayudas los evita salvo que no tenga otra opción.
+ */
+export function cardValue(card, hero, city = 1) {
+  const fx = card.fx;
+  const left = 9 - city; // ciudades que quedan para cobrar Brújula, Cosecha y Constelación
+  let v = 4 * (fx.turns || 0) + 1.5 * (fx.heavyIce || 0);
+  v += fx.revives ? 4 : 0;
+  v += fx.reviveShare ? 1 : 0;
+  v += fx.powerShare ? (hero === 'lia' ? 0 : 2.5) : 0;
+  v += fx.lastPower ? (hero === 'jean' ? 1.5 : hero === 'van' ? 0.8 : 0) : 0;
+  v += 0.8 * (fx.pickHints || 0) + 0.8 * (fx.cityHints || 0) * left;
+  v -= (fx.shop || 0) * 6;
+  v += 10 * (fx.points || 0) + (fx.pointsPerCard ? 0.2 * left : 0) + (fx.longBoard ? 0.5 : 0);
+  v += fx.perfect || fx.streakCap || fx.streakEff ? 0.6 : 0;
+  v += fx.seal ? 0.4 : 0;
+  v += fx.cityBases ? 0.1 * left : 0;
+  v += fx.pickBases ? 0.5 : 0;
+  v -= fx.noPower ? (hero === 'lia' ? 9 : 6) : 0;
+  v -= fx.noRevive ? 3 : 0;
+  v -= fx.noShop ? 3 : 0;
+  v -= fx.perfectStreak ? 1 : 0;
+  v -= fx.noSeals ? 0.8 : 0;
+  v -= fx.pickScore ? 1 : 0;
+  return v;
+}
+export const pickForSurvival = (offer, hero, city) =>
+  offer.reduce((best, card) => (cardValue(card, hero, city) > cardValue(best, hero, city) ? card : best));
+
+/**
  * Simula UNA partida de 100 niveles.
  * @param {object} o
  * @param {string} o.hero        'none' | 'lia' | 'jean' | 'van'
@@ -142,8 +186,21 @@ export function playBoard(
  * @param {boolean} [o.shop]     el jugador usa la tienda
  * @returns {{cleared:number, score:number, completed:boolean, revivesBought:number}}
  */
-export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = false, seals = true, powers = {} }) {
+export function simulateRun({
+  hero,
+  start,
+  skill,
+  seed,
+  revive = 'none',
+  shop = false,
+  seals = true,
+  powers = {},
+  fate = false,
+}) {
   const rng = mulberry32(seed);
+  // Cartas del destino: `fate` = tamaño de la oferta (2 o 3) o false (sin cartas). El jugador elige con `pickForSurvival`.
+  const fateRun = fate ? { mode: 'c', hero, start, seed, score: 0, hints: 0, fate: [], fatePicked: 0 } : null;
+  const deck = fate ? fateDeck(seed) : null;
   let hints = startHintsFor(start);
   let score = 0;
   let streak = 0;
@@ -155,8 +212,10 @@ export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = 
   let hintsBought = 0;
   let sealPts = 0;
   for (let level = 1; level <= MAX_LEVEL; level++) {
-    if (revive === 'city' && level % CITY_EVERY === 1 && level > 20 && bought < MAX_REVIVES && score > 0) {
-      score -= Math.round(score * REVIVE_SHARE);
+    const ft = fateRun ? fateTotals(fateRun) : null;
+    const maxBuy = MAX_REVIVES + (ft?.revives || 0);
+    if (revive === 'city' && level % CITY_EVERY === 1 && level > 20 && bought < maxBuy && !ft?.noRevive && score > 0) {
+      score -= Math.round(score * (ft?.reviveShare ? Math.min(REVIVE_SHARE, ft.reviveShare) : REVIVE_SHARE));
       charges++;
       bought++;
     }
@@ -177,6 +236,7 @@ export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = 
         shop: shop ? { score } : null,
         seal: goForSeal ? seal : null,
         powers,
+        fate: fateRun,
       });
       hints = res.hints;
       score -= res.spent;
@@ -199,19 +259,32 @@ export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = 
         sealPts,
       };
     }
-    const gain = calcGain(res.moves, d, streak);
-    score += gain.total;
-    if (goForSeal) {
-      // sello recogido: puntos extra
-      const pts = sealPoints(d, d + res.extra, seal.tier);
+    const gain = calcGain(res.moves, d, streak, fateRun ? fateRules(fateRun) : undefined);
+    score += gain.total + (fateRun ? Math.round(gain.total * fatePoints(fateRun, { opt: d })) : 0);
+    if (goForSeal && !ft?.noSeals) {
+      // sello recogido: puntos extra (Sello dorado suma; Eclipse los anula)
+      const pts = Math.round(sealPoints(d, d + res.extra, seal.tier) * (1 + (ft?.seal || 0)));
       score += pts;
       sealPts += pts;
     }
-    streak = gain.eff >= 0.9 ? streak + 1 : 0;
+    streak = (fateRun ? keepsStreak(fateRun, gain.eff) : gain.eff >= 0.9) ? streak + 1 : 0;
     adj = Math.max(-2, Math.min(level < 10 ? 1 : 2, adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
     const rate = powers.hintMult?.[hero] ?? 1; // ritmo de pistas propio de cada héroe (Juth las encuentra más a menudo)
     if (Math.floor((level * rate) / hintEvery(start)) > Math.floor(((level - 1) * rate) / hintEvery(start))) hints++;
     if (isBonusLevel(level)) hints += bonusPrize(minigameGrade(skill, rng()), level, start);
+    if (fateRun && level % 10 === 0 && level < MAX_LEVEL) {
+      const city = level / 10;
+      Object.assign(fateRun, { score, hints });
+      fateCityRewards(fateRun, city, d);
+      const card = pickForSurvival(deck.slice((city - 1) * fate, city * fate).map(fateById), hero, city);
+      fateRun.fate.push(card.id);
+      fateRun.fatePicked = city;
+      const fx = card.fx;
+      if (fx.pickHints) fateRun.hints += fx.pickHints;
+      if (fx.pickScore) fateRun.score = Math.max(0, fateRun.score + Math.round(fateRun.score * fx.pickScore));
+      if (fx.pickBases) fateRun.score += fx.pickBases * (50 + 55 * d);
+      ({ score, hints } = fateRun);
+    }
   }
   return {
     cleared: MAX_LEVEL,
@@ -236,6 +309,7 @@ export function averageRuns({
   shop = false,
   seals = true,
   powers = {},
+  fate = false,
 }) {
   let cleared = 0;
   let score = 0;
@@ -254,6 +328,7 @@ export function averageRuns({
       shop,
       seals,
       powers,
+      fate,
       seed: hash32(i, start, Math.round(skill * 100), salt),
     });
     cleared += r.cleared;

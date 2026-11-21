@@ -3,7 +3,6 @@
  * funciones puras sobre el objeto `run` (la aventura en curso), sin DOM, y están cubiertas por tests.
  */
 import { moveLimit, byPath } from '../engine/difficulty.js';
-import { fateBlocks } from './fate.js';
 
 /* Ojo: el identificador interno de Juth sigue siendo 'van' (imágenes heroes/van*.webp y partidas guardadas). Solo cambia el nombre que se ve. */
 export const HEROES = [
@@ -56,8 +55,11 @@ const isPractice = (mode) => mode === 'p';
 
 /* ───────────── Lía: turnos de reserva (un % más de turnos en cada tablero) ───────────── */
 
-/** +40 % del mínimo de movimientos del tablero en Normal, 20 % en Difícil y 25 % en Experto (su terreno: donde el límite aprieta). */
-const LIA_TURNS_SHARE = { 1: 0.4, 50: 0.2, 75: 0.25 };
+/**
+ * +40 % del mínimo de movimientos del tablero en Normal, 17 % en Difícil y 18 % en Experto (su terreno: donde el límite aprieta).
+ * Calibrado con `npm run simulate` junto con las cartas del destino: Lía elige entre 2 cartas y Jean y Juth entre 3.
+ */
+const LIA_TURNS_SHARE = { 1: 0.4, 50: 0.17, 75: 0.18 };
 const LIA_MIN_TURNS = 1;
 
 /** Turnos extra que da el héroe sobre el límite base (solo Lía): una parte del mínimo `opt` del tablero según el camino. `off` = poder apagado (Juramento). */
@@ -96,7 +98,6 @@ export function snapshotRescue(G) {
  */
 export function spendHint({ run, mode }) {
   if (isPractice(mode)) return { ok: true, free: true };
-  if (fateBlocks(run, 'hints')) return { ok: false, free: false };
   if ((run.hints || 0) > 0) {
     run.hints--;
     return { ok: true, free: false };
@@ -105,7 +106,7 @@ export function spendHint({ run, mode }) {
 }
 
 /** ¿Se puede pedir una pista ahora? */
-export const canHint = (run, mode) => isPractice(mode) || (!fateBlocks(run, 'hints') && (run?.hints || 0) > 0);
+export const canHint = (run, mode) => isPractice(mode) || (run?.hints || 0) > 0;
 
 /**
  * Pistas ganadas al completar `level`; suma a run.hints y devuelve cuántas.

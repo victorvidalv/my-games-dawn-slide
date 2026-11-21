@@ -7,6 +7,7 @@ import { S } from '../state.js';
 import { icon } from './icons.js';
 import { burst } from './fx.js';
 import { numLocale } from '../i18n.js';
+import { countStat } from './achievements.js';
 
 const TIER_COLORS = [
   ['#e0a468', '#f3c996', '#b8703a'],
@@ -86,8 +87,10 @@ export function renderSeal() {
 
 export function processSealMove(before = S.G?.hist.at(-1)) {
   if (!S.G || !S.run) return 0;
+  const tier = S.G?.seal ? sealTier(S.G.seal) : 0;
   const value = collectSeal(S.run, S.G, before);
   if (!value) return 0;
+  if (tier === 3) countStat('goldSeals');
   const G = S.G,
     board = $('board'),
     rect = board.getBoundingClientRect(),

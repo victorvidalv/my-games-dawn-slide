@@ -10,6 +10,7 @@ afterEach(async () => {
 const SAVE_KEY = 'desbloquea.rogue.v2';
 const saved = () => JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
 const shown = (app, id) => app.$(id).classList.contains('show');
+const buttons0 = (app) => [...app.$('fateOffer').querySelectorAll('.fate-card')];
 /** Partida guardada en el nivel 3 del camino Normal (sin tablero en curso). */
 const savedRun = {
   run: { level: 3, seed: 123, start: 1, mode: 'c', hero: 'van', score: 50, hints: 2, adj: 0, streak: 0 },
@@ -54,7 +55,11 @@ describe('interfaz: aventura', () => {
       const portrait = app.$('travelHero');
       expect(portrait.getAttribute('src')).toBe(`heroes/${hero.id}-route.webp`);
       expect(portrait.alt).toBe(hero.name);
-      const buttons = [...app.$('fateOffer').querySelectorAll('.fate-card')];
+      expect(app.$('travel').classList.contains('intro'), 'primero la entrada «Ciudad completada»').toBe(true);
+      buttons0(app)[0].click(); // durante la entrada no se elige nada
+      await until(() => app.$('travel').classList.contains('fate-dealt'));
+      await new Promise((r) => setTimeout(r, 400));
+      const buttons = buttons0(app);
       expect(buttons.map((b) => b.dataset.card)).toEqual(cards.map((c) => c.id));
       for (const b of buttons) expect(b.querySelector('svg.fate-art')).toBeTruthy();
       buttons[1].click();

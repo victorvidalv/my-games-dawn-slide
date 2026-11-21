@@ -1,8 +1,8 @@
 /* ============================ Cartas del destino ============================
- * Al cerrar cada ciudad (niveles 10, 20 … 90) se eligen 1 de 3 cartas. Hay 27 cartas y 9 elecciones:
+ * Al cerrar cada ciudad (niveles 10, 20 … 90) se elige 1 carta entre 2 o 3 (según el héroe). Hay 27 cartas y 9 elecciones:
  *   · al empezar la aventura se baraja el mazo con la semilla de la partida (`run.fateDeck`);
- *   · la ciudad k (1..9) muestra las cartas 3(k−1) … 3(k−1)+2 del mazo: las tres se descartan elijas la que elijas,
- *     así que en una partida pasan las 27, cada una una sola vez y en otro orden;
+ *   · la ciudad k (1..9) muestra las siguientes 2 o 3 cartas del mazo: se descartan elijas la que elijas, así que ninguna
+ *     carta se repite en una partida (con 3 por ciudad pasan las 27; con 2, 18 de ellas) y el orden cambia cada vez;
  *   · las elegidas (`run.fate`) se acumulan hasta el final y sus efectos se suman.
  * Solo en Aventura (ni Diario, ni Práctica, ni Desafío). Todo son funciones puras sobre `run` (sin DOM).
  *
@@ -22,7 +22,7 @@
  *   shop          cambio de precio de la tienda (−0,15 = 15 % más barata; +0,25 = 25 % más cara)
  *   revives       revivir extra en la partida
  *   reviveShare   parte de los puntos que cuesta revivir (se usa la más baja)
- *   noPower · noShop · noHints · noRevive   lo que apaga un Pacto
+ *   noPower · noShop · noSeals · noRevive   lo que apaga un Pacto
  *   pickHints · pickScore · pickBases        al tomar la carta: pistas, % de tus puntos, puntos base del tablero
  *   cityHints · cityBases                    al cerrar cada ciudad siguiente
  */
@@ -31,6 +31,12 @@ import { baseScore } from '../engine/scoring.js';
 
 export const FATE_PICKS = 9;
 export const FATE_OFFER = 3;
+/**
+ * Cartas que ve cada héroe en cada cierre de ciudad (equilibrio de poderes, ver `npm run simulate`): el héroe más fuerte
+ * elige entre menos cartas. Siempre se elige una; las que no se eligen se descartan.
+ */
+export const FATE_OFFER_BY_HERO = { lia: 2, jean: 3, van: 3 };
+export const offerSize = (run) => FATE_OFFER_BY_HERO[run?.hero] ?? FATE_OFFER;
 export const LONG_BOARD = 14;
 /** Límites de la suma de todas las cartas. */
 export const FATE_POINTS_RANGE = [-0.3, 0.75];
@@ -218,13 +224,13 @@ export const FATE_CARDS = [
     fx: { points: 0.15, noShop: true },
   },
   {
-    id: 'silencio',
+    id: 'eclipse',
     kind: 'pact',
-    name: 'Silencio',
+    name: 'Eclipse',
     gain: '+12 % de puntos',
-    cost: 'No puedes usar pistas',
+    cost: 'Los sellos no dan puntos',
     hue: ['#5a5f86', '#dcdff5'],
-    fx: { points: 0.12, noHints: true },
+    fx: { points: 0.12, noSeals: true },
   },
   {
     id: 'cuerda-floja',
@@ -302,12 +308,15 @@ export function deckOf(run) {
 export const fateCards = (run) => (run?.fate || []).map(fateById).filter(Boolean);
 export const hasFate = (run, id) => !!run?.fate?.includes(id);
 
-/** Las 3 cartas que ofrece el cierre de la ciudad `city` (1..9 = tras los niveles 10..90). */
-export function fateOffer(run, city) {
+/**
+ * Las cartas que ofrece el cierre de la ciudad `city` (1..9 = tras los niveles 10..90): 2 o 3 según el héroe (`size`).
+ * Cada ciudad toma las siguientes del mazo barajado, así que nunca se repite una carta en la misma partida.
+ */
+export function fateOffer(run, city, size = offerSize(run)) {
   if (city < 1 || city > FATE_PICKS) return [];
-  const from = (city - 1) * FATE_OFFER;
+  const from = (city - 1) * size;
   return deckOf(run)
-    .slice(from, from + FATE_OFFER)
+    .slice(from, from + size)
     .map(fateById);
 }
 
@@ -337,7 +346,7 @@ export function fateTotals(run) {
     reviveShare: 0,
     noPower: false,
     noShop: false,
-    noHints: false,
+    noSeals: false,
     noRevive: false,
     cityHints: 0,
     cityBases: 0,
@@ -387,10 +396,10 @@ export const keepsStreak = (run, eff) => eff >= fateRules(run).streakEff;
 /** Cambio de precio de la tienda por las cartas (negativo = descuento). */
 export const fateShop = (run) => fateTotals(run).shop;
 
-/** ¿Apaga un Pacto esta ayuda? kind: 'power' | 'shop' | 'hints' | 'revive' */
+/** ¿Apaga un Pacto esta ayuda? kind: 'power' | 'shop' | 'seals' | 'revive' */
 export function fateBlocks(run, kind) {
   const t = fateTotals(run);
-  return { power: t.noPower, shop: t.noShop, hints: t.noHints, revive: t.noRevive }[kind] || false;
+  return { power: t.noPower, shop: t.noShop, seals: t.noSeals, revive: t.noRevive }[kind] || false;
 }
 
 /** Parte extra de tableros con el poder listo. */
@@ -403,10 +412,10 @@ export const fateReviveShare = (run) => fateTotals(run).reviveShare;
 /** Fracción extra de los sellos. */
 export const fateSeal = (run) => fateTotals(run).seal;
 
-/** ¿Deja una carta sin efecto a otra ya elegida o futura? (Silencio con las de pistas, Juramento con las de poder…) */
+/** ¿Deja una carta sin efecto a otra ya elegida o futura? (Eclipse con Sello dorado, Juramento con las de poder…) */
 const MUTED_BY = {
   noPower: ['carga', 'power-echo'],
-  noHints: ['bolsillo', 'brujula'],
+  noSeals: ['gilded-seal'],
   noShop: ['mercader', 'botin'],
   noRevive: ['fenix', 'ceniza-tibia'],
 };

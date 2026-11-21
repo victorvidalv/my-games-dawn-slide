@@ -134,7 +134,7 @@ describe('pieza de hielo y combinación de todas las especiales', () => {
     const b = decodeBoard('h2.2.0 v2.3.1i h2.4.2p v2.4.2g4.1 #0.3 #0.4');
     const opt = minMoves(b.pieces, b.pos, b.walls);
     expect(opt).toBe(4);
-    expect(moveLimit(opt)).toBe(8);
+    expect(moveLimit(opt)).toBe(9); // ×2,2 en el nivel 1 de Normal
     expect(checkBoard(b, 'cuatro especiales juntas')).toBeGreaterThan(5);
     let cur = b.pos.slice();
     for (let s = 0; s < opt; s++) {

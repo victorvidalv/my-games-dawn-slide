@@ -64,9 +64,11 @@ export const startHintsFor = (start = 1) => (pathKey(start) === 75 ? 2 : 3);
 
 /**
  * Factor de límite de movimientos: empieza holgado y se aprieta hasta el nivel 100, así la dificultad se siente subir.
- *   Normal ×2 → ×1,3 · Difícil ×1,85 → ×1,06 · Experto ×1,7 → ×1,04 (con el mínimo de «mínimo + 2» movimientos)   (interpolación lineal entre el nivel 1 y el 100)
+ *   Normal ×2,2 → ×1,5 · Difícil ×1,85 → ×1,06 · Experto ×1,7 → ×1,04, con un margen mínimo de turnos de sobra
+ *   (Normal 4, los demás 2): un error cuesta varios movimientos fijos, así que los tableros cortos necesitan margen absoluto.   (interpolación lineal entre el nivel 1 y el 100)
  */
-const LIMIT_FACTORS = { 1: [2, 1.3], 50: [1.85, 1.06], 75: [1.7, 1.04] };
+const LIMIT_FACTORS = { 1: [2.2, 1.5], 50: [1.85, 1.06], 75: [1.7, 1.04] };
+const MIN_SPARE = { 1: 4, 50: 2, 75: 2 };
 const limitFactor = (start = 1, level = 1) => {
   const [from, to] = byPath(LIMIT_FACTORS, start);
   const t = Math.max(0, Math.min(1, (level - 1) / (MAX_LEVEL - 1)));
@@ -74,4 +76,5 @@ const limitFactor = (start = 1, level = 1) => {
 };
 
 /** Límite de movimientos permitido para completar un tablero de mínimo `opt` en ese camino y nivel. */
-export const moveLimit = (opt, start = 1, level = 1) => Math.max(opt + 2, Math.round(opt * limitFactor(start, level)));
+export const moveLimit = (opt, start = 1, level = 1) =>
+  Math.max(opt + byPath(MIN_SPARE, start), Math.round(opt * limitFactor(start, level)));

@@ -780,18 +780,7 @@ body.perfect .frame {
 #journey .mcap p {
   font-size: 11px;
 }
-#journey .mapwrap {
-  filter: none;
-}
-.atlas-city {
-  filter: none;
-}
-.atlas-city.current {
-  filter: none;
-}
-.atlas-traveler {
-  filter: drop-shadow(0 2px 2px #0007);
-}
+
 .wheel-shell {
   width: min(100%, 268px);
   border: 2px solid #b69b66;

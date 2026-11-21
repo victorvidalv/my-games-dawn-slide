@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   FATE_CARDS,
+  FATE_OFFER_BY_HERO,
   FATE_PICKS,
   FATE_POINTS_RANGE,
   fateById,
@@ -21,6 +22,7 @@ import { runGain, shopDiscount } from '../src/game/run-points.js';
 import { canHint, snapshotRescue, spendHint } from '../src/game/heroes.js';
 import { availability, buy, canPaidRevive, payRevive, priceOf, reviveCost } from '../src/game/shop.js';
 import { baseScore, calcGain } from '../src/engine/scoring.js';
+import { sealReward } from '../src/game/seals.js';
 import { moveLimit } from '../src/engine/difficulty.js';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { applyAdventureWin, newAdventureRun } from '../src/game/run-logic.js';
@@ -79,6 +81,18 @@ describe('el mazo de 27 cartas del destino', () => {
     expect(fateOffer(r, 0)).toEqual([]);
     expect(fateOffer(r, 10)).toEqual([]);
   });
+  it('Lía (el poder más fuerte) elige entre 2 cartas; Jean y Juth entre 3; nunca se repiten', () => {
+    expect(FATE_OFFER_BY_HERO).toEqual({ lia: 2, jean: 3, van: 3 });
+    const lia = run([], { hero: 'lia' });
+    const seen = [];
+    for (let city = 1; city <= FATE_PICKS; city++) {
+      const offer = fateOffer(lia, city);
+      expect(offer).toHaveLength(2);
+      seen.push(...offer.map((c) => c.id));
+    }
+    expect(new Set(seen).size).toBe(18);
+    expect(fateOffer(run([], { hero: 'van' }), 1)).toHaveLength(3);
+  });
   it('solo hay cartas en Aventura, al cerrar las ciudades 1 a 9, una vez cada una', () => {
     expect(usesFate(run())).toBe(true);
     expect(usesFate({ ...run(), mode: 'p' })).toBe(false);
@@ -111,7 +125,7 @@ describe('efectos acumulativos', () => {
       'juramento',
       'vidrio',
       'pacto-mercante',
-      'silencio',
+      'eclipse',
       'cuerda-floja',
       'temerario',
       'ofrenda',
@@ -189,12 +203,12 @@ describe('pactos: beneficio con costo', () => {
     expect(fateBlocks(r, 'shop')).toBe(true);
     expect(canPaidRevive(r)).toBe(true);
   });
-  it('Silencio apaga las pistas aunque queden en la reserva', () => {
-    const r = run(['silencio']);
-    expect(canHint(r, 'c')).toBe(false);
-    expect(spendHint({ run: r, mode: 'c' })).toEqual({ ok: false, free: false });
-    expect(r.hints).toBe(3);
-    expect(canHint(r, 'p'), 'en Práctica las pistas siguen').toBe(true);
+  it('Eclipse deja los sellos sin puntos (y anula Sello dorado); las pistas siguen disponibles', () => {
+    const r = run(['eclipse']);
+    expect(sealReward(r, { value: 100 })).toBe(0);
+    expect(sealReward(run(['eclipse', 'gilded-seal']), { value: 100 })).toBe(0);
+    expect(canHint(r, 'c')).toBe(true);
+    expect(spendHint({ run: r, mode: 'c' })).toEqual({ ok: true, free: false });
   });
   it('Temerario quita el revivir; Fénix da uno más y Ceniza tibia lo abarata', () => {
     expect(canPaidRevive(run(['temerario']))).toBe(false);
@@ -227,11 +241,11 @@ describe('pactos: beneficio con costo', () => {
     expect(r).toMatchObject({ hints: 1, score: baseScore(10) });
   });
   it('un pacto deja sin efecto a las cartas que choca (se ven grises)', () => {
-    expect(fateMuted(run(['silencio']), 'bolsillo')).toBe(true);
+    expect(fateMuted(run(['eclipse']), 'gilded-seal')).toBe(true);
     expect(fateMuted(run(['juramento']), 'carga')).toBe(true);
     expect(fateMuted(run(['pacto-mercante']), 'mercader')).toBe(true);
     expect(fateMuted(run(['temerario']), 'fenix')).toBe(true);
-    expect(fateMuted(run(), 'bolsillo')).toBe(false);
+    expect(fateMuted(run(), 'gilded-seal')).toBe(false);
   });
   it('todas las cartas existen por id', () => {
     for (const c of FATE_CARDS) expect(fateById(c.id)).toBe(c);

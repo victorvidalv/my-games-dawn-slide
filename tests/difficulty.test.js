@@ -20,16 +20,18 @@ const PATHS = { Normal: 1, Difícil: 50, Experto: 75 };
 const targetAt = (start, level) => curve(rateAt(start, level)).target;
 
 describe('dificultad: la curva calibrada se siente apropiada', () => {
-  it('en Normal los mínimos parten de 3 y suben un movimiento cada 3 niveles (los cierres de ciudad, 2 más desde el 20)', () => {
-    for (let l = 1; l <= MAX_LEVEL; l++) {
-      const want = Math.min(37, 3 + Math.floor((l - 1) / 3) + (isCityEnd(l) && l >= 20 ? 2 : 0));
-      expect(minFor(1, l), `nivel ${l}`).toBe(want);
-      expect(targetAt(1, l), `nivel ${l}`).toBe(want);
+  it('Normal sube por tramos: 1–20 de 2 a 6, 21–50 hasta 15, 51–80 hasta 22 y 81–100 meseta hasta 25 (sin saltos)', () => {
+    const at = (l) => minFor(1, l);
+    expect([at(1), at(20), at(50), at(80), at(100)]).toEqual([2, 6, 15, 22, 25]);
+    for (let l = 2; l <= MAX_LEVEL; l++) {
+      expect(at(l), `nivel ${l}`).toBeGreaterThanOrEqual(at(l - 1));
+      expect(at(l) - at(l - 1), `nivel ${l}`).toBeLessThanOrEqual(1);
     }
-    expect(minFor(1, 1)).toBe(3);
+    for (let l = 1; l <= MAX_LEVEL; l++) expect(Math.abs(targetAt(1, l) - at(l)), `nivel ${l}`).toBeLessThanOrEqual(1);
   });
-  it('llegar al nivel 100 es desafiante (≥ 35 movimientos mínimos) en todos los caminos', () => {
-    for (const start of Object.values(PATHS)) expect(targetAt(start, 100)).toBeGreaterThanOrEqual(35);
+  it('llegar al nivel 100 es desafiante: Normal ≥ 24 movimientos mínimos; Difícil y Experto ≥ 35', () => {
+    expect(targetAt(1, 100)).toBeGreaterThanOrEqual(24);
+    for (const start of [50, 75]) expect(targetAt(start, 100)).toBeGreaterThanOrEqual(35);
   });
   it('Difícil y Experto empiezan donde Normal ya exige pensar, y Experto más arriba que Difícil', () => {
     expect(targetAt(50, 1)).toBeGreaterThanOrEqual(9);
@@ -81,9 +83,10 @@ describe('dificultad: la curva calibrada se siente apropiada', () => {
     }
     expect(minReach(30)).toBe(curve(30).target);
   });
-  it('el límite es el doble en Normal y se vuelve más estricto en Difícil y Experto', () => {
-    expect(moveLimit(20)).toBe(40);
-    expect(moveLimit(20, 1)).toBe(40);
+  it('el límite en Normal va de ×2,2 a ×1,5 (siempre 4 turnos de sobra) y es más estricto en Difícil y Experto', () => {
+    expect(moveLimit(20)).toBe(44);
+    expect(moveLimit(25, 1, 100)).toBe(38); // nivel 100 de Normal: 25 movimientos con 38 turnos
+    expect(moveLimit(2, 1, 100)).toBe(6); // margen mínimo de 4 turnos en los tableros cortos
     expect(moveLimit(20, 50)).toBeLessThan(moveLimit(20, 1));
     expect(moveLimit(20, 75)).toBeLessThan(moveLimit(20, 50));
     expect(moveLimit(20, 75)).toBeGreaterThan(20);

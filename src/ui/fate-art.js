@@ -142,11 +142,11 @@ const ART = {
     `<path d="M8 28h48v26H8z" fill="${a}"/><path d="M8 28c0-12 10-18 24-18s24 6 24 18z" fill="${b}"/>
     <path d="M8 36h48M20 28v26M44 28v26" stroke-width="1.6"/>
     <rect x="24" y="32" width="16" height="14" rx="3" fill="${IRON}"/><path d="M27 32v-5a5 5 0 0 1 10 0v5" fill="none" stroke-width="3"/><circle cx="32" cy="39" r="2" fill="${INK}" stroke="none"/>`,
-  /** Campana tachada: el silencio (sin pistas). */
-  silencio: (a, b) =>
-    `<path d="M32 8c-10 0-14 8-14 18v10l-6 8h40l-6-8V26c0-10-4-18-14-18z" fill="${b}"/><circle cx="32" cy="50" r="5" fill="${a}"/>
-    <path d="M24 18c2-4 4-5 7-6" fill="none" stroke="#fff" stroke-width="1.8"/>
-    <path d="M8 56L56 8" stroke="${INK}" stroke-width="8"/><path d="M8 56L56 8" stroke="#d9604f" stroke-width="4"/>`,
+  /** Sol tapado por una luna oscura con su corona de luz: el eclipse (los sellos no dan puntos). */
+  eclipse: (a, b) =>
+    `${[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((r) => `<path d="M32 4v8" stroke="${b}" stroke-width="2.4" transform="rotate(${r} 32 32)"/>`).join('')}
+    <circle cx="32" cy="32" r="17" fill="${GOLD_LT}"/><circle cx="37" cy="29" r="16" fill="${a}"/>
+    <path d="M28 20c4-2 9-2 13 1" fill="none" stroke="#ffffff55" stroke-width="1.6"/>`,
   /** Equilibrista sobre la cuerda: −2 turnos. */
   'cuerda-floja': (a, b) =>
     `<path d="M2 44c20 6 40 6 60 0" fill="none" stroke-width="2.2"/><path d="M4 44v16M60 44v16" stroke-width="3"/>

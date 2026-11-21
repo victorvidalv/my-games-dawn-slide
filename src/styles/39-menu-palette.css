@@ -272,9 +272,9 @@ button.danger {
 @media (max-aspect-ratio: 13/10) {
   #menu[data-view='home'] .lang-switch {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
-    max-width: 420px;
+    max-width: 340px;
     margin-inline: auto;
     gap: 8px;
   }

@@ -98,7 +98,7 @@ function totalsHtml(summary) {
   if (t.revives) chips.push(['good', `+${t.revives} revivir`]);
   if (t.noPower) chips.push(['bad', 'Sin poder del héroe']);
   if (t.noShop) chips.push(['bad', 'Tienda cerrada']);
-  if (t.noHints) chips.push(['bad', 'Sin pistas']);
+  if (t.noSeals) chips.push(['bad', 'Sellos sin puntos']);
   if (t.noRevive) chips.push(['bad', 'Sin revivir']);
   if (t.perfectStreak) chips.push(['bad', 'Racha solo con Perfecto']);
   return chips.map(([kind, text]) => `<span class="fate-chip is-${kind}">${text}</span>`).join('');
@@ -189,6 +189,10 @@ export function showFateDialog({ run, hero, city, cards, rewards, onChoose, isAc
       box = $('fateOffer');
     fillStage(hero, city);
     $('fateAsk').textContent = `Carta del destino ${city} de ${FATE_PICKS}`;
+    $('fateSub').textContent =
+      cards.length > 2
+        ? 'Se suma a las que ya tienes. Las otras dos no vuelven.'
+        : 'Se suma a las que ya tienes. La otra no vuelve.';
     const reward = rewardsText(rewards);
     $('fateRewards').hidden = !reward;
     $('fateRewards').textContent = reward;
@@ -216,8 +220,10 @@ export function showFateDialog({ run, hero, city, cards, rewards, onChoose, isAc
         buttons[(Math.max(0, at) + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
       }
     };
+    let dealtAt = Infinity;
     const choose = (button) => {
-      if (chosen || !isActive()) return;
+      // nada se elige hasta que las cartas están sobre la mesa (el toque que salta la entrada no cuenta)
+      if (chosen || !isActive() || performance.now() - dealtAt < 350) return;
       chosen = true;
       const card = cards.find((c) => c.id === button.dataset.card);
       buttons.forEach((b) => {
@@ -240,13 +246,33 @@ export function showFateDialog({ run, hero, city, cards, rewards, onChoose, isAc
       );
     };
     buttons.forEach((b) => (b.onclick = () => choose(b)));
-    wipeIn('gold').then(() => {
-      modal.classList.add('show');
-      modal.addEventListener('keydown', key);
-      Music.scene('fate');
+    // Entrada: «Ciudad completada» con una carta que brilla (≈1,4 s, se salta con un toque) y después se reparten las cartas.
+    $('fateIntroCity').textContent = ZONES[city - 1].n;
+    let dealt = false;
+    const deal = () => {
+      if (dealt) return;
+      dealt = true;
+      clearTimeout(introTimer);
+      modal.removeEventListener('pointerdown', deal);
+      modal.classList.remove('intro');
       sfx.fateDeal();
-      requestAnimationFrame(() => modal.classList.add('fate-dealt'));
-      buttons[0]?.focus();
+      setTimeout(
+        () => {
+          modal.classList.add('fate-dealt');
+          dealtAt = performance.now();
+        },
+        reduced() ? 0 : 260,
+      );
+      buttons[0]?.focus({ preventScroll: true });
+    };
+    let introTimer = 0;
+    wipeIn('gold').then(() => {
+      modal.classList.add('show', 'intro');
+      modal.addEventListener('keydown', key);
+      modal.addEventListener('pointerdown', deal);
+      Music.scene('fate');
+      sfx.routePick();
+      introTimer = setTimeout(deal, reduced() ? 0 : 1400);
       wipeOut();
     });
   });

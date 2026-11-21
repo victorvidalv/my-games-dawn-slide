@@ -256,14 +256,14 @@ El menú principal tiene tres pestañas.
 
 ## Idiomas
 
-El juego está en **inglés, español, chino simplificado y japonés**. El español es el idioma de origen (así están escritos el código y los datos); los demás se aplican en el navegador con el traductor de [`src/i18n.js`](src/i18n.js), que busca cada texto visible en el diccionario del idioma activo.
+El juego está en **inglés, español y chino simplificado**. El español es el idioma de origen (así están escritos el código y los datos); los demás se aplican en el navegador con el traductor de [`src/i18n.js`](src/i18n.js), que busca cada texto visible en el diccionario del idioma activo.
 
-- **Textos centralizados**: todo lo que se lee en cada idioma vive en `src/i18n/<idioma>-ui.js`, `-game.js`, `-story.js` y `-shop.js` (`en`, `zh`, `ja`), con las mismas claves —el texto en español— y en el mismo orden. Para añadir un idioma: crear sus cuatro archivos, registrarlo en `LANGS`, `DICTS` y `LANG_INFO` y poner su bandera en el selector de `index.html`.
-- **Idioma inicial**: el que eligió el jugador la última vez; si no hay elección, el del navegador (`navigator.languages`, p. ej. `es-CL` → español, `zh-TW` → chino, `ja-JP` → japonés); si no es ninguno de los cuatro, inglés (`detectLang`).
-- **Selector**: cuatro banderas en el menú principal; el cambio es instantáneo y no corta la música.
+- **Textos centralizados**: todo lo que se lee en cada idioma vive en `src/i18n/<idioma>-ui.js`, `-game.js`, `-story.js` y `-shop.js` (`en`, `zh`), con las mismas claves —el texto en español— y en el mismo orden. Para añadir un idioma: crear sus cuatro archivos, registrarlo en `LANGS`, `DICTS` y `LANG_INFO` y poner su bandera en el selector de `index.html`.
+- **Idioma inicial**: el que eligió el jugador la última vez; si no hay elección, el del navegador (`navigator.languages`, p. ej. `es-CL` → español, `zh-TW` → chino); si no es ninguno de los tres, inglés (`detectLang`).
+- **Selector**: tres banderas en el menú principal; el cambio es instantáneo y no corta la música.
 - **Nombres propios** (Lía, Jean, Juth, Vhorn, Thyes, Tri, los mercaderes y los cuatro pueblos) se dejan en alfabeto latino en todos los idiomas; las ciudades y los sellos sí se traducen.
-- **Tipografía**: en chino y japonés los rótulos usan serifas CJK del sistema (`32-menus.css`), porque las fuentes de cartel no traen esos signos.
-- `tests/i18n.test.js` comprueba que los tres diccionarios tienen exactamente las mismas claves, que ninguna traducción está vacía, que conservan los marcadores `{x}` y los símbolos del juego, y que en chino y japonés no queda texto en español ni en inglés.
+- **Tipografía**: en chino los rótulos usan serifas CJK del sistema (`32-menus.css`), porque las fuentes de cartel no traen esos signos.
+- `tests/i18n.test.js` comprueba que los dos diccionarios tienen exactamente las mismas claves, que ninguna traducción está vacía, que conservan los marcadores `{x}` y los símbolos del juego, y que en chino no queda texto en español ni en inglés.
 
 ## Música
 

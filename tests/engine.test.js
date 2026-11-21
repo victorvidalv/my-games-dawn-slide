@@ -142,12 +142,12 @@ describe('codificación', () => {
 });
 
 describe('dificultad', () => {
-  it('rateAt sube desde la dificultad inicial de cada camino hasta 100 (solo baja tras un jefe)', () => {
+  it('rateAt sube desde la dificultad inicial de cada camino y nunca baja', () => {
     for (const start of [1, 50, 75]) {
-      expect(rateAt(start, 1)).toBeGreaterThanOrEqual(start === 1 ? 5 : start === 50 ? 25 : 40); // Normal parte de 3 movimientos
-      expect(rateAt(start, MAX_LEVEL)).toBeGreaterThanOrEqual(95);
+      expect(rateAt(start, 1)).toBeGreaterThanOrEqual(start === 1 ? 1 : start === 50 ? 25 : 40); // Normal parte de 2 movimientos
+      expect(rateAt(start, MAX_LEVEL)).toBeGreaterThanOrEqual(start === 1 ? 60 : 95); // Normal termina en 25 movimientos
       for (let l = 2; l <= MAX_LEVEL; l++)
-        if (l % 10 !== 1) expect(rateAt(start, l)).toBeGreaterThanOrEqual(rateAt(start, l - 1)); // solo baja justo después de un jefe (+2)
+        if (start === 1 || l % 10 !== 1) expect(rateAt(start, l)).toBeGreaterThanOrEqual(rateAt(start, l - 1));
     }
   });
   it('los movimientos objetivo crecen con la dificultad (tutorial suave → 37)', () => {
@@ -163,8 +163,9 @@ describe('dificultad', () => {
       expect(curve(r).others).toBeGreaterThanOrEqual(curve(r - 1).others);
     }
   });
-  it('el límite de movimientos es el doble del mínimo', () => {
-    expect(moveLimit(7)).toBe(14);
+  it('el límite de movimientos al empezar Normal es ×2,2 del mínimo (con 4 de sobra como poco)', () => {
+    expect(moveLimit(7)).toBe(15);
+    expect(moveLimit(2)).toBe(6);
   });
 });
 

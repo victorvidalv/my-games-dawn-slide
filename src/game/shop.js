@@ -74,20 +74,27 @@ export const extraTurns = (id, limit) => {
 /** Una lección y el tablero que le sigue pueden compartir el número de nivel. */
 export const shopBoardKey = (G) => (G.tutorial ? `${G.n}:${G.tutorial}` : G.n);
 
+/** ¿Ya se compró algo en este tablero? (también cuentan las compras guardadas antes de esta regla) */
+export const boughtHere = (run, G) => {
+  const key = shopBoardKey(G);
+  return (
+    run.shopBoard === key ||
+    run.hintPurchaseBoard === key ||
+    run.turnPackBoard === key ||
+    run.redoBoard === key ||
+    (G.bought || 0) > 0
+  );
+};
+
 /** ¿Se puede usar el objeto ahora mismo? (reason = por qué no) */
 export function availability(id, { run, G }) {
   if (!run || !G || G.done) return { ok: false, reason: 'No hay un tablero en juego.' };
   if (run.mode === 'p') return { ok: false, reason: 'En Práctica todo es gratis.' };
   if (fateBlocks(run, 'shop')) return { ok: false, reason: 'Tu Pacto mercante cerró la tienda.' };
-  if (id === 'hint' && run.hintPurchaseBoard === shopBoardKey(G)) {
-    return { ok: false, reason: 'Ya compraste una pista para este tablero.' };
-  }
-  if (itemById(id).share && (run.turnPackBoard === shopBoardKey(G) || G.bought > 0)) {
-    return { ok: false, reason: 'Ya compraste turnos para este tablero.' };
-  }
+  // Una sola compra por tablero (de lo que sea): la tienda ayuda, pero no salva cada tablero.
+  if (boughtHere(run, G)) return { ok: false, reason: 'Ya compraste algo en este tablero.' };
   if (id === 'skip' && run.lastSkipZone === zoneIdx(G.n))
     return { ok: false, reason: 'Ya usaste el salto de esta ciudad.' };
-  if (id === 'redo' && run.redoBoard === shopBoardKey(G)) return { ok: false, reason: 'Ya rehiciste este tablero.' };
   if (id === 'redo' && !G.moves) return { ok: false, reason: 'Aún no has movido nada.' };
   const price = priceOf(id, G.opt, run.start, run);
   if ((run.score || 0) < price) return { ok: false, reason: 'No te alcanzan los puntos.', price };
@@ -103,6 +110,7 @@ export function buy(id, { run, G }) {
   if (!a.ok) return a;
   run.score -= a.price;
   run.spent = (run.spent || 0) + a.price;
+  run.shopBoard = shopBoardKey(G);
   const item = itemById(id);
   if (id === 'hint') {
     run.hints = (run.hints || 0) + 1;

@@ -18,15 +18,15 @@ const missing = (list) =>
     (s) => s.length > 3 && !NAMES.test(s) && /[A-Za-zÁ-ú]/.test(s) && tr(s) === s.replace(/\s+/g, ' ').trim(),
   );
 
-describe('cuatro idiomas: inglés, español, chino y japonés, con las mismas claves', () => {
+describe('tres idiomas: inglés, español y chino, con las mismas claves', () => {
   const ph = (x) => (x.match(/\{\w+\}/g) || []).sort().join();
   it('idioma inicial: el del navegador si es uno de los nuestros; si no, inglés', () => {
-    expect(LANGS).toEqual(['en', 'es', 'zh', 'ja']);
+    expect(LANGS).toEqual(['en', 'es', 'zh']);
     expect(detectLang(['es-CL', 'en'])).toBe('es');
     expect(detectLang(['zh-TW'])).toBe('zh');
     expect(detectLang(['zh_CN'])).toBe('zh');
-    expect(detectLang(['ja-JP', 'en-US'])).toBe('ja');
-    expect(detectLang(['fr-FR', 'de', 'ja'])).toBe('ja'); // se respeta el orden de preferencia
+    expect(detectLang(['ja-JP', 'en-US'])).toBe('en'); // el japonés ya no está: sigue con el siguiente preferido
+    expect(detectLang(['fr-FR', 'de', 'zh'])).toBe('zh'); // se respeta el orden de preferencia
     expect(detectLang(['pt-BR'])).toBe('en');
     expect(detectLang([])).toBe('en');
     expect(detectLang([undefined, null, ''])).toBe('en');
@@ -51,11 +51,11 @@ describe('cuatro idiomas: inglés, español, chino y japonés, con las mismas cl
         if (code !== 'en') expect(symbols(out), `${code}: ${es}`).toBe(symbols(es));
       }
   });
-  it('chino y japonés: no queda español ni inglés suelto, y usan su propia escritura', () => {
+  it('chino: no queda español ni inglés suelto, y usa su propia escritura', () => {
     const NAMES =
       /Lía|Jean|Juth|Vhorn|VHORN|Thyes|THYES|Tri|Maela|Azhar|Don Dublón|Kogn|Sahrim|Ennari|Aluen|DAWNSLIDE|LV|OK/g;
-    for (const code of ['zh', 'ja']) {
-      const script = code === 'zh' ? /[\u4e00-\u9fff]/ : /[\u3040-\u30ff\u4e00-\u9fff]/;
+    for (const code of ['zh']) {
+      const script = /[\u4e00-\u9fff]/;
       let withScript = 0;
       for (const [es, out] of Object.entries(DICTS[code])) {
         const rest = out.replace(NAMES, '').replace(/\{\w+\}/g, '');
@@ -64,21 +64,14 @@ describe('cuatro idiomas: inglés, español, chino y japonés, con las mismas cl
       }
       expect(withScript / Object.keys(DICTS[code]).length, code).toBeGreaterThan(0.93);
     }
-    // el japonés usa kana (no es una copia del chino)
-    expect(Object.values(DICTS.ja).filter((v) => /[\u3040-\u30ff]/.test(v)).length).toBeGreaterThan(600);
   });
   it('traduce a cualquier idioma: frases exactas, plantillas con números y nombres anidados', () => {
     expect(tr('Pista', 'zh')).toBe('提示');
-    expect(tr('Pista', 'ja')).toBe('ヒント');
     expect(tr('Pista', 'es')).toBe('Pista');
     expect(tr('Te quedan 3 turnos.', 'zh')).toBe('你还剩 3 步。');
-    expect(tr('Te quedan 3 turnos.', 'ja')).toBe('残り 3 手です。');
     expect(tr('Sello de Corazón', 'zh')).toBe('心之印');
-    expect(tr('Sello de Corazón', 'ja')).toBe('心の封印');
     expect(tr('Valle Esmeralda', 'zh')).toBe('翡翠谷');
-    expect(tr('3.250', 'ja')).toBe('3.250');
     expect(tr('«Incluso la ceniza recuerda el calor.»', 'zh')).toBe('「就连灰烬也记得温暖。」');
-    expect(tr('Incluso la ceniza recuerda el calor.', 'ja')).toBe('灰でさえ、ぬくもりを覚えている。'); // citada sin comillas dentro de otro texto
   });
 });
 

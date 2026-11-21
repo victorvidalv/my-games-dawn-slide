@@ -191,10 +191,23 @@ for (const s of sealLevels) {
 }
 
 /* ---------- 5. Turnos mínimos ---------- */
+/**
+ * Curva de Normal por tramos (justa, alcanzable hasta el 100 y sin tableros eternos):
+ *   1–20 de 2 a 6 movimientos (entrar en ritmo) · 21–50 de 6 a 15 (llegan las mecánicas) · 51–80 de 15 a 22 (planificar)
+ *   · 81–100 de 22 a 25 (meseta alta: el reto viene de mezclar mecánicas, sellos y un límite ajustado ×1,3).
+ */
+const normalMin = (l) =>
+  l <= 20
+    ? Math.round(2 + ((l - 1) * 4) / 19)
+    : l <= 50
+      ? Math.round(6 + ((l - 20) * 9) / 30)
+      : l <= 80
+        ? Math.round(15 + ((l - 50) * 7) / 30)
+        : Math.round(22 + ((l - 80) * 3) / 20);
 let prevH = 0;
 let prevE = 0;
 for (let l = 1; l <= 100; l++) {
-  const normal = Math.min(37, 3 + Math.floor((l - 1) / 3) + (isBoss(l) && l >= 20 ? 2 : 0));
+  const normal = normalMin(l);
   prevH = Math.max(prevH, get(l).min.hard, normal + 6);
   prevE = Math.max(prevE, get(l).min.expert, prevH);
   level[l].min = [normal, Math.min(37, prevH), Math.min(37, prevE)];

@@ -11,7 +11,7 @@ import { tr } from '../src/i18n.js';
 import { guides } from './content.js';
 import { extraChapters } from './chapters.js';
 
-export const guidePaths = { es: 'guia/', en: 'guia/en/', ja: 'guia/ja/', zh: 'guia/zh/' };
+export const guidePaths = { es: 'guia/', en: 'guia/en/', zh: 'guia/zh/' };
 export const guideEntries = Object.fromEntries(
   Object.entries(guidePaths).map(([lang, path]) => [lang, path + 'index.html']),
 );

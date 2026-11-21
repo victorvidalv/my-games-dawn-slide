@@ -77,7 +77,7 @@ describe('generador: todas las combinaciones de piezas', () => {
     expect(states).toBeGreaterThan(2000);
   });
 
-  it('el nivel construido tiene el mínimo exacto, el límite es el doble y la pista lo gana en `mínimo` pasos', () => {
+  it('el nivel construido tiene el mínimo exacto, el límite de Normal y la pista lo gana en `mínimo` pasos', () => {
     for (const c of combos()) {
       const id = `${c.family} dif ${c.rating} muros ${c.walls0} semilla ${c.seed}`;
       expect(c.lvlReal, id).toBe(c.lvlOpt);

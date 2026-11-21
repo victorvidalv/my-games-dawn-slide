@@ -359,7 +359,7 @@
   }
 }
 
-/* ---------- selector de idioma: cuatro banderas (inglés, español, chino, japonés) que caben en una o dos filas ---------- */
+/* ---------- selector de idioma: tres banderas (inglés, español y chino) en una fila ---------- */
 #menu .lang-switch {
   gap: 9px;
   row-gap: 9px;
@@ -376,24 +376,18 @@
 }
 @media (max-width: 420px) {
   #menu .lang-btn {
-    flex: 1 1 40%;
+    flex: 1 1 28%;
     justify-content: center;
   }
 }
 
-/* ---------- chino y japonés: las fuentes de rótulo no traen esos signos, así que se eligen serifas CJK del sistema ---------- */
+/* ---------- chino: las fuentes de rótulo no traen esos signos, así que se eligen serifas CJK del sistema ---------- */
 html:lang(zh-Hans) {
   --font-title: 'Songti SC', 'STSong', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', Georgia, serif;
   --font-book: 'Songti SC', 'STSong', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', Georgia, serif;
   --font-ui: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', system-ui, sans-serif;
 }
-html:lang(ja) {
-  --font-title: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP', 'Source Han Serif JP', Georgia, serif;
-  --font-book: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP', 'Source Han Serif JP', Georgia, serif;
-  --font-ui: 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', 'Noto Sans CJK JP', system-ui, sans-serif;
-}
-html:lang(zh-Hans) body,
-html:lang(ja) body {
+html:lang(zh-Hans) body {
   line-break: strict;
   word-break: normal;
   overflow-wrap: anywhere;

@@ -24,6 +24,7 @@ import {
   claimAchievements,
   collectAchievement,
   earnedPoints,
+  migrateAchievements,
   lookOf,
   markStat,
   rewardUnlocked,
@@ -96,28 +97,26 @@ describe('economía de logros y canje', () => {
   it('un logro cumplido queda pendiente hasta reclamarlo, suma puntos y permite canjear en la Tienda', () => {
     const store = { paths: { c1: { level: 30 } }, stats: { boardsSolved: 1 } };
     const fresh = claimAchievements(store, 100);
-    expect(fresh.map((a) => a.id)).toEqual(['firstWin', 'lv5', 'city1', 'lv20', 'lv25']);
-    // Aún no reclamados: saldo en 0 y 5 pendientes
-    expect(unclaimedAchievements(store)).toHaveLength(5);
+    expect(fresh.map((a) => a.id)).toEqual(['firstWin', 'city1', 'lv25']);
+    // Aún no reclamados: saldo en 0 y 3 pendientes
+    expect(unclaimedAchievements(store)).toHaveLength(3);
     expect(achBalance(store)).toBe(0);
 
     // Reclamar uno a uno suma sus puntos
     const r1 = collectAchievement(store, 'firstWin', 200);
     expect(r1).toMatchObject({ points: 10, balance: 10 });
     expect(collectAchievement(store, 'firstWin', 201)).toBeNull(); // no se puede cobrar dos veces
-    collectAchievement(store, 'lv5', 202);
     collectAchievement(store, 'city1', 203);
-    collectAchievement(store, 'lv20', 204);
     collectAchievement(store, 'lv25', 205);
     expect(unclaimedAchievements(store)).toHaveLength(0);
-    expect(earnedPoints(store)).toBe(75);
-    expect(achBalance(store)).toBe(75);
+    expect(earnedPoints(store)).toBe(50);
+    expect(achBalance(store)).toBe(50);
 
     // No alcanza para un objeto de 85 pts
     expect(buyShopItem(store, 'board', 'celestial', 300)).toEqual({ ok: false, reason: 'funds' });
     // Sí alcanza para Pizarra nocturna (30 pts)
     const bought = buyShopItem(store, 'board', 'slate', 301);
-    expect(bought).toMatchObject({ ok: true, balance: 45 });
+    expect(bought).toMatchObject({ ok: true, balance: 20 });
     expect(spentPoints(store)).toBe(30);
     expect(rewardUnlocked('board', 'slate', store)).toBe(true);
     expect(lookOf(store).board).toBe('slate');
@@ -196,12 +195,12 @@ describe('economía equilibrada: rarezas, cofres y precios justos', () => {
   });
 
   it('«Casi lo tienes» propone los logros pendientes con más avance', () => {
-    const store = { stats: { perfects: 9, boardsSolved: 9 }, paths: { c1: { level: 4 } } };
+    const store = { stats: { perfects: 22, boardsSolved: 45 }, paths: { c1: { level: 4 } } };
     claimAchievements(store, 1);
     const near = nearAchievements(store, 3).map((a) => a.id);
     expect(near).toHaveLength(3);
-    expect(near).toContain('perf10');
-    expect(near).toContain('boards10');
+    expect(near).toContain('perf5'); // 22 de 25 perfectos
+    expect(near).toContain('boards50'); // 45 de 50 tableros
     for (const id of near) expect(store.ach[id]).toBeUndefined();
   });
 });
@@ -246,6 +245,34 @@ describe('estadísticas', () => {
 });
 
 describe('guardado compatible con actualizaciones', () => {
+  it('los logros retirados por relleno conservan sus puntos como puntos heredados (una sola vez)', () => {
+    const old = { ach: { lv5: 1, perf1: 2, city1: 3 }, achClaimed: { lv5: 4, boards10: 5 }, stats: { bosses: 2 } };
+    expect(migrateAchievements(old)).toBe(true);
+    expect(old.ach).toEqual({ city1: 3 });
+    expect(old.achClaimed).toEqual({});
+    expect(old.stats).toMatchObject({ legacyAchPoints: 10 + 10 + 15, fateCards: 2 });
+    expect(earnedPoints(old)).toBe(35);
+    expect(migrateAchievements(old)).toBe(false);
+    expect(earnedPoints(old)).toBe(35);
+  });
+
+  it('una primera partida no llena de logros de relleno: llegar al 30 de Normal da solo unos pocos', () => {
+    const store = {
+      paths: { c1: { level: 30, score: 9000 } },
+      stats: {
+        boardsSolved: 29,
+        perfects: 17,
+        iceRock: 8,
+        locks: 0,
+        heavyBoards: 3,
+        powersUsed: 20,
+        fateCards: 2,
+        cleanCity: 1,
+      },
+    };
+    expect(claimAchievements(store, 1).length).toBeLessThanOrEqual(6);
+  });
+
   it('un guardado antiguo (sin stats ni logros nuevos) se lee sin errores y los logros cumplidos se conceden', () => {
     const old = {
       best: { score: 0, level: 0 },
@@ -254,7 +281,7 @@ describe('guardado compatible con actualizaciones', () => {
       ach: { city1: 5 },
     };
     expect(() => statsOf(old)).not.toThrow();
-    expect(claimAchievements(old, 9).map((a) => a.id)).toEqual(['lv5', 'lv20', 'lv25', 'perf1', 'perf5', 'perf10']);
+    expect(claimAchievements(old, 9).map((a) => a.id)).toEqual(['lv25']);
     expect(old.ach.city1).toBe(5);
   });
 

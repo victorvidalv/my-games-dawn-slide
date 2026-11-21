@@ -12,7 +12,7 @@ import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
 import { startOptions } from '../game/starts.js';
 import { RELICS } from '../game/relics.js';
-import { fateBlocks } from '../game/fate.js';
+import { FATE_OFFER_BY_HERO, fateBlocks } from '../game/fate.js';
 import { preloadAwakening } from './power-art.js';
 import { numLocale } from '../i18n.js';
 export function syncHero(id = S.run?.hero) {
@@ -76,6 +76,7 @@ export function chooseHero(start, mode) {
       $('heroPowerIcon').innerHTML = icon(h.icon);
       $('heroPowerShort').textContent = h.id === 'lia' ? 'Más turnos' : h.power;
       $('heroRouteIcon').innerHTML = icon('fate');
+      $('heroRouteName').textContent = `1 de ${FATE_OFFER_BY_HERO[h.id] ?? 3} cartas por ciudad`;
       $('heroConfirm').textContent = from === 1 ? 'Comenzar aventura ➜' : `Comenzar desde el nivel ${from} ➜`;
       renderStarts();
       cards.querySelectorAll('button').forEach(
@@ -139,12 +140,8 @@ export function updateHeroHud() {
     h.id === 'lia'
       ? `+${bonusTurns('lia', S.G.opt, S.run.start, fateBlocks(S.run, 'power'))} turnos de reserva`
       : status.reason;
-  const silenced = !prac && fateBlocks(S.run, 'hints');
-  $('hintN').textContent = prac ? '∞' : silenced ? '✕' : S.run.hints;
-  $('bHint').setAttribute(
-    'aria-label',
-    silenced ? 'Pista. Apagada por tu Pacto de Silencio.' : `Pista. ${S.run.hints} en reserva.`,
-  );
+  $('hintN').textContent = prac ? '∞' : S.run.hints;
+  $('bHint').setAttribute('aria-label', `Pista. ${S.run.hints} en reserva.`);
   $('bHint').disabled = S.busy || !canHint(S.run, S.run.mode);
   $('bUndo').hidden = true;
   const button = $('bPower');

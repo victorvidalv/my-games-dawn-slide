@@ -105,11 +105,7 @@ body::before {
   margin-left: 7px;
   white-space: nowrap;
 }
-#journey .map-hero {
-  width: 30px;
-  height: 42px;
-  overflow: visible;
-}
+
 @media (max-height: 600px) {
   .travel-card {
     padding: 14px;
@@ -140,11 +136,7 @@ body::before {
   gap: 12px;
   padding-top: calc(env(safe-area-inset-top) + 20px);
 }
-#journey .mapwrap {
-  width: min(96vw, 500px);
-  max-height: 720px;
-  filter: drop-shadow(0 20px 24px #0007);
-}
+
 #journey .mtag {
   color: #e8cc94;
   font-size: 10px;
@@ -168,21 +160,7 @@ body::before {
   font-size: 12px;
   line-height: 1.5;
 }
-.atlas-city {
-  filter: drop-shadow(0 5px 8px #0008);
-}
-.atlas-city.current {
-  filter: drop-shadow(0 0 12px #e6c27955);
-}
-.atlas-traveler {
-  filter: drop-shadow(0 5px 4px #000b);
-}
-@media (min-aspect-ratio: 13/10) {
-  #journey .mapwrap {
-    width: min(95vw, 1080px);
-    max-height: 520px;
-  }
-}
+
 .wheel-shell {
   width: min(100%, 280px);
   aspect-ratio: 1;

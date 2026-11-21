@@ -183,7 +183,7 @@ describe('tienda (simulación)', () => {
       const { levels, spent } = gain(start, 0.8);
       expect(levels, `camino ${start}`).toBeGreaterThan(0.5);
       expect(levels, `camino ${start}`).toBeLessThan(22);
-      expect(spent, `camino ${start}`).toBeGreaterThan(1000);
+      expect(spent, `camino ${start}`).toBeGreaterThan(300); // en Normal, con más margen, casi no hace falta comprar
     }
   });
   it('el jugador perfecto casi no necesita comprar', () => {

@@ -265,7 +265,7 @@ const tasks = {
         const la = analyze(lvl.pieces, lvl.pos, 600000, lvl.walls);
         c.lvlOpt = lvl.opt;
         c.lvlReal = la?.dist.get(la.k0);
-        c.limitOk = moveLimit(lvl.opt) === lvl.opt * 2;
+        c.limitOk = moveLimit(lvl.opt) === Math.max(lvl.opt + 4, Math.round(lvl.opt * 2.2));
         let cur = lvl.pos.slice();
         let hintOk = true;
         for (let st = 0; st < lvl.opt; st++) {

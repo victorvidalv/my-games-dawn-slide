@@ -1,6 +1,7 @@
 import { heroById } from './game/heroes.js';
 import { runGain } from './game/run-points.js';
 import { mergeSaves } from './game/save-merge.js';
+import { migrateAchievements } from './game/achievements.js';
 /* ============================ Estado y guardado ============================ */
 /* Los puntajes viven SIEMPRE en localStorage (clave estable entre versiones, con copia de respaldo) */
 const SAVE = 'desbloquea.rogue.v2',
@@ -29,19 +30,7 @@ for (const box of [store.shopOwned, store.shopPaid])
     delete box['music:boss'];
   }
 if (store.look?.music === 'boss') store.look.music = 'fate';
-/* Los logros de jefes pasaron a ser de cartas del destino: se conservan los ganados y sus puntos. */
-const ACH_RENAMED = { boss1: 'fate1', bosses3: 'fate9', bosses: 'fate27', bosses15: 'fate81' };
-for (const box of [store.ach, store.achClaimed])
-  if (box)
-    for (const [from, to] of Object.entries(ACH_RENAMED))
-      if (Object.hasOwn(box, from)) {
-        box[to] ??= box[from];
-        delete box[from];
-      }
-if (store.stats && Object.hasOwn(store.stats, 'bosses')) {
-  store.stats.fateCards = Math.max(Number(store.stats.fateCards) || 0, Number(store.stats.bosses) || 0);
-  delete store.stats.bosses;
-}
+migrateAchievements(store); // logros de jefes → cartas, y los retirados pasan a puntos heredados
 if (store.best && store.best.score > 0 && !store.paths.c1)
   store.paths.c1 = { score: store.best.score, level: store.best.level, runs: 0 }; // migra récords antiguos
 /* Tres caminos de 100 niveles. 's' = dificultad inicial (1-100); sube de forma lineal hasta 100 en el nivel 100 */
@@ -122,5 +111,6 @@ export function importProgress(incoming, { replaceRun = false } = {}) {
   updated.run = incoming.run || localRun || null;
   updated.look = incoming.look;
   updated.tips = { ...disk.tips, ...store.tips, ...incoming.tips };
+  migrateAchievements(updated);
   return persist(updated) ? 'done' : 'error';
 }

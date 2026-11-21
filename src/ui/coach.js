@@ -94,7 +94,7 @@ function tipFor(id) {
     fate: {
       tag: 'CARTAS DEL DESTINO',
       title: 'Tu destino se acumula',
-      text: 'Al cerrar cada ciudad eliges <b>1 de 3 cartas</b>. Sus efectos se <b>suman</b> hasta el final de la partida y las que no eliges no vuelven. Toca el botón de cartas, arriba, para ver las que tienes activas y lo que suman.',
+      text: 'Al cerrar cada ciudad eliges <b>1 carta entre 2 o 3</b> (según tu héroe). Sus efectos se <b>suman</b> hasta el final de la partida y las que no eliges no vuelven. Toca el botón de cartas, arriba, para ver las que tienes activas y lo que suman.',
       demo: 'fate',
       glow: '#bFate',
     },

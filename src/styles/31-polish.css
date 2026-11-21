@@ -934,93 +934,17 @@ button.primary {
   color: #f6dc9a;
   font-size: 10px;
 }
-#journey.show .mapwrap {
-  animation: atlas-open 0.55s cubic-bezier(0.2, 1.15, 0.3, 1) both;
-}
+
 #journey.show .mcap {
   animation: tr-rise 0.5s ease-out 0.3s both;
 }
-#journey .mapwrap {
-  filter: drop-shadow(0 0 0 #091118) drop-shadow(0 22px 30px #000a);
-}
-.atlas-city {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: city-pop 0.42s cubic-bezier(0.2, 1.5, 0.4, 1) calc(0.16s + var(--i, 0) * 45ms) both;
-}
-.atlas-city.current .plaque {
-  animation: plaque-pulse 1.5s ease-in-out infinite;
-}
-.atlas-city.arrived {
-  animation: city-arrive 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both;
-}
-.atlas-traveler {
-  animation: atlas-fade 0.4s ease-out 0.6s both;
-} /* solo opacidad: su posición va en el atributo transform */
-.road-walk {
-  stroke: #ffdb8f;
-  stroke-opacity: 1;
-  stroke-width: 4;
-  stroke-dasharray: 7 9;
-  animation: road-march 0.5s linear infinite;
-  filter: drop-shadow(0 0 5px #f1ce82);
-}
+
+/* solo opacidad: su posición va en el atributo transform */
+
 #journey.show.out {
   animation: jout 0.15s ease-in forwards;
 }
-#journey.show.out.dive {
-  animation: jout 0.38s ease-in forwards;
-}
-#journey.out.dive .mapwrap {
-  animation: atlas-dive 0.38s cubic-bezier(0.6, 0, 0.9, 0.5) forwards;
-}
-#journey.out.dive .mcap,
-#journey.out.dive .mtag {
-  animation: jout 0.2s ease-in forwards;
-}
-@keyframes atlas-open {
-  from {
-    opacity: 0;
-    transform: perspective(900px) rotateX(24deg) translateY(34px) scale(0.88);
-    filter: brightness(1.8);
-  }
-}
-@keyframes atlas-dive {
-  to {
-    transform: scale(3.4);
-    opacity: 0;
-    filter: brightness(1.7) blur(2px);
-  }
-}
-@keyframes atlas-fade {
-  from {
-    opacity: 0;
-  }
-}
-@keyframes city-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.6);
-  }
-}
-@keyframes city-arrive {
-  0% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(1.14);
-    filter: drop-shadow(0 0 22px #ffdb8f) brightness(1.3);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-@keyframes plaque-pulse {
-  50% {
-    stroke-width: 6.5;
-    stroke: #fff3cf;
-  }
-}
+
 @keyframes road-march {
   to {
     stroke-dashoffset: -16;
@@ -1258,12 +1182,8 @@ body.perfect .frame {
   #board.board-win,
   #board.board-win .piece .face,
   #result.perfect .res-card::after,
-  #journey.show .mapwrap,
   #journey.show .mcap,
-  #journey.show .mtag,
-  .atlas-city,
-  .atlas-traveler,
-  .road-walk {
+  #journey.show .mtag {
     animation: none !important;
   }
 }
