@@ -9,7 +9,7 @@ import { sfx } from '../audio/sound.js';
 import { LORE_PORTRAITS, WORLD, lorePortraitSrc } from '../data/lore.js';
 import { ZONES } from '../data/zones.js';
 import { $ } from '../dom.js';
-import { FATE_CARDS, FATE_PICKS, fateMuted, fateSummary, usesFate } from '../game/fate.js';
+import { FATE_CARDS, FATE_PICKS, STREAK_TURNS_EVERY, fateMuted, fateSummary, usesFate } from '../game/fate.js';
 import { numLocale } from '../i18n.js';
 import { S, holdBusy } from '../state.js';
 import { fateArt } from './fate-art.js';
@@ -22,7 +22,7 @@ const fmt = (n) => n.toLocaleString(numLocale());
 const pct = (x) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${fmt(Math.round(Math.abs(x) * 100))} %`;
 const KIND_NAME = { blessing: 'Bendición', pact: 'Pacto' };
 
-/** Número de la carta en el mazo (1..27): se imprime en la esquina, como en una baraja. */
+/** Número de la carta en el mazo (1..31): se imprime en la esquina, como en una baraja. */
 const numberOf = (card) => FATE_CARDS.indexOf(card) + 1;
 
 /** Una carta completa (marco, emblema, nombre, efecto y costo). `muted`: un Pacto tuyo la deja sin efecto. */
@@ -93,6 +93,11 @@ function totalsHtml(summary) {
   if (summary.turns)
     chips.push(['turns', `Turnos ${summary.turns > 0 ? '+' : '−'}${Math.abs(summary.turns)} por tablero`]);
   if (t.heavyIce) chips.push(['turns', `+${t.heavyIce} turnos con pesadas o hielo`]);
+  if (t.curseTurns) chips.push(['turns', `+${t.curseTurns} turno en maleficios`]);
+  if (t.streakTurns) chips.push(['turns', `+1 turno cada ${STREAK_TURNS_EVERY} de racha`]);
+  if (t.perfectHints) chips.push(['good', 'Pista por Perfecto']);
+  if (t.purePoints) chips.push(['points', `Sin ayuda ${pct(t.purePoints)}`]);
+  if (t.streakKeep) chips.push(['good', 'La racha no se pierde entera']);
   if (t.perfect) chips.push(['points', `Perfecto ${pct(t.perfect)}`]);
   if (t.streakCap) chips.push(['points', `Racha hasta ×${fmt(1 + t.streakCap / 10)}`]);
   if (t.cursePoints) chips.push(['points', `Maleficios ${pct(t.cursePoints)}`]);

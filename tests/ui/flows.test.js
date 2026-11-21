@@ -34,7 +34,7 @@ describe('interfaz: aventura', () => {
     app.$('heroConfirm').click();
     await started;
     await untilPlayable(app, 1);
-    expect(saved().run).toMatchObject({ relic: 'lantern', hero: 'jean', hints: 7 });
+    expect(saved().run).toMatchObject({ relic: 'lantern', hero: 'jean', hints: 6 });
   });
 
   it('al cerrar la ciudad muestra al héroe de la partida y reparte 3 cartas del destino; elegir una la aplica una vez', async () => {

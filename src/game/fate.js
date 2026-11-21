@@ -1,8 +1,8 @@
 /* ============================ Cartas del destino ============================
- * Al cerrar cada tramo (niveles 3, 6, 9, 12, 15 y 18) se elige 1 carta entre 3. Hay 24 cartas (16 bendiciones y 8 pactos) y 6 elecciones:
+ * Al cerrar cada tramo (niveles 3, 6, 9, 12, 15 y 18) se elige 1 carta entre 3. Hay 31 cartas (21 bendiciones y 10 pactos) y 6 elecciones:
  *   · al empezar la aventura se baraja el mazo con la semilla de la partida (`run.fateDeck`);
  *   · el tramo k (1..6) muestra las siguientes 3 cartas del mazo: se descartan elijas la que elijas, así que ninguna
- *     carta se repite en una partida (pasan 18 de las 24) y el orden cambia cada vez;
+ *     carta se repite en una partida (pasan 18 de las 31) y el orden cambia cada vez;
  *   · las elegidas (`run.fate`) se acumulan hasta el final y sus efectos se suman.
  * Solo en Aventura (ni Diario, ni Práctica, ni Desafío). Todo son funciones puras sobre `run` (sin DOM).
  */
@@ -15,14 +15,20 @@ export const FATE_PICKS = 6;
 export const FATE_OFFER = 3;
 export const FATE_OFFER_BY_HERO = { lia: 3, jean: 3, van: 3 };
 export const offerSize = (run) => FATE_OFFER_BY_HERO[run?.hero] ?? FATE_OFFER;
-export const LONG_BOARD = 14;
+/** Desde este nivel cuentan Gran tablero y Frenesí (los tableros grandes del final, igual en los tres caminos). */
+export const LATE_LEVEL = 12;
 export const FINAL_LEG_START = 19;
 /** Límites de la suma de todas las cartas. */
 export const FATE_POINTS_RANGE = [-0.3, 0.9];
-export const FATE_TURNS_RANGE = [-2, 3];
+export const FATE_TURNS_RANGE = [-2, 4];
+/** Impulso: +1 turno por cada `STREAK_TURNS_EVERY` de racha, hasta +2. */
+export const STREAK_TURNS_EVERY = 2;
+export const STREAK_TURNS_MAX = 3;
+/** Maestría: un Perfecto en un tablero de al menos este mínimo da una pista. */
+export const MASTERY_MIN = 15;
 
 /**
- * Las 24 cartas (16 bendiciones, 8 pactos). `hue` son sus dos colores; el arte vive en `ui/fate-art.js`.
+ * Las 31 cartas (21 bendiciones, 10 pactos). Las nuevas van al final: el código de guardado usa su posición. `hue` son sus dos colores; el arte vive en `ui/fate-art.js`.
  */
 export const FATE_CARDS = [
   /* ───── Bendiciones: puntaje ───── */
@@ -46,9 +52,9 @@ export const FATE_CARDS = [
     id: 'constelacion',
     kind: 'blessing',
     name: 'Constelación',
-    gain: '+3 % de puntos por cada carta que tengas',
+    gain: '+4 % de puntos por cada carta que tengas',
     hue: ['#7b84e8', '#dfe2ff'],
-    fx: { pointsPerCard: 0.03 },
+    fx: { pointsPerCard: 0.04 },
   },
   {
     id: 'destello',
@@ -70,59 +76,59 @@ export const FATE_CARDS = [
     id: 'racha-firme',
     kind: 'blessing',
     name: 'Racha firme',
-    gain: 'Mantienes racha con 80 % de eficiencia (antes 90 %)',
+    gain: 'Racha con 75 % de eficiencia; si se rompe, conservas la mitad',
     hue: ['#d96c6c', '#ffd8d2'],
-    fx: { streakEff: 0.8 },
+    fx: { streakEff: 0.75, streakKeep: 0.5 },
   },
   {
     id: 'long-board',
     kind: 'blessing',
     name: 'Gran tablero',
-    gain: `+20 % de puntos en tableros de ${LONG_BOARD}+ mov. mínimos`,
+    gain: `+22 % de puntos del nivel ${LATE_LEVEL} al 21`,
     hue: ['#5f9e7a', '#d5f2df'],
-    fx: { longBoard: 0.2 },
+    fx: { longBoard: 0.22 },
   },
   {
     id: 'ceniza-tibia',
     kind: 'blessing',
     name: 'Ceniza tibia',
-    gain: '+25 % de puntos en tableros con maleficio',
+    gain: '+35 % de puntos y +1 turno en tableros con maleficio',
     hue: ['#b06a5a', '#f5d6cc'],
-    fx: { cursePoints: 0.25 },
+    fx: { cursePoints: 0.35, curseTurns: 1 },
   },
   /* ───── Bendiciones: turnos ───── */
   {
     id: 'respiro',
     kind: 'blessing',
     name: 'Respiro',
-    gain: '+1 turno extra en cada tablero',
+    gain: '+2 turnos extra en cada tablero',
     hue: ['#68c3a3', '#dbf7ec'],
-    fx: { turns: 1 },
+    fx: { turns: 2 },
   },
   {
     id: 'holgura',
     kind: 'blessing',
     name: 'Holgura',
-    gain: '+2 turnos extra si hay pieza pesada o hielo',
+    gain: '+3 turnos extra si hay pieza pesada o hielo',
     hue: ['#79a9d6', '#e0efff'],
-    fx: { heavyIce: 2 },
+    fx: { heavyIce: 3 },
   },
   /* ───── Bendiciones: poder del héroe ───── */
   {
     id: 'carga',
     kind: 'blessing',
     name: 'Carga',
-    gain: 'Tu poder nunca descansa (Lía: +1 turno en cada tablero)',
+    gain: 'Tu poder nunca descansa y +1 turno en cada tablero (Lía: +2 turnos)',
     hue: ['#a77ee0', '#eee0ff'],
-    fx: { powerShare: 1, liaTurns: 1 },
+    fx: { powerShare: 1, powerTurns: 1, liaTurns: 2 },
   },
   {
     id: 'power-echo',
     kind: 'blessing',
     name: 'Eco del poder',
-    gain: '+1 uso de poder en el 3.er tablero (Lía: +2 turnos allí)',
+    gain: '+1 uso de poder en cada tablero (Lía: +1 turno en cada tablero)',
     hue: ['#c26fd1', '#f7dcff'],
-    fx: { lastPower: 1, liaLastTurns: 2 },
+    fx: { lastPower: 1, liaLastTurns: 1 },
   },
   /* ───── Bendiciones: pistas, revivir y cierre ───── */
   {
@@ -153,9 +159,9 @@ export const FATE_CARDS = [
     id: 'cosecha',
     kind: 'blessing',
     name: 'Cosecha',
-    gain: '+1,5 tableros de puntos al cerrar cada tramo (incluye el 21)',
+    gain: 'Al cerrar cada tramo, +80 % de los puntos base de un tablero (incluye el 21)',
     hue: ['#9bb043', '#eef6c8'],
-    fx: { cityBases: 1.5 },
+    fx: { cityBases: 0.8 },
   },
   {
     id: 'vinculo',
@@ -178,19 +184,19 @@ export const FATE_CARDS = [
     id: 'juramento',
     kind: 'pact',
     name: 'Juramento',
-    gain: '+25 % de puntos',
+    gain: '+50 % de puntos y +1 pista al cerrar cada tramo',
     cost: 'Apaga el poder de tu héroe',
     hue: ['#8e3b5f', '#f2c6d8'],
-    fx: { points: 0.25, noPower: true },
+    fx: { points: 0.5, cityHints: 1, noPower: true },
   },
   {
     id: 'vidrio',
     kind: 'pact',
     name: 'Vidrio',
-    gain: '+25 % de puntos',
+    gain: '+22 % de puntos',
     cost: 'La racha solo sigue con Perfecto',
     hue: ['#4c8fa8', '#d6f1fb'],
-    fx: { points: 0.25, perfectStreak: true },
+    fx: { points: 0.22, perfectStreak: true },
   },
   {
     id: 'cuerda-floja',
@@ -205,10 +211,10 @@ export const FATE_CARDS = [
     id: 'temerario',
     kind: 'pact',
     name: 'Temerario',
-    gain: '+20 % de puntos',
+    gain: '+50 % de puntos',
     cost: 'No puedes usar pistas',
     hue: ['#a1322f', '#ffc9c2'],
-    fx: { points: 0.2, noHints: true },
+    fx: { points: 0.5, noHints: true },
   },
   {
     id: 'ofrenda',
@@ -232,19 +238,62 @@ export const FATE_CARDS = [
     id: 'abismo',
     kind: 'pact',
     name: 'Abismo',
-    gain: '+40 % de puntos en los 3 últimos tableros (19–21)',
-    cost: 'Pierdes 20 % de tus puntos ahora',
+    gain: '+60 % de puntos en los 3 últimos tableros (19–21)',
+    cost: 'Pierdes 10 % de tus puntos ahora',
     hue: ['#5c2a6e', '#e5c8f7'],
-    fx: { finalPoints: 0.4, pickScore: -0.2 },
+    fx: { finalPoints: 0.6, pickScore: -0.1 },
   },
   {
     id: 'frenesi',
     kind: 'pact',
     name: 'Frenesí',
-    gain: `+25 % de puntos en tableros de ${LONG_BOARD}+ mov. mínimos`,
+    gain: `+32 % de puntos del nivel ${LATE_LEVEL} al 21`,
     cost: '−1 turno en cada tablero',
     hue: ['#c9532b', '#ffd8c4'],
-    fx: { longBoard: 0.25, turns: -1 },
+    fx: { longBoard: 0.32, turns: -1 },
+  },
+  /* ───── Nuevas (van al final: el código de guardado guarda la posición de cada carta) ───── */
+  {
+    id: 'impulso',
+    kind: 'blessing',
+    name: 'Impulso',
+    gain: `+1 turno por cada ${STREAK_TURNS_EVERY} de racha al empezar el tablero (máx. +${STREAK_TURNS_MAX})`,
+    hue: ['#f08a3c', '#ffe6cc'],
+    fx: { streakTurns: 1 },
+  },
+  {
+    id: 'maestria',
+    kind: 'blessing',
+    name: 'Maestría',
+    gain: `+1 pista por cada Perfecto en tableros de ${MASTERY_MIN}+ mov. mínimos`,
+    hue: ['#3f9fd8', '#d8efff'],
+    fx: { perfectHints: 1 },
+  },
+  {
+    id: 'ascetismo',
+    kind: 'blessing',
+    name: 'Ascetismo',
+    gain: '+20 % de puntos en tableros sin pista ni poder (Lía: sin tocar la reserva)',
+    hue: ['#8a9a7b', '#eef3e4'],
+    fx: { purePoints: 0.2 },
+  },
+  {
+    id: 'reencarnacion',
+    kind: 'pact',
+    name: 'Reencarnación',
+    gain: 'Desbloquea 1 revivir y +2 pistas ahora',
+    cost: '−2 turnos en cada tablero',
+    hue: ['#c2463f', '#ffd9cf'],
+    fx: { revives: 1, pickHints: 2, turns: -2 },
+  },
+  {
+    id: 'codicia',
+    kind: 'pact',
+    name: 'Codicia',
+    gain: '+28 % de puntos',
+    cost: 'Pierdes 1 pista al cerrar cada tramo',
+    hue: ['#c99a1e', '#fff0b8'],
+    fx: { points: 0.28, cityHints: -1 },
   },
 ];
 
@@ -327,6 +376,12 @@ export function fateTotals(run) {
     perfectStreak: false,
     turns: 0,
     heavyIce: 0,
+    powerTurns: 0,
+    curseTurns: 0,
+    streakTurns: 0,
+    streakKeep: 0,
+    perfectHints: 0,
+    purePoints: 0,
     liaTurns: 0,
     liaLastTurns: 0,
     powerShare: 0,
@@ -342,7 +397,7 @@ export function fateTotals(run) {
     for (const [k, v] of Object.entries(card.fx)) {
       if (!(k in t)) continue;
       if (typeof v === 'boolean') t[k] ||= v;
-      else if (k === 'perfect' || k === 'streakCap' || k === 'hintCap') t[k] = Math.max(t[k], v);
+      else if (k === 'perfect' || k === 'streakCap' || k === 'hintCap' || k === 'streakKeep') t[k] = Math.max(t[k], v);
       else if (k === 'streakEff') t[k] = t[k] ? Math.min(t[k], v) : v;
       else t[k] += v;
     }
@@ -361,19 +416,33 @@ export function fatePoints(run, G) {
   const pactBonus = t.pactPoints * pacts;
   const hintBonus = t.hintPoints && !t.noHints ? Math.min(t.hintCap || 0.3, (run?.hints || 0) * t.hintPoints) : 0;
   const noHint = !G?.n || run?.helpAt !== G.n ? t.noHintPoints : 0;
-  const long = G && G.opt >= LONG_BOARD ? t.longBoard : 0;
-  const curse = G && Number.isFinite(G.n) && hasCurse(G.n) ? t.cursePoints : 0;
-  const finalLeg = G && Number.isFinite(G.n) && G.n >= FINAL_LEG_START ? t.finalPoints : 0;
-  return clamp(t.points + t.pointsPerCard * count + pactBonus + hintBonus + noHint + long + curse + finalLeg, FATE_POINTS_RANGE);
+  const known = G && Number.isFinite(G.n);
+  const long = known && G.n >= LATE_LEVEL ? t.longBoard : 0;
+  const curse = known && hasCurse(G.n) ? t.cursePoints : 0;
+  const finalLeg = known && G.n >= FINAL_LEG_START ? t.finalPoints : 0;
+  const pure = known && G.pure ? t.purePoints : 0;
+  return clamp(
+    t.points + t.pointsPerCard * count + pactBonus + hintBonus + noHint + long + curse + finalLeg + pure,
+    FATE_POINTS_RANGE,
+  );
 }
 
 /** Turnos extra (o menos) de las cartas en el tablero `G`. Nunca deja el límite por debajo de mínimo + 1 (eso lo hace quien suma). */
 export function fateTurns(run, G) {
   const t = fateTotals(run);
   const isLia = run?.hero === 'lia' && !t.noPower;
-  const liaExtra = isLia ? t.liaTurns + (G && Number.isFinite(G.n) && G.n % FATE_EVERY === 0 ? t.liaLastTurns : 0) : 0;
-  return clamp(t.turns + (heavyOrIce(G) ? t.heavyIce : 0) + liaExtra, FATE_TURNS_RANGE);
+  const known = G && Number.isFinite(G.n);
+  const liaExtra = isLia ? t.liaTurns + (known && echoBoard(G.n) ? t.liaLastTurns : 0) : 0;
+  const curse = known && hasCurse(G.n) ? t.curseTurns : 0;
+  const streak = t.streakTurns
+    ? Math.min(STREAK_TURNS_MAX, Math.floor((run?.streak || 0) / STREAK_TURNS_EVERY)) * t.streakTurns
+    : 0;
+  const power = isLia || t.noPower ? 0 : t.powerTurns; // Carga: +1 turno (Lía ya suma los suyos)
+  return clamp(t.turns + (heavyOrIce(G) ? t.heavyIce : 0) + liaExtra + power + curse + streak, FATE_TURNS_RANGE);
 }
+
+/** Tableros con el uso extra de Eco del poder: todos (se deja la regla aparte por si se quiere acotar). */
+export const echoBoard = (level) => level >= 1;
 
 /** Reglas del puntaje que cambian las cartas (bono de Perfecto, tope y umbral de la racha). */
 export function fateRules(run) {
@@ -388,6 +457,17 @@ export function fateRules(run) {
 /** ¿Sigue la racha con esta eficiencia? */
 export const keepsStreak = (run, eff) => eff >= fateRules(run).streakEff;
 
+/** Racha tras ganar un tablero con eficiencia `eff`: sube 1, o se rompe (Racha firme conserva la mitad). */
+export function nextStreak(run, eff) {
+  const streak = run?.streak || 0;
+  if (keepsStreak(run, eff)) return streak + 1;
+  return Math.floor(streak * fateTotals(run).streakKeep);
+}
+
+/** Pistas que da Maestría al ganar un tablero de mínimo `opt` en `moves` (0 si un Pacto apaga las pistas). */
+export const fatePerfectHints = (run, moves, opt) =>
+  moves <= opt && opt >= MASTERY_MIN && !fateBlocks(run, 'hints') ? fateTotals(run).perfectHints : 0;
+
 /** ¿Apaga un Pacto esta ayuda? kind: 'power' | 'hints' */
 export function fateBlocks(run, kind) {
   const t = fateTotals(run);
@@ -396,15 +476,15 @@ export function fateBlocks(run, kind) {
 
 /** Parte extra de tableros con el poder listo. */
 export const fatePowerShare = (run) => fateTotals(run).powerShare;
-/** Usos extra del poder en el tablero `level` (Eco del poder: el último de cada tramo). */
-export const fatePowerUses = (run, level) => (level % FATE_EVERY === 0 ? fateTotals(run).lastPower : 0);
+/** Usos extra del poder en el tablero `level` (Eco del poder: uno más en cada tablero). */
+export const fatePowerUses = (run, level) => (echoBoard(level) ? fateTotals(run).lastPower : 0);
 /** Revivir extra de la partida (Fénix suma uno). */
 export const fateRevives = (run) => fateTotals(run).revives;
 
 /** ¿Deja una carta sin efecto a otra ya elegida o futura? (Juramento con las de poder, Temerario con las de pistas…) */
 const MUTED_BY = {
   noPower: ['carga', 'power-echo'],
-  noHints: ['bolsillo', 'brujula', 'lucidez'],
+  noHints: ['bolsillo', 'brujula', 'lucidez', 'maestria'],
 };
 export function fateMuted(run, id) {
   const t = fateTotals(run);
@@ -438,8 +518,9 @@ export function fateCityRewards(run, city, opt) {
   if (!usesFate(run) || (run.fateCityPaid || 0) >= city) return null;
   run.fateCityPaid = city;
   const t = fateTotals(run);
+  const hints = t.cityHints > 0 && fateBlocks(run, 'hints') ? 0 : t.cityHints;
   const out = {
-    hints: fateBlocks(run, 'hints') ? 0 : t.cityHints,
+    hints: Math.max(0 - (run.hints || 0), hints), // Codicia quita pistas, pero nunca deja la reserva por debajo de 0
     score: Math.round(t.cityBases * baseScore(opt)),
   };
   run.hints = (run.hints || 0) + out.hints;

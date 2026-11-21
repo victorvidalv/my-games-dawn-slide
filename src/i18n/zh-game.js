@@ -21,8 +21,8 @@ export const ZH_GAME = {
   'Escriba de las Runas': '符文的书记官',
   'Turnos de reserva': '储备步数',
   'Más turnos en cada tablero': '每关都有更多步数',
-  'Cada tablero te da turnos extra (alrededor de un tercio del mínimo necesario; algo menos en los caminos difíciles) para perdonar los errores pequeños sin quitarte el reto.':
-    '每块棋盘都会给你额外步数（约为最少步数的三分之一；较难的道路上略少），小失误可以被原谅，挑战却不会变少。',
+  'Cada tablero te da turnos extra (alrededor de un tercio del mínimo; algo menos en los caminos difíciles) para perdonar errores. Si terminas sin tocarlos, la Brasa intacta te da puntos extra.':
+    '每个棋盘都会给你额外步数（约为最少步数的三分之一；困难路线稍少），用来弥补失误。若完全不动用这些步数，「余烬完好」会给你额外得分。',
   'Retrocede varios movimientos': '后退若干步',
   'Una vez por tablero (dos en los tableros largos), devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.':
     '每关一次（长棋盘两次），把方块和步数退回大约三分之一（至少三步）。如果走的步数更少，就回到开局。',

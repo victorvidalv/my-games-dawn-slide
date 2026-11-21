@@ -20,11 +20,11 @@ describe('héroes', () => {
 });
 
 describe('Lía · turnos de reserva', () => {
-  it('solo Lía recibe turnos extra: 34 % del mínimo en Normal, 20 % en Difícil y 17 % en Experto', () => {
+  it('solo Lía recibe turnos extra: 34 % del mínimo en Normal, 23 % en Difícil y 21 % en Experto', () => {
     expect(bonusTurns('lia', 8)).toBe(3);
     expect(bonusTurns('lia', 40)).toBe(14);
-    expect(bonusTurns('lia', 40, 50)).toBe(8);
-    expect(bonusTurns('lia', 40, 75)).toBe(7);
+    expect(bonusTurns('lia', 40, 50)).toBe(9);
+    expect(bonusTurns('lia', 40, 75)).toBe(8);
     expect(bonusTurns('lia', 2)).toBe(1);
     expect(bonusTurns('jean', 40)).toBe(0);
     expect(bonusTurns('van', 40)).toBe(0);

@@ -11,7 +11,6 @@ import {
   analyze,
   hintMove,
   minMoves,
-  maxDistance,
   expand,
   curve,
   rateAt,
@@ -27,6 +26,7 @@ import {
   isWon,
   isLow,
 } from '../src/engine/index.js';
+import { runPoolCached as runPool } from './parallel/pool.js';
 
 /** Tablero mínimo: llave roja sola → 1 movimiento (un arrastre largo hasta la salida). */
 const solo = { pieces: [{ o: 'h', len: 2, fix: 2 }], pos: [0] };
@@ -145,7 +145,7 @@ describe('dificultad', () => {
   it('rateAt sube desde la dificultad inicial de cada camino y nunca baja', () => {
     for (const start of [1, 50, 75]) {
       expect(rateAt(start, 1)).toBeGreaterThanOrEqual(start === 1 ? 1 : start === 50 ? 25 : 40); // Normal parte de 2 movimientos
-      expect(rateAt(start, MAX_LEVEL)).toBeGreaterThanOrEqual(start === 1 ? 60 : 95); // Normal termina en 25 movimientos
+      expect(rateAt(start, MAX_LEVEL)).toBeGreaterThanOrEqual(start === 1 ? 55 : start === 50 ? 75 : 95); // Normal termina en 22 movimientos
       for (let l = 2; l <= MAX_LEVEL; l++)
         if (start === 1 || l % 10 !== 1) expect(rateAt(start, l)).toBeGreaterThanOrEqual(rateAt(start, l - 1));
     }
@@ -163,26 +163,31 @@ describe('dificultad', () => {
       expect(curve(r).others).toBeGreaterThanOrEqual(curve(r - 1).others);
     }
   });
-  it('el límite de movimientos al empezar Normal es ×2,2 del mínimo (con 4 de sobra como poco)', () => {
-    expect(moveLimit(7)).toBe(15);
+  it('el límite de movimientos al empezar Normal es ×2,0 del mínimo (con 4 de sobra como poco)', () => {
+    expect(moveLimit(7)).toBe(14);
     expect(moveLimit(2)).toBe(6);
   });
 });
 
 describe('generador', () => {
   it('es determinista: misma semilla, mismo tablero', () => {
-    const a = generateBoard(12, 4242);
-    const b = generateBoard(12, 4242);
+    // el determinismo no depende de cuántas vueltas dé la búsqueda: con pocas basta y el test tarda una fracción
+    const a = generateBoard(12, 4242, { maxIters: 120 });
+    const b = generateBoard(12, 4242, { maxIters: 120 });
     expect(encodeBoard(a.pieces, a.pos)).toBe(encodeBoard(b.pieces, b.pos));
     expect(a.maxd).toBe(b.maxd);
-  }, 120000);
-  it('alcanza el mínimo objetivo y el estado devuelto está a esa distancia', () => {
-    for (const rating of [1, 8, 20, 28]) {
-      const g = generateBoard(rating, 1000 + rating);
-      expect(g.reached).toBe(true);
+  });
+  it('alcanza el mínimo objetivo y el estado devuelto está a esa distancia (en paralelo)', async () => {
+    const rows = await runPool(
+      'reach',
+      [1, 8, 20, 28].map((rating) => ({ rating, seed: 1000 + rating })),
+      { batch: 1 },
+    );
+    for (const g of rows) {
+      expect(g.reached, `dif ${g.rating}`).toBe(true);
       expect(g.maxd).toBeGreaterThanOrEqual(g.target);
-      expect(minMoves(g.pieces, g.pos)).toBe(g.maxd);
-      expect(maxDistance(analyze(g.pieces, g.pos))).toBe(g.maxd);
+      expect(g.min).toBe(g.maxd);
+      expect(g.far).toBe(g.maxd);
     }
   }, 120000);
 });

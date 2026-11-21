@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { runPool, FULL } from './parallel/pool.js';
+import { runPoolCached as runPool, FULL } from './parallel/pool.js';
 
 /**
  * El generador de tableros probado desde cero, en paralelo: para cada dificultad × (con/sin muros) × semilla se genera

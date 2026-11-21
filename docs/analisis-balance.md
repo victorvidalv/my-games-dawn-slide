@@ -1,110 +1,79 @@
-# Análisis de balance — modo Aventura
+# Análisis de balance — Aventura roguelite (21 niveles)
 
-Fuente: el simulador determinista de `src/game/balance.js` (`npm run simulate`), 300–400 partidas por combinación de
-héroe, camino y habilidad (0,4 casual · 0,6 media · 0,8 buena · 0,92 experta). Es un modelo para **comparar opciones**,
-no una predicción exacta. No simula los reintentos gratis de los niveles 1–9, así que el jugador casual queda algo
-peor de lo que le va en el juego real.
+Fuente: el modelo determinista de `src/game/balance.js`, que corre con `node scripts/analyze-balance.mjs [partidas]
+[heroes|relics|cards|pick|raw] [nivel]`. Las habilidades son 0,4 (casual), 0,6 (media), 0,8 (buena) y 0,92
+(experta). El modelo sirve para **comparar opciones**, no para predecir puntajes exactos: el jugador simulado hace
+Perfecto más a menudo que una persona, así que sus puntajes salen algo inflados.
 
-## 1. Curva de Normal
+El simulador ahora modela las reliquias, todas las cartas con sus reglas reales (`fateTurns`, `fatePoints`,
+`nextStreak`, Maestría…), la Brasa intacta de Lía, el revivir de Fénix/Reencarnación al caer y tres formas de elegir
+cartas: `survival` (llegar lejos), `score` (puntos primero) y `random`.
 
-Se aplicó la curva propuesta (`src/data/calibration.json`, columna Normal, y `scripts/optimize-calibration.mjs`):
+## 1. Lo que se encontró
 
-| Tramo | Mínimo de movimientos |
-| --- | --- |
-| 1–20 | 2 → 6 |
-| 21–50 | 6 → 15 |
-| 51–80 | 15 → 22 |
-| 81–100 | 22 → 25 (meseta) |
+| Problema | Medida antes | Arreglo |
+| --- | --- | --- |
+| **Cosecha** daba +25 % de puntaje sin ningún costo (la mejor carta del juego, por mucho) | +24,8 % | 1,5 → 0,8 tableros base por tramo: +13 % |
+| **Juramento** y **Temerario** eran trampas: perdían niveles **y** puntos | −1,8 niv / −1,6 % · −1,1 niv / −0,8 % | Juramento +50 % y +1 pista por tramo; Temerario +50 %: ahora ≈ +18 % de puntos por su riesgo |
+| **Gran tablero** y **Frenesí** valían siempre en Difícil/Experto (todos los tableros tienen 14+ movimientos) y poco en Normal | — | Cuentan desde el **nivel 12** en los tres caminos |
+| **Respiro** (+1 turno) apenas ayudaba; Holgura era siempre mejor | +0,28 niv | Respiro +2 turnos; Holgura +3; tope de turnos −2/+4 |
+| **Eco del poder** solo valía en 1 de cada 3 tableros | +0,10 niv | +1 uso de poder en **cada** tablero |
+| **Carga** no hacía nada a Juth en Normal (su poder ya nunca descansa) | 0 niv | Además da +1 turno (Lía: +2) |
+| **Abismo** tomado tarde costaba más de lo que daba | +2 % | +60 % en 19–21, pierde 10 % al tomarlo |
+| **Constelación**, **Racha firme** y **Ceniza tibia** casi no se notaban | +2–3 % | +4 %/carta; la racha conserva la mitad; +35 % y +1 turno en maleficios |
+| **Lía** sacaba muchos menos puntos: su reserva alarga el tablero y baja la eficiencia | −20 a −40 % frente a Jean/Juth | **Brasa intacta**: +12 % si termina sin tocar la reserva; reserva 23 % en Difícil y 21 % en Experto |
+| **Reloj de arena** era la reliquia más floja; el **Farol** dominaba Experto | +0,3–0,6 niv vs +1,3 niv | Reloj +2 turnos; Farol +3 pistas |
+| Rango final: con puntajes más altos, S+ se volvía fácil | — | Umbrales nuevos (abajo) |
 
-Antes iba de 3 a 37, con +2 en los cierres de ciudad (lo que quedaba de los jefes). Ese pico también se quitó.
+## 2. Héroes (con cartas, eligiendo para sobrevivir; niveles alcanzados de 21)
 
-### Hallazgo: con tableros más cortos, ×1,3 hace Normal **más difícil**
+| Camino | hab. | Lía | Jean | Juth |
+| --- | --- | --- | --- | --- |
+| Normal | 0,60 | 18,0 | 17,8 | 17,8 |
+| Normal | 0,92 | 20,5 | 20,5 | 20,5 |
+| Difícil | 0,60 | 16,8 | 16,9 | 16,1 |
+| Difícil | 0,80 | 19,5 | 19,7 | 19,1 |
+| Experto | 0,60 | 11,2 | 11,7 | 11,0 |
+| Experto | 0,80 | 18,0 | 17,4 | 17,6 |
 
-Un error cuesta un número fijo de movimientos (equivocarse y deshacer, unos 2–5), pero el margen de turnos es un
-porcentaje del tablero. Con 25 movimientos y ×1,3 quedan 8 turnos de sobra; con 37 quedaban 11.
+Los tres quedan a menos de un nivel entre sí en cada camino. En puntos, Lía queda algo por debajo con poca habilidad
+(su reserva perdona errores, y eso se paga en eficiencia) y por encima con mucha (la Brasa intacta premia no usarla).
+Jean y Juth puntúan parecido.
 
-| Normal, sin poder | antes (3→37, ×2→×1,3) | curva nueva con ×1,3 | **curva nueva con ×2,2→×1,5 y margen mínimo 4** |
+## 3. Reliquias (media de héroes, hab. 0,6–0,92)
+
+| Camino | Medallón solar | Reloj de arena | Farol de pistas |
 | --- | --- | --- | --- |
-| hab. 0,40 | 14,7 | 12,2 | **18,3** |
-| hab. 0,60 | 27,9 | 19,8 | **30,4** |
-| hab. 0,80 | 53,6 | 41,7 | **56,6** |
-| hab. 0,92 | 77,1 | 69,2 | **80,1** |
+| Normal | +15 % pts, +0 niv | +0,7 niv, +4 % pts | +0,1 niv |
+| Difícil | +15 % pts | +0,7 niv, +4 % pts | +0,4 niv, +4 % pts |
+| Experto | +15 % pts | +1,3 niv, +7 % pts | +1,1 niv, +9 % pts |
 
-Por eso el límite de Normal pasa a ser **×2,2 al principio y ×1,5 en el nivel 100, con al menos 4 turnos de sobra**
-(Difícil y Experto no cambian). El nivel 100 de Normal queda en 25 movimientos con 38 turnos.
+Es un triángulo: el Medallón es para el récord; el Reloj da margen en todos los caminos; el Farol rinde en los caminos
+difíciles y combina con Lucidez y Maestría.
 
-Con héroe y cartas, Normal queda así (niveles alcanzados):
+## 4. Estrategia de cartas (media de héroes, hab. 0,6–0,92)
 
-| hab. | Lía | Jean | Juth |
+| Elección | Normal | Difícil | Experto |
 | --- | --- | --- | --- |
-| 0,60 | ≈57 | ≈57 | ≈63 |
-| 0,80 | ≈79 | ≈80 | ≈81 |
-| 0,92 | ≈90 | ≈91 | ≈91 |
+| Sobrevivir | 19,4 niv · 31,9 mil pts · 88 % gana | 18,8 · 41,5 mil · 73 % | 16,3 · 43,1 mil · 54 % |
+| Puntos primero | 18,0 · 36,8 mil · 66 % | 16,5 · 43,9 mil · 41 % | 13,6 · 42,3 mil · 26 % |
+| Al azar | 19,2 · 37,5 mil · 84 % | 18,2 · 45,3 mil · 63 % | 15,4 · 45,2 mil · 43 % |
 
-Un jugador bueno llega cerca del final y uno experto lo termina con frecuencia, sobre todo usando la tienda y los
-revivir (la tienda suma unos 20 niveles a la habilidad 0,8 sin héroe).
+Codiciar puntos da más puntaje por tablero pero termina muchas menos partidas: los Pactos pesan de verdad. La mejor
+partida mezcla las dos cosas según el tramo y la mano, que es lo que se busca.
 
-## 2. Héroes
+## 5. Rango final (victorias)
 
-Niveles extra que da cada poder frente a no tener ninguno (media de las cuatro habilidades):
-
-| Camino | Lía | Jean | Juth |
+| Camino | S+ | S | A |
 | --- | --- | --- | --- |
-| Normal | 19,8 | 18,4 | 21,9 |
-| Difícil | 14,8 | 12,1 | 10,0 |
-| Experto | 19,8 | 9,9 | 11,7 |
-| **Total** | **18,1** | **13,5** | **14,5** |
+| Normal | 48.000 | 32.000 | 20.000 |
+| Difícil | 62.000 | 43.000 | 27.000 |
+| Experto | 80.000 | 55.000 | 36.000 |
 
-**Lía era la más fuerte, no la más débil**, sobre todo en Experto, donde duplicaba a los otros. Sus turnos de reserva
-son seguros (no dependen de cuándo te equivoques), mientras que rebobinar y trazar destino se gastan una vez por
-tablero.
+(Se mantiene el atajo por Perfectos: S+ con 75 % de Perfectos y puntaje de S; S con 55 %; A con 35 %.)
 
-### Cuánto vale elegir entre 3 cartas en vez de 2
+## Pendiente
 
-Con las cartas modeladas (el jugador elige la que más le ayuda a sobrevivir: turnos, revivir, poder, pistas):
-
-| | solo poder | poder + 1 de 2 | poder + 1 de 3 |
-| --- | --- | --- | --- |
-| Lía | 18,3 | 20,4 | 21,4 |
-| Jean | 13,7 | 16,5 | 17,6 |
-| Juth | 14,6 | 17,3 | 18,5 |
-
-Elegir entre 3 en vez de 2 vale **~1 nivel**: no alcanza por sí solo para cerrar una diferencia de 4–5 niveles.
-
-### Ajuste aplicado
-
-- **Lía elige 1 de 2 cartas; Jean y Juth, 1 de 3** (`FATE_OFFER_BY_HERO` en `src/game/fate.js`).
-- **Reserva de Lía**: 40 % del mínimo en Normal (igual), **17 % en Difícil** (antes 20 %) y **18 % en Experto** (antes 25 %).
-
-Resultado (niveles extra con poder y cartas, media de habilidades):
-
-| Camino | Lía (1 de 2) | Jean (1 de 3) | Juth (1 de 3) |
-| --- | --- | --- | --- |
-| Normal | 21,7 | 22,1 | **24,1** |
-| Difícil | 15,3 | **16,9** | 15,0 |
-| Experto | **16,7** | 13,9 | 16,5 |
-| **Total** | **17,9** | **17,6** | **18,5** |
-
-Los tres quedan a menos de ±3 % de la media, y cada uno sigue siendo el mejor en su camino (Juth en Normal, Jean en
-Difícil, Lía en Experto), como dice la selección de héroe.
-
-## 3. Economía
-
-- **Tienda**: con la curva nueva, en Normal casi no hace falta comprar (gasto medio ~500 pts a la habilidad 0,8); en
-  Difícil y Experto sigue siendo clave (12–30 mil pts y 5–16 pistas compradas por partida).
-- **Revivir**: suma 6–12 niveles a los jugadores medios y buenos, y casi nada al casual. Bien como red de seguridad.
-- **Sellos**: aportan ~24–25 % del puntaje del jugador hábil y cuestan unos 5–6 niveles de riesgo. Es el tope de lo
-  razonable: si se quiere que pesen menos, bajar el multiplicador del sello de oro (2,1).
-
-## 4. Cartas del destino
-
-- Las que más ayudan a sobrevivir son las de turnos (Respiro, Péndulo roto, Holgura), Fénix y Carga.
-- Los Pactos que apagan ayudas (Juramento, Pacto mercante, Temerario) son un riesgo real: el jugador simulado los
-  evita salvo que no haya otra opción, que es lo que se busca.
-- El tope de +75 % de puntos y de −2/+3 turnos evita que una mano de pactos rompa los logros de puntaje.
-
-## Pendiente / ideas
-
-- Volver a calibrar Difícil y Experto con el mismo criterio de margen mínimo (hoy ×1,06 y ×1,04 al final dejan muy
-  poco margen absoluto; el modelo dice que Experto 0,8 se queda en el nivel ~33 sin héroe).
-- Modelar los reintentos gratis de los niveles 1–9 en el simulador.
+- El modelo infravalora los usos extra de poder (Eco del poder): en el juego real un tercer rebobinado vale más.
+  Conviene mirarlo con partidas reales.
+- Tres tests de `engine.test.js`/`generator.test.js` ya fallaban antes de este cambio (curva de Normal ×2,0 vs ×2,2).

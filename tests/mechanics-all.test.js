@@ -1,81 +1,68 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import levelBank from '../src/data/levels.json';
 import specialBank from '../src/data/special.json';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { levelPlan } from '../src/game/mechanics.js';
-import { N, analyze, decode, expand, isValidState, minMoves, slideRange, hintMove } from '../src/engine/index.js';
+import { runPoolCached as runPool } from './parallel/pool.js';
 
-const run = (level, start = 1) => ({
-  seed: 46,
-  hero: 'lia',
-  start,
-  level,
-  mode: 'c',
-  adj: 0,
-  hints: 3,
-  score: 0,
-});
 const allTips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_curse'].map((k) => [k, true]));
 const build = (level, start = 1) =>
-  buildAdventureLevel(run(level, start), { levels: levelBank.ratings, special: specialBank, tips: allTips });
+  buildAdventureLevel(
+    { seed: 46, hero: 'lia', start, level, mode: 'c', adj: 0, hints: 3, score: 0 },
+    { levels: levelBank.ratings, special: specialBank, tips: allTips },
+  );
 
-/** Cada movimiento del solver coincide con lo que el jugador puede arrastrar (slideRange) en una muestra de estados alcanzables. */
-function parity(G, label, sample = 120) {
-  const { pieces, walls = [] } = G;
-  const an = analyze(pieces, G.pos, 600000, walls);
-  expect(an, `${label}: con solución`).not.toBeNull();
-  const g = new Int8Array(N * N);
-  const tmp = new Array(pieces.length).fill(0);
-  const step = Math.max(1, Math.floor(an.list.length / sample));
-  for (let q = 0; q < an.list.length; q += step) {
-    const k = an.list[q];
-    const here = decode(k, pieces.length);
-    const targets = pieces.map(() => new Set());
-    expand(pieces, k, tmp, g, (i, to) => targets[i].add(to), walls);
-    pieces.forEach((p, i) => {
-      const [lo, hi] = slideRange(pieces, here, i, walls);
-      for (const t of targets[i])
-        expect(t >= lo && t <= hi && t !== here[i], `${label}: pieza ${i} a ${t} fuera de [${lo},${hi}]`).toBe(true);
-      if (!p.kind && lo < hi) {
-        // pieza normal: puede ir a cualquier casilla libre de su recorrido
-        for (let x = lo; x <= hi; x++)
-          if (x !== here[i]) expect(targets[i].has(x), `${label}: pieza ${i} debería poder ir a ${x}`).toBe(true);
-      }
-    });
-  }
-}
+/** Niveles que se revisan: los 21 de Normal y los cierres de tramo de Experto. */
+const LEVELS = [
+  ...Array.from({ length: 21 }, (_, i) => ({ start: 1, level: i + 1 })),
+  ...[3, 6, 9, 12, 15, 18, 21].map((level) => ({ start: 75, level })),
+];
+/** Niveles con hielo, candados y pesadas: además se compara el solver con el arrastre (paridad). */
+const PARITY = new Set([3, 5, 6, 8, 10, 13, 15, 16, 18, 21]);
 
-describe('mecánicas: los 21 niveles', () => {
-  it('todos los niveles se generan válidos, resolubles, con el mínimo correcto y siempre con pista', () => {
-    for (const start of [1, 75]) {
-      for (let level = 1; level <= 21; level++) {
-        if (start !== 1 && level % 3 !== 0) continue;
-        const label = `camino ${start} nivel ${level}`;
-        const G = build(level, start);
-        expect(isValidState(G.pieces, G.pos, G.walls), `${label}: estado válido`).toBe(true);
-        expect(minMoves(G.pieces, G.pos, G.walls), `${label}: mínimo`).toBe(G.opt);
-        expect(G.limit, `${label}: límite`).toBeGreaterThan(G.opt);
-        expect(G.plan.boss, `${label}: sin jefes`).toBeUndefined();
-        expect(G.timeLimit, `${label}: sin contrarreloj`).toBeUndefined();
-        // la salida no está cerrada: siempre hay una pista que acerca a la meta
-        const hint = hintMove(G.pieces, G.pos, G.walls);
-        if (G.opt > 0) expect(hint, `${label}: pista`).not.toBeNull();
-      }
-    }
+describe('mecánicas: los 21 niveles (en paralelo)', () => {
+  let rows = [];
+  beforeAll(async () => {
+    rows = await runPool(
+      'adventure',
+      LEVELS.map((x) => ({ ...x, parity: x.start === 1 && PARITY.has(x.level) ? 120 : 0 })),
+      { batch: 1 },
+    );
   }, 600000);
+
+  it('todos los niveles se generan válidos, resolubles, con el mínimo correcto y siempre con pista', () => {
+    expect(rows).toHaveLength(LEVELS.length);
+    for (const r of rows) {
+      const label = `camino ${r.start} nivel ${r.level}`;
+      expect(r.valid, `${label}: estado válido`).toBe(true);
+      expect(r.real, `${label}: mínimo`).toBe(r.opt);
+      expect(r.limit, `${label}: límite`).toBeGreaterThan(r.opt);
+      expect(r.boss, `${label}: sin jefes`).toBeUndefined();
+      expect(r.timeLimit, `${label}: sin contrarreloj`).toBeUndefined();
+      // la salida no está cerrada: siempre hay una pista que acerca a la meta
+      if (r.opt > 0) expect(r.hint, `${label}: pista`).toBe(true);
+    }
+  });
 
   it('los movimientos del solver y los del arrastre coinciden en los niveles con hielo, candados y pesadas', () => {
-    for (const level of [3, 5, 6, 8, 10, 13, 15, 16, 18, 21]) {
-      parity(build(level), `nivel ${level}`);
-    }
-  }, 600000);
+    const checked = rows.filter((r) => r.start === 1 && PARITY.has(r.level));
+    expect(checked).toHaveLength(PARITY.size);
+    for (const r of checked) expect(r.violations, `nivel ${r.level}`).toEqual([]);
+  });
 
   it('los cierres de tramo (3…21) son tableros válidos con el límite habitual de su camino', () => {
     for (let level = 3; level <= 21; level += 3) {
-      const G = build(level);
+      const r = rows.find((x) => x.start === 1 && x.level === level);
       expect(levelPlan(level).boss, `nivel ${level}`).toBeUndefined();
-      expect(G.opt, `nivel ${level}`).toBeGreaterThan(2);
-      expect(G.limit, `nivel ${level}`).toBeGreaterThanOrEqual(G.opt + 2);
+      expect(r.opt, `nivel ${level}`).toBeGreaterThan(2);
+      expect(r.limit, `nivel ${level}`).toBeGreaterThanOrEqual(r.opt + 2);
     }
+  });
+
+  it('el nivel construido en el hilo principal es el mismo que en los hilos (determinista)', () => {
+    const G = build(7);
+    const r = rows.find((x) => x.start === 1 && x.level === 7);
+    expect(G.opt).toBe(r.opt);
+    expect(G.limit).toBe(r.limit);
   });
 });

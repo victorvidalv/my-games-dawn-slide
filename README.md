@@ -26,6 +26,8 @@ npm run dev        # servidor local con recarga en caliente
 | `npm run build` | Compila la versión final en `dist/` (incluye el service worker). |
 | `npm run preview` | Sirve `dist/` para probar el build (y la instalación PWA). |
 | `npm test` | Ejecuta todas las pruebas (motor, banco de niveles, poderes, partidas completas). |
+| `npm run test:fresh` | Igual, pero sin la caché de resultados de los tests pesados (ver abajo). |
+| `npm run balance` | Análisis de balance del roguelite: héroes, reliquias y cartas (`scripts/analyze-balance.mjs`). |
 | `npm run lint` | Revisa el código con ESLint. |
 | `npm run levels` | Regenera el banco de tableros `src/data/levels.json` (varios minutos). |
 
@@ -214,6 +216,13 @@ a recargar la página y a las partidas guardadas antiguas.
 ---
 
 ## Pruebas
+
+> **Velocidad de los tests.** Los tests pesados (banco completo, generador, variantes y los 21 niveles) reparten su
+> trabajo entre hilos (`tests/parallel`) y guardan el resultado en `node_modules/.cache/dawnslide-tests`, con una
+> huella de `src/engine`, `src/game`, `src/data` y el worker: si nada de eso cambió, se reutiliza y la suite tarda
+> unos segundos; si cambió, se vuelve a revisar todo. `FULL=1`, `CI` o `TEST_CACHE=0` la desactivan. Los scripts de
+> generación (`levels`, `levels:walls`, `levels:decorate`) usan una cola compartida entre núcleos
+> (`scripts/lib/work-queue.mjs`; `GEN_THREADS` fija los hilos) y dan exactamente el mismo banco.
 
 `npm test` (Vitest) comprueba:
 

@@ -1,19 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import bank from '../src/data/levels.json';
-import {
-  isValidState,
-  analyze,
-  maxDistance,
-  minReach,
-  MAX_LEVEL,
-  pickBoard,
-  varyBoard,
-  encodeBoard,
-  calcGain,
-  moveLimit,
-  moveStatus,
-} from '../src/engine/index.js';
-import { runPool, FULL } from './parallel/pool.js';
+import { MAX_LEVEL, calcGain, moveLimit, moveStatus } from '../src/engine/index.js';
+import { runPoolCached as runPool, FULL } from './parallel/pool.js';
 
 // La validación del banco está en bank.test.js; aquí se construyen niveles como lo hace el juego, repartidos en hilos.
 const RATINGS = Array.from({ length: 100 }, (_, i) => i + 1);
@@ -21,21 +8,21 @@ const STARTS = [1, 50, 75];
 const SEED = 77;
 
 describe('variantes: cada partida tiene tableros distintos', () => {
-  it('varyBoard conserva solución y mínimo objetivo, es determinista y cambia el tablero', () => {
-    for (const rating of FULL ? [1, 15, 30, 45, 60] : [1, 30, 60]) {
-      const base = pickBoard(bank.ratings, rating, 1, rating);
-      const seen = new Set();
-      for (let seed = 1; seed <= 4; seed++) {
-        const v = varyBoard(base, rating, seed);
-        expect(isValidState(v.pieces, v.pos)).toBe(true);
-        const an = analyze(v.pieces, v.pos, 600000);
-        expect(an).not.toBeNull();
-        expect(maxDistance(an), `dif ${rating}`).toBeGreaterThanOrEqual(minReach(rating));
-        const v2 = varyBoard(base, rating, seed);
-        expect(encodeBoard(v.pieces, v.pos, v.walls)).toBe(encodeBoard(v2.pieces, v2.pos, v2.walls));
-        seen.add(encodeBoard(v.pieces, v.pos));
+  it('varyBoard conserva solución y mínimo objetivo, es determinista y cambia el tablero (en paralelo)', async () => {
+    const ratings = FULL ? [1, 15, 30, 45, 60] : [1, 30, 60];
+    const out = await runPool(
+      'vary',
+      ratings.map((rating) => ({ rating })),
+      { batch: 1 },
+    );
+    for (const { rating, minReach, rows } of out) {
+      for (const r of rows) {
+        expect(r.valid, `dif ${rating}`).toBe(true);
+        expect(r.solvable, `dif ${rating}`).toBe(true);
+        expect(r.maxd, `dif ${rating}`).toBeGreaterThanOrEqual(minReach);
+        expect(r.same, `dif ${rating}: determinista`).toBe(true);
       }
-      expect(seen.size, `dif ${rating}: variantes distintas`).toBeGreaterThanOrEqual(2);
+      expect(new Set(rows.map((r) => r.key)).size, `dif ${rating}: variantes distintas`).toBeGreaterThanOrEqual(2);
     }
   }, 120000);
 });

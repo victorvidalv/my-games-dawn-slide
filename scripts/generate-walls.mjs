@@ -6,8 +6,8 @@
  *   npm run levels:walls            → todo (varios minutos)
  *   npm run levels:walls -- --only 40-60
  */
-import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
-import { cpus } from 'node:os';
+import { isMainThread } from 'node:worker_threads';
+import { runQueue, serveQueue } from './lib/work-queue.mjs';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -22,7 +22,7 @@ const PER = 6;
 const WALLS = 3;
 
 if (!isMainThread) {
-  for (const { rating, slot } of workerData.jobs) {
+  serveQueue(({ rating, slot }) => {
     let seed = hash32(rating, slot, 0x3a11);
     let text = null;
     // Con muros, llegar al mínimo de las dificultades más altas es muy caro: se admiten 2 movimientos menos
@@ -36,9 +36,9 @@ if (!isMainThread) {
       const dWithout = without ? without.dist.get(without.k0) : 0;
       if (dWithout !== undefined && b.maxd > dWithout) text = encodeBoard(b.pieces, b.pos, b.walls); // los muros importan
     }
-    parentPort.postMessage({ rating, slot, text });
-  }
-  process.exit(0);
+    return { rating, slot, text };
+  });
+  await new Promise(() => {}); // este hilo solo atiende la cola: no sigue con el código del hilo principal
 }
 
 const arg = (name, def) => {
@@ -54,26 +54,16 @@ for (let rating = from; rating <= (to || from); rating++) {
   for (let slot = 0; slot < PER; slot++) jobs.push({ rating, slot });
 }
 jobs.sort((a, b) => b.rating - a.rating);
-const threads = Math.max(1, cpus().length - 1);
 let done = 0;
 let failed = 0;
-await Promise.all(
-  Array.from(
-    { length: threads },
-    (_, t) =>
-      new Promise((ok) => {
-        const w = new Worker(new URL(import.meta.url), {
-          workerData: { jobs: jobs.filter((_, i) => i % threads === t) },
-        });
-        w.on('message', (m) => {
-          if (m.text) out.walls[m.rating - 1].push(m.text);
-          else failed++;
-          if (++done % 100 === 0) console.log(`${done}/${jobs.length} (sin lograr: ${failed})`);
-        });
-        w.on('exit', ok);
-      }),
-  ),
-);
+await runQueue(new URL(import.meta.url), jobs, {
+  every: 100,
+  onResult: (m) => {
+    if (m.text) out.walls[m.rating - 1].push(m.text);
+    else failed++;
+    done++;
+  },
+});
 out.walls.forEach((l) => l.sort());
 writeFileSync(OUT, JSON.stringify(out) + '\n');
 console.log(`Listo: ${done - failed} tableros con muros, ${failed} sin lograr → ${OUT}`);

@@ -169,6 +169,37 @@ const ART = {
     `<path d="M32 6c12 10 20 20 18 34-1 10-8 18-18 18S15 50 14 40C12 26 20 16 32 6z" fill="${a}"/>
     <path d="M32 18c7 7 11 14 10 23-1 6-5 11-10 11s-9-5-10-11c-1-9 3-16 10-23z" fill="${b}"/>
     <path d="M36 10L24 32h10l-6 22 16-26H33z" fill="${GOLD_LT}"/>`,
+
+  /* ───── Nuevas ───── */
+  /** Flecha de fuego que sube por tres escalones: el impulso de la racha. */
+  impulso: (a, b) =>
+    `<path d="M8 54h14v-10h12v-10h12v-10h10v30H8z" fill="${b}"/><path d="M8 54h14v-10h12v-10h12v-10h10" fill="none" stroke-width="2.4"/>
+    <path d="M14 40l22-22" stroke="${a}" stroke-width="5"/><path d="M28 14h12v12z" fill="${a}"/>
+    <path d="M12 46c2-6 6-8 10-8-2 4-2 6 0 10-4 0-8-1-10-2z" fill="${GOLD_LT}"/>`,
+  /** Pluma sobre un pergamino con una estrella: la maestría. */
+  maestria: (a, b) =>
+    `<path d="M12 18h34c4 0 6 3 6 6v28H18c-4 0-6-3-6-6z" fill="${CREAM}"/><path d="M12 18c0 4 3 6 6 6h34" fill="none" stroke-width="2"/>
+    <path d="M20 34h18M20 41h14" stroke="${b}" stroke-width="2.4"/>
+    <path d="M58 6C46 10 38 20 34 34l4 2C44 24 52 16 58 6z" fill="${a}"/><path d="M34 34l-2 6 6-4" fill="${INK}"/>
+    <path d="M44 42l1.8 3.8 4.2.6-3 2.9.7 4.2-3.7-2-3.7 2 .7-4.2-3-2.9 4.2-.6z" fill="${GOLD}"/>`,
+  /** Cuenco vacío bajo una hoja: el ascetismo (sin ayudas). */
+  ascetismo: (a, b) =>
+    `<path d="M10 34h44c0 12-10 20-22 20S10 46 10 34z" fill="${a}"/><path d="M10 34h44" stroke-width="2.6"/>
+    <ellipse cx="32" cy="34" rx="20" ry="4" fill="${b}"/>
+    <path d="M32 28c-8-2-12-10-10-20 8 2 12 10 10 20z" fill="#7fae62"/><path d="M32 28c-2-6-4-11-9-17" fill="none" stroke-width="1.4"/>
+    <path d="M24 60h16" stroke-width="3"/>`,
+  /** Llama que renace de un cráneo de ceniza: la reencarnación. */
+  reencarnacion: (a, b) =>
+    `<path d="M18 40c0-9 6-14 14-14s14 5 14 14c0 5-3 8-6 9v7H24v-7c-3-1-6-4-6-9z" fill="${CREAM}"/>
+    <circle cx="26" cy="40" r="3.5" fill="${INK}" stroke="none"/><circle cx="38" cy="40" r="3.5" fill="${INK}" stroke="none"/>
+    <path d="M28 56v-4M32 56v-4M36 56v-4" stroke-width="1.6"/>
+    <path d="M32 2c8 7 11 13 8 19-2 4-5 6-8 6s-6-2-8-6c-3-6 0-12 8-19z" fill="${a}"/><path d="M32 12c3 4 4 7 2 10-1 2-1 2-2 2s-1 0-2-2c-2-3-1-6 2-10z" fill="${b}" stroke="none"/>`,
+  /** Bolsa de oro rebosante con una pista que se escapa: la codicia. */
+  codicia: (a, b) =>
+    `<path d="M22 20c-10 8-14 18-12 26 2 8 10 12 22 12s20-4 22-12c2-8-2-18-12-26z" fill="${a}"/>
+    <path d="M22 20l4-8h12l4 8z" fill="${b}"/><path d="M22 20h20" stroke-width="3"/>
+    <circle cx="32" cy="40" r="7" fill="${GOLD_LT}"/><path d="M32 36v8M29 38h5a2 2 0 0 1 0 4h-5" fill="none" stroke-width="1.6"/>
+    <path d="M50 8l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1z" fill="${CREAM}" fill-opacity=".7"/>`,
 };
 
 /** SVG de la carta (sin marco): su emblema propio con sus colores. */

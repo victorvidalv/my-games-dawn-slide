@@ -1,7 +1,7 @@
 import { mulberry32, hash32 } from '../engine/rng.js';
 import { curve, moveLimit, rateAt, startHintsFor, MAX_LEVEL } from '../engine/difficulty.js';
-import { calcGain } from '../engine/scoring.js';
-import { hintEvery, CITY_EVERY, bonusTurns } from './heroes.js';
+import { baseScore, calcGain } from '../engine/scoring.js';
+import { hintEvery, CITY_EVERY, bonusTurns, LIA_INTACT_POINTS } from './heroes.js';
 import { MAX_REVIVES, REVIVE_SHARE } from './shop.js';
 import {
   FATE_EVERY,
@@ -12,9 +12,20 @@ import {
   fatePoints,
   fateRules,
   fateTotals,
-  keepsStreak,
+  fateTurns,
+  fatePerfectHints,
+  nextStreak,
+  pickFate,
 } from './fate.js';
+import { RELICS } from './relics.js';
 import { levelPlan } from './mechanics.js';
+
+/** Tablero mínimo para las reglas de las cartas: nivel, mínimo y si tiene pieza pesada o de hielo (según el plan del nivel). */
+const simBoard = (level, d) => ({
+  n: level,
+  opt: d,
+  pieces: /[hi]/.test(levelPlan(level).letters) ? [{ kind: 'heavy' }] : [],
+});
 import { rewindCount, DESTINY_SHARE, JUTH_MIN_REMAINING, destinyCount, powerReady, powerUses } from './powers.js';
 
 /**
@@ -35,22 +46,21 @@ const MODEL = {
  * Jugador que usa la tienda (`shop = {score}`), con UNA compra por tablero: cerca del límite compra el paquete más barato que le permita seguir,
  * y si no le quedan pistas en un tablero duro compra una, pero solo si le sobran puntos (MODEL.shopReserve veces el precio).
  */
-export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, powers = {}, fate = null }) {
+export function playBoard(
+  rng,
+  { hero, skill, d, start = 1, level = 1, hints, powers = {}, fate = null, extraTurns = 0 },
+) {
   const destinyShare = DESTINY_SHARE;
   const ft = fate ? fateTotals(fate) : null;
   const noPower = !!ft?.noPower;
   const noHints = !!ft?.noHints;
-  const fateTurns = ft
-    ? Math.max(-2, Math.min(3, ft.turns + (/[hi]/.test(levelPlan(level).letters) ? ft.heavyIce : 0)))
-    : 0;
-  let limit = Math.max(
-    d + 1,
-    moveLimit(d, start, level) +
-      (powers.liaTurns && hero === 'lia'
-        ? Math.max(1, Math.round(d * powers.liaTurns))
-        : bonusTurns(hero, d, start, noPower)) +
-      fateTurns,
-  );
+  const fateExtra = fate ? fateTurns(fate, simBoard(level, d)) : 0;
+  const reserve =
+    powers.liaTurns && hero === 'lia'
+      ? Math.max(1, Math.round(d * powers.liaTurns))
+      : bonusTurns(hero, d, start, noPower);
+  let limit = Math.max(d + 1, moveLimit(d, start, level) + reserve + fateExtra + extraTurns);
+  let powerUsed = false;
   const need = d;
   const err = Math.min(0.85, (1 - skill) * MODEL.err * (1 + need / 25));
   let moves = 0;
@@ -58,7 +68,7 @@ export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, po
   const ready = !noPower && powerReady(level, start, hero, ft?.powerShare || 0); // a veces el poder descansa
   const echo = ft && level % FATE_EVERY === 0 ? ft.lastPower : 0; // Eco del poder: uso extra en el último tablero del tramo
   let rewind = hero === 'jean' && ready ? powerUses(hero, d, echo) : 0; // una vez por tablero, dos en los largos
-  let destiny = hero === 'van' && ready;
+  let destiny = hero === 'van' && ready ? powerUses(hero, d, echo) : 0; // Eco del poder suma un uso
   let safe = 0; // pasos protegidos por «Trazar destino»
   for (let step = 0; step < need; step++) {
     if (safe > 0) safe--;
@@ -66,11 +76,12 @@ export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, po
       if (!noHints && h > 0 && need >= MODEL.hintMinD && rng() < MODEL.hintAware) {
         h--; // la pista evita el error
       } else if (
-        destiny &&
+        destiny > 0 &&
         need - step > (powers.juthMin ?? JUTH_MIN_REMAINING) &&
         limit - moves >= destinyCount(need - step, destinyShare)
       ) {
-        destiny = false; // Juth traza el destino: ~25 % de los pasos que faltan sin error (nunca el último)
+        destiny--;
+        powerUsed = true; // Juth traza el destino: ~25 % de los pasos que faltan sin error (nunca el último)
         safe = destinyCount(need - step, destinyShare) - 1;
       } else {
         const k = 1 + Math.floor(Math.log(1 - rng()) / Math.log(0.5)); // 1 + geométrica (media 2)
@@ -78,6 +89,7 @@ export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, po
         for (let j = 0; j < k; j++) waste += rng() >= MODEL.notice ? MODEL.unnoticedCost : 2;
         if (rewind > 0) {
           rewind--;
+          powerUsed = true;
           waste = Math.max(0, waste - 2 * rewindCount(moves));
         } // Jean rebobina ~33 % de los movimientos hechos (mín. 3)
         moves += waste;
@@ -85,9 +97,11 @@ export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, po
     }
     moves += 1;
     const minimumToContinue = moves + (step < need - 1 ? 1 : 0);
-    if (minimumToContinue > limit) return { ok: false, moves, hints: h, spent: 0, boughtTurns: 0, boughtHints: 0, extra: 0 };
+    if (minimumToContinue > limit)
+      return { ok: false, moves, hints: h, spent: 0, boughtTurns: 0, boughtHints: 0, extra: 0 };
   }
-  return { ok: true, moves, hints: h, spent: 0, boughtTurns: 0, boughtHints: 0, extra: 0 };
+  const intact = hero === 'lia' && reserve > 0 && moves <= limit - reserve;
+  return { ok: true, moves, hints: h, spent: 0, boughtTurns: 0, boughtHints: 0, extra: 0, powerUsed, intact };
 }
 
 /**
@@ -97,11 +111,14 @@ export function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, po
 export function cardValue(card, hero, city = 1) {
   const fx = card.fx;
   const left = FATE_PICKS - city; // tramos que quedan para cobrar Brújula, Cosecha y Constelación
-  let v = 4 * (fx.turns || 0) + 1.5 * (fx.heavyIce || 0);
+  let v = 4 * (fx.turns || 0) + 1.5 * (fx.heavyIce || 0) + 0.8 * (fx.curseTurns || 0) + 2.5 * (fx.streakTurns || 0);
+  v += fx.perfectHints ? 0.4 * left : 0;
+  v += fx.purePoints ? 0.5 : 0;
   v += fx.revives ? 4 : 0;
-  v += fx.powerShare ? (hero === 'lia' ? 0 : 2.5) : 0;
+  v += fx.powerShare ? (hero === 'lia' ? 0 : 2.5 + 4 * (fx.powerTurns || 0)) : 0;
   v += fx.lastPower ? (hero === 'jean' ? 1.5 : hero === 'van' ? 0.8 : 0) : 0;
   v += 0.8 * (fx.pickHints || 0) + 0.8 * (fx.cityHints || 0) * left;
+  v += fx.liaTurns && hero === 'lia' ? 4 * fx.liaTurns : 0;
   v -= (fx.shop || 0) * 6;
   v += 10 * (fx.points || 0) + (fx.pointsPerCard ? 0.2 * left : 0) + (fx.longBoard ? 0.5 : 0);
   v += fx.cursePoints ? 0.6 : 0;
@@ -118,24 +135,86 @@ export function cardValue(card, hero, city = 1) {
 export const pickForSurvival = (offer, hero, city) =>
   offer.reduce((best, card) => (cardValue(card, hero, city) > cardValue(best, hero, city) ? card : best));
 
+/** Estrategias de elección de carta del jugador simulado. */
+const PICKERS = {
+  survival: (offer, hero, city) => pickForSurvival(offer, hero, city),
+  score: (offer, hero, city) =>
+    offer.reduce((best, c) => (scoreValue(c, hero, city) > scoreValue(best, hero, city) ? c : best)),
+  random: (offer, hero, city, rng) => offer[Math.floor(rng() * offer.length)],
+};
+/** Valor «de puntaje» de una carta (para el jugador que busca récord): puntos primero, pero sin suicidarse. */
+function scoreValue(card, hero, city) {
+  const fx = card.fx;
+  const left = FATE_PICKS - city;
+  let v = 25 * (fx.points || 0) + 18 * (fx.longBoard || 0) + 8 * (fx.cursePoints || 0) + 12 * (fx.noHintPoints || 0);
+  v += fx.pointsPerCard ? 3 * (city + 1) * fx.pointsPerCard * 10 : 0;
+  v += fx.pactPoints ? 8 : 0;
+  v += 12 * (fx.purePoints || 0) + (fx.perfectHints ? 2 : 0);
+  v += fx.hintPoints ? 4 : 0;
+  v += fx.finalPoints ? 6 : 0;
+  v += fx.perfect || fx.streakCap || fx.streakEff ? 3 : 0;
+  v += fx.cityBases ? 1.2 * left : 0;
+  v += fx.streakBases ? 3 : 0;
+  v += 0.6 * cardValue(card, hero, city);
+  return v;
+}
+
 /**
  * Simula UNA partida de 21 niveles.
+ * `fate`: tamaño de la oferta (3) o false. `pick`: 'survival' | 'score' | 'random'. `force`: ids de carta que toma si se ofrecen.
+ * `relic`: id de reliquia (sun, purse, lantern). Con cartas, al caer usa los revivir de Fénix (cuesta 33 % de los puntos).
  */
-export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = false, powers = {}, fate = false }) {
+export function simulateRun({
+  hero,
+  start,
+  skill,
+  seed,
+  revive = 'none',
+  shop = false,
+  powers = {},
+  fate = false,
+  pick = 'survival',
+  force = [],
+  relic = null,
+  grant = null,
+}) {
   const rng = mulberry32(seed);
-  // Cartas del destino: `fate` = tamaño de la oferta (2 o 3) o false (sin cartas). El jugador elige con `pickForSurvival`.
+  const pickRng = mulberry32(hash32(seed, 0x5eed));
+  const rel = RELICS.find((r) => r.id === relic) || null;
   const fateRun = fate ? { mode: 'c', hero, start, seed, score: 0, hints: 0, fate: [], fatePicked: 0 } : null;
   const deck = fate ? fateDeck(seed) : null;
-  let hints = startHintsFor(start);
+  let hints = startHintsFor(start) + (rel?.hints || 0);
   let score = 0;
   let streak = 0;
+  let bestStreak = 0;
+  let perfects = 0;
   let adj = 0;
   let charges = 0;
   let bought = 0;
   let spentTotal = 0;
   let turnsBought = 0;
   let hintsBought = 0;
+  const done = (cleared, completed) => ({
+    cleared,
+    score,
+    completed,
+    revivesBought: bought,
+    spent: spentTotal,
+    turnsBought,
+    hintsBought,
+    perfects,
+    bestStreak,
+    cards: fateRun ? fateRun.fate.slice() : [],
+  });
   for (let level = 1; level <= MAX_LEVEL; level++) {
+    if (grant && fateRun && level === grant.at) {
+      for (const id of grant.ids) {
+        const fx = fateById(id).fx;
+        fateRun.fate.push(id);
+        if (fx.pickHints && !fateTotals(fateRun).noHints) hints += fx.pickHints;
+        if (fx.pickScore) score = Math.max(0, score + Math.round(score * fx.pickScore));
+      }
+    }
     const ft = fateRun ? fateTotals(fateRun) : null;
     const maxBuy = MAX_REVIVES + (ft?.revives || 0);
     if (revive === 'city' && level % CITY_EVERY === 1 && level > 6 && bought < maxBuy && score > 0) {
@@ -146,7 +225,9 @@ export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = 
     const rating = rateAt(start, level);
     const d = Math.max(1, curve(rating).target + adj);
     let res;
+    const hintsBefore = hints;
     for (;;) {
+      if (fateRun) fateRun.streak = streak;
       res = playBoard(rng, {
         hero,
         skill,
@@ -154,59 +235,59 @@ export function simulateRun({ hero, start, skill, seed, revive = 'none', shop = 
         start,
         level,
         hints,
-        shop: shop ? { score } : null,
         powers,
         fate: fateRun,
+        extraTurns: rel?.turns || 0,
       });
       hints = res.hints;
-      score -= res.spent;
-      spentTotal += res.spent;
-      turnsBought += res.boughtTurns;
-      hintsBought += res.boughtHints;
       if (res.ok) break;
+      streak = 0;
       if (charges > 0) {
         charges--;
         continue;
       }
-      return {
-        cleared: level - 1,
-        score,
-        completed: false,
-        revivesBought: bought,
-        spent: spentTotal,
-        turnsBought,
-        hintsBought,
-      };
+      if (fateRun && revive === 'none' && bought < maxBuy && score > 0) {
+        const cost = Math.round(score * REVIVE_SHARE);
+        score -= cost;
+        spentTotal += cost;
+        bought++;
+        continue;
+      }
+      return done(level - 1, false);
     }
+    const usedHint = hints < hintsBefore;
+    if (fateRun) fateRun.helpAt = usedHint ? level : 0;
+    const noPow = !!fateRun && fateTotals(fateRun).noPower;
+    const pure = !usedHint && (noPow || (hero === 'lia' ? res.intact : !res.powerUsed));
+    const G = { ...simBoard(level, d), pure };
     const gain = calcGain(res.moves, d, streak, fateRun ? fateRules(fateRun) : undefined);
-    score += gain.total + (fateRun ? Math.round(gain.total * fatePoints(fateRun, { opt: d, n: level })) : 0);
-    streak = (fateRun ? keepsStreak(fateRun, gain.eff) : gain.eff >= 0.9) ? streak + 1 : 0;
-    adj = Math.max(-2, Math.min(level < 6 ? 1 : 2, adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
+    const ember = res.intact && !noPow && !powers.noEmber ? LIA_INTACT_POINTS : 0;
+    let total = gain.total + Math.round(gain.total * ((fateRun ? fatePoints({ ...fateRun, hints }, G) : 0) + ember));
+    total += Math.round(total * (rel?.points || 0));
+    score += total;
+    if (res.moves <= d) perfects++;
+    if (fateRun) hints += fatePerfectHints(fateRun, res.moves, d);
+    streak = fateRun ? nextStreak({ ...fateRun, streak }, gain.eff) : gain.eff >= 0.9 ? streak + 1 : 0;
+    bestStreak = Math.max(bestStreak, streak);
+    adj = Math.max(-2, Math.min(level < 10 ? 1 : 2, adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
     const rate = powers.hintMult?.[hero] ?? 1;
     if (Math.floor((level * rate) / hintEvery(start)) > Math.floor(((level - 1) * rate) / hintEvery(start))) hints++;
-    if (fateRun && level % FATE_EVERY === 0 && level < MAX_LEVEL) {
+    if (fateRun && level % FATE_EVERY === 0) {
       const city = level / FATE_EVERY;
-      Object.assign(fateRun, { score, hints });
+      Object.assign(fateRun, { score, hints, streak });
       fateCityRewards(fateRun, city, d);
-      const card = pickForSurvival(deck.slice((city - 1) * fate, city * fate).map(fateById), hero, city);
-      fateRun.fate.push(card.id);
-      fateRun.fatePicked = city;
-      const fx = card.fx;
-      if (fx.pickHints && !ft?.noHints) fateRun.hints += fx.pickHints;
-      if (fx.pickScore) fateRun.score = Math.max(0, fateRun.score + Math.round(fateRun.score * fx.pickScore));
-      if (fx.pickBases) fateRun.score += fx.pickBases * (50 + 55 * d);
+      if (level < MAX_LEVEL && !grant) {
+        const offer = deck.slice((city - 1) * fate, city * fate).map(fateById);
+        const forced = offer.find((c) => force.includes(c.id));
+        const card = forced || PICKERS[pick](offer, hero, city, pickRng);
+        fateRun.fatePicked = city - 1;
+        fateRun.fateDeck = deck;
+        pickFate(fateRun, card.id, city, baseScore(d));
+      }
       ({ score, hints } = fateRun);
     }
   }
-  return {
-    cleared: MAX_LEVEL,
-    score,
-    completed: true,
-    revivesBought: bought,
-    spent: spentTotal,
-    turnsBought,
-    hintsBought,
-  };
+  return done(MAX_LEVEL, true);
 }
 
 /** Media de `runs` partidas (semillas deterministas) para una combinación héroe/camino/habilidad. */
@@ -220,8 +301,14 @@ export function averageRuns({
   shop = false,
   powers = {},
   fate = false,
+  pick,
+  force,
+  relic,
+  grant,
 }) {
   let cleared = 0;
+  let perfects = 0;
+  let bestStreak = 0;
   let score = 0;
   let spent = 0;
   let turns = 0;
@@ -237,8 +324,14 @@ export function averageRuns({
       shop,
       powers,
       fate,
+      pick,
+      force,
+      relic,
+      grant,
       seed: hash32(i, start, Math.round(skill * 100), salt),
     });
+    perfects += r.perfects;
+    bestStreak += r.bestStreak;
     cleared += r.cleared;
     score += r.score;
     spent += r.spent;
@@ -253,6 +346,8 @@ export function averageRuns({
     spent: spent / runs,
     turnsBought: turns / runs,
     hintsBought: hintsB / runs,
+    perfects: perfects / runs,
+    bestStreak: bestStreak / runs,
   };
 }
 

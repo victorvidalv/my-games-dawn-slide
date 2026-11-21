@@ -24,8 +24,8 @@ export const EN_GAME = {
   'Escriba de las Runas': 'Rune Scribe',
   'Turnos de reserva': 'Reserve turns',
   'Más turnos en cada tablero': 'More turns on every board',
-  'Cada tablero te da turnos extra (alrededor de un tercio del mínimo necesario; algo menos en los caminos difíciles) para perdonar los errores pequeños sin quitarte el reto.':
-    'Every board gives you extra turns (about a third of the minimum needed; a little less on the harder paths) to forgive small mistakes without taking away the challenge.',
+  'Cada tablero te da turnos extra (alrededor de un tercio del mínimo; algo menos en los caminos difíciles) para perdonar errores. Si terminas sin tocarlos, la Brasa intacta te da puntos extra.':
+    'Every board gives you extra turns (about a third of the minimum; a little less on the harder paths) to forgive mistakes. Finish without touching them and Intact Ember gives you bonus points.',
   'Retrocede varios movimientos': 'Go back several moves',
   'Una vez por tablero (dos en los tableros largos), devuelve las piezas y los turnos cerca de un tercio de tus movimientos (mínimo tres). Si llevas menos, regresas al inicio.':
     'Once per board (twice on long boards), it puts the pieces and turns back about a third of your moves (at least three). If you have made fewer, you return to the start.',

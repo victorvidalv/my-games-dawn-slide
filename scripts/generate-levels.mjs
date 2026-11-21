@@ -1,13 +1,13 @@
 /**
  * Genera el banco de tableros (src/data/levels.json) para las 100 dificultades.
- * Es determinista y se reparte entre núcleos con worker_threads.
+ * Es determinista y se reparte entre núcleos con una cola compartida (scripts/lib/work-queue.mjs).
  *
  *   npm run levels                 → regenera todo (varios minutos)
  *   npm run levels -- --per 12     → tableros por dificultad (por defecto 12)
  *   npm run levels -- --only 80-100
  */
-import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
-import { cpus } from 'node:os';
+import { isMainThread } from 'node:worker_threads';
+import { runQueue, serveQueue } from './lib/work-queue.mjs';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -18,8 +18,7 @@ import { hash32 } from '../src/engine/rng.js';
 const OUT = resolve(dirname(fileURLToPath(import.meta.url)), '../src/data/levels.json');
 
 if (!isMainThread) {
-  const { jobs } = workerData;
-  for (const { rating, slot } of jobs) {
+  serveQueue(({ rating, slot }) => {
     let seed = hash32(rating, slot, 0x51de);
     let b;
     for (let attempt = 0; attempt < 40; attempt++) {
@@ -27,9 +26,9 @@ if (!isMainThread) {
       if (b.reached) break;
       seed = hash32(seed, attempt + 1);
     }
-    parentPort.postMessage({ rating, slot, ok: b.reached, maxd: b.maxd, text: encodeBoard(b.pieces, b.pos) });
-  }
-  process.exit(0);
+    return { rating, slot, ok: b.reached, maxd: b.maxd, text: encodeBoard(b.pieces, b.pos) };
+  });
+  await new Promise(() => {}); // este hilo solo atiende la cola: no sigue con el código del hilo principal
 }
 
 const arg = (name, def) => {
@@ -43,7 +42,6 @@ for (let slot = 0; slot < per; slot++)
   for (let rating = from; rating <= (to || from); rating++) jobs.push({ rating, slot });
 jobs.sort((a, b) => b.rating - a.rating); // lo más pesado primero
 
-const threads = Math.max(1, cpus().length - 1);
 const bank = Array.from({ length: 100 }, () => []);
 let existing = null;
 try {
@@ -57,25 +55,16 @@ if (from !== 1 || (to || from) !== 100) {
 
 let done = 0;
 let bad = 0;
-await Promise.all(
-  Array.from(
-    { length: threads },
-    (_, t) =>
-      new Promise((ok) => {
-        const mine = jobs.filter((_, i) => i % threads === t);
-        const w = new Worker(new URL(import.meta.url), { workerData: { jobs: mine } });
-        w.on('message', (m) => {
-          if (!m.ok) {
-            bad++;
-            console.warn(`⚠ dificultad ${m.rating}: no alcanzó el objetivo (maxd=${m.maxd})`);
-          }
-          bank[m.rating - 1][m.slot] = m.text;
-          if (++done % 50 === 0) console.log(`${done}/${jobs.length}`);
-        });
-        w.on('exit', ok);
-      }),
-  ),
-);
+await runQueue(new URL(import.meta.url), jobs, {
+  onResult: (m) => {
+    if (!m.ok) {
+      bad++;
+      console.warn(`⚠ dificultad ${m.rating}: no alcanzó el objetivo (maxd=${m.maxd})`);
+    }
+    bank[m.rating - 1][m.slot] = m.text;
+    done++;
+  },
+});
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify({ version: 1, ratings: bank }) + '\n');
 console.log(`Listo: ${done} tableros, ${bad} sin objetivo → ${OUT}`);

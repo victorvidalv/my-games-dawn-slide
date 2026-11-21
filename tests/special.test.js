@@ -185,7 +185,7 @@ describe('generador con muros y decoración', () => {
   // «genera tableros con muros que importan…» se prueba ahora en paralelo en generator.test.js
 
   it('mutate conserva los muros y no toca candados ni pesadas', () => {
-    const b = generateBoard(12, 77, { walls: 3, maxIters: 300 });
+    const b = generateBoard(12, 77, { walls: 3, maxIters: 80 }); // basta un tablero con muros: no hace falta que sea difícil
     const d = decorateBoard(b, 'mixed', 5) ?? b;
     const rng = mulberry32(3);
     for (let t = 0; t < 30; t++) {
@@ -202,7 +202,7 @@ describe('generador con muros y decoración', () => {
   // «decorar añade candado…» se prueba ahora en paralelo en generator.test.js
 
   it('la llave roja nunca es candado, pesada ni hielo', () => {
-    const base = generateBoard(10, 11, { maxIters: 300 });
+    const base = generateBoard(10, 11, { maxIters: 60 });
     for (const family of ['gates', 'heavy', 'ice']) {
       const d = decorateBoard(base, family, 3);
       if (d) expect(d.pieces[0].kind).toBeUndefined();

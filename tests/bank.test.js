@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import bank from '../src/data/levels.json';
 import special from '../src/data/special.json';
 import { curve, minReach } from '../src/engine/index.js';
-import { runPool, FULL } from './parallel/pool.js';
+import { runPoolCached as runPool, FULL } from './parallel/pool.js';
 
 /**
  * Banco completo (tableros normales + 6 familias especiales) verificado en paralelo:

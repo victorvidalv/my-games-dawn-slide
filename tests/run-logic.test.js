@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { decodeBoard } from '../src/engine/board.js';
+import { FATE_CARDS } from '../src/game/fate.js';
 import {
   acceptRescue,
   applyMove,
@@ -75,13 +76,13 @@ describe('crear partidas', () => {
       fate: [],
       fatePicked: 0,
     });
-    expect(run.fateDeck).toHaveLength(26);
+    expect(run.fateDeck).toHaveLength(FATE_CARDS.length);
   });
 
   it('el Farol suma sus pistas a las del camino y la racha diaria (no las reemplaza)', () => {
-    // 3 del camino + 15 de una racha de 7 días + 4 del Farol
-    expect(newAdventureRun({ seed: 7, start: 1, hero: 'lia', hints: 18, relic: 'lantern' }).hints).toBe(22);
-    expect(newAdventureRun({ seed: 7, start: 75, hero: 'lia', hints: 2, relic: 'lantern' }).hints).toBe(6);
+    // 3 del camino + 15 de una racha de 7 días + 3 del Farol
+    expect(newAdventureRun({ seed: 7, start: 1, hero: 'lia', hints: 18, relic: 'lantern' }).hints).toBe(21);
+    expect(newAdventureRun({ seed: 7, start: 75, hero: 'lia', hints: 2, relic: 'lantern' }).hints).toBe(5);
     expect(newAdventureRun({ seed: 7, start: 1, hero: 'lia', hints: 18, relic: 'sun' }).hints).toBe(18);
   });
 
@@ -308,8 +309,8 @@ describe('rescates, movimientos y partidas guardadas', () => {
 
   it('el rango de partida (S+, S, A, B, C) refleja victoria, puntaje y perfectos', () => {
     expect(runGrade({ victory: true, score: 45000, perfects: 16, start: 1 })).toEqual({ grade: 'S+', cls: 'splus' });
-    expect(runGrade({ victory: true, score: 30000, perfects: 10, start: 1 })).toEqual({ grade: 'S', cls: 's' });
-    expect(runGrade({ victory: true, score: 19000, perfects: 6, start: 1 })).toEqual({ grade: 'A', cls: 'a' });
+    expect(runGrade({ victory: true, score: 33000, perfects: 10, start: 1 })).toEqual({ grade: 'S', cls: 's' });
+    expect(runGrade({ victory: true, score: 21000, perfects: 6, start: 1 })).toEqual({ grade: 'A', cls: 'a' });
     expect(runGrade({ victory: true, score: 10000, perfects: 2, start: 1 })).toEqual({ grade: 'B', cls: 'b' });
     expect(runGrade({ victory: false, level: 17, score: 12000, start: 50 })).toEqual({ grade: 'A', cls: 'a' });
     expect(runGrade({ victory: false, level: 11, score: 6000, start: 50 })).toEqual({ grade: 'B', cls: 'b' });

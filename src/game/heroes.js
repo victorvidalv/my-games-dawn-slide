@@ -16,7 +16,7 @@ export const HEROES = [
     power: 'Turnos de reserva',
     short: 'Más turnos en cada tablero',
     detail:
-      'Cada tablero te da turnos extra (alrededor de un tercio del mínimo necesario; algo menos en los caminos difíciles) para perdonar los errores pequeños sin quitarte el reto.',
+      'Cada tablero te da turnos extra (alrededor de un tercio del mínimo; algo menos en los caminos difíciles) para perdonar errores. Si terminas sin tocarlos, la Brasa intacta te da puntos extra.',
     quote: '«Incluso la ceniza recuerda el calor.»',
   },
   {
@@ -57,11 +57,13 @@ const isPractice = (mode) => mode === 'p';
 /* ───────────── Lía: turnos de reserva (un % más de turnos en cada tablero) ───────────── */
 
 /**
- * +28 % del mínimo de movimientos del tablero en Normal y +16 % en Difícil/Experto.
- * Calibrado con `npm run simulate` junto con las cartas del destino (los tres héroes eligen entre 3 cartas).
+ * Reserva: +34 % del mínimo de movimientos del tablero en Normal, +23 % en Difícil y +21 % en Experto.
+ * Calibrado con `node scripts/analyze-balance.mjs` junto con las cartas del destino y la Brasa intacta.
  */
-const LIA_TURNS_SHARE = { 1: 0.34, 50: 0.2, 75: 0.17 };
+const LIA_TURNS_SHARE = { 1: 0.34, 50: 0.23, 75: 0.21 };
 const LIA_MIN_TURNS = 1;
+/** Brasa intacta: +12 % de puntos en el tablero si Lía lo termina sin entrar en su reserva. */
+export const LIA_INTACT_POINTS = 0.12;
 
 /** Turnos extra que da el héroe sobre el límite base (solo Lía): una parte del mínimo `opt` del tablero según el camino. `off` = poder apagado (Juramento). */
 export const bonusTurns = (heroId, opt, start = 1, off = false) => {

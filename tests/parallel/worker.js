@@ -31,6 +31,8 @@ import {
   moveLimit,
 } from '../../src/engine/index.js';
 import { levelPlan } from '../../src/game/mechanics.js';
+import { buildAdventureLevel } from '../../src/game/build-adventure.js';
+import { minMoves } from '../../src/engine/index.js';
 
 const read = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
 const bank = read('../../src/data/levels.json');
@@ -43,6 +45,34 @@ const stripped = (b) => ({
   walls: [],
 });
 const MAXV = 6; // violaciones que se guardan por tablero (basta para diagnosticar)
+
+/** Cada movimiento del solver coincide con lo que el jugador puede arrastrar (slideRange), en una muestra de estados. */
+function parityCheck(G, sample) {
+  const { pieces } = G;
+  const walls = G.walls || [];
+  const an = analyze(pieces, G.pos, 600000, walls);
+  if (!an) return ['sin solución'];
+  const v = [];
+  const bad = (m) => v.length < MAXV && v.push(m);
+  const g = new Int8Array(N * N);
+  const tmp = new Array(pieces.length).fill(0);
+  const step = Math.max(1, Math.floor(an.list.length / sample));
+  for (let q = 0; q < an.list.length; q += step) {
+    const k = an.list[q];
+    const here = decode(k, pieces.length);
+    const targets = pieces.map(() => new Set());
+    expand(pieces, k, tmp, g, (i, to) => targets[i].add(to), walls);
+    pieces.forEach((p, i) => {
+      const [lo, hi] = slideRange(pieces, here, i, walls);
+      for (const t of targets[i])
+        if (!(t >= lo && t <= hi && t !== here[i])) bad(`pieza ${i} a ${t} fuera de [${lo},${hi}]`);
+      if (!p.kind && lo < hi)
+        for (let x = lo; x <= hi; x++)
+          if (x !== here[i] && !targets[i].has(x)) bad(`pieza ${i} debería poder ir a ${x}`);
+    });
+  }
+  return v;
+}
 
 /**
  * Propiedades de seguridad sobre una muestra de estados alcanzables (los `sample` más repartidos):
@@ -206,6 +236,63 @@ const tasks = {
     return out;
   },
 
+  /** Generador desde cero: llega al mínimo objetivo y el estado devuelto está a esa distancia. */
+  reach({ rating, seed }) {
+    const g = generateBoard(rating, seed);
+    const an = analyze(g.pieces, g.pos);
+    return {
+      rating,
+      reached: g.reached,
+      maxd: g.maxd,
+      target: g.target,
+      min: minMoves(g.pieces, g.pos),
+      far: maxDistance(an),
+    };
+  },
+
+  /** varyBoard: conserva solución y mínimo, es determinista y da variantes distintas (4 semillas por dificultad). */
+  vary({ rating }) {
+    const base = pickBoard(bank.ratings, rating, 1, rating);
+    const rows = [];
+    for (let seed = 1; seed <= 4; seed++) {
+      const v = varyBoard(base, rating, seed);
+      const v2 = varyBoard(base, rating, seed);
+      const an = analyze(v.pieces, v.pos, 600000);
+      rows.push({
+        valid: isValidState(v.pieces, v.pos),
+        solvable: !!an,
+        maxd: an ? maxDistance(an) : -1,
+        same: JSON.stringify([v.pieces, v.pos, v.walls]) === JSON.stringify([v2.pieces, v2.pos, v2.walls]),
+        key: JSON.stringify([v.pieces, v.pos]),
+      });
+    }
+    return { rating, minReach: minReach(rating), rows };
+  },
+
+  /** Nivel de Aventura tal como lo arma el juego (con cartas, reliquia y tutoriales vistos), resumido. */
+  adventure({ start, level, parity = 0 }) {
+    const tips = Object.fromEntries(
+      ['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_curse'].map((k) => [k, true]),
+    );
+    const run = { seed: 46, hero: 'lia', start, level, mode: 'c', adj: 0, hints: 3, score: 0 };
+    const G = buildAdventureLevel(run, { levels: bank.ratings, special, tips });
+    const walls = G.walls || [];
+    const out = {
+      start,
+      level,
+      valid: isValidState(G.pieces, G.pos, walls),
+      opt: G.opt,
+      real: minMoves(G.pieces, G.pos, walls),
+      limit: G.limit,
+      boss: G.plan.boss,
+      timeLimit: G.timeLimit,
+      hint: !!hintMove(G.pieces, G.pos, walls),
+      violations: [],
+    };
+    if (parity) out.violations = parityCheck(G, parity);
+    return out;
+  },
+
   /** buildLevel con todos los ajustes adaptativos y rutas para una dificultad. */
   build({ rating }) {
     const target = curve(rating).target;
@@ -265,7 +352,7 @@ const tasks = {
         const la = analyze(lvl.pieces, lvl.pos, 600000, lvl.walls);
         c.lvlOpt = lvl.opt;
         c.lvlReal = la?.dist.get(la.k0);
-        c.limitOk = moveLimit(lvl.opt) === Math.max(lvl.opt + 4, Math.round(lvl.opt * 2.1));
+        c.limitOk = moveLimit(lvl.opt) === Math.max(lvl.opt + 4, Math.round(lvl.opt * 2)); // Normal, nivel 1: ×2,0 (4 de sobra)
         let cur = lvl.pos.slice();
         let hintOk = true;
         for (let st = 0; st < lvl.opt; st++) {

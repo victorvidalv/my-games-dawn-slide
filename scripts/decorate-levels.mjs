@@ -6,8 +6,8 @@
  *   npm run levels:decorate
  *   npm run levels:decorate -- --only 20-60
  */
-import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
-import { cpus } from 'node:os';
+import { isMainThread } from 'node:worker_threads';
+import { runQueue, serveQueue } from './lib/work-queue.mjs';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -21,27 +21,25 @@ const BANK = resolve(ROOT, 'src/data/levels.json');
 const OUT = resolve(ROOT, 'src/data/special.json');
 
 if (!isMainThread) {
-  const { jobs, ratings, bases } = workerData;
-  const pickWallFallback = (rating, slot) => {
+  const pickWallFallback = (rating, slot, bases) => {
     for (let r = Math.min(rating - 1, bases.walls.length - 1); r >= 69; r--) {
       const pool = bases.walls[r];
       if (pool?.length) return pool[hash32(rating, slot, r) % pool.length];
     }
     return null;
   };
-  for (const { rating, slot, family } of jobs) {
+  serveQueue(({ rating, slot, family }, { ratings, bases }) => {
     const base = familySpec(family).base;
-    const text = base ? bases[base]?.[rating - 1]?.[slot] || pickWallFallback(rating, slot) : ratings[rating - 1][slot];
-    if (!text) {
-      parentPort.postMessage({ rating, slot, family, text: null });
-      continue;
-    }
+    const text = base
+      ? bases[base]?.[rating - 1]?.[slot] || pickWallFallback(rating, slot, bases)
+      : ratings[rating - 1][slot];
+    if (!text) return { rating, slot, family, text: null };
     const board = decodeBoard(text);
     const minOpt = base && !bases[base]?.[rating - 1]?.[slot] ? minReach(rating) - 2 : 0;
     const d = decorateBoard(board, family, hash32(rating, slot, family.length, 0xdec0), { minOpt });
-    parentPort.postMessage({ rating, slot, family, text: d ? encodeBoard(d.pieces, d.pos, d.walls) : null });
-  }
-  process.exit(0);
+    return { rating, slot, family, text: d ? encodeBoard(d.pieces, d.pos, d.walls) : null };
+  });
+  await new Promise(() => {}); // este hilo solo atiende la cola: no sigue con el código del hilo principal
 }
 
 const arg = (name, def) => {
@@ -85,26 +83,17 @@ if (planFile) {
   }
 }
 jobs.sort((a, b) => b.rating - a.rating);
-const threads = Math.max(1, cpus().length - 1);
 let done = 0;
 let failed = 0;
-await Promise.all(
-  Array.from(
-    { length: threads },
-    (_, t) =>
-      new Promise((ok) => {
-        const w = new Worker(new URL(import.meta.url), {
-          workerData: { jobs: jobs.filter((_, i) => i % threads === t), ratings, bases: { walls: out.walls } },
-        });
-        w.on('message', (m) => {
-          if (m.text) out[m.family][m.rating - 1].push(m.text);
-          else failed++;
-          if (++done % 200 === 0) console.log(`${done}/${jobs.length} (sin decorar: ${failed})`);
-        });
-        w.on('exit', ok);
-      }),
-  ),
-);
+await runQueue(new URL(import.meta.url), jobs, {
+  data: { ratings, bases: { walls: out.walls } },
+  every: 200,
+  onResult: (m) => {
+    if (m.text) out[m.family][m.rating - 1].push(m.text);
+    else failed++;
+    done++;
+  },
+});
 for (const f of families) out[f].forEach((l) => l.sort()); // orden estable: el resultado no depende de los hilos
 writeFileSync(OUT, JSON.stringify(out) + '\n');
 console.log(`Listo: ${done - failed} tableros decorados, ${failed} sin decorar → ${OUT}`);

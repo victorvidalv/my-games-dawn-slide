@@ -91,7 +91,7 @@ export function playKeyExit(G, { party = true } = {}) {
 }
 
 export const winMessage = (G, gain, heroId) =>
-  `${G.moves <= G.opt ? 'Perfecto · ' : ''}+${gain.total} puntos · ${HERO_TALK[heroId].win[G.n % 3]}`;
+  `${G.moves <= G.opt ? 'Perfecto · ' : ''}${gain.ember ? 'Brasa intacta · ' : ''}+${gain.total} puntos · ${HERO_TALK[heroId].win[G.n % 3]}`;
 
 /** Las piezas se apagan al perder la partida. */
 export const dimBoard = (G) =>

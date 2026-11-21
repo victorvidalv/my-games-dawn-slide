@@ -50,12 +50,13 @@ describe('Jean: ~33 % de los movimientos hechos, mínimo 3', () => {
     beginPower(short, { ...rewindBoard(12), opt: 13 });
     expect(powerState(short, { ...rewindBoard(12), opt: 13 }).ok).toBe(false);
   });
-  it('con Eco del poder Jean tiene un rebobinado extra en el último tablero de cada ciudad', () => {
-    const last = { ...rewindBoard(12), n: 18, opt: 10 };
+  it('con Eco del poder Jean tiene un rebobinado extra en cada tablero (tres en los largos)', () => {
+    const board = { ...rewindBoard(12), n: 17, opt: 10 };
     const eco = { ...run('jean'), mode: 'c', fate: ['power-echo'] };
-    expect(powerState(eco, last).reason).toBe('2 usos en este tablero');
-    expect(powerState({ ...run('jean'), mode: 'c' }, last).reason).toBe('1 uso por tablero');
-    expect(powerState(eco, { ...last, n: 17 }).reason).toBe('1 uso por tablero');
+    expect(powerState(eco, board).reason).toBe('2 usos en este tablero');
+    expect(powerState({ ...run('jean'), mode: 'c' }, board).reason).toBe('1 uso por tablero');
+    expect(powerState(eco, { ...board, n: 18 }).reason).toBe('2 usos en este tablero');
+    expect(powerState(eco, { ...board, opt: 16 }).reason).toBe('3 usos en este tablero');
   });
   it('Juramento apaga el poder del héroe', () => {
     const oath = { ...run('jean'), mode: 'c', fate: ['juramento'] };

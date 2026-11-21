@@ -9,7 +9,7 @@ import { analyze } from '../engine/solver.js';
 import { clearRewards, snapshotRescue } from './heroes.js';
 import { relicFor } from './relics.js';
 import { canPaidRevive, hasRevive, useFreeRetry, useRevive } from './shop.js';
-import { FATE_EVERY, FATE_PICKS, fateById, fateDeck, keepsStreak } from './fate.js';
+import { FATE_EVERY, FATE_PICKS, fateById, fateDeck, fatePerfectHints, nextStreak } from './fate.js';
 
 const copyRows = (rows) => rows.map((p) => p.slice());
 
@@ -201,17 +201,18 @@ export function applyAdventureWin(run, G, gain) {
   run.score += gain.total;
   run.cleared = (run.cleared || 0) + 1;
   if (G.moves <= G.opt) run.perfects = (run.perfects || 0) + 1;
-  run.streak = keepsStreak(run, gain.eff) ? (run.streak || 0) + 1 : 0;
+  run.streak = nextStreak(run, gain.eff);
   run.bestStreak = Math.max(run.bestStreak || 0, run.streak);
   run.adj = Math.max(-2, Math.min(run.level < 10 ? 1 : 2, run.adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
   clearRewards(run, G.n);
+  run.hints = (run.hints || 0) + fatePerfectHints(run, G.moves, G.opt); // Maestría
   run.pendingClear = { level: G.n, gain: gain.total, moves: G.moves, opt: G.opt };
 }
 
 const GRADE_THRESHOLDS = {
-  1: { sPlus: 42000, s: 28000, a: 18000 },
-  50: { sPlus: 55000, s: 38000, a: 24000 },
-  75: { sPlus: 70000, s: 48000, a: 32000 },
+  1: { sPlus: 48000, s: 32000, a: 20000 },
+  50: { sPlus: 62000, s: 43000, a: 27000 },
+  75: { sPlus: 80000, s: 55000, a: 36000 },
 };
 
 /** Rango visual de la partida (S+, S, A, B, C) según victoria, puntaje y perfectos. */
