@@ -76,4 +76,3 @@ partida mezcla las dos cosas según el tramo y la mano, que es lo que se busca.
 
 - El modelo infravalora los usos extra de poder (Eco del poder): en el juego real un tercer rebobinado vale más.
   Conviene mirarlo con partidas reales.
-- Tres tests de `engine.test.js`/`generator.test.js` ya fallaban antes de este cambio (curva de Normal ×2,0 vs ×2,2).
