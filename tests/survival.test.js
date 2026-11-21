@@ -87,26 +87,31 @@ describe('modo desafío', () => {
     pHint = spendSurvivalTurn(pHint, [4], true, [1]); // supera tablero
     expect(canUseChallengeRelic(pHint).ok).toBe(true); // vuelve a estar disponible en el tablero siguiente
 
-    // 2. Rehacer tablero completo una vez por partida
+    // 2. +2 turnos de margen y rehacer tablero completo una vez por partida
     let pReset = newSurvival('200', 'reset');
+    expect(pReset.remaining).toBe(202);
+    expect(newSurvival('200', 'hint').remaining).toBe(200);
     expect(canUseChallengeRelic(pReset).ok).toBe(false); // sin mover aún
     pReset = spendSurvivalTurn(pReset, [1], false, [0]);
     pReset = spendSurvivalTurn(pReset, [2], false, [1]);
-    expect(pReset.remaining).toBe(198);
+    expect(pReset.remaining).toBe(200);
     expect(canUseChallengeRelic(pReset).ok).toBe(true);
     pReset = useChallengeReset(pReset);
-    expect(pReset).toMatchObject({ remaining: 200, pos: null, resetUsed: true });
+    expect(pReset).toMatchObject({ remaining: 202, pos: null, resetUsed: true });
     pReset = spendSurvivalTurn(pReset, [1], false, [0]);
     expect(canUseChallengeRelic(pReset).ok).toBe(false); // solo una vez por partida
 
-    // 3. Deshacer una vez por tablero
+    // 3. Deshacer dos veces por tablero (puede volver dos movimientos seguidos)
     let pUndo = newSurvival('250', 'undo');
     expect(canUseChallengeRelic(pUndo).ok).toBe(false);
     pUndo = spendSurvivalTurn(pUndo, [1, 2], false, [0, 2]);
-    expect(pUndo.remaining).toBe(249);
-    expect(canUseChallengeRelic(pUndo).ok).toBe(true);
+    pUndo = spendSurvivalTurn(pUndo, [1, 3], false, [1, 2]);
+    expect(pUndo.remaining).toBe(248);
+    expect(canUseChallengeRelic(pUndo)).toEqual({ ok: true, reason: '2 usos en este tablero' });
     pUndo = useChallengeUndo(pUndo);
-    expect(pUndo).toMatchObject({ remaining: 250, pos: [0, 2], undoUsedBoard: true });
+    expect(pUndo).toMatchObject({ remaining: 249, pos: [1, 2], undoCount: 1 });
+    pUndo = useChallengeUndo(pUndo);
+    expect(pUndo).toMatchObject({ remaining: 250, pos: [0, 2], undoCount: 2, undoUsedBoard: true });
     pUndo = spendSurvivalTurn(pUndo, [1, 2], false, [0, 2]);
     expect(canUseChallengeRelic(pUndo).ok).toBe(false); // ya usada en este tablero
     pUndo = spendSurvivalTurn(pUndo, [4, 2], true, [1, 2]); // supera tablero

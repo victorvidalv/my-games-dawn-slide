@@ -907,4 +907,7 @@ export const EN_UI = {
   'La racha no se pierde entera': 'Streak never fully breaks',
   'Perfecto · Brasa intacta · +{p} puntos · {m}': 'Perfect · Intact Ember · +{p} points · {m}',
   'Brasa intacta · +{p} puntos · {m}': 'Intact Ember · +{p} points · {m}',
+  '+2 turnos y rehace 1 tablero': '+2 turns and reset 1 board',
+  '2 deshacer por tablero': '2 undos per board',
+  '2 por tablero': '2 per board',
 };

@@ -79,14 +79,14 @@ it('elige ruta y reliquia en Desafío, usa la pista por turno, guarda y continú
   expect(audio.themeName).toBe(resumedTrack);
 });
 
-it('permite usar rehacer tablero (1 vez por partida) y deshacer (1 vez por tablero) desde el HUD', async () => {
+it('permite usar rehacer tablero (+2 turnos, 1 vez por partida) y deshacer (2 por tablero) desde el HUD', async () => {
   const app = await bootApp();
   app.$('tabSurvival').click();
   app.$('survivalRoutes').querySelector('input[value="200"]').click();
   app.$('survivalRelics').querySelector('input[value="reset"]').click();
   app.$('survivalPlay').click();
 
-  expect(app.$('survivalTurns').textContent).toBe('200');
+  expect(app.$('survivalTurns').textContent).toBe('202');
   expect(app.$('bChallengeRelic').disabled).toBe(true);
 
   const { applyMove } = await import('../../src/game/run-logic.js');
@@ -96,13 +96,13 @@ it('permite usar rehacer tablero (1 vez por partida) y deshacer (1 vez por table
   const move1 = hintMove(app.S.G.pieces, app.S.G.pos, app.S.G.walls);
   applyMove(app.S.G, move1.i, move1.to);
   afterMove();
-  expect(app.$('survivalTurns').textContent).toBe('199');
+  expect(app.$('survivalTurns').textContent).toBe('201');
   expect(app.$('bChallengeRelic').disabled).toBe(false);
 
   // Rehacer tablero: restaura posiciones y turnos, queda usada para toda la partida
   app.$('bChallengeRelic').click();
   expect(app.S.G.pos).toEqual(startPos);
-  expect(app.$('survivalTurns').textContent).toBe('200');
+  expect(app.$('survivalTurns').textContent).toBe('202');
   expect(app.$('bChallengeRelic').disabled).toBe(true);
 
   // Ahora probar reliquia de deshacer en ruta 250

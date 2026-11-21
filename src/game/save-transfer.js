@@ -15,6 +15,7 @@ import { FATE_CARDS, FATE_PICKS } from './fate.js';
 import {
   CHALLENGE_RELICS,
   CHALLENGE_ROUTES,
+  RESET_BONUS_TURNS,
   routeById,
   survivalBestFor,
   survivalProgress,
@@ -227,12 +228,12 @@ export function exportSaveLink(store = {}) {
       indexOf(V3_CHALLENGE_ROUTES, activeSurv.route) |
       (indexOf(V3_CHALLENGE_RELICS, activeSurv.relic) << 2) |
       (activeSurv.resetUsed ? 1 << 4 : 0) |
-      (activeSurv.undoUsedBoard ? 1 << 5 : 0) |
+      (activeSurv.undoUsedBoard || activeSurv.undoCount > 0 ? 1 << 5 : 0) |
       (activeSurv.hintUsedTurn ? 1 << 6 : 0);
     write(meta);
     const route = routeById(activeSurv.route);
     write(bounded(activeSurv.cleared, route.levels));
-    writeV(activeSurv.boardStartRemaining ?? activeSurv.remaining, route.turns);
+    writeV(activeSurv.boardStartRemaining ?? activeSurv.remaining, route.turns + RESET_BONUS_TURNS);
   }
 
   // 8. Partida de Aventura activa (opcional)
@@ -509,7 +510,7 @@ function readV3(read, readV, atEnd, now, v4 = false) {
     if (routeIdx >= V3_CHALLENGE_ROUTES.length || relicIdx >= V3_CHALLENGE_RELICS.length) invalid();
     const route = routeById(V3_CHALLENGE_ROUTES[routeIdx]);
     const cleared = read(1, route.levels - 1);
-    const remaining = readV(route.turns, 1);
+    const remaining = readV(route.turns + RESET_BONUS_TURNS, 1);
     survival = {
       routeVersion: 2,
       route: route.id,
@@ -521,7 +522,9 @@ function readV3(read, readV, atEnd, now, v4 = false) {
       lastPos: null,
       hintUsedTurn: (meta & (1 << 6)) !== 0,
       resetUsed: (meta & (1 << 4)) !== 0,
-      undoUsedBoard: (meta & (1 << 5)) !== 0,
+      undoUsedBoard: false,
+      undoCount: (meta & (1 << 5)) !== 0 ? 1 : 0, // el código solo guarda si se usó: se cuenta como un uso
+      undoStack: [],
       status: 'active',
       updatedAt: ts,
     };

@@ -72,6 +72,28 @@ partida mezcla las dos cosas según el tramo y la mano, que es lo que se busca.
 
 (Se mantiene el atajo por Perfectos: S+ con 75 % de Perfectos y puntaje de S; S con 55 %; A con 35 %.)
 
+## 6. Reliquias del Desafío
+
+El Desafío no tiene margen: la senda da exactamente la suma de los mínimos, así que cualquier turno de más termina la
+partida antes del final. Con el mismo modelo de jugador (% de partidas que completan la senda):
+
+| Senda · hab. | Brújula (1 pista/tablero) | Reloj antes (rehace 1) | Hilo antes (1 deshacer) | **Reloj nuevo** (+2 turnos y rehace 1) | **Hilo nuevo** (2 deshacer) |
+| --- | --- | --- | --- | --- | --- |
+| 150 · 0,90 | 56 % | 47 % | 36 % | 58 % | ≈ 50–60 % |
+| 150 · 0,95 | 74 % | 76 % | 59 % | 83 % | ≈ 70–80 % |
+| 250 · 0,90 | 35 % | 19 % | 16 % | 28 % | ≈ 30–40 % |
+| 250 · 0,95 | 59 % | 55 % | 40 % | 64 % | ≈ 55–65 % |
+
+- **Hilo del Retorno** era la peor en todos los casos: un error suele costar varios movimientos y solo deshacía uno.
+  Ahora deshace **dos por tablero**, así corrige el error aunque te des cuenta un movimiento tarde. (El modelo no
+  distingue bien «deshacer dos» de «rebobinar»; el rango es entre esas dos estimaciones.)
+- **Reloj de Arena** era la mejor para expertos y la peor si fallas a menudo. Suma **+2 turnos** al empezar: un
+  pequeño margen para el primer desliz, sin perder su papel de segunda oportunidad.
+- **Brújula** no cambia: es la que más ayuda al jugador medio, porque previene el error en vez de corregirlo.
+
+Cada una se siente distinta: la Brújula te dice qué hacer, el Hilo te deja corregir sobre la marcha y el Reloj te da
+colchón y una partida de rescate.
+
 ## Pendiente
 
 - El modelo infravalora los usos extra de poder (Eco del poder): en el juego real un tercer rebobinado vale más.

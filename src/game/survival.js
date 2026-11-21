@@ -7,6 +7,15 @@ export const CHALLENGE_ROUTES = [
   { id: '250', name: 'Senda Eterna', turns: 250, levels: routes['250'].length, tag: 'Maestro' },
 ];
 
+/**
+ * Reliquias del Desafío. Calibradas con el mismo modelo de jugador que la Aventura para que terminen la senda con
+ * probabilidad parecida, cada una con su estilo:
+ *   · Brújula: previene (una pista por tablero). La mejor para jugadores medios.
+ *   · Reloj de Arena: segunda oportunidad (+2 turnos de margen y rehacer 1 tablero entero). La de los expertos.
+ *   · Hilo del Retorno: corrige (2 deshacer por tablero, que devuelven su turno). La más regular.
+ */
+export const RESET_BONUS_TURNS = 2;
+export const UNDO_PER_BOARD = 2;
 export const CHALLENGE_RELICS = [
   {
     id: 'hint',
@@ -18,18 +27,26 @@ export const CHALLENGE_RELICS = [
   {
     id: 'reset',
     name: 'Reloj de Arena',
-    label: 'Rehace 1 tablero',
+    label: '+2 turnos y rehace 1 tablero',
     action: 'Rehacer tablero',
     rule: '1 por partida',
   },
   {
     id: 'undo',
     name: 'Hilo del Retorno',
-    label: '1 deshacer por tablero',
+    label: '2 deshacer por tablero',
     action: 'Deshacer',
-    rule: '1 por tablero',
+    rule: '2 por tablero',
   },
 ];
+
+/** Turnos con los que empieza la senda con esa reliquia (el Reloj de Arena suma su margen). */
+export const startTurns = (routeId, relicId) =>
+  routeById(routeId).turns + (challengeRelicById(relicId).id === 'reset' ? RESET_BONUS_TURNS : 0);
+/** Posiciones a las que puede volver el Hilo (las más recientes al final); acepta guardados con `lastPos`. */
+const undoStackOf = (p) => (Array.isArray(p.undoStack) ? p.undoStack : Array.isArray(p.lastPos) ? [p.lastPos] : []);
+/** Deshacer gastados en este tablero (los guardados antiguos solo sabían si se había usado). */
+const undoCountOf = (p) => (Number.isInteger(p.undoCount) ? p.undoCount : p.undoUsedBoard ? UNDO_PER_BOARD : 0);
 
 export const SURVIVAL_LEVELS = routes['150'].length;
 export const SURVIVAL_TURNS = routes['150'].reduce((sum, level) => sum + level.opt, 0);
@@ -75,15 +92,18 @@ export function survivalBestLevel(store) {
 export function newSurvival(routeId = '150', relicId = 'hint') {
   const route = routeById(routeId);
   const relic = challengeRelicById(relicId);
+  const turns = startTurns(route.id, relic.id);
   return {
     routeVersion: ROUTE_VERSION,
     route: route.id,
     relic: relic.id,
     cleared: 0,
-    remaining: route.turns,
-    boardStartRemaining: route.turns,
+    remaining: turns,
+    boardStartRemaining: turns,
     pos: null,
     lastPos: null,
+    undoStack: [],
+    undoCount: 0,
     hintUsedTurn: false,
     resetUsed: false,
     undoUsedBoard: false,
@@ -130,17 +150,21 @@ export function spendSurvivalTurn(progress, pos, won, prevPos = null) {
       boardStartRemaining: remaining,
       pos: null,
       lastPos: null,
+      undoStack: [],
+      undoCount: 0,
       hintUsedTurn: false,
       undoUsedBoard: false,
       status,
     };
   }
+  const stack = !remaining || !Array.isArray(prevPos) ? [] : [...undoStackOf(progress), prevPos.slice()];
   return {
     ...progress,
     cleared,
     remaining,
     pos: !remaining ? null : pos.slice(),
-    lastPos: !remaining || !Array.isArray(prevPos) ? null : prevPos.slice(),
+    lastPos: stack.at(-1) || null,
+    undoStack: stack.slice(-UNDO_PER_BOARD),
     hintUsedTurn: !remaining ? false : Boolean(progress.hintUsedTurn),
     status,
   };
@@ -159,10 +183,12 @@ export function canUseChallengeRelic(progress) {
         return { ok: false, reason: 'Mueve al menos una vez' };
       }
       return { ok: true, reason: '1 uso en la partida' };
-    case 'undo':
-      if (progress.undoUsedBoard) return { ok: false, reason: 'Usada en este tablero' };
-      if (!Array.isArray(progress.lastPos)) return { ok: false, reason: 'Mueve primero' };
-      return { ok: true, reason: '1 uso en este tablero' };
+    case 'undo': {
+      const left = UNDO_PER_BOARD - undoCountOf(progress);
+      if (left <= 0) return { ok: false, reason: 'Usada en este tablero' };
+      if (!undoStackOf(progress).length) return { ok: false, reason: 'Mueve primero' };
+      return { ok: true, reason: left > 1 ? `${left} usos en este tablero` : '1 uso en este tablero' };
+    }
     default:
       return { ok: false, reason: '' };
   }
@@ -180,6 +206,8 @@ export function useChallengeReset(progress) {
     remaining: progress.boardStartRemaining ?? progress.remaining,
     pos: null,
     lastPos: null,
+    undoStack: [],
+    undoCount: 0,
     resetUsed: true,
     hintUsedTurn: false,
     undoUsedBoard: false,
@@ -188,12 +216,17 @@ export function useChallengeReset(progress) {
 
 export function useChallengeUndo(progress) {
   if (progress?.relic !== 'undo' || !canUseChallengeRelic(progress).ok) return progress;
+  const stack = undoStackOf(progress).slice();
+  const back = stack.pop();
+  const count = undoCountOf(progress) + 1;
   return {
     ...progress,
     remaining: progress.remaining + 1,
-    pos: progress.lastPos.slice(),
-    lastPos: null,
-    undoUsedBoard: true,
+    pos: back.slice(),
+    lastPos: stack.at(-1) || null,
+    undoStack: stack,
+    undoCount: count,
+    undoUsedBoard: count >= UNDO_PER_BOARD,
     hintUsedTurn: false,
   };
 }

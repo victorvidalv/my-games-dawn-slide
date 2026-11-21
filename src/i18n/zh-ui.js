@@ -865,4 +865,7 @@ export const ZH_UI = {
   'La racha no se pierde entera': '连胜不会完全中断',
   'Perfecto · Brasa intacta · +{p} puntos · {m}': '完美 · 余烬完好 · +{p} 分 · {m}',
   'Brasa intacta · +{p} puntos · {m}': '余烬完好 · +{p} 分 · {m}',
+  '+2 turnos y rehace 1 tablero': '+2 步并可重置 1 个棋盘',
+  '2 deshacer por tablero': '每盘 2 次撤销',
+  '2 por tablero': '每盘 2 次',
 };
