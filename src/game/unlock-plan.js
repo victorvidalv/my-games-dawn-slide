@@ -443,6 +443,125 @@ export const PLAN = {
       ['masterSolved', 40],
     ],
   },
+  trail: {
+    dust: [['boardsSolved', 20]],
+    embers: [['dailySolved', 4]],
+    leaves: [['challengeBoards', 6]],
+    petals: [['perfects', 12]],
+    bubbles: [['dailyGold', 3]],
+    ink: [['iceRock', 10]],
+    frost: [['bestStreak', 7]],
+    sparks: [['challengeBest', 5]],
+    lightning: [
+      ['powersUsed', 140],
+      ['dailySolved', 29],
+    ],
+    rainbow: [
+      ['heavyBoards', 50],
+      ['challengeBoards', 35],
+    ],
+    starlight: [
+      ['locks', 85],
+      ['dailyGold', 25],
+    ],
+    comet: [
+      ['expertDone', 1],
+      ['challengeWonCount', 2],
+      ['bestStreak', 30],
+    ],
+    phoenix: [
+      ['completed', 20],
+      ['challengeWonCount', 3],
+      ['dailyGold', 60],
+    ],
+    eclipse: [
+      ['perfects', 450],
+      ['challengeBest', 14],
+      ['dailyGold', 40],
+    ],
+  },
+  fx: {
+    embers: [['boardsSolved', 20]],
+    sparks: [['dailySolved', 4]],
+    petals: [['challengeBoards', 6]],
+    leaves: [['perfects', 12]],
+    ink: [['dailyGold', 3]],
+    frost: [['bestRunStreak', 10]],
+    stars: [['bestStreak', 6]],
+    confetti: [['challengeBest', 5]],
+    coins: [['cleanCity', 11]],
+    aurora: [
+      ['completed', 4],
+      ['dailyGold', 10],
+    ],
+    prism: [
+      ['perfects', 100],
+      ['challengeBest', 8],
+    ],
+    lightning: [
+      ['boardsSolved', 625],
+      ['dailySolved', 70],
+    ],
+    phoenix: [
+      ['expertDone', 1],
+      ['challengeWonCount', 2],
+      ['bestStreak', 30],
+    ],
+    fireworks: [
+      ['perfects', 450],
+      ['challengeWonCount', 3],
+      ['dailyGold', 60],
+    ],
+  },
+  aura: {
+    fireflies: [['maxLevel', 6]],
+    mist: [['dailySolved', 4]],
+    sunmotes: [['challengeBoards', 6]],
+    drizzle: [['boardsSolved', 55]],
+    leaves: [['bestStreak', 6]],
+    petals: [['fateCards', 21]],
+    snow: [
+      ['hardLevel', 15],
+      ['dailyGold', 10],
+    ],
+    ash: [
+      ['expertLevel', 11],
+      ['challengeBest', 8],
+    ],
+    meteors: [
+      ['completed', 10],
+      ['bestStreak', 27],
+    ],
+    storm: [
+      ['expertDone', 1],
+      ['challengeWonCount', 2],
+      ['bestStreak', 30],
+    ],
+    aurora: [
+      ['perfects', 450],
+      ['challengeWonCount', 3],
+      ['dailyGold', 60],
+    ],
+  },
+  ui: {
+    thyes: [['maxLevel', 6]],
+    jade: [['bestStreak', 3]],
+    crimson: [['challengeBest', 5]],
+    glacier: [['completed', 3]],
+    faro: [
+      ['powersUsed', 140],
+      ['dailySolved', 29],
+    ],
+    neon: [
+      ['fateSeenCount', 24],
+      ['challengeBoards', 60],
+    ],
+    eclipse: [
+      ['completed', 20],
+      ['challengeWonCount', 3],
+      ['dailyGold', 60],
+    ],
+  },
   outfit: {
     'lia:aviadora': [['heroBoardsLia', 16]],
     'lia:arquera': [['heroBoardsLia', 20]],

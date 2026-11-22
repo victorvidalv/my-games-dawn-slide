@@ -19,7 +19,7 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
 
   app.$('tabAch').click();
   const panel = app.$('panelAch');
-  // Tres pestañas (Tablero, Atuendos y Portada) y, dentro de Tablero, los filtros Borde · Fichas · Llave · Tarjetas; no hay puntos ni «Reclamar»
+  // Tres pestañas (Tablero, Atuendos y Portada) y, dentro de Tablero, los filtros Borde · Fichas · Llave / Tarjetas · Estelas · Celebración; no hay puntos ni «Reclamar»
   expect([...panel.querySelectorAll('[data-custom-group]')].map((b) => b.dataset.customGroup)).toEqual([
     'board',
     'outfit',
@@ -30,6 +30,8 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
     'pieces',
     'key',
     'card',
+    'trail',
+    'fx',
   ]);
   expect(panel.querySelector('[data-claim]')).toBeNull();
   expect(app.$('achWallet')).toBeNull();
@@ -74,12 +76,14 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
   show.querySelector('[data-os-close]').click();
   expect(document.querySelector('.outfit-show-ov')).toBeNull();
 
-  // Portada: Héroes · Música · Fondo
+  // Portada: Héroes · Música · Fondo / Clima · Tema
   app.$('panelAch').querySelector('[data-custom-group="cover"]').click();
   expect([...app.$('panelAch').querySelectorAll('[data-custom-type]')].map((b) => b.dataset.customType)).toEqual([
     'cover',
     'music',
     'bg',
+    'aura',
+    'ui',
   ]);
   app.$('panelAch').querySelector('[data-custom-type="bg"]').click();
   expect(app.$('panelAch').querySelectorAll('.ach-shop-card').length).toBe(16); // 16 fondos

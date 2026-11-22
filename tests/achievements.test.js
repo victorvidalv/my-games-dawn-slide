@@ -15,6 +15,7 @@ import {
   RARITY,
   DEFAULT_LOOK,
   GROUPS,
+  LEGACY_REWARDS,
   REWARDS,
   REWARD_TYPES,
   STATS,
@@ -62,7 +63,19 @@ describe('registro de logros y tienda', () => {
       collection: 20,
     });
     // La tienda tiene 5 categorías, cada una con un elemento de serie gratis y premios con precio > 0
-    expect(REWARD_TYPES).toEqual(['board', 'pieces', 'key', 'fx', 'music', 'cover', 'card', 'bg']);
+    expect(REWARD_TYPES).toEqual([
+      'board',
+      'pieces',
+      'key',
+      'fx',
+      'music',
+      'cover',
+      'card',
+      'bg',
+      'trail',
+      'aura',
+      'ui',
+    ]);
     let buyable = 0;
     for (const type of REWARD_TYPES) {
       expect(REWARDS[type][0].id).toBe(DEFAULT_LOOK[type]);
@@ -123,7 +136,20 @@ describe('Personalizar: objetos que se desbloquean por acciones', () => {
   const custom = () => CUSTOM_TYPES.filter((t) => REWARDS[t]).flatMap((t) => REWARDS[t].slice(1).map((r) => [t, r]));
 
   it('categorías (tablero, fichas, llave, música, portada, fondo, atuendos) y cada objeto no inicial tiene su acción de desbloqueo', () => {
-    expect(CUSTOM_TYPES).toEqual(['board', 'pieces', 'key', 'card', 'music', 'cover', 'bg', 'outfit']);
+    expect(CUSTOM_TYPES).toEqual([
+      'board',
+      'pieces',
+      'key',
+      'card',
+      'trail',
+      'fx',
+      'music',
+      'cover',
+      'bg',
+      'aura',
+      'ui',
+      'outfit',
+    ]);
     for (const [type, item] of custom()) {
       const u = UNLOCKS[`${type}:${item.id}`];
       expect(u, `${type}:${item.id}`).toBeTruthy();
@@ -221,7 +247,7 @@ describe('Personalizar: objetos que se desbloquean por acciones', () => {
       if (rarity === 'legendary') expect(new Set(u.reqs.map((r) => MODE_OF(r.stat))).size, key).toBe(3);
       checked++;
     };
-    for (const type of ['board', 'pieces', 'key', 'card', 'music', 'cover', 'bg'])
+    for (const type of ['board', 'pieces', 'key', 'card', 'trail', 'fx', 'music', 'cover', 'bg', 'aura', 'ui'])
       for (const r of REWARDS[type].slice(1)) check(`${type}:${r.id}`, r.rarity);
     for (const [hero, list] of Object.entries(OUTFITS))
       for (const o of list.slice(1))
@@ -230,7 +256,7 @@ describe('Personalizar: objetos que se desbloquean por acciones', () => {
           o.rarity === 'rare' && o.id === list.slice(1).find((x) => x.rarity === 'rare').id ? 'rare' : o.rarity,
         );
     expect([...modes].sort()).toEqual(['aventura', 'desafio', 'diario']);
-    expect(checked).toBe(203);
+    expect(checked).toBe(249);
   });
 
   it('cada traje pide jugar con SU héroe: no se abren los de un héroe que no usas', () => {
@@ -273,7 +299,7 @@ describe('Personalizar: objetos que se desbloquean por acciones', () => {
       const store = {};
       unlockRewards(store);
       const missing = [];
-      for (const type of ['board', 'pieces', 'key', 'card', 'music', 'cover', 'bg'])
+      for (const type of ['board', 'pieces', 'key', 'card', 'trail', 'fx', 'music', 'cover', 'bg', 'aura', 'ui'])
         for (const r of REWARDS[type].slice(1)) if (!rewardUnlocked(type, r.id, store)) missing.push(`${type}:${r.id}`);
       for (const [hero, list] of Object.entries(OUTFITS))
         for (const o of list.slice(1)) if (!outfitUnlocked(store, hero, o.id)) missing.push(`${hero}:${o.id}`);
@@ -448,5 +474,35 @@ describe('logros del roguelite: rangos, héroes, reliquias, cartas y retos combi
       ['key', 'eclipse'],
     ])
       expect(rewardById(type, id)).toMatchObject({ rarity: 'legendary', anim: true });
+  });
+});
+
+describe('Personalizar: estelas, celebración, clima y tema de interfaz', () => {
+  it('estelas y celebraciones tienen 15 elementos cada una, con sus colores de partículas', () => {
+    expect(REWARDS.trail).toHaveLength(15);
+    expect(REWARDS.fx).toHaveLength(15);
+    for (const r of REWARDS.trail.slice(1)) expect(r.colors?.length, `trail:${r.id}`).toBeGreaterThanOrEqual(3);
+    for (const r of REWARDS.fx.slice(1)) expect(r.burst.colors.length, `fx:${r.id}`).toBeGreaterThanOrEqual(3);
+    // las diez celebraciones de antes siguen en su orden (el código QR las lee por posición)
+    expect(LEGACY_REWARDS.fx).toHaveLength(10);
+  });
+
+  it('clima (aura) y tema de interfaz: de serie «sin clima» y «Tinta clásica», y se desbloquean por acciones', () => {
+    expect(DEFAULT_LOOK).toMatchObject({ trail: 'none', aura: 'none', ui: 'ink' });
+    expect(REWARDS.aura.map((r) => r.id)).toEqual(
+      expect.arrayContaining(['fireflies', 'snow', 'petals', 'ash', 'drizzle', 'meteors']),
+    );
+    expect(REWARDS.ui.map((r) => r.id)).toEqual(expect.arrayContaining(['ink', 'thyes', 'crimson', 'faro', 'neon']));
+    for (const type of ['trail', 'fx', 'aura', 'ui'])
+      for (const r of REWARDS[type].slice(1)) expect(UNLOCKS[`${type}:${r.id}`], `${type}:${r.id}`).toBeTruthy();
+  });
+
+  it('un objeto nuevo solo se equipa si está desbloqueado', () => {
+    const store = { shopOwned: { 'trail:comet': 1 } };
+    expect(setLook(store, 'trail', 'phoenix')).toBe(false);
+    expect(setLook(store, 'trail', 'comet')).toBe(true);
+    expect(lookOf(store).trail).toBe('comet');
+    expect(setLook(store, 'ui', 'neon')).toBe(false);
+    expect(lookOf({ look: { aura: 'snow' } }).aura).toBe('none');
   });
 });

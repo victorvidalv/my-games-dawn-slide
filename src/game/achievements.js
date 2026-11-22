@@ -190,6 +190,41 @@ export const REWARDS = {
       burst: { n: 48, colors: ['#ff8a65', '#ffd54f', '#4dd0e1', '#ce93d8', '#fff8e1'], speed: 9 },
     },
     {
+      id: 'leaves',
+      name: 'Hojas de otoño',
+      price: 45,
+      rarity: 'common',
+      burst: { n: 30, colors: ['#d9772b', '#e8a23a', '#b5481f', '#f2c76b'], speed: 5 },
+    },
+    {
+      id: 'confetti',
+      name: 'Confeti de fiesta',
+      price: 80,
+      rarity: 'rare',
+      burst: { n: 52, colors: ['#ff5f8f', '#ffd24a', '#58d8c8', '#6cb6ff', '#b08cff'], speed: 9 },
+    },
+    {
+      id: 'coins',
+      name: 'Lluvia de monedas',
+      price: 95,
+      rarity: 'rare',
+      burst: { n: 34, colors: ['#ffd24a', '#f2b632', '#fff1b0', '#c98d1a'], speed: 7 },
+    },
+    {
+      id: 'lightning',
+      name: 'Relámpago',
+      price: 170,
+      rarity: 'epic',
+      burst: { n: 40, colors: ['#e6f2ff', '#8fc6ff', '#b9a6ff', '#ffffff'], speed: 10 },
+    },
+    {
+      id: 'phoenix',
+      name: 'Vuelo del fénix',
+      price: 300,
+      rarity: 'legendary',
+      burst: { n: 56, colors: ['#ff7a2e', '#ffc23d', '#ff4a3d', '#fff0b8'], speed: 8 },
+    },
+    {
       id: 'fireworks',
       name: 'Fuegos artificiales',
       price: 280,
@@ -524,6 +559,86 @@ export const REWARDS = {
       fx: '#ff3a6a',
     },
   ],
+  /* Estelas: lo que deja tu ficha al deslizarse por el tablero (partículas en el lienzo de efectos, src/ui/fx.js → TRAILS). */
+  trail: [
+    { id: 'none', name: 'Sin estela', price: 0, rarity: 'common' },
+    { id: 'dust', name: 'Polvo de luz', price: 30, rarity: 'common', colors: ['#fff6d6', '#ffe9ad', '#f1ce82'] },
+    { id: 'embers', name: 'Rastro de brasas', price: 35, rarity: 'common', colors: ['#ff9a3d', '#ffd24a', '#ff6a3d'] },
+    { id: 'leaves', name: 'Hojas al viento', price: 40, rarity: 'common', colors: ['#8fcf5a', '#5fae3d', '#d9a93a'] },
+    { id: 'petals', name: 'Pétalos de cerezo', price: 45, rarity: 'common', colors: ['#ffb7d0', '#ff8fb8', '#ffe3ee'] },
+    { id: 'bubbles', name: 'Burbujas', price: 70, rarity: 'rare', colors: ['#bdeeff', '#7fd6ff', '#ffffff'] },
+    { id: 'ink', name: 'Tinta china', price: 75, rarity: 'rare', colors: ['#1a1220', '#3a2a44', '#e0b04f'] },
+    { id: 'frost', name: 'Copos de nieve', price: 80, rarity: 'rare', colors: ['#d6f6ff', '#8fe0ff', '#ffffff'] },
+    { id: 'sparks', name: 'Chispas doradas', price: 90, rarity: 'rare', colors: ['#ffd24a', '#fff6c9', '#e0b04f'] },
+    {
+      id: 'lightning',
+      name: 'Rastro eléctrico',
+      price: 170,
+      rarity: 'epic',
+      colors: ['#e6f2ff', '#8fc6ff', '#b9a6ff'],
+    },
+    {
+      id: 'rainbow',
+      name: 'Arcoíris',
+      price: 185,
+      rarity: 'epic',
+      colors: ['#ff6b6b', '#ffd24a', '#58e0a0', '#6cb6ff', '#b08cff'],
+    },
+    {
+      id: 'starlight',
+      name: 'Polvo de estrellas',
+      price: 200,
+      rarity: 'epic',
+      colors: ['#d7c3ff', '#8fd8ff', '#ffffff', '#ffe9ad'],
+    },
+    {
+      id: 'comet',
+      name: 'Cometa',
+      price: 300,
+      rarity: 'legendary',
+      colors: ['#bfe6ff', '#6cb6ff', '#ffffff', '#ffe9ad'],
+    },
+    {
+      id: 'phoenix',
+      name: 'Plumas de fénix',
+      price: 320,
+      rarity: 'legendary',
+      colors: ['#ff7a2e', '#ffc23d', '#ff4a3d', '#fff0b8'],
+    },
+    {
+      id: 'eclipse',
+      name: 'Sombra del eclipse',
+      price: 340,
+      rarity: 'legendary',
+      colors: ['#3a1f5c', '#8a5cd6', '#ff8ad8', '#ffffff'],
+    },
+  ],
+  /* Clima de la portada (aura): capa de CSS animada, combinable con cualquier fondo. Estilos en 49-cover-aura.css. */
+  aura: [
+    { id: 'none', name: 'Cielo despejado', price: 0, rarity: 'common' },
+    { id: 'fireflies', name: 'Luciérnagas', price: 35, rarity: 'common' },
+    { id: 'mist', name: 'Neblina', price: 40, rarity: 'common' },
+    { id: 'sunmotes', name: 'Motas de sol', price: 45, rarity: 'common' },
+    { id: 'drizzle', name: 'Lluvia fina', price: 75, rarity: 'rare' },
+    { id: 'leaves', name: 'Hojas de otoño', price: 80, rarity: 'rare' },
+    { id: 'petals', name: 'Pétalos cayendo', price: 85, rarity: 'rare' },
+    { id: 'snow', name: 'Nevada', price: 170, rarity: 'epic', anim: true },
+    { id: 'ash', name: 'Cenizas ascendentes', price: 180, rarity: 'epic', anim: true },
+    { id: 'meteors', name: 'Estrellas fugaces', price: 190, rarity: 'epic', anim: true },
+    { id: 'storm', name: 'Tormenta eléctrica', price: 310, rarity: 'legendary', anim: true },
+    { id: 'aurora', name: 'Aurora boreal', price: 340, rarity: 'legendary', anim: true },
+  ],
+  /* Tema de interfaz: paleta de la portada, los botones y las tarjetas (y del selector de héroe). Estilos en 50-ui-themes.css. */
+  ui: [
+    { id: 'ink', name: 'Tinta clásica', price: 0, rarity: 'common' },
+    { id: 'thyes', name: 'Pergamino de Thyes', price: 40, rarity: 'common' },
+    { id: 'jade', name: 'Bosque de jade', price: 45, rarity: 'common' },
+    { id: 'crimson', name: 'Noche carmesí', price: 90, rarity: 'rare' },
+    { id: 'glacier', name: 'Marea glacial', price: 95, rarity: 'rare' },
+    { id: 'faro', name: 'Oro del Faro', price: 190, rarity: 'epic', anim: true },
+    { id: 'neon', name: 'Neón', price: 200, rarity: 'epic', anim: true },
+    { id: 'eclipse', name: 'Eclipse violeta', price: 330, rarity: 'legendary', anim: true },
+  ],
 };
 
 /**
@@ -543,6 +658,9 @@ export const DEFAULT_LOOK = {
   cover: 'alba-arcana',
   bg: 'bosque-cascada',
   card: 'mision',
+  trail: 'none',
+  aura: 'none',
+  ui: 'ink',
 };
 
 /**
@@ -1944,7 +2062,20 @@ export function claimAchievements(store, now = Date.now()) {
 /* ───────────── Personalizar: desbloqueo por acciones ───────────── */
 
 /** Categorías de Personalizar (en este orden). `outfit` = conjuntos de traje de los héroes. */
-export const CUSTOM_TYPES = ['board', 'pieces', 'key', 'card', 'music', 'cover', 'bg', 'outfit'];
+export const CUSTOM_TYPES = [
+  'board',
+  'pieces',
+  'key',
+  'card',
+  'trail',
+  'fx',
+  'music',
+  'cover',
+  'bg',
+  'aura',
+  'ui',
+  'outfit',
+];
 
 /**
  * Qué hay que hacer en el juego para desbloquear cada objeto. No hay puntos ni canje: al cumplir la acción,

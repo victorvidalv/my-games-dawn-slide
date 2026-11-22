@@ -1,0 +1,760 @@
+/*
+ * Clima de la portada (Personalizar → Portada → Clima). Capa de CSS puro, combinable con cualquiera de los fondos.
+ * El mismo `.aura-fx[data-aura]` se usa en la portada (.cover-aura), en las muestras (.sw-aura) y en la vista previa.
+ *
+ * Cada clima se compone de tres capas que se mueven con `transform` (GPU, sin repintar):
+ *   · el propio elemento  → fondo fijo (tintes, resplandores, estrellas)
+ *   · ::before y ::after  → dos capas de partículas con mosaicos distintos, para que no se note el patrón
+ *   · el hijo <i>         → tercera capa de partículas
+ * Truco del bucle sin saltos: la capa es un mosaico de W×H px, sobresale una celda por cada lado y se desplaza justo
+ * (--mx, --my) = una celda: al final de la animación el dibujo coincide con el del principio.
+ * `rotate` inclina la capa entera (la lluvia cae en diagonal) y la animación `au-sway` mece cada capa de lado a lado.
+ */
+
+.aura-fx {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+.aura-fx[data-aura='none'],
+.aura-fx:not([data-aura]) {
+  display: none;
+}
+/* En la portada solo se ve en el inicio (como el paisaje); en los modos y menús no aparece */
+.cover-aura {
+  z-index: 2;
+}
+#menu:not([data-view='home']) .cover-aura {
+  display: none;
+}
+
+.aura-fx::before,
+.aura-fx::after,
+.aura-fx > i {
+  content: '';
+  position: absolute;
+  display: block;
+  inset: calc(var(--h, 300px) * -1 - 12%) calc(var(--w, 300px) * -1 - 12%);
+  background-size: var(--w, 300px) var(--h, 300px);
+  pointer-events: none;
+  will-change: transform;
+}
+.aura-fx[data-aura='none'] > i {
+  display: none;
+}
+
+@keyframes au-move {
+  to {
+    transform: translate3d(var(--mx, 0px), var(--my, 0px), 0);
+  }
+}
+@keyframes au-sway {
+  from {
+    translate: calc(var(--sw, 14px) * -1) 0;
+  }
+  to {
+    translate: var(--sw, 14px) 0;
+  }
+}
+@keyframes au-blink {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  45% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.8;
+  }
+}
+@keyframes au-breathe {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ───────────── 1 · Luciérnagas (común): puntitos verdosos que suben despacio y se encienden y apagan ───────────── */
+.aura-fx[data-aura='fireflies']::before {
+  --w: 340px;
+  --h: 280px;
+  --mx: -40px;
+  --my: calc(var(--h) * -1);
+  background-image:
+    radial-gradient(circle at 60px 210px, #fffbb8 0 1.4px, #d6ff5acc 2.4px, #b6ff3a44 6px, transparent 11px),
+    radial-gradient(circle at 190px 90px, #fffbb8 0 1.3px, #d6ff5acc 2.3px, #b6ff3a44 6px, transparent 10px),
+    radial-gradient(circle at 280px 230px, #fffbb8 0 1.5px, #d6ff5acc 2.6px, #b6ff3a44 7px, transparent 12px),
+    radial-gradient(circle at 120px 20px, #fffbb8 0 1.2px, #d6ff5acc 2.2px, #b6ff3a44 5px, transparent 10px);
+}
+.aura-fx[data-aura='fireflies']::after {
+  --w: 420px;
+  --h: 360px;
+  --mx: 60px;
+  --my: calc(var(--h) * -1);
+  background-image:
+    radial-gradient(circle at 90px 300px, #f4ffc2 0 1.2px, #9dffb8bb 2.2px, #58ffa633 6px, transparent 10px),
+    radial-gradient(circle at 330px 150px, #f4ffc2 0 1.4px, #9dffb8bb 2.4px, #58ffa633 6px, transparent 11px),
+    radial-gradient(circle at 210px 60px, #f4ffc2 0 1.1px, #9dffb8bb 2px, #58ffa633 5px, transparent 9px);
+}
+.aura-fx[data-aura='fireflies'] > i {
+  --w: 260px;
+  --h: 240px;
+  --mx: -30px;
+  --my: calc(var(--h) * -1);
+  background-image:
+    radial-gradient(circle at 40px 180px, #ffffd0 0 1.1px, #e9ff7acc 2px, #d0ff4a33 5px, transparent 9px),
+    radial-gradient(circle at 170px 60px, #ffffd0 0 1.2px, #e9ff7acc 2.1px, #d0ff4a33 5px, transparent 9px);
+}
+.aura-fx[data-aura='fireflies']::before {
+  animation:
+    au-move 52s linear infinite,
+    au-sway 7s ease-in-out infinite alternate,
+    au-blink 3.7s ease-in-out infinite;
+}
+.aura-fx[data-aura='fireflies']::after {
+  animation:
+    au-move 66s linear infinite,
+    au-sway 9s ease-in-out infinite alternate-reverse,
+    au-blink 5.3s ease-in-out infinite 1.1s;
+  --sw: 22px;
+}
+.aura-fx[data-aura='fireflies'] > i {
+  animation:
+    au-move 44s linear infinite,
+    au-sway 6s ease-in-out infinite alternate,
+    au-blink 4.4s ease-in-out infinite 2.2s;
+  --sw: 10px;
+}
+.aura-fx[data-aura='fireflies'] {
+  background: radial-gradient(ellipse 90% 40% at 50% 100%, #1a3a1c66, transparent 70%);
+}
+
+/* ───────────── 2 · Neblina (común): bancos de bruma que cruzan el paisaje en sentidos opuestos ───────────── */
+.aura-fx[data-aura='mist'] {
+  background: linear-gradient(0deg, #dfeaf233, transparent 46%);
+}
+.aura-fx[data-aura='mist']::before {
+  --w: 980px;
+  --h: 420px;
+  --mx: var(--w);
+  --my: 0px;
+  background-image:
+    radial-gradient(ellipse 300px 52px at 220px 300px, #ffffff3d, transparent 72%),
+    radial-gradient(ellipse 360px 64px at 690px 340px, #ffffff33, transparent 72%),
+    radial-gradient(ellipse 240px 44px at 470px 220px, #ffffff2b, transparent 72%);
+  filter: blur(7px);
+  animation: au-move 90s linear infinite;
+}
+.aura-fx[data-aura='mist']::after {
+  --w: 1200px;
+  --h: 520px;
+  --mx: calc(var(--w) * -1);
+  --my: 0px;
+  background-image:
+    radial-gradient(ellipse 420px 80px at 300px 400px, #eaf4ff2e, transparent 72%),
+    radial-gradient(ellipse 340px 60px at 860px 250px, #eaf4ff26, transparent 72%),
+    radial-gradient(ellipse 380px 70px at 1010px 450px, #eaf4ff30, transparent 72%);
+  filter: blur(10px);
+  animation:
+    au-move 130s linear infinite,
+    au-breathe 11s ease-in-out infinite alternate;
+}
+.aura-fx[data-aura='mist'] > i {
+  --w: 800px;
+  --h: 360px;
+  --mx: var(--w);
+  --my: 0px;
+  background-image:
+    radial-gradient(ellipse 220px 36px at 160px 280px, #ffffff40, transparent 74%),
+    radial-gradient(ellipse 260px 42px at 560px 320px, #ffffff36, transparent 74%);
+  filter: blur(5px);
+  animation: au-move 64s linear infinite;
+}
+
+/* ───────────── 3 · Motas de sol (común): polvo dorado que asciende entre haces de luz ───────────── */
+.aura-fx[data-aura='sunmotes'] {
+  background: repeating-linear-gradient(108deg, transparent 0 96px, #ffe29612 96px 160px);
+  -webkit-mask-image: linear-gradient(#000 0 30%, #0006 100%);
+  mask-image: linear-gradient(#000 0 30%, #0006 100%);
+}
+.aura-fx[data-aura='sunmotes']::before {
+  --w: 360px;
+  --h: 300px;
+  --mx: 40px;
+  --my: calc(var(--h) * -1);
+  background-image:
+    radial-gradient(circle at 70px 220px, #fff3b8 0 1.6px, #ffd96acc 2.6px, #ffc54a33 7px, transparent 12px),
+    radial-gradient(circle at 250px 120px, #fff3b8 0 1.3px, #ffd96acc 2.3px, #ffc54a33 6px, transparent 10px),
+    radial-gradient(circle at 160px 20px, #fff3b8 0 1.5px, #ffd96acc 2.5px, #ffc54a33 7px, transparent 11px);
+  animation:
+    au-move 46s linear infinite,
+    au-sway 8s ease-in-out infinite alternate,
+    au-breathe 6s ease-in-out infinite alternate;
+}
+.aura-fx[data-aura='sunmotes']::after {
+  --w: 240px;
+  --h: 220px;
+  --mx: -20px;
+  --my: calc(var(--h) * -1);
+  background-image:
+    radial-gradient(circle at 50px 150px, #ffffffee 0 0.9px, #fff1c8aa 1.8px, transparent 4px),
+    radial-gradient(circle at 180px 70px, #ffffffee 0 1px, #fff1c8aa 2px, transparent 4.5px);
+  animation:
+    au-move 30s linear infinite,
+    au-sway 5s ease-in-out infinite alternate-reverse;
+  --sw: 9px;
+}
+.aura-fx[data-aura='sunmotes'] > i {
+  --w: 520px;
+  --h: 440px;
+  --mx: 30px;
+  --my: calc(var(--h) * -1);
+  background-image:
+    radial-gradient(circle at 120px 330px, #ffe9a0 0 2.2px, #ffcf5c99 4px, #ffb83a22 10px, transparent 16px),
+    radial-gradient(circle at 390px 110px, #ffe9a0 0 2px, #ffcf5c99 3.6px, #ffb83a22 9px, transparent 15px);
+  animation:
+    au-move 70s linear infinite,
+    au-sway 12s ease-in-out infinite alternate,
+    au-breathe 8s ease-in-out infinite alternate-reverse;
+  --sw: 26px;
+}
+
+/* ───────────── 4 · Lluvia fina (rara): hilos de agua en diagonal, dos velocidades y un velo azulado ───────────── */
+.aura-fx[data-aura='drizzle'] {
+  background: linear-gradient(180deg, #5a7fa022, #1a2a4a3a);
+}
+.aura-fx[data-aura='drizzle']::before {
+  --w: 200px;
+  --h: 340px;
+  --mx: 0px;
+  --my: var(--h);
+  rotate: 11deg;
+  background-image:
+    radial-gradient(ellipse 0.7px 15px at 30px 60px, #d2e4ffcc, transparent 100%),
+    radial-gradient(ellipse 0.7px 12px at 110px 200px, #d2e4ffb0, transparent 100%),
+    radial-gradient(ellipse 0.7px 16px at 170px 290px, #d2e4ffcc, transparent 100%),
+    radial-gradient(ellipse 0.7px 11px at 70px 300px, #d2e4ff99, transparent 100%),
+    radial-gradient(ellipse 0.7px 13px at 150px 120px, #d2e4ffb0, transparent 100%);
+  animation: au-move 1.5s linear infinite;
+}
+.aura-fx[data-aura='drizzle']::after {
+  --w: 260px;
+  --h: 420px;
+  --mx: 0px;
+  --my: var(--h);
+  rotate: 11deg;
+  background-image:
+    radial-gradient(ellipse 0.6px 20px at 50px 90px, #bfd6ff88, transparent 100%),
+    radial-gradient(ellipse 0.6px 18px at 200px 250px, #bfd6ff77, transparent 100%),
+    radial-gradient(ellipse 0.6px 22px at 130px 380px, #bfd6ff88, transparent 100%);
+  animation: au-move 2.3s linear infinite;
+}
+.aura-fx[data-aura='drizzle'] > i {
+  --w: 160px;
+  --h: 260px;
+  --mx: 0px;
+  --my: var(--h);
+  rotate: 11deg;
+  background-image:
+    radial-gradient(ellipse 0.8px 9px at 20px 40px, #ffffffbb, transparent 100%),
+    radial-gradient(ellipse 0.8px 8px at 100px 170px, #ffffffaa, transparent 100%);
+  animation: au-move 0.95s linear infinite;
+}
+
+/* ───────────── 5 · Hojas de otoño (rara): hojas rojizas que giran y se mecen al caer ───────────── */
+.aura-fx[data-aura='leaves']::before {
+  --w: 360px;
+  --h: 400px;
+  --mx: -60px;
+  --my: var(--h);
+  rotate: 24deg;
+  background-image:
+    radial-gradient(ellipse 7px 3.2px at 70px 60px, #d2691e 0 55%, #8a3b12bb 80%, transparent 100%),
+    radial-gradient(ellipse 6px 2.8px at 260px 150px, #e8a23a 0 55%, #a8641cbb 80%, transparent 100%),
+    radial-gradient(ellipse 7.5px 3.4px at 150px 290px, #b5481f 0 55%, #6e2a0fbb 80%, transparent 100%),
+    radial-gradient(ellipse 6px 2.8px at 320px 360px, #f2c76b 0 55%, #b8862bbb 80%, transparent 100%);
+  animation:
+    au-move 19s linear infinite,
+    au-sway 3.6s ease-in-out infinite alternate;
+  --sw: 26px;
+}
+.aura-fx[data-aura='leaves']::after {
+  --w: 300px;
+  --h: 340px;
+  --mx: 50px;
+  --my: var(--h);
+  rotate: -32deg;
+  background-image:
+    radial-gradient(ellipse 5.5px 2.6px at 40px 110px, #cf5a1c 0 55%, #7d3010bb 80%, transparent 100%),
+    radial-gradient(ellipse 6px 2.9px at 210px 40px, #efb04a 0 55%, #a8701cbb 80%, transparent 100%),
+    radial-gradient(ellipse 5px 2.4px at 140px 250px, #a23d18 0 55%, #5e240cbb 80%, transparent 100%);
+  animation:
+    au-move 26s linear infinite,
+    au-sway 4.4s ease-in-out infinite alternate-reverse;
+  --sw: 20px;
+}
+.aura-fx[data-aura='leaves'] > i {
+  --w: 460px;
+  --h: 500px;
+  --mx: -40px;
+  --my: var(--h);
+  rotate: 8deg;
+  background-image:
+    radial-gradient(ellipse 9px 4.2px at 100px 90px, #e0781f 0 55%, #94400fcc 80%, transparent 100%),
+    radial-gradient(ellipse 8.5px 4px at 340px 330px, #c9501a 0 55%, #7a300ecc 80%, transparent 100%);
+  animation:
+    au-move 14s linear infinite,
+    au-sway 3s ease-in-out infinite alternate;
+  --sw: 34px;
+  filter: blur(0.4px);
+}
+
+/* ───────────── 6 · Pétalos cayendo (rara): pétalos rosados, suaves y lentos ───────────── */
+.aura-fx[data-aura='petals']::before {
+  --w: 380px;
+  --h: 420px;
+  --mx: -50px;
+  --my: var(--h);
+  rotate: 18deg;
+  background-image:
+    radial-gradient(ellipse 5.5px 2.8px at 60px 70px, #ffd0e0 0 50%, #ff9fc2aa 85%, transparent 100%),
+    radial-gradient(ellipse 5px 2.6px at 250px 170px, #fff0f6 0 50%, #ffbdd6aa 85%, transparent 100%),
+    radial-gradient(ellipse 6px 3px at 140px 320px, #ffb3cf 0 50%, #ff86b0aa 85%, transparent 100%),
+    radial-gradient(ellipse 5px 2.5px at 330px 390px, #ffe4ee 0 50%, #ffc0d8aa 85%, transparent 100%);
+  animation:
+    au-move 30s linear infinite,
+    au-sway 5.5s ease-in-out infinite alternate;
+  --sw: 30px;
+}
+.aura-fx[data-aura='petals']::after {
+  --w: 320px;
+  --h: 360px;
+  --mx: 40px;
+  --my: var(--h);
+  rotate: -26deg;
+  background-image:
+    radial-gradient(ellipse 4.6px 2.4px at 50px 120px, #ffc4da 0 50%, #ff98bcaa 85%, transparent 100%),
+    radial-gradient(ellipse 5px 2.6px at 220px 40px, #fff4f8 0 50%, #ffc8dcaa 85%, transparent 100%),
+    radial-gradient(ellipse 4.8px 2.5px at 150px 270px, #ffaecb 0 50%, #ff7fa9aa 85%, transparent 100%);
+  animation:
+    au-move 38s linear infinite,
+    au-sway 6.5s ease-in-out infinite alternate-reverse;
+  --sw: 22px;
+}
+.aura-fx[data-aura='petals'] > i {
+  --w: 520px;
+  --h: 560px;
+  --mx: -30px;
+  --my: var(--h);
+  rotate: 6deg;
+  background-image:
+    radial-gradient(ellipse 8px 4px at 140px 110px, #ffd6e6 0 50%, #ffa6c8aa 85%, transparent 100%),
+    radial-gradient(ellipse 7.5px 3.8px at 400px 380px, #ffeaf2 0 50%, #ffc2d9aa 85%, transparent 100%);
+  animation:
+    au-move 22s linear infinite,
+    au-sway 4.2s ease-in-out infinite alternate;
+  --sw: 38px;
+  filter: blur(0.5px);
+}
+
+/* ───────────── 7 · Nevada (épica): tres capas de copos con profundidad, brisa y bruma blanca abajo ───────────── */
+.aura-fx[data-aura='snow'] {
+  background: linear-gradient(0deg, #e8f2ff30, transparent 38%);
+}
+.aura-fx[data-aura='snow']::before {
+  --w: 420px;
+  --h: 460px;
+  --mx: -70px;
+  --my: var(--h);
+  background-image:
+    radial-gradient(circle at 80px 80px, #fff 0 2.6px, #ffffff55 4.4px, transparent 6.4px),
+    radial-gradient(circle at 300px 200px, #fff 0 3.2px, #ffffff55 5px, transparent 7px),
+    radial-gradient(circle at 170px 380px, #fff 0 2.8px, #ffffff55 4.6px, transparent 6.6px);
+  animation:
+    au-move 16s linear infinite,
+    au-sway 4.2s ease-in-out infinite alternate;
+  --sw: 30px;
+  filter: blur(0.6px);
+}
+.aura-fx[data-aura='snow']::after {
+  --w: 300px;
+  --h: 340px;
+  --mx: -40px;
+  --my: var(--h);
+  background-image:
+    radial-gradient(circle at 40px 60px, #ffffffee 0 1.7px, #ffffff44 3px, transparent 4.4px),
+    radial-gradient(circle at 220px 130px, #ffffffee 0 1.5px, #ffffff44 2.8px, transparent 4.2px),
+    radial-gradient(circle at 120px 250px, #ffffffee 0 1.8px, #ffffff44 3px, transparent 4.5px),
+    radial-gradient(circle at 270px 310px, #ffffffee 0 1.4px, #ffffff44 2.6px, transparent 4px);
+  animation:
+    au-move 10s linear infinite,
+    au-sway 3.4s ease-in-out infinite alternate-reverse;
+  --sw: 18px;
+}
+.aura-fx[data-aura='snow'] > i {
+  --w: 220px;
+  --h: 260px;
+  --mx: -20px;
+  --my: var(--h);
+  background-image:
+    radial-gradient(circle at 30px 40px, #ffffffd0 0 1.1px, #ffffff33 2.2px, transparent 3.2px),
+    radial-gradient(circle at 150px 100px, #ffffffd0 0 1px, #ffffff33 2px, transparent 3px),
+    radial-gradient(circle at 90px 200px, #ffffffd0 0 1.2px, #ffffff33 2.2px, transparent 3.3px);
+  animation:
+    au-move 6.4s linear infinite,
+    au-sway 2.6s ease-in-out infinite alternate;
+  --sw: 10px;
+}
+
+/* ───────────── 8 · Cenizas ascendentes (épica): brasas que suben con chispazos y ceniza gris que se arremolina ───────────── */
+.aura-fx[data-aura='ash'] {
+  background:
+    radial-gradient(ellipse 90% 34% at 50% 112%, #ff5a1e55, #ff5a1e00 72%),
+    linear-gradient(0deg, #2a0e0a40, transparent 55%);
+}
+.aura-fx[data-aura='ash']::before {
+  --w: 380px;
+  --h: 420px;
+  --mx: 40px;
+  --my: calc(var(--h) * -1);
+  background-image:
+    radial-gradient(circle at 70px 330px, #fff0b0 0 1.2px, #ff9a3dcc 2.4px, #ff5a1e44 6px, transparent 10px),
+    radial-gradient(circle at 250px 190px, #ffe08a 0 1.4px, #ff8a2ecc 2.6px, #ff4a1a44 6px, transparent 11px),
+    radial-gradient(circle at 330px 40px, #fff0b0 0 1.1px, #ffa04acc 2.2px, #ff5a1e44 5px, transparent 9px),
+    radial-gradient(circle at 150px 90px, #ffd890 0 1.3px, #ff7a2ecc 2.4px, #ff4a1a44 6px, transparent 10px);
+  animation:
+    au-move 13s linear infinite,
+    au-sway 2.8s ease-in-out infinite alternate,
+    au-blink 2.1s ease-in-out infinite;
+  --sw: 22px;
+}
+.aura-fx[data-aura='ash']::after {
+  --w: 300px;
+  --h: 360px;
+  --mx: -30px;
+  --my: calc(var(--h) * -1);
+  rotate: 14deg;
+  background-image:
+    radial-gradient(ellipse 3.4px 1.6px at 60px 280px, #cfc6bd 0 50%, #8a817a88 85%, transparent 100%),
+    radial-gradient(ellipse 3px 1.5px at 210px 150px, #b9b0a8 0 50%, #7a716a88 85%, transparent 100%),
+    radial-gradient(ellipse 3.6px 1.7px at 130px 40px, #dad2ca 0 50%, #9a918a88 85%, transparent 100%);
+  animation:
+    au-move 24s linear infinite,
+    au-sway 5s ease-in-out infinite alternate-reverse;
+  --sw: 28px;
+}
+.aura-fx[data-aura='ash'] > i {
+  --w: 240px;
+  --h: 280px;
+  --mx: 20px;
+  --my: calc(var(--h) * -1);
+  background-image:
+    radial-gradient(circle at 40px 220px, #ffe9b0 0 0.9px, #ffa84acc 1.8px, transparent 4px),
+    radial-gradient(circle at 170px 90px, #ffe9b0 0 1px, #ff9a3dcc 2px, transparent 4.4px);
+  animation:
+    au-move 8s linear infinite,
+    au-sway 2.2s ease-in-out infinite alternate,
+    au-blink 1.5s ease-in-out infinite 0.4s;
+  --sw: 12px;
+}
+
+/* ───────────── 9 · Estrellas fugaces (épica): cielo estrellado que titila y tres meteoros de cola larga ───────────── */
+.aura-fx[data-aura='meteors'] {
+  background:
+    radial-gradient(circle at 12% 18%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 34% 8%, #cfe2ff 0 1.2px, transparent 2.4px),
+    radial-gradient(circle at 58% 22%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 81% 12%, #ffe9c8 0 1.3px, transparent 2.6px),
+    radial-gradient(circle at 92% 30%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 23% 36%, #cfe2ff 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 70% 40%, #fff 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 47% 46%, #ffe9c8 0 1px, transparent 2px),
+    linear-gradient(180deg, #0a102838, transparent 60%);
+}
+.aura-fx[data-aura='meteors']::before,
+.aura-fx[data-aura='meteors']::after,
+.aura-fx[data-aura='meteors'] > i {
+  inset: auto;
+  width: 170px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ffffff00, #bfe0ffaa 55%, #ffffff);
+  box-shadow:
+    0 0 8px 1px #cfe6ffcc,
+    4px 0 14px 3px #ffffffaa;
+  opacity: 0;
+  rotate: 32deg;
+  --mx: -110vmax;
+  --my: 0px;
+  transform-origin: 100% 50%;
+}
+.aura-fx[data-aura='meteors']::before {
+  top: -4%;
+  left: 86%;
+  animation: au-meteor 6.4s linear infinite 0.8s;
+}
+.aura-fx[data-aura='meteors']::after {
+  top: 6%;
+  left: 54%;
+  width: 120px;
+  animation: au-meteor 9.5s linear infinite 3.2s;
+}
+.aura-fx[data-aura='meteors'] > i {
+  top: -2%;
+  left: 108%;
+  width: 220px;
+  animation: au-meteor 12.6s linear infinite 6.1s;
+}
+/* Cada meteoro cruza el cielo en una fracción corta del ciclo y espera antes del siguiente (el eje se inclina con `rotate`) */
+@keyframes au-meteor {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  2% {
+    opacity: 1;
+  }
+  13% {
+    opacity: 1;
+  }
+  16% {
+    opacity: 0;
+    transform: translate3d(-95vmax, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-95vmax, 0, 0);
+  }
+}
+
+/* ───────────── 10 · Tormenta eléctrica (legendaria): lluvia fuerte, cielo oscuro y relámpagos que iluminan todo ───────────── */
+.aura-fx[data-aura='storm'] {
+  background: linear-gradient(180deg, #0a1030aa, #1a224055 60%, #0a103055);
+}
+.aura-fx[data-aura='storm']::before {
+  --w: 220px;
+  --h: 360px;
+  --mx: 0px;
+  --my: var(--h);
+  rotate: 16deg;
+  background-image:
+    radial-gradient(ellipse 0.9px 22px at 30px 70px, #cfe0ffcc, transparent 100%),
+    radial-gradient(ellipse 0.8px 18px at 120px 210px, #cfe0ffb0, transparent 100%),
+    radial-gradient(ellipse 0.9px 24px at 190px 320px, #cfe0ffcc, transparent 100%),
+    radial-gradient(ellipse 0.8px 16px at 80px 330px, #cfe0ff99, transparent 100%),
+    radial-gradient(ellipse 0.8px 20px at 160px 130px, #cfe0ffb0, transparent 100%);
+  animation: au-move 0.7s linear infinite;
+}
+.aura-fx[data-aura='storm'] > i {
+  --w: 170px;
+  --h: 280px;
+  --mx: 0px;
+  --my: var(--h);
+  rotate: 16deg;
+  background-image:
+    radial-gradient(ellipse 0.7px 13px at 20px 50px, #e6f0ff99, transparent 100%),
+    radial-gradient(ellipse 0.7px 11px at 100px 170px, #e6f0ff88, transparent 100%),
+    radial-gradient(ellipse 0.7px 14px at 140px 250px, #e6f0ff99, transparent 100%);
+  animation: au-move 0.46s linear infinite;
+}
+/* Relámpago: dos destellos seguidos (el segundo más débil) y largo silencio */
+.aura-fx[data-aura='storm']::after {
+  inset: 0;
+  background-size: auto;
+  background:
+    radial-gradient(ellipse 60% 70% at 68% 0%, #dfe9ffee, #9db6ff55 45%, transparent 75%),
+    linear-gradient(180deg, #b8c8ff66, transparent 70%);
+  opacity: 0;
+  animation: au-flash 7.5s linear infinite 1.2s;
+}
+@keyframes au-flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  3.5% {
+    opacity: 0.15;
+  }
+  5% {
+    opacity: 0.75;
+  }
+  9% {
+    opacity: 0;
+  }
+  58% {
+    opacity: 0;
+  }
+  59.2% {
+    opacity: 0.85;
+  }
+  62% {
+    opacity: 0;
+  }
+}
+
+/* ───────────── 11 · Aurora boreal (legendaria): cortinas de luz verde, turquesa y violeta que ondulan sobre un cielo de estrellas ───────────── */
+.aura-fx[data-aura='aurora'] {
+  background:
+    radial-gradient(circle at 16% 14%, #fff 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 44% 6%, #cfe2ff 0 1.1px, transparent 2.2px),
+    radial-gradient(circle at 72% 16%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 90% 8%, #ffe9c8 0 1.2px, transparent 2.4px),
+    radial-gradient(circle at 28% 30%, #fff 0 0.8px, transparent 1.6px),
+    radial-gradient(circle at 62% 34%, #cfe2ff 0 0.9px, transparent 1.8px),
+    linear-gradient(180deg, #06142a66, transparent 70%);
+}
+.aura-fx[data-aura='aurora']::before,
+.aura-fx[data-aura='aurora']::after,
+.aura-fx[data-aura='aurora'] > i {
+  inset: -8% -12% 28%;
+  background-size: auto;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 28%, #000 52%, transparent 92%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 28%, #000 52%, transparent 92%);
+  filter: blur(5px);
+  mix-blend-mode: screen;
+  transform-origin: 50% 0;
+}
+.aura-fx[data-aura='aurora']::before {
+  background: repeating-linear-gradient(
+    94deg,
+    transparent 0 34px,
+    #3dffb2d8 70px,
+    #9dffe2f0 96px,
+    #2fe0c0aa 128px,
+    transparent 176px
+  );
+  animation:
+    au-wave 17s ease-in-out infinite alternate,
+    au-breathe 6s ease-in-out infinite alternate;
+}
+.aura-fx[data-aura='aurora']::after {
+  background: repeating-linear-gradient(
+    88deg,
+    transparent 0 60px,
+    #4aa8ffb8 100px,
+    #a8dcffe0 130px,
+    #5a78ff99 170px,
+    transparent 230px
+  );
+  animation:
+    au-wave 23s ease-in-out infinite alternate-reverse,
+    au-breathe 8s ease-in-out infinite alternate-reverse;
+}
+.aura-fx[data-aura='aurora'] > i {
+  background: repeating-linear-gradient(
+    101deg,
+    transparent 0 90px,
+    #c06bffa0 140px,
+    #ff8ad8dd 170px,
+    #b05cff99 210px,
+    transparent 290px
+  );
+  opacity: 0.95;
+  animation:
+    au-wave 29s ease-in-out infinite alternate,
+    au-breathe 10s ease-in-out infinite alternate;
+}
+@keyframes au-wave {
+  from {
+    transform: translate3d(-4%, 0, 0) skewX(-7deg) scaleY(0.92);
+  }
+  50% {
+    transform: translate3d(1%, -2%, 0) skewX(3deg) scaleY(1.06);
+  }
+  to {
+    transform: translate3d(5%, 1%, 0) skewX(9deg) scaleY(0.98);
+  }
+}
+
+/* ───────────── En la muestra y la vista previa: la capa se amplía para que se vean más partículas y se frena hasta señalarla ───────────── */
+.sw-aura {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 108px;
+  aspect-ratio: 1.8 / 1;
+  overflow: hidden;
+  border-radius: 9px;
+  border: 1.5px solid #0a1118;
+  background: #0b1219;
+  box-shadow: inset 0 0 0 1px #ffffff14;
+}
+.sw-aura > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(0.72) saturate(1.05);
+}
+.sw-aura .aura-fx,
+.look-pv-aura .aura-fx {
+  inset: auto;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+.sw-aura .aura-fx {
+  width: 200%;
+  height: 200%;
+  transform: scale(0.5);
+}
+.look-pv-aura .aura-fx {
+  width: 140%;
+  height: 140%;
+  transform: scale(0.714);
+}
+.sw-aura .aura-fx::before,
+.sw-aura .aura-fx::after,
+.sw-aura .aura-fx > i {
+  animation-play-state: paused;
+}
+.ach-shop-card:hover .sw-aura .aura-fx::before,
+.ach-shop-card:hover .sw-aura .aura-fx::after,
+.ach-shop-card:hover .sw-aura .aura-fx > i,
+.ach-shop-card:focus-within .sw-aura .aura-fx::before,
+.ach-shop-card:focus-within .sw-aura .aura-fx::after,
+.ach-shop-card:focus-within .sw-aura .aura-fx > i {
+  animation-play-state: running;
+}
+.look-pv-aura {
+  position: relative;
+  overflow: hidden;
+}
+.look-pv-aura > img:first-child {
+  filter: brightness(0.78) saturate(1.1);
+}
+
+/* Sin movimiento (preferencia del sistema o modo ligero en la portada): se queda el dibujo quieto */
+@media (prefers-reduced-motion: reduce) {
+  .aura-fx::before,
+  .aura-fx::after,
+  .aura-fx > i {
+    animation: none !important;
+  }
+  .aura-fx[data-aura='storm']::after,
+  .aura-fx[data-aura='meteors']::before,
+  .aura-fx[data-aura='meteors']::after,
+  .aura-fx[data-aura='meteors'] > i {
+    opacity: 0 !important;
+  }
+}
+.lite .cover-aura::before,
+.lite .cover-aura::after,
+.lite .cover-aura > i {
+  animation: none !important;
+}
+.lite .cover-aura[data-aura='storm']::after,
+.lite .cover-aura[data-aura='meteors']::before,
+.lite .cover-aura[data-aura='meteors']::after,
+.lite .cover-aura[data-aura='meteors'] > i {
+  opacity: 0 !important;
+}

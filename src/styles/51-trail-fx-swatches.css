@@ -1,0 +1,358 @@
+/*
+ * Personalizar: filtros en filas de 3 y las muestras de Estelas y Celebración (las de Clima y Tema están en
+ * 49-cover-aura.css y 50-ui-themes.css). Las muestras son estáticas: la animación real se ve en la vista previa.
+ */
+
+/* ───────────── Filtros: filas de 3 ───────────── */
+.ach-filters.board-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.ach-filters.board-filters .ach-filter {
+  position: relative;
+  justify-content: center;
+  min-height: 34px;
+  padding-inline: 6px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.ach-filters.board-filters .ach-filter > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Cinco filtros (Portada): la segunda fila, de dos, queda centrada */
+.ach-filters.board-filters[data-count='5'] {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.ach-filters.board-filters[data-count='5'] .ach-filter {
+  grid-column: span 2;
+}
+.ach-filters.board-filters[data-count='5'] .ach-filter:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+.ach-filters.board-filters[data-count='5'] .ach-filter:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+.ach-filter .ach-tab-badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+}
+
+/* ───────────── Muestra de estela: carril oscuro, ficha a la derecha y su rastro hacia atrás ───────────── */
+.sw-trail,
+.swfx {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 108px;
+  height: 56px;
+  border-radius: 9px;
+  border: 1.5px solid #0a1118;
+  background:
+    linear-gradient(#ffffff0b 1px, transparent 1px) 0 50% / 100% 100% no-repeat,
+    radial-gradient(ellipse at 70% 50%, #1d2c3a, #0b1219 78%);
+  box-shadow: inset 0 0 0 1px #ffffff12;
+  overflow: hidden;
+}
+.sw-trail .sw-piece {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  width: 26px;
+  height: 15px;
+  translate: 0 -50%;
+  border-radius: 4px;
+  border: 1.5px solid #120e14;
+  background: linear-gradient(180deg, #ef5a48, #a82418);
+  box-shadow:
+    inset 0 1px 0 #ffffff55,
+    0 2px 0 #0007;
+}
+.sw-trail > b {
+  position: absolute;
+  top: 50%;
+  right: calc(32px + var(--i, 0) * 13px);
+  width: calc(9px - var(--i, 0) * 1px);
+  height: calc(9px - var(--i, 0) * 1px);
+  margin-top: var(--dy, 0px);
+  translate: 0 -50%;
+  opacity: calc(1 - var(--i, 0) * 0.17);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--c1, #fff) 0 45%,
+    color-mix(in srgb, var(--c2, var(--c1, #fff)) 55%, transparent) 70%,
+    transparent 100%
+  );
+  box-shadow: 0 0 6px color-mix(in srgb, var(--c1, #fff) 70%, transparent);
+}
+.sw-trail > b:nth-child(1) {
+  --i: 0;
+  --dy: 1px;
+}
+.sw-trail > b:nth-child(2) {
+  --i: 1;
+  --dy: -3px;
+}
+.sw-trail > b:nth-child(3) {
+  --i: 2;
+  --dy: 3px;
+}
+.sw-trail > b:nth-child(4) {
+  --i: 3;
+  --dy: -2px;
+}
+.sw-trail > b:nth-child(5) {
+  --i: 4;
+  --dy: 2px;
+}
+.sw-trail > b:nth-child(2n) {
+  background: radial-gradient(
+    circle,
+    var(--c2, var(--c1, #fff)) 0 45%,
+    color-mix(in srgb, var(--c3, var(--c1, #fff)) 55%, transparent) 70%,
+    transparent 100%
+  );
+}
+.sw-trail > b:nth-child(3n) {
+  background: radial-gradient(
+    circle,
+    var(--c3, var(--c1, #fff)) 0 45%,
+    color-mix(in srgb, var(--c1, #fff) 50%, transparent) 70%,
+    transparent 100%
+  );
+}
+/* Formas */
+.sw-trail[data-shape='ring'] > b {
+  background: none;
+  border: 1.4px solid var(--c1);
+  box-shadow: inset 0 0 3px color-mix(in srgb, var(--c1) 70%, transparent);
+}
+.sw-trail[data-shape='leaf'] > b {
+  height: calc(4.6px - var(--i, 0) * 0.3px);
+  width: calc(10px - var(--i, 0) * 1px);
+  border-radius: 80% 20% 80% 20%;
+  rotate: calc(var(--i, 0) * 38deg - 20deg);
+}
+.sw-trail[data-shape='blob'] > b {
+  border-radius: 62% 38% 55% 45% / 48% 58% 42% 52%;
+  box-shadow: none;
+}
+.sw-trail[data-shape='flake'] > b {
+  background: none;
+  box-shadow: none;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  background-color: var(--c1);
+}
+.sw-trail[data-shape='star'] > b {
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background: var(--c1);
+  box-shadow: none;
+}
+.sw-trail[data-shape='streak'] > b {
+  height: 1.8px;
+  width: calc(14px - var(--i, 0) * 2px);
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--c1));
+  rotate: calc(var(--i, 0) * 6deg - 10deg);
+}
+.sw-trail[data-shape='zig'] > b {
+  height: calc(10px - var(--i, 0) * 1px);
+  width: calc(8px - var(--i, 0) * 0.6px);
+  border-radius: 0;
+  clip-path: polygon(40% 0, 100% 0, 60% 42%, 100% 42%, 20% 100%, 42% 56%, 0 56%);
+  background: var(--c1);
+  box-shadow: none;
+}
+.sw-trail[data-shape='comet'] > b {
+  height: calc(8px - var(--i, 0) * 1.2px);
+  width: calc(22px - var(--i, 0) * 3px);
+  margin-top: 0;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, var(--c1));
+  right: calc(34px + var(--i, 0) * 11px);
+}
+.sw-trail.none > b {
+  display: none;
+}
+.sw-trail.none::after {
+  content: '';
+  position: absolute;
+  right: 40px;
+  left: 14px;
+  top: 50%;
+  border-top: 1.5px dashed #ffffff30;
+}
+
+/* ───────────── Muestra de celebración: estallido con los colores del festejo ───────────── */
+.swfx {
+  display: grid;
+  place-items: center;
+}
+.swfx::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 30%, var(--c1, #fff) 60%, transparent 100%);
+  box-shadow: 0 0 12px var(--c1, #fff);
+}
+.swfx > b {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--c1);
+  box-shadow: 0 0 5px var(--c1);
+  transform: rotate(calc(var(--n) * 45deg)) translateY(calc(-13px - var(--r, 0px)));
+}
+.swfx > b:nth-child(1) {
+  --n: 0;
+  --r: 7px;
+}
+.swfx > b:nth-child(2) {
+  --n: 1;
+  background: var(--c2, var(--c1));
+  box-shadow: 0 0 5px var(--c2, var(--c1));
+}
+.swfx > b:nth-child(3) {
+  --n: 2;
+  --r: 7px;
+  background: var(--c3, var(--c1));
+  box-shadow: 0 0 5px var(--c3, var(--c1));
+}
+.swfx > b:nth-child(4) {
+  --n: 3;
+  background: var(--c4, var(--c1));
+  box-shadow: 0 0 5px var(--c4, var(--c1));
+}
+.swfx > b:nth-child(5) {
+  --n: 4;
+  --r: 7px;
+}
+.swfx > b:nth-child(6) {
+  --n: 5;
+  background: var(--c2, var(--c1));
+  box-shadow: 0 0 5px var(--c2, var(--c1));
+}
+.swfx > b:nth-child(7) {
+  --n: 6;
+  --r: 7px;
+  background: var(--c3, var(--c1));
+  box-shadow: 0 0 5px var(--c3, var(--c1));
+}
+.swfx > b:nth-child(8) {
+  --n: 7;
+  background: var(--c4, var(--c1));
+  box-shadow: 0 0 5px var(--c4, var(--c1));
+}
+/* Formas propias de algunos festejos */
+.swfx[data-fx='stars'] > b,
+.swfx[data-fx='fireworks'] > b {
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 0;
+}
+.swfx[data-fx='petals'] > b,
+.swfx[data-fx='leaves'] > b {
+  width: 8px;
+  height: 4px;
+  border-radius: 80% 20% 80% 20%;
+}
+.swfx[data-fx='confetti'] > b {
+  border-radius: 1px;
+  width: 5px;
+  height: 3px;
+}
+.swfx[data-fx='coins'] > b {
+  width: 7px;
+  height: 7px;
+  border: 1.2px solid #fff6c9;
+}
+.swfx[data-fx='lightning'] > b,
+.swfx[data-fx='sparks'] > b {
+  width: 2px;
+  height: 8px;
+  border-radius: 1px;
+}
+.swfx[data-fx='frost'] > b {
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+}
+.swfx.none::before {
+  background: none;
+  border: 1.5px dashed #ffffff40;
+  box-shadow: none;
+  width: 18px;
+  height: 18px;
+}
+.swfx.none > b {
+  display: none;
+}
+
+/* ───────────── Vista previa de estela y celebración: el tablero de muestra con la llave en movimiento ───────────── */
+.look-mini.demo-run .piece.red .face {
+  animation: none;
+}
+.look-mini.demo-run {
+  --cell: 38px;
+}
+.look-pv-stage[data-type='trail'] .look-pv-play,
+.look-pv-stage[data-type='fx'] .look-pv-play {
+  margin-top: 2px;
+}
+.look-pv-stage[data-type='ui'] {
+  padding: 8px;
+}
+.look-pv-stage[data-type='aura'] {
+  padding: 6px;
+}
+.look-pv-stage .look-pv-aura {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+}
+@media (max-width: 380px) {
+  .uim-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Las imágenes no se recortan: los fondos son 16:9 (1,8:1) y se ven enteros en muestras y vistas previas */
+.sw-aura,
+.look-pv-stage .look-pv-aura {
+  aspect-ratio: 1.8 / 1;
+}
+.look-pv-aura > img:first-child {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ach-shop-card .ach-shop-art img.sw-bg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1.8 / 1;
+  object-fit: contain;
+}
+
+/* Héroes y fondos: la miniatura entera (sin recortes) */
+.ach-shop-art .sw-cover.sw-bg {
+  height: auto;
+  aspect-ratio: 1.8 / 1;
+  object-fit: contain;
+  object-position: center;
+}
+.ach-shop-art .sw-cover.sw-cover {
+  height: 84px;
+  object-fit: contain;
+  object-position: center bottom;
+}

@@ -82,6 +82,30 @@ const POOL = {
     desafio: ['challengeBest', 'challengeBoards'],
     diario: ['dailySolved', 'dailyGold', 'bestStreak'],
   },
+  /* Estelas (lo que dejan las fichas al moverse): premian el juego táctico — tableros, mínimos, rocas, hielo, poderes */
+  trail: {
+    aventura: ['boardsSolved', 'perfects', 'iceRock', 'powersUsed', 'heavyBoards', 'bestRunStreak', 'locks'],
+    desafio: ['challengeBoards', 'challengeBest'],
+    diario: ['dailySolved', 'dailyGold', 'bestStreak'],
+  },
+  /* Celebración de la llave que sale: premia terminar bien (mínimos, tramos limpios, rachas, aventuras completas) */
+  fx: {
+    aventura: ['perfects', 'bestRunStreak', 'boardsSolved', 'cleanCity', 'completed', 'maxLevel', 'hardLevel'],
+    desafio: ['challengeBest', 'challengeBoards'],
+    diario: ['dailyGold', 'dailySolved', 'bestStreak'],
+  },
+  /* Clima de la portada: premia avanzar por el mundo (niveles, caminos, cartas) y volver cada día */
+  aura: {
+    aventura: ['maxLevel', 'boardsSolved', 'fateCards', 'hardLevel', 'expertLevel', 'completed'],
+    desafio: ['challengeBoards', 'challengeBest'],
+    diario: ['bestStreak', 'dailySolved', 'dailyKinds', 'dailyGold'],
+  },
+  /* Tema de interfaz: premia la constancia y completar aventuras */
+  ui: {
+    aventura: ['completed', 'maxLevel', 'powersUsed', 'fateSeenCount', 'boardsSolved', 'hardLevel', 'expertLevel'],
+    desafio: ['challengeBest', 'challengeBoards'],
+    diario: ['bestStreak', 'dailySolved', 'dailyGold'],
+  },
 };
 const heroPool = (H) => ({
   aventura: [

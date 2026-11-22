@@ -13,7 +13,8 @@ import { freeRetry } from '../game/shop.js';
 import { lowState, renderTurns } from './turns.js';
 import { numLocale } from '../i18n.js';
 import { boardRotation, localDelta } from '../game/orientation.js';
-import { motes } from './fx.js';
+import { rewardById } from '../game/achievements.js';
+import { motes, trailPath } from './fx.js';
 export const boardEl = $('board'),
   cellPx = () => boardEl.clientWidth / 6;
 /* Mide el espacio libre real y da al tablero el mayor tamaño posible (sin scroll) */
@@ -131,7 +132,33 @@ export function place(i, x = S.G.pos[i]) {
     s = cellPx();
   el.style.width = (p.o === 'h' ? p.len : 1) * s + 'px';
   el.style.height = (p.o === 'v' ? p.len : 1) * s + 'px';
+  const prev = el._px;
+  el._px = x;
+  if (prev !== undefined && prev !== x) trailStep(p, prev, x, s);
   setXY(el, p, x, s);
+}
+/** Estela equipada (Personalizar → Tablero → Estelas): partículas desde el borde trasero de la ficha mientras se mueve. */
+function trailStep(p, from, to, s) {
+  const kind = document.body.dataset.trail;
+  if (!kind || kind === 'none' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = rewardById('trail', kind)?.colors;
+  if (!colors) return;
+  const r = boardEl.getBoundingClientRect(),
+    w = boardEl.clientWidth,
+    deg = ((Number(document.querySelector('.frame')?.dataset.rot) || 0) * Math.PI) / 180,
+    cos = Math.cos(deg),
+    sin = Math.sin(deg),
+    fwd = to > from;
+  // Punto de la pantalla del borde trasero de la ficha cuando está en la casilla `x` (el tablero puede ir girado)
+  const at = (x) => {
+    const e = (fwd ? x : x + p.len) * s,
+      lx = (p.o === 'h' ? e : (p.fix + 0.5) * s) - w / 2,
+      ly = (p.o === 'h' ? (p.fix + 0.5) * s : e) - w / 2;
+    return [r.left + r.width / 2 + lx * cos - ly * sin, r.top + r.height / 2 + lx * sin + ly * cos];
+  };
+  const [ax, ay] = at(from),
+    [bx, by] = at(to);
+  trailPath(kind, ax, ay, bx, by, colors);
 }
 /** Posición de la pieza con `translate` (compuesta en la GPU; left/top se quedan en 0). */
 const setXY = (el, p, x, s) => {

@@ -115,6 +115,16 @@ const pick = (cols, i) => cols[i % cols.length];
 function shape(o) {
   parts.push({ sh: o.sh, x: 0, y: 0, vx: 0, vy: 0, g: 0, drag: 1, rot: 0, vr: 0, r: 3, add: false, ...o, max: o.life });
 }
+/** Rayo en zigzag: de (0, 0) en la dirección `ang`, `len` px, con `seg` quiebros de hasta `jit` px. */
+function boltPts(ang, len, seg = 7, jit = 10) {
+  const pts = [[0, 0]];
+  for (let i = 1; i <= seg; i++) {
+    const d = (len * i) / seg,
+      j = i === seg ? 0 : rnd(-jit, jit);
+    pts.push([Math.cos(ang) * d - Math.sin(ang) * j, Math.sin(ang) * d + Math.cos(ang) * j]);
+  }
+  return pts;
+}
 /** Formas propias de cada celebración (src/game/achievements.js → REWARDS.fx). `w`: ancho de la zona (el tablero). */
 const STYLES = {
   // Brasas: suben flotando, se mecen y titilan
@@ -325,6 +335,127 @@ const STYLES = {
         delay: i * 9,
       });
   },
+  // Hojas de otoño: caen girando con un balanceo amplio y lento
+  leaves(x, y, w, cols) {
+    for (let i = 0; i < count(26); i++)
+      shape({
+        sh: 'petal',
+        x: x - rnd(0, w * 0.9),
+        y: y - rnd(w * 0.2, w * 0.7),
+        vx: rnd(-0.7, 0.3),
+        vy: rnd(0.9, 2),
+        sway: rnd(1.6, 2.8),
+        ph: rnd(0, 6),
+        r: rnd(5, 9),
+        rot: rnd(0, 6),
+        vr: rnd(-0.1, 0.1),
+        life: rnd(110, 170),
+        c: pick(cols, i),
+        delay: Math.floor(rnd(0, 24)),
+      });
+  },
+  // Confeti: dos cañonazos de papelitos (el segundo, un instante después, desde el otro lado)
+  confetti(x, y, w, cols) {
+    burst(x, y, 44, cols, 9);
+    setTimeout(() => burst(x - w * 0.55, y - w * 0.1, 34, cols, 8), 170);
+  },
+  // Monedas: saltan hacia arriba, giran sobre su canto y caen tintineando
+  coins(x, y, w, cols) {
+    for (let i = 0; i < count(26); i++)
+      shape({
+        sh: 'coin',
+        x: x + rnd(-10, 6),
+        y,
+        vx: rnd(-6.5, 1.5),
+        vy: rnd(-10.5, -5),
+        g: 0.34,
+        drag: 0.99,
+        r: rnd(4.5, 7),
+        ph: rnd(0, 6),
+        life: rnd(70, 105),
+        c: pick(cols, i),
+        delay: Math.floor(rnd(0, 14)),
+      });
+    shape({ sh: 'ring', x, y, r: 4, grow: 1.1, life: 22, c: cols[2], add: true, lw: 2 });
+  },
+  // Relámpago: tres rayos caen sobre la llave con un destello blanco y una onda de choque
+  lightning(x, y, w, cols) {
+    for (let i = 0; i < 3; i++) {
+      const sx = x - w * rnd(0.05, 0.85),
+        sy = y - w * rnd(0.45, 0.75),
+        ang = Math.atan2(y - sy, x - sx + rnd(-30, 30));
+      shape({
+        sh: 'bolt',
+        x: sx,
+        y: sy,
+        pts: boltPts(ang, Math.hypot(x - sx, y - sy), 8, 13),
+        r: 1.7,
+        life: 15,
+        c: i % 2 ? cols[0] : cols[1],
+        add: true,
+        delay: i * 7,
+      });
+    }
+    shape({ sh: 'ring', x, y, r: 6, grow: 1.13, life: 26, c: cols[0], add: true, lw: 4, delay: 12 });
+    shape({ sh: 'ring', x, y, r: 3, grow: 1.18, life: 20, c: cols[2], add: true, lw: 2, delay: 14 });
+    for (let i = 0; i < count(26); i++) {
+      const a = rnd(0, Math.PI * 2),
+        s = rnd(4, 11);
+      shape({
+        sh: 'streak',
+        x,
+        y,
+        vx: Math.cos(a) * s,
+        vy: Math.sin(a) * s,
+        drag: 0.93,
+        r: rnd(1, 1.8),
+        life: rnd(14, 26),
+        c: pick(cols, i),
+        add: true,
+        delay: 12,
+      });
+    }
+  },
+  // Vuelo del fénix: dos alas de llamas que se abren hacia arriba, plumas que ascienden y un aro de fuego
+  phoenix(x, y, w, cols) {
+    for (const side of [-1, 1])
+      for (let i = 0; i < count(18); i++) {
+        const k = i / 17;
+        shape({
+          sh: 'ember',
+          x: x + side * 4,
+          y,
+          vx: side * (1.4 + k * 5.4),
+          vy: -(5 - k * 3.4) - rnd(0, 1),
+          g: -0.03,
+          drag: 0.965,
+          r: rnd(2.4, 4.6),
+          life: rnd(55, 90),
+          c: pick(cols, i),
+          add: true,
+          ph: rnd(0, 6),
+          delay: Math.floor(k * 8),
+        });
+      }
+    for (let i = 0; i < count(14); i++)
+      shape({
+        sh: 'petal',
+        x: x + rnd(-14, 14),
+        y: y + rnd(-6, 10),
+        vx: rnd(-1, 1),
+        vy: rnd(-3.4, -1.4),
+        sway: rnd(0.8, 1.6),
+        ph: rnd(0, 6),
+        r: rnd(5, 8),
+        rot: rnd(0, 6),
+        vr: rnd(-0.08, 0.08),
+        life: rnd(70, 110),
+        c: pick(cols, i),
+        delay: Math.floor(rnd(2, 20)),
+      });
+    shape({ sh: 'ring', x, y, r: 6, grow: 1.1, life: 36, c: cols[1], add: true, lw: 4 });
+    shape({ sh: 'ring', x, y, r: 3, grow: 1.14, life: 28, c: cols[3], add: true, lw: 2 });
+  },
 };
 function explode(p) {
   const n = count(38),
@@ -478,6 +609,31 @@ function drawShape(p) {
       cx.lineTo(p.r, 0);
       cx.stroke();
       break;
+    case 'coin': {
+      const sq = Math.abs(Math.cos(p.age * 0.22 + p.ph));
+      cx.beginPath();
+      cx.ellipse(0, 0, p.r * (0.22 + 0.78 * sq), p.r, 0, 0, Math.PI * 2);
+      cx.fill();
+      cx.globalAlpha *= 0.75;
+      cx.strokeStyle = '#fff6c9';
+      cx.lineWidth = 1.1;
+      cx.stroke();
+      break;
+    }
+    case 'bolt':
+      cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cx.lineCap = cx.lineJoin = 'round';
+      for (const [lw, al] of [
+        [p.r * 3.2, 0.28],
+        [p.r, 1],
+      ]) {
+        cx.globalAlpha = Math.max(0, a * al);
+        cx.lineWidth = lw;
+        cx.beginPath();
+        p.pts.forEach(([px, py], i) => cx[i ? 'lineTo' : 'moveTo'](p.x + px, p.y + py));
+        cx.stroke();
+      }
+      break;
     case 'ribbon': {
       p.trail.push(p.x, p.y);
       if (p.trail.length > 36) p.trail.splice(0, 2);
@@ -553,4 +709,280 @@ export function countUp(el, from, to, ms = 900, fmt = (v) => Math.round(v).toLoc
     el.textContent = fmt(from + (to - from) * e);
     if (k < 1) requestAnimationFrame(f);
   })(t0);
+}
+
+/* ============================ Estelas (Personalizar → Tablero → Estelas) ============================ */
+const rpick = (cols) => cols[Math.floor(Math.random() * cols.length)];
+let rainbowI = 0;
+/** Una partícula de la estela `kind` en (x, y); `u` = dirección unitaria del movimiento; `d` = retraso en fotogramas. */
+const TRAIL_STYLES = {
+  dust: (x, y, u, c, d) =>
+    shape({
+      sh: 'ember',
+      x: x + rnd(-5, 5),
+      y: y + rnd(-5, 5),
+      vx: rnd(-0.3, 0.3),
+      vy: rnd(-0.5, 0.1),
+      drag: 0.96,
+      r: rnd(1.2, 2.5),
+      life: rnd(26, 42),
+      c: rpick(c),
+      add: true,
+      ph: rnd(0, 6),
+      delay: d,
+    }),
+  embers: (x, y, u, c, d) =>
+    shape({
+      sh: 'ember',
+      x: x + rnd(-6, 6),
+      y: y + rnd(-6, 6),
+      vx: -u.x * 0.6 + rnd(-0.4, 0.4),
+      vy: -u.y * 0.6 + rnd(-1.4, -0.4),
+      g: -0.02,
+      drag: 0.98,
+      r: rnd(1.6, 3.2),
+      life: rnd(36, 60),
+      c: rpick(c),
+      add: true,
+      ph: rnd(0, 6),
+      delay: d,
+    }),
+  leaves: (x, y, u, c, d) =>
+    shape({
+      sh: 'petal',
+      x: x + rnd(-6, 6),
+      y: y + rnd(-6, 6),
+      vx: -u.x * 0.5 + rnd(-0.3, 0.3),
+      vy: rnd(0.3, 1),
+      sway: rnd(1, 2),
+      ph: rnd(0, 6),
+      r: rnd(3.5, 5.5),
+      rot: rnd(0, 6),
+      vr: rnd(-0.1, 0.1),
+      life: rnd(44, 70),
+      c: rpick(c),
+      delay: d,
+    }),
+  petals: (x, y, u, c, d) =>
+    shape({
+      sh: 'petal',
+      x: x + rnd(-6, 6),
+      y: y + rnd(-6, 6),
+      vx: -u.x * 0.4 + rnd(-0.3, 0.3),
+      vy: rnd(0.2, 0.8),
+      sway: rnd(0.8, 1.6),
+      ph: rnd(0, 6),
+      r: rnd(3, 5),
+      rot: rnd(0, 6),
+      vr: rnd(-0.08, 0.08),
+      life: rnd(46, 74),
+      c: rpick(c),
+      delay: d,
+    }),
+  bubbles: (x, y, u, c, d) =>
+    shape({
+      sh: 'ring',
+      x: x + rnd(-7, 7),
+      y: y + rnd(-7, 7),
+      vx: rnd(-0.15, 0.15),
+      vy: rnd(-0.7, -0.2),
+      r: rnd(2, 4.4),
+      grow: 1.02,
+      life: rnd(34, 54),
+      c: rpick(c),
+      add: true,
+      lw: 1.4,
+      delay: d,
+    }),
+  ink: (x, y, u, c, d) =>
+    shape({
+      sh: 'blob',
+      x: x + rnd(-4, 4),
+      y: y + rnd(-4, 4),
+      vx: rnd(-0.2, 0.2),
+      vy: rnd(-0.2, 0.2),
+      drag: 0.9,
+      r: rnd(2.4, 5.2),
+      grow: 1.012,
+      life: rnd(34, 58),
+      c: rpick(c),
+      ph: rnd(0, 6),
+      delay: d,
+    }),
+  frost: (x, y, u, c, d) =>
+    shape({
+      sh: 'flake',
+      x: x + rnd(-6, 6),
+      y: y + rnd(-6, 6),
+      vx: rnd(-0.3, 0.3),
+      vy: rnd(0.1, 0.6),
+      drag: 0.97,
+      r: rnd(2.2, 4),
+      rot: rnd(0, 1),
+      vr: rnd(-0.05, 0.05),
+      life: rnd(40, 64),
+      c: rpick(c),
+      add: true,
+      delay: d,
+    }),
+  sparks: (x, y, u, c, d) =>
+    shape({
+      sh: 'streak',
+      x: x + rnd(-3, 3),
+      y: y + rnd(-3, 3),
+      vx: -u.x * rnd(2, 5) + rnd(-1.2, 1.2),
+      vy: -u.y * rnd(2, 5) + rnd(-1.2, 1.2),
+      g: 0.1,
+      drag: 0.93,
+      r: rnd(1, 1.7),
+      life: rnd(16, 28),
+      c: rpick(c),
+      add: true,
+      delay: d,
+    }),
+  lightning: (x, y, u, c, d) => {
+    const a = Math.atan2(-u.y, -u.x) + rnd(-0.7, 0.7);
+    shape({
+      sh: 'bolt',
+      x,
+      y,
+      pts: boltPts(a, rnd(14, 26), 4, 6),
+      r: 1.2,
+      life: rnd(9, 14),
+      c: rpick(c),
+      add: true,
+      delay: d,
+    });
+  },
+  rainbow: (x, y, u, c, d) =>
+    shape({
+      sh: 'blob',
+      x,
+      y,
+      vx: 0,
+      vy: 0,
+      drag: 1,
+      r: 4.6,
+      life: 30,
+      c: c[rainbowI++ % c.length],
+      add: true,
+      ph: 0,
+      delay: d,
+    }),
+  starlight: (x, y, u, c, d) =>
+    shape({
+      sh: 'star',
+      x: x + rnd(-7, 7),
+      y: y + rnd(-7, 7),
+      vx: rnd(-0.3, 0.3),
+      vy: rnd(-0.4, 0.2),
+      drag: 0.97,
+      r: rnd(2, 4.4),
+      rot: rnd(0, 1),
+      vr: rnd(-0.05, 0.05),
+      life: rnd(36, 58),
+      c: rpick(c),
+      add: true,
+      ph: rnd(0, 6),
+      delay: d,
+    }),
+  comet: (x, y, u, c, d) => {
+    shape({ sh: 'ember', x, y, vx: 0, vy: 0, r: rnd(3.6, 5), life: 26, c: c[0], add: true, ph: rnd(0, 6), delay: d });
+    shape({
+      sh: 'streak',
+      x,
+      y,
+      vx: -u.x * rnd(3, 6),
+      vy: -u.y * rnd(3, 6),
+      drag: 0.9,
+      r: 1.6,
+      life: rnd(14, 22),
+      c: rpick(c),
+      add: true,
+      delay: d,
+    });
+  },
+  phoenix: (x, y, u, c, d) => {
+    shape({
+      sh: 'ember',
+      x: x + rnd(-6, 6),
+      y: y + rnd(-4, 6),
+      vx: rnd(-0.5, 0.5),
+      vy: rnd(-2, -0.7),
+      g: -0.03,
+      drag: 0.98,
+      r: rnd(2.6, 5),
+      life: rnd(40, 68),
+      c: rpick(c),
+      add: true,
+      ph: rnd(0, 6),
+      delay: d,
+    });
+    if (Math.random() < 0.35)
+      shape({
+        sh: 'petal',
+        x,
+        y,
+        vx: rnd(-0.6, 0.6),
+        vy: rnd(-1.6, -0.6),
+        sway: 1.2,
+        ph: rnd(0, 6),
+        r: rnd(4, 6.5),
+        rot: rnd(0, 6),
+        vr: rnd(-0.1, 0.1),
+        life: rnd(46, 70),
+        c: rpick(c),
+        add: true,
+        delay: d,
+      });
+  },
+  eclipse: (x, y, u, c, d) => {
+    shape({
+      sh: 'blob',
+      x: x + rnd(-5, 5),
+      y: y + rnd(-5, 5),
+      vx: rnd(-0.3, 0.3),
+      vy: rnd(-0.3, 0.3),
+      drag: 0.92,
+      r: rnd(4, 8),
+      grow: 1.02,
+      life: rnd(34, 54),
+      c: c[0],
+      ph: rnd(0, 6),
+      delay: d,
+    });
+    if (Math.random() < 0.7)
+      shape({
+        sh: 'ember',
+        x: x + rnd(-8, 8),
+        y: y + rnd(-8, 8),
+        vx: rnd(-0.4, 0.4),
+        vy: rnd(-0.5, 0.3),
+        r: rnd(1.4, 2.8),
+        life: rnd(26, 44),
+        c: c[1 + Math.floor(Math.random() * (c.length - 1))],
+        add: true,
+        ph: rnd(0, 6),
+        delay: d,
+      });
+  },
+};
+/**
+ * Deja la estela `kind` a lo largo del tramo (ax, ay) → (bx, by), en píxeles de pantalla. En un arrastre llegan tramos cortos
+ * (se dibujan al instante); en un deslizamiento largo las partículas se reparten en el tiempo siguiendo a la ficha.
+ */
+export function trailPath(kind, ax, ay, bx, by, cols) {
+  const make = TRAIL_STYLES[kind];
+  if (!make || !cols?.length || parts.length > 480) return;
+  const dist = Math.hypot(bx - ax, by - ay);
+  if (dist < 1) return;
+  if (isLite() && Math.random() < 0.5) return;
+  const u = { x: (bx - ax) / dist, y: (by - ay) / dist },
+    steps = Math.max(1, Math.min(34, Math.round(dist / 9))),
+    lag = dist > 30 ? 10 : 0;
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    make(ax + (bx - ax) * t, ay + (by - ay) * t, u, cols, Math.round(t * lag));
+  }
+  if (!raf) raf = requestAnimationFrame(tick);
 }

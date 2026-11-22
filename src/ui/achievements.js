@@ -36,7 +36,7 @@ import { HEROES } from '../game/heroes.js';
 import { FATE_CARDS } from '../game/fate.js';
 import { numLocale } from '../i18n.js';
 import { S, persist, store } from '../state.js';
-import { celebration } from './fx.js';
+import { celebration, trailPath } from './fx.js';
 import { fateCardHtml } from './fate.js';
 import { icon } from './icons.js';
 
@@ -49,15 +49,20 @@ const TYPE_NAME = {
   cover: 'Héroes',
   music: 'Música',
   bg: 'Fondo',
+  trail: 'Estelas',
+  fx: 'Celebración',
+  aura: 'Clima',
+  ui: 'Tema',
 };
 /**
- * Pestañas principales, cada una con sus filtros (para poder añadir más sin ocupar espacio):
- *   Tablero → Borde · Fichas · Llave     Atuendos → un filtro por héroe     Portada → Héroes · Música · Fondo
+ * Pestañas principales, cada una con sus filtros (para poder añadir más sin ocupar espacio), en filas de 3:
+ *   Tablero → Borde · Fichas · Llave / Tarjetas · Estelas · Celebración     Atuendos → un filtro por héroe
+ *   Portada → Héroes · Música · Fondo / Clima · Tema
  */
 const GROUPS = [
-  { id: 'board', label: 'Tablero', icon: 'flag', types: ['board', 'pieces', 'key', 'card'] },
+  { id: 'board', label: 'Tablero', icon: 'flag', types: ['board', 'pieces', 'key', 'card', 'trail', 'fx'] },
   { id: 'outfit', label: 'Atuendos', icon: 'heart', types: ['outfit'] },
-  { id: 'cover', label: 'Portada', icon: 'stars', types: ['cover', 'music', 'bg'] },
+  { id: 'cover', label: 'Portada', icon: 'stars', types: ['cover', 'music', 'bg', 'aura', 'ui'] },
 ];
 const groupOf = (type) => GROUPS.find((g) => g.types.includes(type)) || GROUPS[0];
 const TYPE_HINT = {
@@ -68,6 +73,10 @@ const TYPE_HINT = {
   cover: 'Así lucirán los héroes en la portada',
   music: 'Así sonará en el menú',
   bg: 'Así lucirá el fondo de la portada',
+  trail: 'Así se verá tu estela al mover fichas',
+  fx: 'Así celebrará tu llave al salir',
+  aura: 'Así lucirá el clima en la portada',
+  ui: 'Así lucirá la interfaz de la portada',
 };
 const SURVIVAL_BY_ID = {
   s0: SURVIVAL_TRACKS[0],
@@ -123,6 +132,10 @@ export function applyLook() {
   document.body.dataset.cover = look.cover;
   document.body.dataset.bg = look.bg;
   document.body.dataset.card = look.card;
+  document.body.dataset.trail = look.trail;
+  document.body.dataset.ui = look.ui;
+  const aura = document.querySelector('#menu .cover-aura');
+  if (aura) aura.dataset.aura = look.aura;
   Music.setMenuTheme(themeOf(look.music));
   return look;
 }
@@ -253,8 +266,41 @@ export function markStat(name, key) {
 /* ---------- muestras ---------- */
 /** Miniatura de una portada o un fondo recortados (public/portada/thumbs, ~5-12 KB); las demás imágenes se usan tal cual. */
 const thumbOf = (src) => (src.startsWith('portada/') ? `portada/thumbs/${src.split('/').pop()}` : src);
+/** Forma de la partícula en la muestra de cada estela (el CSS dibuja una fila de cinco, de más grande a más pequeña). */
+const TRAIL_SHAPE = {
+  dust: 'dot',
+  embers: 'dot',
+  leaves: 'leaf',
+  petals: 'leaf',
+  bubbles: 'ring',
+  ink: 'blob',
+  frost: 'flake',
+  sparks: 'streak',
+  lightning: 'zig',
+  rainbow: 'blob',
+  starlight: 'star',
+  comet: 'comet',
+  phoenix: 'leaf',
+  eclipse: 'blob',
+};
+const colorVars = (cols = []) => cols.map((c, i) => `--c${i + 1}:${c}`).join(';');
+/** Miniatura del fondo equipado (sobre ella se ven los climas). */
+const equippedBgThumb = () => thumbOf(rewardById('bg', lookOf(store).bg)?.src || DEFAULT_BG_SRC);
+const DEFAULT_BG_SRC = 'portada/fondos/bosque-cascada.webp';
 const swatch = (type, id) => {
   if (type === 'board') return `<i class="sw sw-board" data-board="${id}"></i>`;
+  if (type === 'trail') {
+    const t = rewardById('trail', id);
+    return `<i class="swx sw-trail${t?.colors ? '' : ' none'}" data-shape="${TRAIL_SHAPE[id] || 'dot'}" style="${colorVars(t?.colors)}"><b></b><b></b><b></b><b></b><b></b><em class="sw-piece"></em></i>`;
+  }
+  if (type === 'fx') {
+    const b = rewardById('fx', id)?.burst;
+    return `<i class="swx swfx${b ? '' : ' none'}" data-fx="${id}" style="${colorVars(b?.colors)}"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></i>`;
+  }
+  if (type === 'aura')
+    return `<span class="swx sw-aura"><img src="/${equippedBgThumb()}" alt="" loading="lazy" decoding="async"><i class="aura-fx" data-aura="${id}"><i></i></i></span>`;
+  if (type === 'ui')
+    return `<span class="swx sw-ui" data-ui-scope="${id}"><i class="uim-card"><b class="uim-title"></b><i class="uim-btn a"></i><i class="uim-btn b"></i><i class="uim-btn c"></i></i></span>`;
   if (type === 'cover' || type === 'bg') {
     const src = thumbOf(rewardById(type, id)?.src || '');
     return `<img class="sw sw-cover sw-${type}" src="/${src}" alt="" loading="lazy" decoding="async">`;
@@ -304,7 +350,8 @@ function renderGrid(type) {
         </button>${foot}</article>`;
     })
     .join('');
-  return `<div class="ach-shop-grid${type === 'key' || type === 'pieces' || type === 'board' ? ' cols-3' : ''}">${cards}</div>`;
+  const cols3 = ['key', 'pieces', 'board', 'trail', 'fx', 'aura', 'ui'].includes(type);
+  return `<div class="ach-shop-grid${cols3 ? ' cols-3' : ''}" data-grid="${type}">${cards}</div>`;
 }
 
 /* ---------- Atuendos: conjuntos de traje por héroe ---------- */
@@ -374,7 +421,23 @@ const SAMPLE_FATES = [
   shortest(FATE_CARDS.filter((c) => c.kind === 'blessing')) || FATE_CARDS[0],
   shortest(FATE_CARDS.filter((c) => c.kind === 'pact')) || FATE_CARDS[1],
 ];
+/** Tablero de muestra para estelas y celebraciones: la llave recorre la fila libre (JS) y deja su rastro / lanza su festejo. */
+const demoBoard = () => miniBoard().replace('class="frame look-mini"', 'class="frame look-mini demo-run"');
 function stageFor(type, id) {
+  if (type === 'trail' || type === 'fx')
+    return `${demoBoard()}${type === 'fx' ? `<button type="button" class="look-pv-play" data-pv-fx>${id === 'none' ? 'Sin celebración' : 'Probar celebración'}</button>` : ''}`;
+  if (type === 'aura') {
+    const bg = rewardById('bg', lookOf(store).bg)?.src || DEFAULT_BG_SRC;
+    return `<div class="look-pv-cover look-pv-aura"><img src="/${bg}" alt=""><i class="aura-fx" data-aura="${id}"><i></i></i></div>`;
+  }
+  if (type === 'ui')
+    return `<div class="uim-stage" data-ui-scope="${id}">
+      <div class="uim-menu"><b class="uim-logo">DAWN<i>SLIDE</i></b>
+        <div class="uim-modes"><span class="uim-mode m1"><i></i><b>Aventura</b><small>Camino de 21 niveles</small></span><span class="uim-mode m2"><i></i><b>Desafío</b><small>Con límite de turnos</small></span><span class="uim-mode m3"><i></i><b>Retos diarios</b><small>Reto de hoy pendiente</small></span></div>
+        <div class="uim-row"><span class="uim-pill">Personalizar</span><span class="uim-pill">Más</span></div>
+      </div>
+      <div class="uim-pick"><b>Elige tu compañero</b><div class="uim-heroes">${HEROES.map((h) => `<span class="uim-hero${h.id === 'lia' ? ' on' : ''}" style="--accent:${h.color}"><i></i><small>${h.name}</small></span>`).join('')}</div><span class="uim-go">Comenzar aventura ➜</span></div>
+    </div>`;
   if (type === 'card')
     return `<div class="look-fates" data-card-scope="${id}">${SAMPLE_FATES.map((c, i) => fateCardHtml(c, { tag: 'span', index: i })).join('')}</div>`;
   if (type === 'cover' || type === 'bg') {
@@ -392,6 +455,53 @@ function tryOn(type, id) {
   document.body.dataset.board = type === 'board' ? id : look.board;
   document.body.dataset.pieces = type === 'pieces' ? id : look.pieces;
   document.body.dataset.key = type === 'key' ? id : look.key;
+  document.body.dataset.ui = type === 'ui' ? id : look.ui;
+}
+
+/**
+ * Demostración en vivo de una estela o una celebración sobre el tablero de muestra: la llave de la fila 3 va y viene
+ * (ida y vuelta suave) y, según el caso, deja su estela por el camino o lanza la celebración al llegar a la salida.
+ */
+function startDemo(el, type, id) {
+  const key = el.querySelector('.look-mini .piece.red'),
+    board = el.querySelector('.look-mini-board');
+  if (!key || !board) return;
+  const item = rewardById(type, id),
+    calm = reducedMotion();
+  let raf = 0,
+    prev = null,
+    lastX = -1;
+  const t0 = performance.now(),
+    fireFx = () => {
+      const b = board.getBoundingClientRect(),
+        r = key.getBoundingClientRect(),
+        fx = item?.burst;
+      if (fx) celebration(id, b.right - 8, r.top + r.height / 2, b.width, fx.colors);
+    };
+  const frame = (now) => {
+    const t = (now - t0) / 1000,
+      cyc = (t % 3.2) / 3.2, // 0→1: ida (0–.5) y vuelta (.5–1)
+      k = cyc < 0.5 ? cyc * 2 : 2 - cyc * 2,
+      x = 4 * (1 - Math.cos(Math.PI * k)) * 0.5;
+    if (!calm) key.style.setProperty('--x', x.toFixed(3));
+    const r = key.getBoundingClientRect();
+    if (type === 'trail' && item?.colors && !calm) {
+      const fwd = lastX < 0 || x >= lastX,
+        px = fwd ? r.left : r.right,
+        py = r.top + r.height / 2;
+      if (prev && Math.abs(x - lastX) > 0.002) trailPath(id, prev[0], prev[1], px, py, item.colors);
+      prev = [px, py];
+    }
+    // La celebración se lanza cuando la llave llega a la salida (arriba del recorrido) y no se repite hasta que vuelve
+    if (type === 'fx' && !calm && item?.burst && lastX < 3.9 && x >= 3.9) fireFx();
+    lastX = x;
+    raf = requestAnimationFrame(frame);
+  };
+  raf = requestAnimationFrame(frame);
+  const btn = el.querySelector('[data-pv-fx]');
+  if (btn) btn.onclick = () => item?.burst && fireFx();
+  if (type === 'fx' && calm) setTimeout(() => item?.burst && fireFx(), 300);
+  pv.stopDemo = () => cancelAnimationFrame(raf);
 }
 
 function paintPreview() {
@@ -404,7 +514,7 @@ function paintPreview() {
       persist();
       sfx.ui();
       feedback = `Activado: ${rewardName(pv.type, pv.id)}`;
-      if (!['board', 'pieces', 'key'].includes(pv.type)) applyLook();
+      if (!['board', 'pieces', 'key', 'ui'].includes(pv.type)) applyLook();
       playEquippedMusic(pv.type);
       if (pv.type === 'music') {
         pv.playing = true;
@@ -419,6 +529,7 @@ function paintPreview() {
 
 function closePreview() {
   if (!pv) return;
+  pv.stopDemo?.();
   const { el, opener, playing, id } = pv;
   document.removeEventListener('keydown', pv.onKey);
   el.remove();
@@ -430,7 +541,8 @@ function closePreview() {
 
 export function openPreview(type, id) {
   const item = rewardById(type, id);
-  if (!item || !['board', 'pieces', 'key', 'card', 'cover', 'bg', 'music'].includes(type)) return;
+  if (!item || !['board', 'pieces', 'key', 'card', 'trail', 'fx', 'cover', 'bg', 'music', 'aura', 'ui'].includes(type))
+    return;
   if (pv) closePreview();
   const rar = rarityOf(item);
   const el = document.createElement('div');
@@ -451,8 +563,9 @@ export function openPreview(type, id) {
     </div>`;
   document.body.appendChild(el);
   pv = { type, id, el, opener: { type, id }, playing: false };
-  if (['board', 'pieces', 'key'].includes(type)) tryOn(type, id);
+  if (['board', 'pieces', 'key', 'ui'].includes(type)) tryOn(type, id);
   paintPreview();
+  if (type === 'trail' || type === 'fx') startDemo(el, type, id);
   el.addEventListener('click', (e) => {
     if (e.target === el || e.target.closest('[data-pv-close]')) {
       sfx.ui();
@@ -594,7 +707,7 @@ export function renderAchievements() {
   // Atuendos filtra por héroe (dentro de su vista); las otras pestañas tienen una fila de filtros arriba
   const filters =
     group.types.length > 1
-      ? `<div class="ach-filters board-filters" role="tablist" aria-label="${group.label}">${group.types
+      ? `<div class="ach-filters board-filters" data-count="${group.types.length}" role="tablist" aria-label="${group.label}">${group.types
           .map((type) => {
             const news = unseenIn(type);
             return `<button type="button" class="ach-filter${activeType === type ? ' on' : ''}" role="tab" aria-selected="${activeType === type}" data-custom-type="${type}"><span>${TYPE_NAME[type]}</span><small>${countOf([type])}/${REWARDS[type].length}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;

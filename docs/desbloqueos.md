@@ -1,6 +1,6 @@
 # Desbloqueos de Personalizar
 
-Todo lo de **Personalizar** (borde, fichas, llave, cartas del destino, música, portada de héroes, fondo y atuendos) se
+Todo lo de **Personalizar** (borde, fichas, llave, cartas del destino, estelas, celebración, música, portada de héroes, fondo, clima, tema de interfaz y atuendos) se
 desbloquea **jugando**: no hay puntos ni tienda. Este documento explica cómo se reparte el esfuerzo, para que el ritmo
 sea justo: lo común llega pronto, lo raro pide constancia, lo épico lleva semanas y lo legendario es una meta de meses.
 
@@ -96,3 +96,17 @@ Condiciones por modo de juego: { aventura: 148, diario: 109, desafio: 87 }
 - Todo lo demás se calcula con las estadísticas que ya existían. Los objetos desbloqueados se guardan al conseguirlos.
 - Los objetos de Personalizar (salvo los 13 primeros bordes, 12 fichas, 13 llaves, 10 celebraciones, 13 músicas y 6 portadas
   del formato antiguo) no viajan en el QR: se vuelven a desbloquear solos al jugar o al importar el progreso.
+
+## Estelas, celebración, clima y tema de interfaz
+
+Cuatro categorías más, con las mismas rarezas y ventanas (los pools de acciones están en `scripts/plan-unlocks.mjs`, cada
+uno pensado para lo que adorna):
+
+| Categoría | Qué es | Qué premia |
+|---|---|---|
+| Estelas (15) | Partículas que deja la ficha al deslizarse (`src/ui/fx.js → trailPath`) | Juego táctico: tableros, mínimos, rocas y hielo, candados, bloques pesados, poderes |
+| Celebración (15) | Festejo cuando la llave sale del tablero | Terminar bien: mínimos de movimientos, tramos sin pistas, rachas, aventuras completas |
+| Clima (12) | Capa de CSS animada sobre el fondo de la portada (`49-cover-aura.css`) | Avanzar por el mundo (niveles, caminos, cartas) y volver cada día |
+| Tema (8) | Paleta de portada, botones, tarjetas y selector de héroe (`50-ui-themes.css`) | Constancia: aventuras completas, niveles, retos diarios |
+
+Tras cambiar el catálogo: `node scripts/plan-unlocks.mjs` y `node scripts/analyze-unlocks.mjs` (0 avisos).

@@ -18,6 +18,10 @@ const NAMES = {
   music: 'Música',
   cover: 'Héroes',
   bg: 'Fondo',
+  trail: 'Estelas',
+  fx: 'Celebración',
+  aura: 'Clima',
+  ui: 'Tema',
 };
 const RARITY = ['common', 'rare', 'epic', 'legendary'];
 const label = { common: 'común', rare: 'rara', epic: 'épica', legendary: 'legendaria' };

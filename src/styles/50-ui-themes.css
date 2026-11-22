@@ -1,0 +1,807 @@
+/*
+ * Tema de interfaz (Personalizar → Portada → Tema): paleta del HUD, botones y tarjetas de la portada y del selector de héroe.
+ *
+ * Cada tema es solo una paleta de variables `--ui-*` (bloques `:is(body[data-ui=…], [data-ui-scope=…])`): la misma paleta
+ * tiñe la portada real y las miniaturas / vista previa de Personalizar, que usan la clase `.uim-*`.
+ * «Tinta clásica» (ink) es el diseño de serie: no toca nada de la portada, solo existe para su miniatura.
+ *
+ * Variables:
+ *   --ui-bg1/2   tarjeta (arriba/abajo)       --ui-bd / --ui-bd-hi   borde / borde resaltado
+ *   --ui-title   títulos y acentos            --ui-hi                 brillo claro (iconos, cifras)
+ *   --ui-ink     texto principal              --ui-muted              texto secundario
+ *   --ui-btn1/2  botón normal                 --ui-pri1/2/--ui-pri-ink botón principal y su texto
+ *   --ui-m1a…m3b los tres modos (Aventura, Desafío, Retos diarios)
+ *   --ui-pill    fondo de chips y accesos     --ui-shadow             sombra de la tarjeta
+ */
+
+/* ═══════════════ Paletas ═══════════════ */
+
+/* Tinta clásica (la de serie; solo para la miniatura) */
+[data-ui-scope='ink'] {
+  --ui-bg1: #1f2644;
+  --ui-bg2: #101426;
+  --ui-bd: #d8ab5256;
+  --ui-bd-hi: #f2d48cad;
+  --ui-title: #f2d48c;
+  --ui-hi: #f2d48c;
+  --ui-ink: #f2e5cb;
+  --ui-muted: #c8c4d4;
+  --ui-btn1: #3d6c75;
+  --ui-btn2: #274a52;
+  --ui-pri1: #b34230;
+  --ui-pri2: #82281d;
+  --ui-pri-ink: #fff6e6;
+  --ui-m1a: #aa3c2c;
+  --ui-m1b: #76231a;
+  --ui-m2a: #563d6e;
+  --ui-m2b: #352348;
+  --ui-m3a: #3d6c75;
+  --ui-m3b: #24454d;
+  --ui-pill: #141930a0;
+  --ui-shadow: 0 18px 44px #080912a0;
+}
+
+/* Pergamino de Thyes: libro encuadernado en cuero, cantos de papel, lacre y latón */
+:is(body[data-ui='thyes'], [data-ui-scope='thyes']) {
+  --ui-bg1: #45311f;
+  --ui-bg2: #25190f;
+  --ui-bd: #c29a5a80;
+  --ui-bd-hi: #efd08fcc;
+  --ui-title: #f3dca4;
+  --ui-hi: #f6e2b0;
+  --ui-ink: #f8ecd0;
+  --ui-muted: #d3bb90;
+  --ui-btn1: #70502c;
+  --ui-btn2: #4b331b;
+  --ui-pri1: #b8412a;
+  --ui-pri2: #7b2315;
+  --ui-pri-ink: #fff3da;
+  --ui-m1a: #a93d26;
+  --ui-m1b: #6c2113;
+  --ui-m2a: #7a6430;
+  --ui-m2b: #483a16;
+  --ui-m3a: #3f6e5e;
+  --ui-m3b: #244637;
+  --ui-pill: #3a2819b5;
+  --ui-shadow: 0 18px 44px #140a04c0;
+}
+
+/* Bosque de jade: verdes profundos, bambú y reflejos de jade pulido */
+:is(body[data-ui='jade'], [data-ui-scope='jade']) {
+  --ui-bg1: #15382f;
+  --ui-bg2: #0a1f1b;
+  --ui-bd: #6fd6b06b;
+  --ui-bd-hi: #b4f2d6c4;
+  --ui-title: #aaf0d0;
+  --ui-hi: #c8f7e2;
+  --ui-ink: #e9fbf2;
+  --ui-muted: #9ccbb9;
+  --ui-btn1: #22705c;
+  --ui-btn2: #154a3f;
+  --ui-pri1: #31a881;
+  --ui-pri2: #1b6e56;
+  --ui-pri-ink: #f4fffb;
+  --ui-m1a: #2d9473;
+  --ui-m1b: #185a45;
+  --ui-m2a: #56863c;
+  --ui-m2b: #2f5023;
+  --ui-m3a: #2c8590;
+  --ui-m3b: #17525c;
+  --ui-pill: #0c2a25b0;
+  --ui-shadow: 0 18px 44px #02100cb8;
+}
+
+/* Noche carmesí: vino casi negro, rubí y brasas */
+:is(body[data-ui='crimson'], [data-ui-scope='crimson']) {
+  --ui-bg1: #2e1019;
+  --ui-bg2: #12060b;
+  --ui-bd: #d2536f73;
+  --ui-bd-hi: #ff9db4c4;
+  --ui-title: #ffb5c4;
+  --ui-hi: #ffc4d0;
+  --ui-ink: #ffeaef;
+  --ui-muted: #d3a5b0;
+  --ui-btn1: #5e2136;
+  --ui-btn2: #3a1223;
+  --ui-pri1: #d6334f;
+  --ui-pri2: #90162f;
+  --ui-pri-ink: #fff2f4;
+  --ui-m1a: #bc2c47;
+  --ui-m1b: #70142a;
+  --ui-m2a: #7e2c60;
+  --ui-m2b: #471238;
+  --ui-m3a: #b04b2a;
+  --ui-m3b: #65260f;
+  --ui-pill: #240a14b8;
+  --ui-shadow: 0 18px 44px #0a0105cc;
+}
+
+/* Marea glacial: vidrio azul hielo y escarcha */
+:is(body[data-ui='glacier'], [data-ui-scope='glacier']) {
+  --ui-bg1: #153d52;
+  --ui-bg2: #091f2e;
+  --ui-bd: #8fe3ff73;
+  --ui-bd-hi: #d7f6ffd0;
+  --ui-title: #b8edff;
+  --ui-hi: #dcf8ff;
+  --ui-ink: #ebfaff;
+  --ui-muted: #9ec8d9;
+  --ui-btn1: #21708f;
+  --ui-btn2: #14506a;
+  --ui-pri1: #35b4e2;
+  --ui-pri2: #187aa5;
+  --ui-pri-ink: #03202d;
+  --ui-m1a: #2b8dbf;
+  --ui-m1b: #185a82;
+  --ui-m2a: #5f7ccc;
+  --ui-m2b: #354a92;
+  --ui-m3a: #2aaaa4;
+  --ui-m3b: #176a64;
+  --ui-pill: #0c2a3cb0;
+  --ui-shadow: 0 18px 44px #02101cb8;
+}
+
+/* Oro del Faro (épico): oro batido sobre negro cálido; el canto de la tarjeta brilla en barrido */
+:is(body[data-ui='faro'], [data-ui-scope='faro']) {
+  --ui-bg1: #2b2110;
+  --ui-bg2: #110c05;
+  --ui-bd: #f2c867a0;
+  --ui-bd-hi: #fff0b8;
+  --ui-title: #ffd96b;
+  --ui-hi: #fff0b8;
+  --ui-ink: #fff6df;
+  --ui-muted: #dcc58e;
+  --ui-btn1: #80601d;
+  --ui-btn2: #523a10;
+  --ui-pri1: #f8cf50;
+  --ui-pri2: #c98a1a;
+  --ui-pri-ink: #2c1b04;
+  --ui-m1a: #d9a02c;
+  --ui-m1b: #8a5a0e;
+  --ui-m2a: #6e4d20;
+  --ui-m2b: #36250f;
+  --ui-m3a: #a8832f;
+  --ui-m3b: #5f4513;
+  --ui-pill: #2a200fb8;
+  --ui-shadow: 0 18px 50px #0c0802d0;
+}
+
+/* Neón (épico): noche violeta, bordes de neón magenta y cian que pulsan */
+:is(body[data-ui='neon'], [data-ui-scope='neon']) {
+  --ui-bg1: #170b2e;
+  --ui-bg2: #07030f;
+  --ui-bd: #ff3df0c0;
+  --ui-bd-hi: #7df9ff;
+  --ui-title: #7df9ff;
+  --ui-hi: #b8fcff;
+  --ui-ink: #f6ecff;
+  --ui-muted: #b99be2;
+  --ui-btn1: #231247;
+  --ui-btn2: #12082b;
+  --ui-pri1: #ff2bd6;
+  --ui-pri2: #7a1fff;
+  --ui-pri-ink: #ffffff;
+  --ui-m1a: #d81fb8;
+  --ui-m1b: #5e118f;
+  --ui-m2a: #2a6bff;
+  --ui-m2b: #1a2f8f;
+  --ui-m3a: #12c5d6;
+  --ui-m3b: #0a6070;
+  --ui-pill: #120730c8;
+  --ui-shadow: 0 18px 50px #0a0220d8;
+}
+
+/* Eclipse violeta (legendario): corona de oro y violeta que da la vuelta al canto de la tarjeta */
+:is(body[data-ui='eclipse'], [data-ui-scope='eclipse']) {
+  --ui-bg1: #1f1138;
+  --ui-bg2: #07030f;
+  --ui-bd: #b89cff80;
+  --ui-bd-hi: #ffd6ff;
+  --ui-title: #ffd27a;
+  --ui-hi: #ffe7b8;
+  --ui-ink: #f6eeff;
+  --ui-muted: #bba9df;
+  --ui-btn1: #3d2872;
+  --ui-btn2: #24164a;
+  --ui-pri1: #8f52ff;
+  --ui-pri2: #4d20bd;
+  --ui-pri-ink: #ffffff;
+  --ui-m1a: #7d3edb;
+  --ui-m1b: #44208f;
+  --ui-m2a: #c64c92;
+  --ui-m2b: #7c1f5a;
+  --ui-m3a: #d29c3c;
+  --ui-m3b: #7f561b;
+  --ui-pill: #160a2cc0;
+  --ui-shadow: 0 18px 54px #05010fe0;
+}
+
+@property --ui-ang {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ═══════════════ Aplicación a la portada y al selector de héroe (todo menos «Tinta clásica») ═══════════════ */
+
+/* Las variables de la paleta base del menú (--mp-*) se reasignan: así se tiñen solas las ~60 reglas que ya las usan */
+body[data-ui]:not([data-ui='ink']) :is(#menu, #heroSelect) {
+  --mp-gold: var(--ui-title);
+  --mp-gold-hi: var(--ui-hi);
+  --mp-parch: var(--ui-ink);
+  --mp-muted: var(--ui-muted);
+  --mp-border: var(--ui-bd);
+  --mp-border-strong: var(--ui-bd-hi);
+  --mp-red-1: var(--ui-pri1);
+  --mp-red-2: var(--ui-pri2);
+  --mp-teal-1: var(--ui-btn1);
+  --mp-teal-2: var(--ui-btn2);
+  --mp-plum-1: var(--ui-m2a);
+  --mp-plum-2: var(--ui-m2b);
+  --mp-navy-1: var(--ui-bg1);
+  --mp-navy-2: var(--ui-bg2);
+  --mp-shadow: var(--ui-shadow);
+  --btn-jade: linear-gradient(180deg, var(--ui-btn1), var(--ui-btn2));
+  --btn-jade-hi: linear-gradient(180deg, color-mix(in srgb, var(--ui-btn1) 82%, #fff), var(--ui-btn1));
+  --btn-crimson: linear-gradient(180deg, var(--ui-pri1), var(--ui-pri2));
+  --btn-crimson-hi: linear-gradient(180deg, color-mix(in srgb, var(--ui-pri1) 84%, #fff), var(--ui-pri1));
+  --btn-amethyst: linear-gradient(180deg, var(--ui-m2a), var(--ui-m2b));
+}
+
+/* Tarjetas: la del menú y la del selector de héroe (conserva el tinte del héroe elegido) */
+body[data-ui]:not([data-ui='ink']) :is(#menu #menuCard, #heroSelect .hero-selector) {
+  background: linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2)) !important;
+  border-color: var(--ui-bd);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--ui-hi) 22%, transparent),
+    var(--ui-shadow);
+}
+body[data-ui]:not([data-ui='ink']) #heroSelect .hero-selector {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--chosen, var(--ui-title)) 16%, var(--ui-bg1)),
+    var(--ui-bg2)
+  ) !important;
+}
+body[data-ui]:not([data-ui='ink']) #heroSelect {
+  background:
+    radial-gradient(120% 80% at 50% 0, transparent 20%, color-mix(in srgb, var(--ui-bg2) 92%, #000) 85%),
+    linear-gradient(
+      color-mix(in srgb, var(--ui-bg1) 70%, transparent),
+      color-mix(in srgb, var(--ui-bg2) 90%, transparent)
+    ),
+    var(--hero-scene) center 18% / cover;
+}
+
+/* Los tres modos, chips, accesos y botones */
+body[data-ui]:not([data-ui='ink']) #menu .home-btn.hb-adv {
+  --hb1: var(--ui-m1a);
+  --hb2: var(--ui-m1b);
+}
+body[data-ui]:not([data-ui='ink']) #menu .home-btn.hb-survival {
+  --hb1: var(--ui-m2a);
+  --hb2: var(--ui-m2b);
+}
+body[data-ui]:not([data-ui='ink']) #menu .home-btn.hb-daily {
+  --hb1: var(--ui-m3a);
+  --hb2: var(--ui-m3b);
+}
+body[data-ui]:not([data-ui='ink']) #menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily) {
+  border-color: var(--ui-bd);
+  color: var(--ui-ink);
+}
+body[data-ui]:not([data-ui='ink']) #menu .home-btn .hb-copy b {
+  color: var(--ui-ink);
+}
+body[data-ui]:not([data-ui='ink']) #menu .home-btn .hb-copy small {
+  color: color-mix(in srgb, var(--ui-ink) 84%, transparent);
+}
+body[data-ui]:not([data-ui='ink']) #menu .home-btn .hb-ico {
+  border-color: var(--ui-bd-hi);
+  background: color-mix(in srgb, var(--ui-bg2) 52%, transparent);
+  color: var(--ui-hi);
+}
+body[data-ui]:not([data-ui='ink']) #menu :is(.record-pill, .home-pill, .title-sub, .lang-btn[aria-pressed='false']) {
+  background: var(--ui-pill);
+  border-color: var(--ui-bd);
+  color: var(--ui-ink);
+}
+body[data-ui]:not([data-ui='ink']) #menu .record-pill strong {
+  color: var(--ui-hi);
+}
+body[data-ui]:not([data-ui='ink']) #menu :is(.tool-btn, .menu-back) {
+  background: color-mix(in srgb, var(--ui-bg1) 90%, transparent);
+  border-color: var(--ui-bd);
+  color: var(--ui-hi);
+}
+body[data-ui]:not([data-ui='ink']) #menu .tool-btn.snd-btn {
+  background: linear-gradient(180deg, var(--ui-btn1), var(--ui-btn2));
+}
+body[data-ui]:not([data-ui='ink']) #menu .lang-btn[aria-pressed='true'] {
+  background: linear-gradient(180deg, var(--ui-pri1), var(--ui-pri2));
+  border-color: var(--ui-bd-hi);
+  color: var(--ui-pri-ink);
+}
+body[data-ui]:not([data-ui='ink']) #menu :is(.menu-title, .menu-head h2) {
+  color: var(--ui-title);
+}
+body[data-ui]:not([data-ui='ink']) #menu .menu-head {
+  border-bottom-color: var(--ui-bd);
+}
+body[data-ui]:not([data-ui='ink']) #menu #panelAdv .cont {
+  background: linear-gradient(145deg, var(--ui-m1a), var(--ui-m1b));
+  border-color: var(--ui-bd-hi);
+  color: var(--ui-ink);
+}
+body[data-ui]:not([data-ui='ink']) #menu #panelAdv .cont-copy b {
+  color: var(--ui-ink);
+}
+body[data-ui]:not([data-ui='ink']) #menu #panelAdv .cont-ico,
+body[data-ui]:not([data-ui='ink']) #menu #panelAdv .cont-go {
+  color: var(--ui-hi);
+  border-color: var(--ui-bd-hi);
+}
+/* Botón principal (Comenzar, etc.) con el texto que mejor se lee sobre su color */
+body[data-ui]:not([data-ui='ink']) :is(#menu, #heroSelect) button.primary {
+  color: var(--ui-pri-ink);
+  border-color: var(--ui-bd-hi);
+  text-shadow: none;
+}
+body[data-ui]:not([data-ui='ink']) :is(#menu, #heroSelect) :is(.pause-actions button, .opt, .map-close) {
+  background: color-mix(in srgb, var(--ui-bg1) 88%, transparent);
+  color: var(--ui-ink);
+  border-color: var(--ui-bd);
+}
+/* Selector de héroe */
+body[data-ui]:not([data-ui='ink']) #heroSelect .hero-selector :is(h2, .hero-choice-name b) {
+  color: var(--ui-title);
+}
+body[data-ui]:not([data-ui='ink']) #heroSelect .hero-choice {
+  border-color: var(--ui-bd);
+  background-color: color-mix(in srgb, var(--ui-bg1) 70%, transparent);
+}
+body[data-ui]:not([data-ui='ink']) #heroSelect .relic-card {
+  background: color-mix(in srgb, var(--ui-bg1) 86%, transparent);
+  border-color: var(--ui-bd);
+  color: var(--ui-ink);
+}
+body[data-ui]:not([data-ui='ink']) #heroSelect .relic-option input:checked + .relic-card {
+  border-color: var(--ui-title);
+  background: color-mix(in srgb, var(--ui-pri1) 28%, var(--ui-bg1));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-title) 55%, transparent);
+}
+/* Pestañas y filtros de Personalizar dentro de la portada */
+body[data-ui]:not([data-ui='ink']) #menu :is(.ach-tab, .ach-filter) {
+  border-color: var(--ui-bd);
+  background: var(--ui-pill);
+  color: var(--ui-ink);
+}
+body[data-ui]:not([data-ui='ink']) #menu :is(.ach-tab.on, .ach-filter.on) {
+  border-color: var(--ui-bd-hi);
+  background: linear-gradient(155deg, color-mix(in srgb, var(--ui-title) 22%, var(--ui-bg1)), var(--ui-bg2));
+  color: var(--ui-hi);
+}
+
+/* ═══════════════ Detalles propios de cada tema (textura, brillo, movimiento) ═══════════════ */
+
+/* Pergamino de Thyes: veta de papel, marco doble de cuero y un resplandor cálido arriba */
+body[data-ui='thyes'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+  background:
+    radial-gradient(120% 60% at 50% -8%, #ffe6b028, transparent 62%),
+    repeating-linear-gradient(90deg, #00000012 0 2px, transparent 2px 6px),
+    repeating-linear-gradient(0deg, #ffffff05 0 1px, transparent 1px 4px),
+    linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2)) !important;
+  box-shadow:
+    inset 0 0 0 4px #25190f,
+    inset 0 0 0 5.5px #c29a5a66,
+    var(--ui-shadow);
+}
+body[data-ui='thyes'] #menu .logo i {
+  color: #e8b76a;
+}
+
+/* Bosque de jade: vetas de bambú y brillo de piedra pulida */
+body[data-ui='jade'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+  background:
+    radial-gradient(90% 50% at 15% 0, #8ff5c722, transparent 60%),
+    repeating-linear-gradient(90deg, #ffffff06 0 2px, transparent 2px 52px),
+    linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2)) !important;
+}
+
+/* Noche carmesí: viñeta de brasas desde abajo y borde con halo rojo */
+body[data-ui='crimson'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+  background:
+    radial-gradient(120% 46% at 50% 122%, #ff3a5c3d, transparent 62%),
+    linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2)) !important;
+  box-shadow:
+    inset 0 1px 0 #ffb5c430,
+    0 0 26px #d6334f33,
+    var(--ui-shadow);
+}
+
+/* Marea glacial: vidrio esmerilado con reflejo diagonal y luz de borde */
+body[data-ui='glacier'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+  background:
+    linear-gradient(112deg, #ffffff1c 0 14%, transparent 14% 38%, #ffffff0d 38% 42%, transparent 42%),
+    linear-gradient(
+      168deg,
+      color-mix(in srgb, var(--ui-bg1) 86%, transparent),
+      color-mix(in srgb, var(--ui-bg2) 92%, transparent)
+    ) !important;
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow:
+    inset 0 1px 0 #ffffff55,
+    inset 0 0 22px #8fe3ff1c,
+    var(--ui-shadow);
+}
+
+/* Oro del Faro: canto de oro batido que recorre la tarjeta y botón principal que respira */
+body[data-ui='faro'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+  border: 1.8px solid transparent;
+  background:
+    radial-gradient(110% 50% at 50% -10%, #ffd96b24, transparent 64%) padding-box,
+    linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2)) padding-box,
+    linear-gradient(110deg, #8a5a14, #ffe9a0 18%, #b8821f 34%, #fff6c8 50%, #b8821f 66%, #ffe9a0 82%, #8a5a14)
+      border-box !important;
+  background-size:
+    100% 100%,
+    100% 100%,
+    300% 100% !important;
+}
+body[data-ui='faro'] :is(#menu, #heroSelect) button.primary {
+  background: linear-gradient(180deg, #ffe08a, #e0a52a 55%, #b87a14);
+  box-shadow:
+    inset 0 1px 0 #fff8d6aa,
+    0 0 14px #ffc94a55;
+}
+body[data-ui='faro'] #menu .menu-title,
+body[data-ui='faro'] #heroSelect h2 {
+  text-shadow: 0 0 12px #ffc94a55;
+}
+@media (prefers-reduced-motion: no-preference) {
+  body[data-ui='faro'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+    animation: ui-foil 7s linear infinite;
+  }
+  body[data-ui='faro'] :is(#menu, #heroSelect) button.primary {
+    animation: ui-gold-breathe 3.4s ease-in-out infinite alternate;
+  }
+}
+@keyframes ui-foil {
+  from {
+    background-position:
+      0 0,
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      0 0,
+      0 0,
+      300% 0;
+  }
+}
+@keyframes ui-gold-breathe {
+  from {
+    box-shadow:
+      inset 0 1px 0 #fff8d6aa,
+      0 0 8px #ffc94a33;
+  }
+  to {
+    box-shadow:
+      inset 0 1px 0 #fff8d6aa,
+      0 0 22px #ffc94a88;
+  }
+}
+
+/* Neón: marco magenta con halo cian, líneas de barrido y texto luminoso */
+body[data-ui='neon'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+  background:
+    repeating-linear-gradient(0deg, #ffffff07 0 1px, transparent 1px 3px),
+    radial-gradient(100% 60% at 50% 0, #7a1fff2b, transparent 66%),
+    linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2)) !important;
+  border: 1.6px solid #ff3df0;
+  box-shadow:
+    0 0 0 1px #7df9ff55,
+    0 0 20px #ff3df066,
+    inset 0 0 26px #7a1fff3a,
+    var(--ui-shadow);
+}
+body[data-ui='neon'] :is(#menu .menu-title, #heroSelect h2, #menu .home-btn .hb-copy b) {
+  text-shadow:
+    0 0 6px #7df9ff99,
+    0 0 16px #7df9ff55;
+}
+body[data-ui='neon'] #menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily) {
+  border-color: #7df9ffb0;
+  box-shadow:
+    inset 0 0 14px #ffffff12,
+    0 0 12px #7df9ff44;
+}
+body[data-ui='neon'] :is(#menu, #heroSelect) button.primary {
+  box-shadow:
+    0 0 16px #ff2bd677,
+    inset 0 1px 0 #ffffff55;
+}
+body[data-ui='neon'] #menu .logo i {
+  color: #ff5be6;
+  text-shadow: 0 0 12px #ff3df0aa;
+}
+@media (prefers-reduced-motion: no-preference) {
+  body[data-ui='neon'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+    animation: ui-neon-pulse 3.6s ease-in-out infinite alternate;
+  }
+}
+@keyframes ui-neon-pulse {
+  from {
+    box-shadow:
+      0 0 0 1px #7df9ff44,
+      0 0 12px #ff3df044,
+      inset 0 0 18px #7a1fff2a,
+      var(--ui-shadow);
+  }
+  to {
+    box-shadow:
+      0 0 0 1px #7df9ffaa,
+      0 0 30px #ff3df0aa,
+      inset 0 0 34px #7a1fff55,
+      var(--ui-shadow);
+  }
+}
+
+/* Eclipse violeta: corona de oro y violeta que gira por el canto, con un disco eclipsado en la esquina */
+body[data-ui='eclipse'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+  border: 1.8px solid transparent;
+  background:
+    radial-gradient(circle at 93% 7%, #ffe9b8 0 2.5px, #ffd27a77 4px, #ffd27a00 46px) padding-box,
+    radial-gradient(110% 55% at 50% -10%, #8f52ff2e, transparent 64%) padding-box,
+    linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2)) padding-box,
+    conic-gradient(from var(--ui-ang), #ffd27a, #8f52ff, #ff6ad8, #4d20bd, #ffd27a) border-box !important;
+  box-shadow:
+    0 0 28px #8f52ff44,
+    var(--ui-shadow);
+}
+body[data-ui='eclipse'] #menu .menu-title,
+body[data-ui='eclipse'] #heroSelect h2 {
+  text-shadow: 0 0 12px #ffd27a55;
+}
+@media (prefers-reduced-motion: no-preference) {
+  body[data-ui='eclipse'] :is(#menu #menuCard, #heroSelect .hero-selector) {
+    animation: ui-corona 10s linear infinite;
+  }
+}
+@keyframes ui-corona {
+  to {
+    --ui-ang: 360deg;
+  }
+}
+/* En modo ligero se quedan los colores y se apagan los movimientos */
+.lite body[data-ui] :is(#menu #menuCard, #heroSelect .hero-selector, button.primary) {
+  animation: none !important;
+}
+
+/* ═══════════════ Miniatura y vista previa en Personalizar (.uim-*) ═══════════════ */
+.uim-card,
+.uim-menu,
+.uim-pick {
+  border: 1.2px solid var(--ui-bd);
+  border-radius: 9px;
+  background: linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--ui-hi) 22%, transparent),
+    0 6px 14px #0007;
+}
+.sw-ui {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 108px;
+  aspect-ratio: 16 / 10;
+  border-radius: 9px;
+  background: radial-gradient(ellipse at 50% 30%, #1d2c3a, #0a1118);
+  border: 1.5px solid #0a1118;
+}
+.sw-ui .uim-card {
+  display: grid;
+  gap: 3px;
+  width: 74%;
+  padding: 6px 7px 7px;
+  border-radius: 7px;
+}
+.uim-title {
+  display: block;
+  height: 4px;
+  width: 54%;
+  margin: 0 auto 1px;
+  border-radius: 2px;
+  background: var(--ui-title);
+}
+.uim-btn {
+  display: block;
+  height: 8px;
+  border-radius: 3px;
+  border: 0.8px solid var(--ui-bd);
+}
+.uim-btn.a {
+  background: linear-gradient(145deg, var(--ui-m1a), var(--ui-m1b));
+}
+.uim-btn.b {
+  background: linear-gradient(145deg, var(--ui-m2a), var(--ui-m2b));
+}
+.uim-btn.c {
+  background: linear-gradient(145deg, var(--ui-m3a), var(--ui-m3b));
+}
+/* Vista previa grande: menú de portada + selector de héroe */
+.uim-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  background: radial-gradient(ellipse at 30% 20%, #2a3d52 0, #0b131b 75%);
+  color: var(--ui-ink);
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+.uim-menu,
+.uim-pick {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 9px;
+  border-radius: 12px;
+}
+.uim-logo {
+  text-align: center;
+  font: 900 13px/1 var(--font-title, serif);
+  letter-spacing: 0.08em;
+  color: var(--ui-hi);
+}
+.uim-logo i {
+  font-style: normal;
+  color: var(--ui-title);
+}
+.uim-modes {
+  display: grid;
+  gap: 4px;
+}
+.uim-mode {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 6px;
+  align-items: center;
+  padding: 4px 6px;
+  border-radius: 7px;
+  border: 1px solid var(--ui-bd);
+  background: linear-gradient(145deg, var(--m-a), var(--m-b));
+}
+.uim-mode.m1 {
+  --m-a: var(--ui-m1a);
+  --m-b: var(--ui-m1b);
+}
+.uim-mode.m2 {
+  --m-a: var(--ui-m2a);
+  --m-b: var(--ui-m2b);
+}
+.uim-mode.m3 {
+  --m-a: var(--ui-m3a);
+  --m-b: var(--ui-m3b);
+}
+.uim-mode i {
+  grid-row: 1 / 3;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.2px solid var(--ui-bd-hi);
+  background: color-mix(in srgb, var(--ui-bg2) 55%, transparent);
+}
+.uim-mode b {
+  font: 800 9.5px/1.1 var(--font-title, serif);
+  color: var(--ui-ink);
+}
+.uim-mode small {
+  font: 600 7.5px/1.1 var(--font-ui, sans-serif);
+  color: color-mix(in srgb, var(--ui-ink) 80%, transparent);
+}
+.uim-row {
+  display: flex;
+  gap: 4px;
+}
+.uim-pill {
+  flex: 1;
+  padding: 3px 4px;
+  text-align: center;
+  border-radius: 99px;
+  border: 1px solid var(--ui-bd);
+  background: var(--ui-pill);
+  font: 700 7.5px/1.2 var(--font-ui, sans-serif);
+  color: var(--ui-ink);
+}
+.uim-pick b {
+  font: 800 10px/1.1 var(--font-title, serif);
+  color: var(--ui-title);
+  text-align: center;
+}
+.uim-heroes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.uim-hero {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 4px 2px 3px;
+  border-radius: 7px;
+  border: 1px solid var(--ui-bd);
+  background: color-mix(in srgb, var(--ui-bg1) 70%, transparent);
+}
+.uim-hero.on {
+  border-color: var(--accent, var(--ui-title));
+  box-shadow: 0 0 0 1px var(--accent, var(--ui-title));
+}
+.uim-hero i {
+  width: 18px;
+  height: 22px;
+  border-radius: 9px 9px 4px 4px;
+  background: linear-gradient(
+    180deg,
+    var(--accent, var(--ui-title)),
+    color-mix(in srgb, var(--accent, var(--ui-title)) 35%, #000)
+  );
+}
+.uim-hero small {
+  font: 700 7px/1 var(--font-ui, sans-serif);
+  color: var(--ui-ink);
+}
+.uim-go {
+  padding: 5px 6px;
+  text-align: center;
+  border-radius: 7px;
+  border: 1px solid var(--ui-bd-hi);
+  background: linear-gradient(180deg, var(--ui-pri1), var(--ui-pri2));
+  font: 800 8.5px/1.1 var(--font-ui, sans-serif);
+  color: var(--ui-pri-ink);
+}
+/* Los temas animados también se mueven en la vista previa (no en las miniaturas) */
+@media (prefers-reduced-motion: no-preference) {
+  .uim-stage[data-ui-scope='faro'] .uim-menu,
+  .uim-stage[data-ui-scope='faro'] .uim-pick {
+    border-color: transparent;
+    background:
+      linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2)) padding-box,
+      linear-gradient(110deg, #8a5a14, #ffe9a0 18%, #b8821f 34%, #fff6c8 50%, #b8821f 66%, #ffe9a0 82%, #8a5a14)
+        border-box;
+    background-size:
+      100% 100%,
+      300% 100%;
+    animation: ui-foil-2 7s linear infinite;
+  }
+  .uim-stage[data-ui-scope='neon'] .uim-menu,
+  .uim-stage[data-ui-scope='neon'] .uim-pick {
+    border-color: #ff3df0;
+    animation: ui-neon-pulse 3.6s ease-in-out infinite alternate;
+  }
+  .uim-stage[data-ui-scope='eclipse'] .uim-menu,
+  .uim-stage[data-ui-scope='eclipse'] .uim-pick {
+    border-color: transparent;
+    background:
+      linear-gradient(168deg, var(--ui-bg1), var(--ui-bg2)) padding-box,
+      conic-gradient(from var(--ui-ang), #ffd27a, #8f52ff, #ff6ad8, #4d20bd, #ffd27a) border-box;
+    animation: ui-corona 10s linear infinite;
+  }
+}
+@keyframes ui-foil-2 {
+  from {
+    background-position:
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      0 0,
+      300% 0;
+  }
+}
