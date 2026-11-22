@@ -28,6 +28,7 @@ import {
   newSurvival,
   spendSurvivalTurn,
   survivalProgress,
+  survivalRouteUnlocked,
   useChallengeHint,
   useChallengeReset,
   useChallengeUndo,
@@ -196,10 +197,12 @@ export function startSurvival({ restart = false, route, relic } = {}) {
   closeRun();
   const previous = survivalProgress(store);
   const resume = !restart && !route && !relic && previous?.status === 'active';
+  const requested = route || previous?.route || '150';
+  const safeRoute = survivalRouteUnlocked(store, requested) ? requested : '150';
   const progress = resume
     ? previous
     : writeSurvival(store, {
-        ...newSurvival(route || previous?.route || '150', relic || previous?.relic || 'hint'),
+        ...newSurvival(safeRoute, relic || previous?.relic || 'hint'),
         updatedAt: store.survival?.updatedAt,
       });
   setRun({ survival: progress, level: progress.cleared + 1 });

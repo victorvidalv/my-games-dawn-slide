@@ -955,4 +955,7 @@ export const EN_UI = {
   'Manos desnudas': 'Bare hands',
   'Completa una senda de Desafío sin usar la reliquia': 'Complete a Challenge path without using the relic',
   'Trío legendario': 'Legendary trio',
+  ESTADO: 'STATUS',
+  'Completa {p} ({n} niveles) para desbloquear': 'Complete {p} ({n} levels) to unlock',
+  'Completa {n} turnos para desbloquear': 'Complete {n} turns to unlock',
 };

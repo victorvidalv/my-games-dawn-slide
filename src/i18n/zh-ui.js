@@ -913,4 +913,7 @@ export const ZH_UI = {
   'Manos desnudas': '空手而行',
   'Completa una senda de Desafío sin usar la reliquia': '不使用遗物完成一条挑战路线',
   'Trío legendario': '传奇三人组',
+  ESTADO: '状态',
+  'Completa {p} ({n} niveles) para desbloquear': '通关{p}（{n}关）解锁',
+  'Completa {n} turnos para desbloquear': '通关{n}步路线解锁',
 };

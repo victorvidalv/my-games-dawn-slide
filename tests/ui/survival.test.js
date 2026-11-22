@@ -80,7 +80,7 @@ it('elige ruta y reliquia en Desafío, usa la pista por turno, guarda y continú
 });
 
 it('permite usar rehacer tablero (+2 turnos, 1 vez por partida) y deshacer (2 por tablero) desde el HUD', async () => {
-  const app = await bootApp();
+  const app = await bootApp({ save: { survivalWon: { 150: true, 200: true } } });
   app.$('tabSurvival').click();
   app.$('survivalRoutes').querySelector('input[value="200"]').click();
   app.$('survivalRelics').querySelector('input[value="reset"]').click();
@@ -163,6 +163,39 @@ it('termina al agotar la reserva y al completar el último tablero muestra la vi
   expect(app.$('survivalEndTitle').textContent).toBe('¡Desafío completado!');
   expect(saved().survival).toMatchObject({ remaining: 0, cleared: 15, status: 'won' });
   app.$('survivalBack').click();
+  // Al volver al menú de Desafío tras ganar 150: 200 ya está desbloqueado y 250 sigue bloqueado
+  expect(app.$('survivalRoutes').querySelector('input[value="200"]').disabled).toBe(false);
+  expect(app.$('survivalRoutes').querySelector('input[value="250"]').disabled).toBe(true);
   app.$('menuBack').click();
   expect(app.$('homeSurvivalBest').textContent).toBe('1/3');
+});
+
+it('desbloquea Desafío en orden: 150 → 200 → 250, con candado y explicación', async () => {
+  // Inicio sin progreso: solo 150 desbloqueado
+  let app = await bootApp();
+  app.$('tabSurvival').click();
+  expect(app.$('survivalRoutes').querySelector('input[value="150"]').disabled).toBe(false);
+  expect(app.$('survivalRoutes').querySelector('input[value="200"]').disabled).toBe(true);
+  expect(app.$('survivalRoutes').querySelector('input[value="250"]').disabled).toBe(true);
+  expect(app.$('survivalRoutes').textContent).toContain('Completa 150 turnos para desbloquear');
+  expect(app.$('survivalRoutes').textContent).toContain('Completa 200 turnos para desbloquear');
+
+  // Con 150 completado: 200 desbloqueado, 250 bloqueado
+  app = await bootApp({ save: { survivalWon: { 150: true } } });
+  app.$('tabSurvival').click();
+  expect(app.$('survivalRoutes').querySelector('input[value="150"]').disabled).toBe(false);
+  expect(app.$('survivalRoutes').querySelector('input[value="200"]').disabled).toBe(false);
+  expect(app.$('survivalRoutes').querySelector('input[value="250"]').disabled).toBe(true);
+
+  // Con 150 y 200 completados: los tres desbloqueados
+  app = await bootApp({ save: { survivalWon: { 150: true, 200: true } } });
+  app.$('tabSurvival').click();
+  expect(app.$('survivalRoutes').querySelector('input[value="250"]').disabled).toBe(false);
+});
+
+it('lo ya jugado en Desafío no se cierra: con progreso en la ruta de 250, 200 y 250 están abiertas', async () => {
+  const app = await bootApp({ save: { survivalBests: { 250: 4 } } });
+  app.$('tabSurvival').click();
+  const route = (id) => app.$('survivalRoutes').querySelector(`input[value="${id}"]`);
+  expect([route('150').disabled, route('200').disabled, route('250').disabled]).toEqual([false, false, false]);
 });

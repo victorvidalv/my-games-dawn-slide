@@ -184,6 +184,42 @@
   color: #86efac;
 }
 
+.challenge-route-option.is-locked {
+  cursor: not-allowed;
+}
+
+.challenge-route-card.locked {
+  position: relative;
+  opacity: 0.76;
+  background: var(--hatch), linear-gradient(160deg, #1b2233, #111624);
+  border-color: #091118;
+  filter: saturate(0.5);
+}
+
+.challenge-route-card.locked .route-turns,
+.challenge-route-card.locked b {
+  color: #b7c4d9;
+}
+
+.challenge-route-card .route-lock-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #f3d291;
+  margin-bottom: 1px;
+}
+
+.challenge-route-card .route-lock-icon .ic {
+  width: 16px;
+  height: 16px;
+}
+
+.challenge-route-card .route-lock-note {
+  margin-top: 2px;
+  color: #f3d291;
+  font: 650 9.5px/1.25 var(--font-ui);
+}
+
 .challenge-route-option input:checked + .challenge-route-card {
   border-color: #e7b963;
   background: var(--hatch), linear-gradient(154deg, #3c4d73, #1e2944);

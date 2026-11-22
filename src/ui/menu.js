@@ -8,7 +8,19 @@ import { paintAchBadge, renderAchievements } from './achievements.js';
 import { paintDailyHome, renderDaily } from './daily.js';
 import { routeById } from '../game/survival.js';
 import { paintSurvivalHome, renderSurvival } from './survival.js';
-import { PATHS, S, closeRun, discardRun, heroOf, pathOf, persist, setRun, store } from '../state.js';
+import {
+  PATHS,
+  S,
+  closeRun,
+  discardRun,
+  heroOf,
+  pathOf,
+  pathUnlockReq,
+  pathUnlocked,
+  persist,
+  setRun,
+  store,
+} from '../state.js';
 import { restoreRun } from '../game/run-logic.js';
 import { bestAdventureRecord } from '../game/save-merge.js';
 import { MAX_LEVEL } from '../engine/difficulty.js';
@@ -26,6 +38,7 @@ function renderPaths() {
 
   $('modeInfo').textContent = MODE_INFO[mode];
   PATHS.forEach((p) => {
+    const unlocked = pathUnlocked(store, p.s);
     const rec = store.paths[mode + p.s],
       lvl = Math.min(MAX_LEVEL, rec ? rec.level : 0),
       prog = lvl ? Math.max(4, Math.round((lvl / MAX_LEVEL) * 100)) : 0;
@@ -33,9 +46,22 @@ function renderPaths() {
     const lbl = mode === 'c' ? 'RÉCORD' : 'NIVEL MÁX.';
     const txt = `${lvl >= MAX_LEVEL ? '👑 ' : ''}Nivel máx. ${lvl}/${MAX_LEVEL}`;
     const d = document.createElement('div');
-    d.className = 'path';
+    d.className = `path${unlocked ? '' : ' locked'}`;
+    d.dataset.start = String(p.s);
     d.style.setProperty('--pc', p.c);
     d.setAttribute('role', 'button');
+    if (!unlocked) {
+      const req = pathUnlockReq(p.s);
+      d.setAttribute('aria-disabled', 'true');
+      d.setAttribute('aria-label', `${p.n}. Bloqueado. ${req}`);
+      d.tabIndex = -1;
+      d.innerHTML = `<div class="pemo pemo-lock" aria-hidden="true">${icon('lock')}</div>
+        <div class="pinfo"><b>${p.n}</b><small>${p.d}</small></div>
+        <div class="pscore"><small>ESTADO</small><b class="path-locked-tag">Bloqueado</b></div>
+        <div class="pach"><span class="path-lock-note">${icon('lock')}<span>${req}</span></span></div>`;
+      box.appendChild(d);
+      return;
+    }
     d.tabIndex = 0;
     d.innerHTML = `<div class="pemo">${p.e}</div>
       <div class="pinfo"><b>${p.n}</b><small>${p.d}</small></div>
@@ -75,6 +101,7 @@ export function ask({ ico = '❓', title, text, yes = 'Aceptar', no = 'Cancelar'
   });
 }
 async function pickPath(s, mode) {
+  if (!pathUnlocked(store, s)) return;
   mode = 'c';
   const active = S.run && S.G && !S.G.done,
     p = pathOf(s);

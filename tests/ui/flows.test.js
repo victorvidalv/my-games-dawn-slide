@@ -37,6 +37,41 @@ describe('interfaz: aventura', () => {
     expect(saved().run).toMatchObject({ relic: 'lantern', hero: 'jean', hints: 6 });
   });
 
+  it('desbloquea Aventura en orden: Normal → Difícil → Experto, solo al completar cada senda', async () => {
+    // Sin completar Normal (incluso si llegó al nivel 21 y perdió ahí): Difícil y Experto bloqueados
+    let app = await bootApp({ save: { paths: { c1: { level: 21, score: 5000, runs: 1 } } } });
+    app.$('tabAdv').click();
+    const lockedCards = () => [...app.$('paths').querySelectorAll('.path')];
+    expect(lockedCards().map((el) => el.classList.contains('locked'))).toEqual([false, true, true]);
+    expect(app.$('paths').textContent).toContain('Completa Normal (21 niveles) para desbloquear');
+    expect(app.$('paths').textContent).toContain('Completa Difícil (21 niveles) para desbloquear');
+    // Tocar un camino bloqueado no abre el selector de héroe
+    lockedCards()[1].click();
+    expect(shown(app, 'heroSelect')).toBe(false);
+
+    // Al completar Normal (victoria en nivel 21): Difícil se desbloquea y Experto sigue bloqueado
+    app = await bootApp({ save: { stats: { paths: [1] } } });
+    app.$('tabAdv').click();
+    expect(lockedCards().map((el) => el.classList.contains('locked'))).toEqual([false, false, true]);
+
+    // Al completar Difícil: Experto también se desbloquea
+    app = await bootApp({ save: { stats: { paths: [1, 50] } } });
+    app.$('tabAdv').click();
+    expect(lockedCards().map((el) => el.classList.contains('locked'))).toEqual([false, false, false]);
+  });
+
+  it('lo que ya se jugó no se vuelve a cerrar: un guardado con récord en Difícil conserva su acceso', async () => {
+    // Sin la victoria anotada (guardado de antes del bloqueo) pero con récord en Difícil: Difícil abierto, Experto no
+    let app = await bootApp({ save: { paths: { c1: { level: 5, score: 100 }, c50: { level: 9, score: 0 } } } });
+    app.$('tabAdv').click();
+    const locks = () => [...app.$('paths').querySelectorAll('.path')].map((el) => el.classList.contains('locked'));
+    expect(locks()).toEqual([false, false, true]);
+    // Con récord en Experto, Difícil y Experto están abiertos aunque no haya victorias anotadas
+    app = await bootApp({ save: { paths: { c75: { level: 3, score: 0 } } } });
+    app.$('tabAdv').click();
+    expect(locks()).toEqual([false, false, false]);
+  });
+
   it('al cerrar la ciudad muestra al héroe de la partida y reparte 3 cartas del destino; elegir una la aplica una vez', async () => {
     const app = await bootApp();
     const { HEROES } = await import('../../src/game/heroes.js');

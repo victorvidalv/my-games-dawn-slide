@@ -77,6 +77,21 @@ export function survivalWonFor(store, routeId) {
   return !!(store?.survivalWon?.[route.id] || (progress?.route === route.id && progress.status === 'won'));
 }
 
+/** 150 siempre está abierto; 200 exige completar 150 y 250 exige completar 200 (lo ya jugado no se vuelve a cerrar). */
+export function survivalRouteUnlocked(store, routeId) {
+  const i = CHALLENGE_ROUTES.findIndex((r) => r.id === String(routeId));
+  return (
+    i <= 0 ||
+    survivalWonFor(store, CHALLENGE_ROUTES[i - 1].id) ||
+    CHALLENGE_ROUTES.slice(i).some((r) => survivalBestFor(store, r.id) > 0)
+  );
+}
+
+export function survivalUnlockReq(routeId) {
+  const i = CHALLENGE_ROUTES.findIndex((r) => r.id === String(routeId));
+  return i > 0 ? `Completa ${CHALLENGE_ROUTES[i - 1].turns} turnos para desbloquear` : '';
+}
+
 export function survivalCompletedCount(store) {
   return CHALLENGE_ROUTES.filter((route) => survivalWonFor(store, route.id)).length;
 }

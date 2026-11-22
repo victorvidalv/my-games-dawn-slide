@@ -11,6 +11,8 @@ import {
   survivalBestLevel,
   survivalCompletedCount,
   survivalProgress,
+  survivalRouteUnlocked,
+  survivalUnlockReq,
   survivalWonFor,
 } from '../game/survival.js';
 import { numLocale } from '../i18n.js';
@@ -56,6 +58,7 @@ export function renderSurvival() {
     selectedRoute = progress.route;
     selectedRelic = progress.relic;
   }
+  if (!survivalRouteUnlocked(store, selectedRoute)) selectedRoute = CHALLENGE_ROUTES[0].id;
 
   $('survivalIntro').textContent = 'Reserva exacta de turnos: cada paso cuenta.';
 
@@ -73,6 +76,11 @@ export function renderSurvival() {
 
   const routesBox = $('survivalRoutes');
   routesBox.innerHTML = CHALLENGE_ROUTES.map((route) => {
+    const unlocked = survivalRouteUnlocked(store, route.id);
+    if (!unlocked) {
+      const req = survivalUnlockReq(route.id);
+      return `<label class="challenge-route-option is-locked" aria-label="${route.name}. Bloqueado. ${req}"><input type="radio" name="challengeRoute" value="${route.id}" disabled><span class="challenge-route-card locked"><span class="route-lock-icon" aria-hidden="true">${icon('lock')}</span><span class="route-turns">${format(route.turns)}<em>turnos</em></span><b>${route.name}</b><small class="route-lock-note">${req}</small></span></label>`;
+    }
     const won = survivalWonFor(store, route.id);
     const bestNum = survivalBestFor(store, route.id);
     const foot = won
@@ -85,7 +93,7 @@ export function renderSurvival() {
 
   routesBox.querySelectorAll('input').forEach((input) => {
     input.onchange = () => {
-      selectedRoute = input.value;
+      if (survivalRouteUnlocked(store, input.value)) selectedRoute = input.value;
     };
   });
 
@@ -202,6 +210,7 @@ $('survivalPlay').onclick = async () => {
     });
     if (!confirmed) return;
   }
+  if (!survivalRouteUnlocked(store, selectedRoute)) selectedRoute = CHALLENGE_ROUTES[0].id;
   $('menu').classList.remove('show');
   startSurvival({ restart: true, route: selectedRoute, relic: selectedRelic });
 };

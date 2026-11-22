@@ -1,3 +1,4 @@
+import { MAX_LEVEL } from './engine/difficulty.js';
 import { heroById } from './game/heroes.js';
 import { runGain } from './game/run-points.js';
 import { mergeSaves } from './game/save-merge.js';
@@ -40,6 +41,23 @@ export const PATHS = [
   { s: 75, n: 'Experto', e: 'Ⅲ', c: '#ff5f8f', d: 'Solo para expertos' },
 ];
 export const pathOf = (s) => PATHS.find((p) => p.s === s) || PATHS[0];
+/** Devuelve true si la senda `s` (1, 50 o 75) ya fue completada (victoria en el nivel 21). */
+export const pathCompleted = (st, s) => Array.isArray(st?.stats?.paths) && st.stats.paths.includes(s);
+/** Ya jugó esa senda: tiene récord en ella o una partida guardada en curso. */
+const pathPlayed = (st, s) => (Number(st?.paths?.[`c${s}`]?.level) || 0) > 0 || st?.run?.start === s;
+/**
+ * Normal siempre está abierto; Difícil exige completar Normal y Experto exige completar Difícil.
+ * Lo que ya se jugó (o cualquier senda más difícil que ya se jugó) nunca se vuelve a cerrar: así un guardado de antes
+ * de este bloqueo conserva su acceso aunque no tenga anotada la victoria.
+ */
+export function pathUnlocked(st, s) {
+  const i = PATHS.findIndex((p) => p.s === s);
+  return i <= 0 || pathCompleted(st, PATHS[i - 1].s) || PATHS.slice(i).some((p) => pathPlayed(st, p.s));
+}
+export function pathUnlockReq(s) {
+  const i = PATHS.findIndex((p) => p.s === s);
+  return i > 0 ? `Completa ${PATHS[i - 1].n} (${MAX_LEVEL} niveles) para desbloquear` : '';
+}
 export const rkey = () => S.run.mode + S.run.start;
 
 /* Estado mutable compartido entre módulos: la aventura en curso, el tablero activo y si la UI está ocupada. */
