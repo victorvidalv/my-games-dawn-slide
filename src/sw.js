@@ -14,13 +14,15 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 registerRoute(
   ({ url }) => /\/(portada|heroes\/outfits)\/.+\.webp$|\/backgrounds\/cover-.+\.webp$/.test(url.pathname),
   new CacheFirst({
-    cacheName: 'cosmeticos-v1',
+    cacheName: 'cosmeticos-v2',
     plugins: [new ExpirationPlugin({ maxEntries: 500, purgeOnQuotaError: true })],
   }),
 );
 
-/* Ya no hay retratos de jefe: se borra la caché que los guardaba en las instalaciones antiguas. */
-self.addEventListener('activate', (e) => e.waitUntil(caches.delete('jefes-v2')));
+/* Limpia cachés antiguas (retratos de jefe retirados y trajes previos sin transparencia). */
+self.addEventListener('activate', (e) =>
+  e.waitUntil(Promise.all([caches.delete('jefes-v2'), caches.delete('cosmeticos-v1')])),
+);
 
 /* La página pide activar la versión nueva cuando el usuario pulsa «Actualizar» */
 self.addEventListener('message', (e) => {

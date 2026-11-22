@@ -2168,7 +2168,7 @@ export function setOutfit(store, hero, id) {
 }
 
 /** Imagen de un atuendo: `adv` cuerpo entero (aventura), `sel` busto y `act` pose (selección). */
-export const outfitArt = (hero, id, pose) => `heroes/outfits/${hero}-${id}-${pose}.webp`;
+export const outfitArt = (hero, id, pose) => `heroes/outfits/${hero}-${id}-${pose}.webp?v=2`;
 
 export function rewardUnlocked(type, id, storeOrOwned = {}) {
   if (DEFAULT_LOOK[type] === id) return true;
