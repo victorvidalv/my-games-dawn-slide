@@ -45,6 +45,7 @@ import './styles/44-piece-collection.css';
 import './styles/45-board-collection.css';
 import './styles/46-card-collection.css';
 import './styles/47-defeat.css';
+import './styles/48-outfit-showcase.css';
 import './styles/35-lite.css'; // modo ligero automático (src/ui/perf.js): siempre la última
 import './ui/transitions.js';
 import './ui/achievements.js';

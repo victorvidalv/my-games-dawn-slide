@@ -911,4 +911,9 @@ export const ZH_GAME = {
   'Completa una aventura con rango A o mejor': '以 A 级或更高完成一次冒险',
   'Completa una aventura sin usar ninguna pista': '不用任何提示完成一次冒险',
   'Completa una aventura entera': '完成一次完整冒险',
+  Mostrar: '展示',
+  'Mostrar atuendo': '展示服装',
+  Selección: '选择',
+  Pose: '姿势',
+  Bloqueado: '未解锁',
 };

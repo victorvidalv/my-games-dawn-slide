@@ -1,0 +1,233 @@
+/* ===== Visor de atuendos (Personalizar → Atuendos → Mostrar): el traje en grande sobre un fondo oscuro animado =====
+   Fondo: dos capas de bruma con el color del héroe, un haz de luz que se mueve despacio y polvo que sube. Todo es CSS y
+   solo anima transform y opacity; con «reducir movimiento» queda quieto. */
+.outfit-show-ov {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  overflow: hidden;
+  background: #05040a;
+  color: #f1ecff;
+  animation: os-in 0.35s ease both;
+}
+@keyframes os-in {
+  from {
+    opacity: 0;
+  }
+}
+.os-bg,
+.os-bg i {
+  position: absolute;
+  pointer-events: none;
+}
+.os-bg {
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 105%, color-mix(in srgb, var(--accent) 38%, #12081c) 0, transparent 70%),
+    radial-gradient(ellipse 70% 50% at 50% -10%, #1c1032 0, transparent 70%),
+    linear-gradient(180deg, #0a0712, #040309 60%, #0e0614);
+}
+.os-fog {
+  inset: -20% -40%;
+  background:
+    radial-gradient(ellipse 30% 14% at 24% 64%, color-mix(in srgb, var(--accent) 45%, transparent), transparent 70%),
+    radial-gradient(ellipse 36% 16% at 72% 46%, #5a2a9a55, transparent 70%),
+    radial-gradient(ellipse 26% 12% at 50% 82%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%);
+  filter: blur(22px);
+}
+.os-fog-2 {
+  background:
+    radial-gradient(ellipse 34% 14% at 30% 30%, #3a1a6aaa, transparent 70%),
+    radial-gradient(ellipse 28% 12% at 80% 74%, color-mix(in srgb, var(--accent) 35%, transparent), transparent 70%);
+  opacity: 0.8;
+}
+/* Haz de luz sobre el traje */
+.os-beam {
+  inset: -10% 20% 10%;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 34%, #ffffff22), transparent 75%);
+  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
+  opacity: 0.35;
+  mix-blend-mode: screen;
+  transform-origin: 50% 0;
+}
+/* Polvo de luz que sube */
+.os-dust {
+  inset: -10% 0 -30%;
+  opacity: 0.6;
+  background:
+    radial-gradient(circle, #ffffffcc 0 1px, transparent 2px) 12% 20% / 150px 170px,
+    radial-gradient(circle, color-mix(in srgb, var(--accent) 80%, #fff) 0 1.4px, transparent 2.6px) 58% 60% / 210px
+      230px,
+    radial-gradient(circle, #ffffff99 0 0.8px, transparent 1.8px) 84% 40% / 260px 190px;
+}
+.os-stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: clamp(40px, 7dvh, 64px) 16px 0;
+  min-height: 0;
+}
+.os-art {
+  display: block;
+  max-width: min(94vw, 520px);
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 18px;
+  filter: drop-shadow(0 0 28px color-mix(in srgb, var(--accent) 55%, transparent)) drop-shadow(0 12px 22px #000b);
+  -webkit-mask-image: radial-gradient(ellipse 58% 56% at 50% 50%, #000 62%, transparent 92%);
+  mask-image: radial-gradient(ellipse 58% 56% at 50% 50%, #000 62%, transparent 92%);
+}
+.outfit-show-ov.is-locked .os-art {
+  filter: brightness(0.5) saturate(0.55) drop-shadow(0 0 20px color-mix(in srgb, var(--accent) 30%, transparent));
+}
+.os-info {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 12px 16px calc(env(safe-area-inset-bottom) + 18px);
+  text-align: center;
+  background: linear-gradient(180deg, transparent, #05040acc 38%);
+}
+.os-info h3 {
+  margin: 0;
+  font: 800 clamp(20px, 5vw, 28px) / 1.1 var(--font-title, Georgia, serif);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.os-hero {
+  margin: -4px 0 0;
+  color: color-mix(in srgb, var(--accent) 70%, #fff);
+  font: 700 12px / 1 var(--font-ui, system-ui);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.os-poses {
+  display: flex;
+  gap: 6px;
+}
+.os-poses button {
+  padding: 7px 14px;
+  border-radius: 99px;
+  border: 1.5px solid #ffffff33;
+  background: #ffffff10;
+  color: #e7defa;
+  font: 700 12px / 1 var(--font-ui, system-ui);
+  cursor: pointer;
+}
+.os-poses button.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 35%, #0a0712);
+  color: #fff;
+}
+.os-foot {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: min(100%, 360px);
+}
+.os-locked {
+  margin: 0;
+  color: #ffb6b6;
+  font: 800 12px / 1 var(--font-ui, system-ui);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.os-close {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 10px);
+  right: 12px;
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff44;
+  background: #0008;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+/* Botón «Mostrar» sobre cada traje de la cuadrícula */
+.outfit-art .outfit-show {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px 5px 7px;
+  border-radius: 99px;
+  border: 1.5px solid #ffffff55;
+  background: #0a0712cc;
+  color: #fff;
+  font: 800 10.5px / 1 var(--font-ui, system-ui);
+  cursor: pointer;
+}
+.outfit-art .outfit-show .ic {
+  width: 12px;
+  height: 12px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .outfit-show-ov .os-fog {
+    animation: os-drift 34s ease-in-out infinite alternate;
+  }
+  .outfit-show-ov .os-fog-2 {
+    animation: os-drift-rev 48s ease-in-out infinite alternate;
+  }
+  .outfit-show-ov .os-beam {
+    animation: os-beam 9s ease-in-out infinite alternate;
+  }
+  .outfit-show-ov .os-dust {
+    animation: os-rise 24s linear infinite;
+  }
+  .outfit-show-ov:not(.is-locked) .os-art {
+    animation: os-breathe 7s ease-in-out infinite alternate;
+  }
+}
+@keyframes os-drift {
+  from {
+    transform: translateX(-9%);
+  }
+  to {
+    transform: translateX(9%);
+  }
+}
+@keyframes os-drift-rev {
+  from {
+    transform: translateX(10%) scale(1.08);
+  }
+  to {
+    transform: translateX(-10%) scale(1.08);
+  }
+}
+@keyframes os-beam {
+  from {
+    transform: rotate(-4deg);
+    opacity: 0.22;
+  }
+  to {
+    transform: rotate(4deg);
+    opacity: 0.5;
+  }
+}
+@keyframes os-rise {
+  to {
+    transform: translateY(-24%);
+  }
+}
+@keyframes os-breathe {
+  from {
+    transform: translateY(0) scale(1);
+  }
+  to {
+    transform: translateY(-6px) scale(1.015);
+  }
+}
+.os-info .rar-chip {
+  position: static;
+}

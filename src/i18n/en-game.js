@@ -935,4 +935,9 @@ export const EN_GAME = {
   'Completa una aventura con rango A o mejor': 'Complete an adventure with rank A or better',
   'Completa una aventura sin usar ninguna pista': 'Complete an adventure without using any hint',
   'Completa una aventura entera': 'Complete a full adventure',
+  Mostrar: 'Show',
+  'Mostrar atuendo': 'Show outfit',
+  Selección: 'Selection',
+  Pose: 'Pose',
+  Bloqueado: 'Locked',
 };

@@ -92,6 +92,10 @@ const rarityOf = (item) => RARITY[item?.rarity] || RARITY.common;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const inRun = () => !!(S.run && S.G && !S.G.done);
+/** Al equipar una música, la portada pasa a sonar con ella al instante (fuera de una partida). */
+const playEquippedMusic = (type) => {
+  if (type === 'music' && !inRun()) Music.scene('menu');
+};
 let activeType = 'board';
 let activeHero = 'lia';
 const lastType = {}; // último filtro usado en cada pestaña principal
@@ -324,7 +328,7 @@ function renderOutfits() {
           : `<button type="button" class="shop-act equip" data-outfit-hero="${h.id}" data-outfit-id="${o.id}">Equipar</button>`
         : `<div class="unlock-foot">${unlockHtml('outfit', `${h.id}:${o.id}`)}</div>`;
       return `<article class="ach-shop-card outfit-card r-${rarityOf(o).id}${on ? ' on' : ''}${owned ? ' owned' : ' locked'}">
-          <span class="ach-shop-open">${o.id === DEFAULT_OUTFIT[h.id] ? '<span class="rar-chip default-chip">Por defecto</span>' : `<span class="rar-chip">${rarityOf(o).name}</span>`}<span class="outfit-art"><img src="${art}" alt="" loading="lazy" decoding="async"></span><b class="ach-shop-name">${o.name}</b></span>${foot}</article>`;
+          <span class="ach-shop-open">${o.id === DEFAULT_OUTFIT[h.id] ? '<span class="rar-chip default-chip">Por defecto</span>' : `<span class="rar-chip">${rarityOf(o).name}</span>`}<span class="outfit-art"><img src="${art}" alt="" loading="lazy" decoding="async"><button type="button" class="outfit-show" data-outfit-show="${h.id}:${o.id}" aria-label="Mostrar atuendo">${icon('stars')}<span>Mostrar</span></button></span><b class="ach-shop-name">${o.name}</b></span>${foot}</article>`;
     })
     .join('');
   return `<div class="ach-filters outfit-heroes" role="tablist" aria-label="Héroe">${picker}</div>
@@ -401,6 +405,13 @@ function paintPreview() {
       sfx.ui();
       feedback = `Activado: ${rewardName(pv.type, pv.id)}`;
       if (!['board', 'pieces', 'key'].includes(pv.type)) applyLook();
+      playEquippedMusic(pv.type);
+      if (pv.type === 'music') {
+        pv.playing = true;
+        const play = pv.el.querySelector('[data-pv-play]');
+        if (play) play.textContent = 'Detener';
+        pv.el.querySelector('.look-pv-music')?.classList.add('on');
+      }
       paintPreview();
       renderAchievements();
     };
@@ -408,12 +419,12 @@ function paintPreview() {
 
 function closePreview() {
   if (!pv) return;
-  const { el, opener, playing } = pv;
+  const { el, opener, playing, id } = pv;
   document.removeEventListener('keydown', pv.onKey);
   el.remove();
   pv = null;
   applyLook(); // quita lo que se estaba probando y deja lo equipado
-  if (playing && !inRun()) Music.scene('menu');
+  if (playing && !inRun() && lookOf(store).music !== id) Music.scene('menu'); // vuelve a la música equipada
   document.querySelector(`[data-open-type="${opener.type}"][data-open-id="${opener.id}"]`)?.focus?.();
 }
 
@@ -466,6 +477,93 @@ export function openPreview(type, id) {
   }
   sfx.ui();
   (el.querySelector('[data-pv-equip]') || el.querySelector('[data-pv-close]'))?.focus?.();
+}
+
+/* ---------- Visor de atuendos: el traje en grande, sobre un fondo oscuro animado ---------- */
+const POSES = [
+  ['adv', 'Aventura'],
+  ['sel', 'Selección'],
+  ['act', 'Pose'],
+];
+let showcase = null;
+
+function closeShowcase() {
+  if (!showcase) return;
+  document.removeEventListener('keydown', showcase.onKey);
+  showcase.el.remove();
+  showcase = null;
+}
+
+/** Abre el visor de un traje (también los bloqueados: se ven, con lo que falta para tenerlos). */
+function openShowcase(hero, id, pose = 'adv') {
+  const h = HEROES.find((x) => x.id === hero);
+  const o = OUTFITS[hero]?.find((x) => x.id === id);
+  if (!h || !o) return;
+  closeShowcase();
+  const el = document.createElement('div');
+  el.className = 'outfit-show-ov';
+  el.setAttribute('role', 'dialog');
+  el.setAttribute('aria-modal', 'true');
+  el.setAttribute('aria-labelledby', 'osName');
+  el.style.setProperty('--accent', h.color);
+  el.innerHTML = `<div class="os-bg" aria-hidden="true"><i class="os-fog"></i><i class="os-fog os-fog-2"></i><i class="os-beam"></i><i class="os-dust"></i></div>
+    <button type="button" class="os-close" data-os-close aria-label="Cerrar">✕</button>
+    <figure class="os-stage"><img class="os-art" alt="" decoding="async"></figure>
+    <div class="os-info">
+      <span class="rar-chip r-${rarityOf(o).id}"></span>
+      <h3 id="osName"></h3>
+      <p class="os-hero"></p>
+      <div class="os-poses" role="tablist" aria-label="Pose">${POSES.map(([p, label]) => `<button type="button" role="tab" data-os-pose="${p}">${label}</button>`).join('')}</div>
+      <div class="os-foot"></div>
+    </div>`;
+  document.body.appendChild(el);
+  showcase = { el, hero, id, pose };
+  const paint = () => {
+    const { pose: cur } = showcase;
+    el.querySelector('.os-art').src = outfitArt(hero, id, cur);
+    el.querySelector('.rar-chip').textContent = DEFAULT_OUTFIT[hero] === id ? 'Por defecto' : rarityOf(o).name;
+    el.querySelector('#osName').textContent = o.name;
+    el.querySelector('.os-hero').textContent = h.name;
+    el.querySelectorAll('[data-os-pose]').forEach((b) => {
+      const on = b.dataset.osPose === cur;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-selected', String(on));
+    });
+    const owned = outfitUnlocked(store, hero, id);
+    const worn = outfitOf(store, hero) === id;
+    el.classList.toggle('is-locked', !owned);
+    el.querySelector('.os-foot').innerHTML = owned
+      ? worn
+        ? `<button type="button" class="shop-act equipped" disabled>Equipado ✓</button>`
+        : `<button type="button" class="shop-act equip" data-os-equip>Equipar</button>`
+      : `<p class="os-locked">Bloqueado</p><div class="unlock-foot">${unlockHtml('outfit', `${hero}:${id}`)}</div>`;
+    el.querySelector('[data-os-equip]')?.addEventListener('click', () => {
+      if (!setOutfit(store, hero, id)) return;
+      persist();
+      sfx.ui();
+      feedback = `Activado: ${o.name}`;
+      paint();
+      renderAchievements();
+    });
+  };
+  el.addEventListener('click', (e) => {
+    const pb = e.target.closest('[data-os-pose]');
+    if (pb) {
+      showcase.pose = pb.dataset.osPose;
+      sfx.ui();
+      paint();
+    } else if (e.target === el || e.target.closest('[data-os-close]')) {
+      sfx.ui();
+      closeShowcase();
+    }
+  });
+  showcase.onKey = (e) => {
+    if (e.key === 'Escape') closeShowcase();
+  };
+  document.addEventListener('keydown', showcase.onKey);
+  paint();
+  sfx.ui();
+  el.querySelector('[data-os-close]').focus();
 }
 
 export function renderAchievements() {
@@ -544,6 +642,12 @@ export function renderAchievements() {
       markSeen(`outfit:${activeHero}`);
     };
   });
+  box.querySelectorAll('[data-outfit-show]').forEach((btn) => {
+    btn.onclick = () => {
+      const [hero, id] = btn.dataset.outfitShow.split(':');
+      openShowcase(hero, id);
+    };
+  });
   box.querySelectorAll('[data-outfit-id]').forEach((btn) => {
     btn.onclick = () => {
       const { outfitHero: hero, outfitId: id } = btn.dataset;
@@ -561,6 +665,7 @@ export function renderAchievements() {
       if (!setLook(store, type, id)) return;
       persist();
       applyLook();
+      playEquippedMusic(type);
       sfx.ui();
       feedback = `Activado: ${rewardName(type, id)}`;
       renderAchievements();

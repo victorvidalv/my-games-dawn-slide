@@ -62,6 +62,18 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
   app.$('panelAch').querySelector('[data-outfit-hero-tab="jean"]').click();
   expect(app.$('panelAch').querySelector('.outfit-card.on .ach-shop-name').textContent).toBe('Vigía del reloj');
 
+  // Visor de atuendos: el botón «Mostrar» abre el traje en grande (también los bloqueados), con sus poses
+  app.$('panelAch').querySelector('[data-outfit-show="jean:aviador"]').click();
+  const show = document.querySelector('.outfit-show-ov');
+  expect(show).toBeTruthy();
+  expect(show.querySelector('.os-art').getAttribute('src')).toContain('jean-aviador-adv');
+  show.querySelector('[data-os-pose="act"]').click();
+  expect(show.querySelector('.os-art').getAttribute('src')).toContain('jean-aviador-act');
+  expect(show.classList.contains('is-locked')).toBe(true); // aún no lo tienes: muestra qué falta
+  expect(show.querySelector('.unlock-reqs li')).toBeTruthy();
+  show.querySelector('[data-os-close]').click();
+  expect(document.querySelector('.outfit-show-ov')).toBeNull();
+
   // Portada: Héroes · Música · Fondo
   app.$('panelAch').querySelector('[data-custom-group="cover"]').click();
   expect([...app.$('panelAch').querySelectorAll('[data-custom-type]')].map((b) => b.dataset.customType)).toEqual([
