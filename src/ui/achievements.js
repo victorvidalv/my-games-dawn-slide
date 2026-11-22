@@ -918,12 +918,10 @@ export function renderAchievements() {
             : REWARDS[t].filter((r) => rewardUnlocked(t, r.id, store)).length),
       0,
     );
-  const totalOf = (types) =>
-    types.reduce((n, t) => n + (t === 'outfit' ? outfitAll.length : t === 'lore' ? loreTotal() : REWARDS[t].length), 0);
   const newsOf = (types) => types.reduce((n, t) => n + unseenKeys().filter((k) => k.startsWith(`${t}:`)).length, 0);
   const tabs = GROUPS.map((g) => {
     const news = newsOf(g.types);
-    return `<button type="button" class="ach-tab${g.id === group.id ? ' on' : ''}" role="tab" aria-selected="${g.id === group.id}" data-custom-group="${g.id}">${icon(g.icon)}<span>${g.label}</span><small>${countOf(g.types)}/${totalOf(g.types)}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
+    return `<button type="button" class="ach-tab${g.id === group.id ? ' on' : ''}" role="tab" aria-selected="${g.id === group.id}" data-custom-group="${g.id}">${icon(g.icon)}<span>${g.label}</span>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
   }).join('');
   // Atuendos filtra por héroe (dentro de su vista); las otras pestañas tienen una fila de filtros arriba
   const filters =
