@@ -1057,6 +1057,33 @@ export function closeCustomView() {
   closeShowcase();
 }
 
+/**
+ * Al repintar un panel (equipar, marcar novedades) el navegador del móvil perdía el scroll y todo parecía recargarse:
+ * se anota dónde estaba cada contenedor y cada fila de pestañas, y se devuelve a su sitio tras escribir el HTML.
+ */
+function snapScroll(box) {
+  const scrolls = (root) =>
+    [...root.querySelectorAll('*')].filter(
+      (e) => e.scrollHeight > e.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(e).overflowY),
+    );
+  const parents = [];
+  for (let e = box; e && e !== document.body; e = e.parentElement)
+    if (e.scrollTop || e.scrollLeft) parents.push([e, e.scrollTop, e.scrollLeft]);
+  const inner = scrolls(box).map((e) => [e.className, e.scrollTop]); // contenedores internos (se vuelven a crear con el HTML)
+  const rows = [...box.querySelectorAll('[role="tablist"]')].map((r) => r.scrollLeft);
+  return () => {
+    for (const [e, top, left] of parents) {
+      e.scrollTop = top;
+      e.scrollLeft = left;
+    }
+    for (const [cls, top] of inner)
+      if (cls) box.querySelector(`.${cls.trim().split(/\s+/).join('.')}`)?.scrollTo(0, top);
+    box.querySelectorAll('[role="tablist"]').forEach((r, i) => {
+      r.scrollLeft = rows[i] || 0;
+    });
+  };
+}
+
 export function renderLorePanel() {
   const box = $('panelLore');
   if (!box) return;
@@ -1067,6 +1094,7 @@ export function renderLorePanel() {
   }
   const loreGot = loreUnlockedKeys(store).length;
   const total = loreTotal();
+  const restore = snapScroll(box);
   box.innerHTML = `<header class="lore-banner">
       <img class="lore-banner-bg" src="/backgrounds/umbral-del-alba.webp" alt="" decoding="async">
       <div class="lore-banner-copy">
@@ -1079,6 +1107,7 @@ export function renderLorePanel() {
       </div>
     </header>
     ${renderLore()}`;
+  restore();
   bindLore(box);
   const marked =
     loreTab === 'people'
@@ -1095,6 +1124,7 @@ export function renderAchievements() {
   const box = $('panelAch');
   if (!box) return;
   const view = `${activeType}|${activeHero}`;
+  const prevView = freshView;
   if (view !== freshView) {
     freshView = view;
     freshNow = new Set();
@@ -1132,6 +1162,7 @@ export function renderAchievements() {
           })
           .join('');
 
+  const restore = view === prevView ? snapScroll(box) : null;
   box.innerHTML = `<div class="custom-header">
       <div class="ach-tabs ach-tabs-3" role="tablist" aria-label="Personalizar">${tabs}</div>
       <div class="ach-total custom-total">
@@ -1146,6 +1177,7 @@ export function renderAchievements() {
       <p class="look-note" id="lookNote" role="status">${feedback || (activeType === 'outfit' ? 'Cada conjunto cambia a tu héroe en la aventura y en la selección de personaje.' : 'Todo se desbloquea jugando. Toca un objeto para probarlo.')}</p>
       ${activeType === 'outfit' ? renderOutfits() : renderGrid(activeType)}
     </section>`;
+  restore?.();
 
   box.querySelectorAll('[data-custom-group]').forEach((btn) => {
     btn.onclick = () => {
