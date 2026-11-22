@@ -271,8 +271,8 @@ button.fate-card {
   width: auto;
   max-width: min(88vw, 420px);
   height: clamp(170px, calc(100dvh - 560px), 560px);
-  -webkit-mask-image: radial-gradient(ellipse 50% 48% at 50% 48%, #000 54%, transparent 82%);
-  mask-image: radial-gradient(ellipse 50% 48% at 50% 48%, #000 54%, transparent 82%);
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 .fate-ask {
   margin: 0;

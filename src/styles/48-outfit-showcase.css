@@ -76,10 +76,9 @@
   max-width: min(94vw, 520px);
   max-height: 100%;
   object-fit: contain;
-  border-radius: 18px;
   filter: drop-shadow(0 0 28px color-mix(in srgb, var(--accent) 55%, transparent)) drop-shadow(0 12px 22px #000b);
-  -webkit-mask-image: radial-gradient(ellipse 58% 56% at 50% 50%, #000 62%, transparent 92%);
-  mask-image: radial-gradient(ellipse 58% 56% at 50% 50%, #000 62%, transparent 92%);
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 .outfit-show-ov.is-locked .os-art {
   filter: brightness(0.5) saturate(0.55) drop-shadow(0 0 20px color-mix(in srgb, var(--accent) 30%, transparent));

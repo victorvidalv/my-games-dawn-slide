@@ -56,8 +56,7 @@ for (const sheet of OUTFIT_SHEETS) {
       let cell = sharp(SRC + sheet.file).extract({ left, top, width: w, height: bottom - top });
       if (sheet.keyWhite) cell = await keyOutWhite(await cell.png().toBuffer());
       await cell
-        .flatten({ background: sheet.bg })
-        .webp({ quality: 70, effort: 6, smartSubsample: true })
+        .webp({ quality: 75, alphaQuality: 90, effort: 6, smartSubsample: true })
         .toFile(`${OUT}/${sheet.hero}-${sheet.ids[c]}-${POSES[r]}.webp`);
     }
 }
