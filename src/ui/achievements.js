@@ -1,71 +1,73 @@
 /**
- * Logros (100 logros con reclamo manual, cofres de colección y animación de premio) y Canjear (tienda cosmética con
- * rarezas y probador: cada objeto se ve en vivo sobre un tablero de muestra antes de gastar los puntos).
- * Las reglas y la economía pura están en src/game/achievements.js.
+ * Personalizar: tablero, fichas, llave y atuendos. Cada objeto se desbloquea solo al cumplir una acción del juego
+ * (sin puntos ni canje) y se puede probar en vivo sobre un tablero de muestra antes de equiparlo.
+ * Las reglas puras están en src/game/achievements.js.
  */
 import { Music } from '../audio/music.js';
 import { sfx } from '../audio/sound.js';
-import { FATE_THEME, HEROES_THEME, MENU_THEME, ZONE_THEMES } from '../audio/themes.js';
+import { CITY_REPERTOIRES, FATE_THEME, HEROES_THEME, MENU_THEME, ZONE_THEMES } from '../audio/themes.js';
 import { SURVIVAL_TRACKS } from '../audio/themes-survival.js';
 import { $ } from '../dom.js';
 import {
-  ACHIEVEMENTS,
-  GROUPS,
-  MILESTONES,
+  CUSTOM_TYPES,
+  DEFAULT_LOOK,
+  DEFAULT_OUTFIT,
+  OUTFITS,
+  outfitArt,
+  outfitOf,
+  outfitUnlocked,
+  setOutfit,
   RARITY,
   REWARDS,
-  REWARD_TYPES,
-  TIERS,
-  achBalance,
   bumpStat,
   raiseStat as raiseStore,
-  buyShopItem,
   claimAchievements,
-  claimedCount,
-  collectAchievement,
-  collectAllAchievements,
   lookOf,
   markStat as addToCollection,
-  migrateShop,
-  nearAchievements,
-  nextMilestone,
-  openMilestone,
-  progressOf,
-  readyMilestones,
   rewardById,
+  revalidateUnlocks,
   rewardUnlocked,
   setLook,
-  statsOf,
-  unclaimedAchievements,
+  unlockOf,
+  unlockProgress,
+  unlockRewards,
 } from '../game/achievements.js';
+import { HEROES } from '../game/heroes.js';
+import { FATE_CARDS } from '../game/fate.js';
 import { numLocale } from '../i18n.js';
 import { S, persist, store } from '../state.js';
-import { burst, celebration } from './fx.js';
+import { celebration } from './fx.js';
+import { fateCardHtml } from './fate.js';
 import { icon } from './icons.js';
 
 const TYPE_NAME = {
-  board: 'Borde del tablero',
+  board: 'Borde',
   pieces: 'Fichas',
-  key: 'Llaves',
-  fx: 'Celebraciones',
-  music: 'Melodías',
-  cover: 'Portada',
+  key: 'Llave',
+  card: 'Tarjetas',
+  outfit: 'Atuendos',
+  cover: 'Héroes',
+  music: 'Música',
+  bg: 'Fondo',
 };
-const TYPE_ICON = { board: 'flag', pieces: 'rock', key: 'unlock', fx: 'crown', music: 'stars', cover: 'heart' };
+/**
+ * Pestañas principales, cada una con sus filtros (para poder añadir más sin ocupar espacio):
+ *   Tablero → Borde · Fichas · Llave     Atuendos → un filtro por héroe     Portada → Héroes · Música · Fondo
+ */
+const GROUPS = [
+  { id: 'board', label: 'Tablero', icon: 'flag', types: ['board', 'pieces', 'key', 'card'] },
+  { id: 'outfit', label: 'Atuendos', icon: 'heart', types: ['outfit'] },
+  { id: 'cover', label: 'Portada', icon: 'stars', types: ['cover', 'music', 'bg'] },
+];
+const groupOf = (type) => GROUPS.find((g) => g.types.includes(type)) || GROUPS[0];
 const TYPE_HINT = {
   board: 'Así se verá en tu tablero',
-  pieces: 'Así se verá en tu tablero',
+  pieces: 'Así se verán en tu tablero',
   key: 'Así se verá en tu tablero',
-  fx: 'Así celebrarás cada llave',
+  card: 'Así lucirán las cartas del destino',
+  cover: 'Así lucirán los héroes en la portada',
   music: 'Así sonará en el menú',
-  cover: 'Así lucirá la portada del menú',
-};
-/** Colores de las chispas al canjear, según la rareza. */
-const RARITY_FX = {
-  common: { n: 22, colors: ['#e9dcc0', '#fff6c9', '#c9b48a'] },
-  rare: { n: 34, colors: ['#6cb6ff', '#b8e0ff', '#ffffff', '#3d8bff'] },
-  epic: { n: 46, colors: ['#c08cff', '#ffb0ff', '#ffffff', '#8a5cff'] },
-  legendary: { n: 70, colors: ['#ffd24a', '#fff6c9', '#ff9f43', '#ffffff', '#ffe38a'] },
+  bg: 'Así lucirá el fondo de la portada',
 };
 const SURVIVAL_BY_ID = {
   s0: SURVIVAL_TRACKS[0],
@@ -78,6 +80,9 @@ const themeOf = (id) => {
   if (id === 'heroes') return HEROES_THEME;
   if (SURVIVAL_BY_ID[id]) return SURVIVAL_BY_ID[id];
   if (id?.startsWith('z')) return ZONE_THEMES[Number(id.slice(1))] || MENU_THEME;
+  // Canciones de los escenarios de Lía (l0–l6) y de Juth (v0–v6)
+  if (/^l\d$/.test(id || '')) return CITY_REPERTOIRES.lia[Number(id.slice(1))] || MENU_THEME;
+  if (/^v\d$/.test(id || '')) return CITY_REPERTOIRES.van[Number(id.slice(1))] || MENU_THEME;
   return MENU_THEME;
 };
 
@@ -85,27 +90,40 @@ const fmt = (n) => n.toLocaleString(numLocale());
 const rewardName = (type, id) => rewardById(type, id)?.name || '';
 const rarityOf = (item) => RARITY[item?.rarity] || RARITY.common;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const inRun = () => !!(S.run && S.G && !S.G.done);
+let activeType = 'board';
+let activeHero = 'lia';
+const lastType = {}; // último filtro usado en cada pestaña principal
+let feedback = '';
 
-let activeTab = 'list';
-let activeShopType = 'board';
-let shopFeedback = '';
-
-/** Aplica el aspecto guardado: atributos en <body> para tablero, fichas y llave, y música del menú. */
+/** Aplica el aspecto guardado: atributos en <body> para tablero, fichas y llave (y lo ya equipado de otras versiones). */
 export function applyLook() {
   const look = lookOf(store);
   document.body.dataset.board = look.board;
   document.body.dataset.pieces = look.pieces;
   document.body.dataset.key = look.key;
   const cover = rewardById('cover', look.cover);
+  const bg = rewardById('bg', look.bg);
+  const scene = document.querySelector('#menu .cover-scene');
   const coverImg = document.querySelector('#menu .cover-heroes');
+  const world = document.querySelector('#menu .cover-world');
+  // Héroes: la capa de los héroes sobre el paisaje (los recortes con transparencia)
   if (coverImg && cover?.src) coverImg.src = `/${cover.src}`;
+  // Fondo: paisaje propio con desvanecido, capa de efecto y movimiento suave (15-cover.css); solo en la portada
+  if (bg?.src && world) {
+    world.src = `/${bg.src}`;
+    scene?.style.setProperty('--world-fx', bg.fx || '#ffe8ad');
+    scene?.classList.add('cover-world-on');
+  } else scene?.classList.remove('cover-world-on');
   document.body.dataset.cover = look.cover;
+  document.body.dataset.bg = look.bg;
+  document.body.dataset.card = look.card;
   Music.setMenuTheme(themeOf(look.music));
   return look;
 }
 
-/** Celebración elegida al sacar la llave (nada si es «Sin adornos»): cada una tiene su forma y su movimiento (fx.js). */
+/** Celebración equipada en versiones anteriores (ya no se elige): sigue sonando para quien la tenía. */
 export function celebrate(el) {
   const id = lookOf(store).fx,
     fx = rewardById('fx', id)?.burst;
@@ -115,9 +133,33 @@ export function celebrate(el) {
   celebration(id, b.right - 8, r.top + r.height / 2, b.width, fx.colors);
 }
 
-/** Actualiza la badge numérica del botón Logros en la pantalla principal (logros y cofres por abrir). */
+/* ---------- novedades: objetos desbloqueados que aún no has visto ---------- */
+const unseenKeys = () => {
+  const seen = store.customSeen || {};
+  const keys = [];
+  for (const type of CUSTOM_TYPES)
+    for (const item of REWARDS[type] || [])
+      if (unlockOf(type, item.id) && rewardUnlocked(type, item.id, store) && !seen[`${type}:${item.id}`])
+        keys.push(`${type}:${item.id}`);
+  for (const [hero, list] of Object.entries(OUTFITS))
+    for (const o of list)
+      if (o.id !== DEFAULT_OUTFIT[hero] && outfitUnlocked(store, hero, o.id) && !seen[`outfit:${hero}:${o.id}`])
+        keys.push(`outfit:${hero}:${o.id}`);
+  return keys;
+};
+const unseenIn = (type) => unseenKeys().filter((k) => k.startsWith(`${type}:`)).length;
+function markSeen(type) {
+  const keys = unseenKeys().filter((k) => k.startsWith(`${type}:`));
+  if (!keys.length) return;
+  const seen = (store.customSeen ||= {});
+  for (const k of keys) seen[k] = 1;
+  persist();
+  paintAchBadge();
+}
+
+/** Actualiza la badge numérica del botón Personalizar en la pantalla principal. */
 export function paintAchBadge() {
-  const pending = unclaimedAchievements(store).length + readyMilestones(store).length;
+  const pending = unseenKeys().length;
   const badge = $('homeAchBadge');
   if (badge) {
     badge.hidden = pending === 0;
@@ -126,19 +168,19 @@ export function paintAchBadge() {
   $('tabAch')?.classList.toggle('has-news', pending > 0);
 }
 
-/* ---------- aviso «logro listo para reclamar» (de uno en uno) ---------- */
+/* ---------- aviso «objeto desbloqueado» (de uno en uno) ---------- */
 const queue = [];
 let activeToast = null;
 let toastsPaused = false;
 function nextToast() {
   if (toastsPaused || activeToast || !queue.length) return;
-  const a = queue.shift();
+  const { type, item } = queue.shift();
   const t = document.createElement('div');
-  t.className = `ach-toast tier-${a.tier}`;
+  t.className = `ach-toast tier-${item.rarity === 'legendary' ? 'gold' : item.rarity === 'common' ? 'bronze' : 'silver'}`;
   t.setAttribute('role', 'status');
-  t.innerHTML = `<i aria-hidden="true">${icon('trophy')}</i><div><small>Logro desbloqueado</small><b></b><span></span></div>`;
-  t.querySelector('b').textContent = a.name;
-  t.querySelector('span').textContent = `+${a.points} pts · Reclámalo en Logros`;
+  t.innerHTML = `<i aria-hidden="true">${icon('unlock')}</i><div><small>Desbloqueado</small><b></b><span></span></div>`;
+  t.querySelector('b').textContent = item.name;
+  t.querySelector('span').textContent = 'Personalizar';
   document.body.appendChild(t);
   sfx.unlock();
   const timer = setTimeout(() => {
@@ -146,7 +188,7 @@ function nextToast() {
     activeToast = null;
     nextToast();
   }, 3200);
-  activeToast = { achievement: a, element: t, timer };
+  activeToast = { entry: { type, item }, element: t, timer };
 }
 
 /** Guarda los avisos mientras el jugador elige el camino y viaja a la próxima ciudad. */
@@ -155,17 +197,18 @@ export function pauseAchievementToasts(paused) {
   if (paused && activeToast) {
     clearTimeout(activeToast.timer);
     activeToast.element.remove();
-    queue.unshift(activeToast.achievement);
+    queue.unshift(activeToast.entry);
     activeToast = null;
   }
   if (!paused) nextToast();
 }
 
-/** Comprueba si se ha cumplido algún logro, lo guarda, actualiza la badge y avisa. */
+/** Anota las acciones cumplidas (registro interno) y desbloquea los objetos que correspondan. */
 export function checkAchievements({ silent = false } = {}) {
-  const fresh = claimAchievements(store);
+  const logged = claimAchievements(store);
+  const fresh = unlockRewards(store);
   paintAchBadge();
-  if (!fresh.length) return fresh;
+  if (!fresh.length && !logged.length) return fresh;
   persist();
   if (!silent) {
     queue.push(...fresh.slice(0, 3));
@@ -174,7 +217,7 @@ export function checkAchievements({ silent = false } = {}) {
   return fresh;
 }
 
-/** Suma 1 a uno o varios contadores de logros y comprueba si se desbloqueó alguno. */
+/** Suma 1 a uno o varios contadores y comprueba si se desbloqueó algo. */
 export function countStat(...names) {
   if (!names.length) return;
   for (const name of names) bumpStat(store, name);
@@ -182,195 +225,114 @@ export function countStat(...names) {
   checkAchievements();
 }
 
-/** Sube una marca máxima (p. ej. la mejor racha de una partida) y comprueba si se desbloqueó algún logro. */
+/** Sube una marca máxima (p. ej. la mejor racha de una partida) y comprueba si se desbloqueó algo. */
 export function raiseStat(name, value) {
   if (!raiseStore(store, name, value)) return;
   persist();
   checkAchievements();
 }
 
-/** Aplica `fn(store)` (que devuelve true si cambió alguna estadística) y comprueba los logros. */
+/** Aplica `fn(store)` (que devuelve true si cambió alguna estadística) y comprueba los desbloqueos. */
 export function updateStats(fn) {
   if (!fn(store)) return;
   persist();
   checkAchievements();
 }
 
-/** Anota `key` en una colección de logros y comprueba si se desbloqueó alguno. */
+/** Anota `key` en una colección y comprueba si se desbloqueó algo. */
 export function markStat(name, key) {
   if (!addToCollection(store, name, key)) return;
   persist();
   checkAchievements();
 }
 
-/* ---------- animación de premio al reclamar o canjear ---------- */
-function spawnRewardPop(originEl, text, colors = ['#ffd24a', '#fff6c9', '#ff9f43', '#ffffff'], n = 26) {
-  if (!originEl || reducedMotion()) return;
-  const rect = originEl.getBoundingClientRect();
-  const x = rect.left + rect.width / 2;
-  const y = rect.top + rect.height / 2;
-  burst(x, y, n, colors, 7);
-  const pop = document.createElement('div');
-  pop.className = 'ach-reward-pop';
-  pop.textContent = text;
-  pop.style.left = `${x}px`;
-  pop.style.top = `${y}px`;
-  document.body.appendChild(pop);
-  setTimeout(() => pop.remove(), 900);
-}
-
-/** El saldo sube contando (de `from` al saldo actual) y la cartera da un saltito. */
-function pulseWallet(from) {
-  const pill = $('achWallet');
-  if (!pill) return;
-  pill.classList.remove('pop');
-  void pill.offsetWidth;
-  pill.classList.add('pop');
-  const b = pill.querySelector('b'),
-    to = achBalance(store);
-  if (!b || from == null || from === to || reducedMotion()) return;
-  const t0 = performance.now(),
-    dur = 520;
-  const step = (t) => {
-    const k = Math.min(1, (t - t0) / dur);
-    b.textContent = fmt(Math.round(from + (to - from) * (1 - (1 - k) ** 3)));
-    if (k < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
-}
-
-/* ---------- muestras de la Tienda ---------- */
+/* ---------- muestras ---------- */
+/** Miniatura de una portada o un fondo recortados (public/portada/thumbs, ~5-12 KB); las demás imágenes se usan tal cual. */
+const thumbOf = (src) => (src.startsWith('portada/') ? `portada/thumbs/${src.split('/').pop()}` : src);
 const swatch = (type, id) => {
   if (type === 'board') return `<i class="sw sw-board" data-board="${id}"></i>`;
+  if (type === 'cover' || type === 'bg') {
+    const src = thumbOf(rewardById(type, id)?.src || '');
+    return `<img class="sw sw-cover sw-${type}" src="/${src}" alt="" loading="lazy" decoding="async">`;
+  }
+  if (type === 'card')
+    // Una carta del destino real, pequeña: el emblema es el mismo en todas y cambian el marco, los colores y la forma
+    return `<span class="sw-fate" data-card-scope="${id}">${fateCardHtml(SAMPLE_FATES[0], { tag: 'span' })}</span>`;
+  if (type === 'music') return `<i class="sw sw-music" data-music="${id}">${icon('stars')}</i>`;
   // Fichas y llave de verdad en miniatura: usan el mismo diseño que el tablero (src/styles/40-piece-key-skins.css)
   if (type === 'key')
     return `<i class="sw sw-real" data-key="${id}"><i class="piece h red"><i class="face"></i></i></i>`;
-  if (type === 'pieces')
-    return `<i class="sw sw-real" data-pieces="${id}"><i class="piece h c4"><i class="face"></i></i><i class="piece h c1"><i class="face"></i></i><i class="piece v c2"><i class="face"></i></i></i>`;
-  if (type === 'fx') return `<i class="sw sw-fx" data-fx="${id}"></i>`;
-  if (type === 'cover') {
-    const src = rewardById('cover', id)?.src || 'backgrounds/cover-heroes.webp';
-    return `<img class="sw sw-cover" src="/${src}" alt="" loading="lazy">`;
-  }
-  return `<i class="sw sw-music" data-music="${id}">${icon('stars')}</i>`;
+  return `<i class="sw sw-real" data-pieces="${id}"><i class="piece h c4"><i class="face"></i></i><i class="piece h c1"><i class="face"></i></i><i class="piece v c2"><i class="face"></i></i></i>`;
 };
 
-/* ---------- lista de logros ---------- */
-function renderAchRow(a, ach, claimed, stats) {
-  const ready = !!(ach[a.id] && !claimed[a.id]);
-  const done = !!claimed[a.id];
-  const p = ach[a.id] ? a.goal : progressOf(a, stats);
-  const tier = TIERS[a.tier] || TIERS.bronze;
-  const right = ready
-    ? `<button type="button" class="ach-claim-btn" data-claim="${a.id}">Reclamar <b>+${a.points}</b></button>`
-    : done
-      ? `<span class="ach-claimed-tag">✓ +${a.points}</span>`
-      : `<div class="ach-prog" role="img" aria-label="${p}/${a.goal}"><em>+${a.points} pts</em><u><i style="width:${(p / a.goal) * 100}%"></i></u><span>${fmt(p)}/${fmt(a.goal)}</span></div>`;
-  return `<li class="ach tier-${tier.id}${done ? ' got' : ''}${ready ? ' ready' : ''}"><i class="ach-ico" aria-hidden="true">${icon(done || ready ? 'trophy' : 'lock')}</i><div class="ach-copy"><div class="ach-head"><b>${a.name}</b><i class="ach-tier">${tier.name}</i></div><span>${a.desc}</span></div>${right}</li>`;
+/** Condiciones de un objeto bloqueado: una línea por condición (con su avance) y una barra con el avance total. */
+function unlockHtml(type, id) {
+  const p = unlockProgress(type, id, store);
+  const lines = p.reqs
+    .map(
+      (r) =>
+        `<li class="${r.done ? 'ok' : ''}"><i aria-hidden="true">${icon(r.done ? 'unlock' : 'lock')}</i><span>${r.text}</span><b>${fmt(r.value)}/${fmt(r.goal)}</b></li>`,
+    )
+    .join('');
+  const pct = p.goal ? Math.min(100, (p.value / p.goal) * 100) : 0;
+  return `<ul class="unlock-reqs${p.reqs.length > 1 ? ' multi' : ''}">${lines}</ul><u class="shop-save" role="img" aria-label="${Math.round(pct)} %"><i style="width:${pct}%"></i></u>`;
 }
 
-/** Barra de cofres de colección: avanza con cada logro reclamado. */
-function renderChests() {
-  const count = claimedCount(store),
-    opened = store.achMilestones || {},
-    next = nextMilestone(store),
-    ready = readyMilestones(store);
-  // Cofres repartidos a partes iguales; la barra se llena por tramos (de un cofre al siguiente).
-  const posOf = (i) => ((i + 1) / MILESTONES.length) * 100;
-  const k = MILESTONES.findIndex((m) => count < m.n);
-  const fill =
-    k === -1
-      ? 100
-      : (k ? posOf(k - 1) : 0) +
-        ((count - (k ? MILESTONES[k - 1].n : 0)) / (MILESTONES[k].n - (k ? MILESTONES[k - 1].n : 0))) *
-          (posOf(k) - (k ? posOf(k - 1) : 0));
-  const nodes = MILESTONES.map((m, i) => {
-    const state = opened[m.n] ? 'open' : count >= m.n ? 'ready' : 'locked';
-    const inner = `<i aria-hidden="true">${icon(state === 'open' ? 'unlock' : state === 'ready' ? 'purse' : 'lock')}</i><b>${m.n}</b><small>+${m.points}</small>`;
-    return state === 'ready'
-      ? `<li class="chest ready" style="--at:${posOf(i)}"><button type="button" data-chest="${m.n}" aria-label="${m.name}">${inner}</button></li>`
-      : `<li class="chest ${state}" style="--at:${posOf(i)}" title="${m.name}">${inner}</li>`;
-  }).join('');
-  const note = ready.length
-    ? `<button type="button" class="ach-chest-open" data-chest="${ready[0].n}">${icon('purse')}<span>${ready[0].name}</span><b>Abrir +${ready[0].points}</b></button>`
-    : next
-      ? `<p class="ach-chests-note">Faltan ${next.n - count} logros para el ${next.name}</p>`
-      : `<p class="ach-chests-note">¡Todos los cofres abiertos!</p>`;
-  return `<section class="ach-chests" aria-label="Cofres de colección">
-    <div class="ach-chests-head"><b>Cofres de colección</b><small>${count}/${ACHIEVEMENTS.length}</small></div>
-    <div class="ach-chest-track"><u><i style="width:${fill}%"></i></u><ol>${nodes}</ol></div>
-    ${note}
-  </section>`;
-}
-
-function renderAchList(stats) {
-  const ach = store.ach || {};
-  const claimed = store.achClaimed || {};
-  const pending = unclaimedAchievements(store);
-  const pendingPts = pending.reduce((s, a) => s + a.points, 0);
-
-  const readySection = pending.length
-    ? `<div class="ach-claim-banner"><div><b>${pending.length === 1 ? `${pending.length} logro listo` : `${pending.length} logros listos`}</b><small>Reclama tus puntos para usarlos en Canjear</small></div>${pending.length > 1 ? `<button type="button" class="ach-claim-btn ach-claim-all" data-claim-all>Reclamar todos (+${pendingPts})</button>` : ''}</div>
-      <ul class="ach-list">${pending.map((a) => renderAchRow(a, ach, claimed, stats)).join('')}</ul>`
-    : '';
-
-  const near = nearAchievements(store, 3);
-  const nearSection = near.length
-    ? `<h3 class="panel-h ach-near-h">Casi lo tienes</h3><ul class="ach-list ach-near">${near.map((a) => renderAchRow(a, ach, claimed, stats)).join('')}</ul>`
-    : '';
-
-  const groupSections = GROUPS.map((g) => {
-    const all = ACHIEVEMENTS.filter((a) => a.group === g.id);
-    const groupItems = all.filter((a) => !(ach[a.id] && !claimed[a.id]));
-    if (!groupItems.length) return '';
-    const got = all.filter((a) => ach[a.id]).length;
-    return `<h3 class="panel-h ach-group-h${got === all.length ? ' full' : ''}"><span>${g.name}</span><small>${got}/${all.length}</small><u><i style="width:${(got / all.length) * 100}%"></i></u></h3><ul class="ach-list">${groupItems.map((a) => renderAchRow(a, ach, claimed, stats)).join('')}</ul>`;
-  }).join('');
-
-  return `${renderChests()}${readySection}${nearSection}${groupSections}`;
-}
-
-/* ---------- Canjear ---------- */
-function renderAchShop() {
-  const balance = achBalance(store);
+/* ---------- cuadrícula de objetos ---------- */
+function renderGrid(type) {
   const look = lookOf(store);
-  const subtabs = REWARD_TYPES.map((type) => {
-    const ownedCount = REWARDS[type].filter((r) => rewardUnlocked(type, r.id, store)).length;
-    return `<button type="button" class="ach-filter${activeShopType === type ? ' on' : ''}" role="tab" aria-selected="${activeShopType === type}" data-shop-type="${type}">${icon(TYPE_ICON[type])}<span>${TYPE_NAME[type]}</span><small>${ownedCount}/${REWARDS[type].length}</small></button>`;
-  }).join('');
-
-  const items = [...REWARDS[activeShopType]].sort((a, b) => a.price - b.price);
-  const cards = items
+  const cards = REWARDS[type]
     .map((item) => {
-      const type = activeShopType;
       const owned = rewardUnlocked(type, item.id, store);
       const equipped = look[type] === item.id;
-      const canBuy = !owned && balance >= item.price;
       const rar = rarityOf(item);
-      const actionBtn = equipped
-        ? `<button type="button" class="shop-act equipped" disabled>Equipado ✓</button>`
-        : owned
-          ? `<button type="button" class="shop-act equip" data-equip-type="${type}" data-equip-id="${item.id}">Equipar</button>`
-          : `<button type="button" class="shop-act buy${canBuy ? ' affordable' : ''}" data-buy-type="${type}" data-buy-id="${item.id}">Ver · ${item.price} pts</button>`;
-      const progress =
-        !owned && !canBuy
-          ? `<u class="shop-save" role="img" aria-label="${fmt(balance)}/${fmt(item.price)}"><i style="width:${Math.min(100, (balance / item.price) * 100)}%"></i></u>`
-          : '';
-      return `<article class="ach-shop-card r-${rar.id}${equipped ? ' on' : ''}${owned ? ' owned' : ''}${canBuy ? ' can-buy' : ''}">
+      const isDefault = DEFAULT_LOOK[type] === item.id;
+      const foot = owned
+        ? equipped
+          ? `<button type="button" class="shop-act equipped" disabled>Equipado ✓</button>`
+          : `<button type="button" class="shop-act equip" data-equip-type="${type}" data-equip-id="${item.id}">Equipar</button>`
+        : `<div class="unlock-foot">${unlockHtml(type, item.id)}</div>`;
+      return `<article class="ach-shop-card r-${rar.id}${equipped ? ' on' : ''}${owned ? ' owned' : ' locked'}">
         <button type="button" class="ach-shop-open" data-open-type="${type}" data-open-id="${item.id}" aria-label="Ver ${item.name}">
-          ${item.price === 0 ? `<span class="rar-chip default-chip">Por defecto</span>` : `<span class="rar-chip">${rar.name}</span>`}${item.anim ? `<span class="anim-chip">Animado</span>` : ''}
+          ${isDefault ? `<span class="rar-chip default-chip">Por defecto</span>` : `<span class="rar-chip">${rar.name}</span>`}${item.anim ? `<span class="anim-chip">Animado</span>` : ''}
           <span class="ach-shop-art">${swatch(type, item.id)}</span>
           <b class="ach-shop-name">${item.name}</b>
-        </button>${progress}${actionBtn}</article>`;
+        </button>${foot}</article>`;
     })
     .join('');
-
-  return `<div class="ach-filters shop-cats" role="tablist" aria-label="Categorías de la tienda">${subtabs}</div>
-    <p class="look-note" id="lookNote" role="status">${shopFeedback || 'Toca un objeto para verlo en vivo antes de canjearlo.'}</p>
-    <div class="ach-shop-grid">${cards}</div>`;
+  return `<div class="ach-shop-grid${type === 'key' || type === 'pieces' || type === 'board' ? ' cols-3' : ''}">${cards}</div>`;
 }
 
-/* ---------- Probador: vista previa en vivo antes de canjear ---------- */
+/* ---------- Atuendos: conjuntos de traje por héroe ---------- */
+function renderOutfits() {
+  const h = HEROES.find((x) => x.id === activeHero) || HEROES[0];
+  const picker = HEROES.map((x) => {
+    const list = OUTFITS[x.id] || [];
+    const got = list.filter((o) => outfitUnlocked(store, x.id, o.id)).length;
+    const news = unseenKeys().filter((k) => k.startsWith(`outfit:${x.id}:`)).length;
+    return `<button type="button" class="ach-filter${x.id === h.id ? ' on' : ''}" role="tab" aria-selected="${x.id === h.id}" data-outfit-hero-tab="${x.id}"><span>${x.name}</span><small>${got}/${list.length}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
+  }).join('');
+  const worn = outfitOf(store, h.id);
+  const cards = (OUTFITS[h.id] || [])
+    .map((o) => {
+      const owned = outfitUnlocked(store, h.id, o.id),
+        on = worn === o.id;
+      const art = outfitArt(h.id, o.id, 'adv');
+      const foot = owned
+        ? on
+          ? `<button type="button" class="shop-act equipped" disabled>Equipado ✓</button>`
+          : `<button type="button" class="shop-act equip" data-outfit-hero="${h.id}" data-outfit-id="${o.id}">Equipar</button>`
+        : `<div class="unlock-foot">${unlockHtml('outfit', `${h.id}:${o.id}`)}</div>`;
+      return `<article class="ach-shop-card outfit-card r-${rarityOf(o).id}${on ? ' on' : ''}${owned ? ' owned' : ' locked'}">
+          <span class="ach-shop-open">${o.id === DEFAULT_OUTFIT[h.id] ? '<span class="rar-chip default-chip">Por defecto</span>' : `<span class="rar-chip">${rarityOf(o).name}</span>`}<span class="outfit-art"><img src="${art}" alt="" loading="lazy" decoding="async"></span><b class="ach-shop-name">${o.name}</b></span>${foot}</article>`;
+    })
+    .join('');
+  return `<div class="ach-filters outfit-heroes" role="tablist" aria-label="Héroe">${picker}</div>
+    <p class="look-note">Cada conjunto cambia a tu héroe en la aventura y en la selección de personaje.</p>
+    <div class="ach-shop-grid" style="--accent:${h.color}">${cards}</div>`;
+}
+
+/* ---------- Probador: vista previa en vivo ---------- */
 /** Tablero de muestra 6×6: la llave roja sale por la derecha (fila 3) y el resto de fichas la rodean. */
 const MINI_PIECES = [
   { c: 'red', o: 'h', x: 0, y: 2, w: 2, h: 1 },
@@ -389,32 +351,38 @@ const miniBoard = () =>
       `<div class="piece ${p.o} ${p.c}" style="--x:${p.x};--y:${p.y};--w:${p.w};--h:${p.h}"><div class="face"></div></div>`,
   ).join('')}</div></div>`;
 
-let pv = null; // { type, id, el, opener, timers, playing }
+let pv = null; // { type, id, el, opener }
 
+function footerFor(type, id) {
+  if (rewardUnlocked(type, id, store)) {
+    if (lookOf(store)[type] === id)
+      return `<button type="button" class="shop-act equipped" disabled>Equipado ✓</button>`;
+    return `<button type="button" class="shop-act equip" data-pv-equip>Equipar</button><small class="look-pv-sub">Ya es tuyo</small>`;
+  }
+  return `<div class="unlock-foot pv-unlock">${unlockHtml(type, id)}</div>`;
+}
+
+/** Escena del probador: tablero de muestra, imagen (portada / fondo) o disco de música con botón de escuchar. */
+/** Cartas de muestra: dos bendiciones y un Pacto, para ver cómo queda cada diseño con sus emblemas. */
+const shortest = (list) =>
+  [...list].sort((x, y) => x.gain.length + (x.cost?.length || 0) - (y.gain.length + (y.cost?.length || 0)))[0];
+const SAMPLE_FATES = [
+  shortest(FATE_CARDS.filter((c) => c.kind === 'blessing')) || FATE_CARDS[0],
+  shortest(FATE_CARDS.filter((c) => c.kind === 'pact')) || FATE_CARDS[1],
+];
 function stageFor(type, id) {
-  if (type === 'cover') {
-    const src = rewardById('cover', id)?.src || 'backgrounds/cover-heroes.webp';
+  if (type === 'card')
+    return `<div class="look-fates" data-card-scope="${id}">${SAMPLE_FATES.map((c, i) => fateCardHtml(c, { tag: 'span', index: i })).join('')}</div>`;
+  if (type === 'cover' || type === 'bg') {
+    const src = rewardById(type, id)?.src || '';
     return `<div class="look-pv-cover"><img src="/${src}" alt=""></div>`;
   }
   if (type === 'music')
     return `<div class="look-pv-music"><div class="look-disc" aria-hidden="true"><i>${icon('stars')}</i></div><button type="button" class="look-pv-play" data-pv-play>Escuchar</button></div>`;
-  return `${miniBoard()}${type === 'fx' ? `<button type="button" class="look-pv-replay" data-pv-replay>Repetir celebración</button>` : ''}`;
+  return miniBoard();
 }
 
-function footerFor(type, id) {
-  const item = rewardById(type, id);
-  const owned = rewardUnlocked(type, id, store);
-  const equipped = lookOf(store)[type] === id;
-  const balance = achBalance(store);
-  if (equipped) return `<button type="button" class="shop-act equipped" disabled>Equipado ✓</button>`;
-  if (owned)
-    return `<button type="button" class="shop-act equip" data-pv-equip>Equipar</button><small class="look-pv-sub">Ya es tuyo</small>`;
-  if (balance >= item.price)
-    return `<button type="button" class="shop-act buy affordable" data-confirm-buy>Canjear por ${item.price} pts</button><small class="look-pv-sub">Te quedarán ${fmt(balance - item.price)} pts</small>`;
-  return `<u class="shop-save pv-save" role="img" aria-label="${fmt(balance)}/${fmt(item.price)}"><i style="width:${Math.min(100, (balance / item.price) * 100)}%"></i></u><button type="button" class="shop-act buy" data-confirm-buy aria-disabled="true">Te faltan ${fmt(item.price - balance)} pts</button><small class="look-pv-sub">Tienes ${fmt(balance)} pts</small>`;
-}
-
-/** Pone el objeto «puesto» mientras dura la vista previa (solo tablero, fichas y llave cambian el <body>). */
+/** Pone el objeto «puesto» mientras dura la vista previa. */
 function tryOn(type, id) {
   const look = lookOf(store);
   document.body.dataset.board = type === 'board' ? id : look.board;
@@ -422,68 +390,17 @@ function tryOn(type, id) {
   document.body.dataset.key = type === 'key' ? id : look.key;
 }
 
-function previewBurst() {
-  if (!pv || reducedMotion()) return;
-  const id = pv.type === 'fx' ? pv.id : lookOf(store).fx;
-  const fx = rewardById('fx', id)?.burst;
-  const frame = pv.el.querySelector('.look-mini');
-  if (!fx || !frame) return;
-  const r = frame.getBoundingClientRect();
-  const cell = r.width / 6.8;
-  celebration(id, r.right - 6, r.top + cell * 2.9, r.width, fx.colors);
-}
-
 function paintPreview() {
   if (!pv) return;
-  const item = rewardById(pv.type, pv.id);
-  const rar = rarityOf(item);
-  const box = pv.el.querySelector('.look-pv');
-  box.className = `look-pv r-${rar.id}${pv.unlocked ? ' unlocked' : ''}`;
   pv.el.querySelector('.look-pv-foot').innerHTML = footerFor(pv.type, pv.id);
-  bindPreviewFoot();
-}
-
-function bindPreviewFoot() {
-  const el = pv.el;
-  const buy = el.querySelector('[data-confirm-buy]');
-  if (buy)
-    buy.onclick = () => {
-      const { type, id } = pv;
-      const before = achBalance(store);
-      const res = buyShopItem(store, type, id);
-      if (!res.ok) {
-        buy.classList.remove('shake');
-        void buy.offsetWidth;
-        buy.classList.add('shake');
-        sfx.merchantNope();
-        return;
-      }
-      persist();
-      paintAchBadge();
-      const rar = rarityOf(res.item);
-      if (rar.id === 'legendary') sfx.fanfare();
-      else if (rar.id === 'epic') sfx.success();
-      else sfx.merchantCoin();
-      const rfx = RARITY_FX[rar.id];
-      spawnRewardPop(el.querySelector('.look-pv-stage'), `¡${res.item.name}!`, rfx.colors, rfx.n);
-      pv.unlocked = true;
-      pv.spent = before;
-      shopFeedback = `¡Canjeado y equipado: ${res.item.name}!`;
-      if (type === 'music' && !inRun()) {
-        Music.setMenuTheme(themeOf(id));
-        pv.musicOwned = true;
-      }
-      if (type === 'fx') setTimeout(previewBurst, 380);
-      paintPreview();
-      renderAchievements();
-    };
-  const equip = el.querySelector('[data-pv-equip]');
+  const equip = pv.el.querySelector('[data-pv-equip]');
   if (equip)
     equip.onclick = () => {
       if (!setLook(store, pv.type, pv.id)) return;
       persist();
       sfx.ui();
-      shopFeedback = `Activado: ${rewardName(pv.type, pv.id)}`;
+      feedback = `Activado: ${rewardName(pv.type, pv.id)}`;
+      if (!['board', 'pieces', 'key'].includes(pv.type)) applyLook();
       paintPreview();
       renderAchievements();
     };
@@ -491,22 +408,18 @@ function bindPreviewFoot() {
 
 function closePreview() {
   if (!pv) return;
-  const { el, opener, timers, type, playing, spent, musicOwned } = pv;
-  timers.forEach(clearTimeout);
-  el.querySelector('.look-mini .piece.red .face')?.removeEventListener('animationiteration', pv.onLoop);
+  const { el, opener, playing } = pv;
   document.removeEventListener('keydown', pv.onKey);
   el.remove();
   pv = null;
   applyLook(); // quita lo que se estaba probando y deja lo equipado
-  if (type === 'music' && (playing || musicOwned) && !inRun()) Music.scene('menu');
-  if (spent != null) pulseWallet(spent);
-  const back = opener && document.querySelector(`[data-open-type="${opener.type}"][data-open-id="${opener.id}"]`);
-  back?.focus?.();
+  if (playing && !inRun()) Music.scene('menu');
+  document.querySelector(`[data-open-type="${opener.type}"][data-open-id="${opener.id}"]`)?.focus?.();
 }
 
 export function openPreview(type, id) {
   const item = rewardById(type, id);
-  if (!item) return;
+  if (!item || !['board', 'pieces', 'key', 'card', 'cover', 'bg', 'music'].includes(type)) return;
   if (pv) closePreview();
   const rar = rarityOf(item);
   const el = document.createElement('div');
@@ -514,9 +427,9 @@ export function openPreview(type, id) {
   el.setAttribute('role', 'dialog');
   el.setAttribute('aria-modal', 'true');
   el.setAttribute('aria-labelledby', 'lookPvName');
-  el.innerHTML = `<div class="look-pv r-${rar.id}">
+  el.innerHTML = `<div class="look-pv r-${rar.id}${rewardUnlocked(type, id, store) ? ' unlocked' : ''}">
       <header class="look-pv-head">
-        ${item.price === 0 ? `<span class="rar-chip default-chip">Por defecto</span>` : `<span class="rar-chip">${rar.name}</span>`}${item.anim ? `<span class="anim-chip">Animado</span>` : ''}
+        ${DEFAULT_LOOK[type] === id ? `<span class="rar-chip default-chip">Por defecto</span>` : `<span class="rar-chip">${rar.name}</span>`}${item.anim ? `<span class="anim-chip">Animado</span>` : ''}
         <small>${TYPE_NAME[type]}</small>
         <h3 id="lookPvName">${item.name}</h3>
         <button type="button" class="look-pv-x" data-pv-close aria-label="Cerrar">✕</button>
@@ -526,11 +439,9 @@ export function openPreview(type, id) {
       <footer class="look-pv-foot"></footer>
     </div>`;
   document.body.appendChild(el);
-  pv = { type, id, el, opener: { type, id }, timers: [], playing: false, unlocked: false, spent: null };
+  pv = { type, id, el, opener: { type, id }, playing: false };
   if (['board', 'pieces', 'key'].includes(type)) tryOn(type, id);
-  else tryOn(null, null);
   paintPreview();
-
   el.addEventListener('click', (e) => {
     if (e.target === el || e.target.closest('[data-pv-close]')) {
       sfx.ui();
@@ -541,19 +452,6 @@ export function openPreview(type, id) {
     if (e.key === 'Escape') closePreview();
   };
   document.addEventListener('keydown', pv.onKey);
-
-  // La llave del tablero de muestra sale una y otra vez; con «Celebraciones» estalla la ráfaga al cruzar la salida.
-  const keyFace = el.querySelector('.look-mini .piece.red .face');
-  if (keyFace && !reducedMotion()) {
-    const fire = () => pv?.timers.push(setTimeout(previewBurst, 1500));
-    pv.onLoop = fire;
-    keyFace.addEventListener('animationiteration', fire);
-    if (type === 'fx') fire();
-  }
-  el.querySelector('[data-pv-replay]')?.addEventListener('click', () => {
-    sfx.ui();
-    previewBurst();
-  });
   const play = el.querySelector('[data-pv-play]');
   if (play) {
     if (inRun()) play.hidden = true;
@@ -567,115 +465,95 @@ export function openPreview(type, id) {
     };
   }
   sfx.ui();
-  (el.querySelector('[data-confirm-buy]:not([aria-disabled])') || el.querySelector('[data-pv-close]'))?.focus?.();
+  (el.querySelector('[data-pv-equip]') || el.querySelector('[data-pv-close]'))?.focus?.();
 }
 
 export function renderAchievements() {
   const box = $('panelAch');
   if (!box) return;
-  const stats = statsOf(store);
-  const ach = store.ach || {};
-  const balance = achBalance(store);
-  const unlockedCount = ACHIEVEMENTS.filter((a) => ach[a.id]).length;
-  const pendingCount = unclaimedAchievements(store).length + readyMilestones(store).length;
-  const ownedTotal = REWARD_TYPES.reduce(
-    (sum, t) => sum + REWARDS[t].filter((r) => rewardUnlocked(t, r.id, store)).length,
-    0,
-  );
-  const catalogTotal = REWARD_TYPES.reduce((sum, t) => sum + REWARDS[t].length, 0);
+  const all = CUSTOM_TYPES.filter((t) => t !== 'outfit').flatMap((t) => REWARDS[t].map((r) => [t, r]));
+  const outfitAll = Object.entries(OUTFITS).flatMap(([h, l]) => l.map((o) => [h, o]));
+  const outfitGot = outfitAll.filter(([h, o]) => outfitUnlocked(store, h, o.id)).length;
+  const got = all.filter(([t, r]) => rewardUnlocked(t, r.id, store)).length + outfitGot;
+  all.push(...outfitAll);
+  const group = groupOf(activeType);
+  const countOf = (types) =>
+    types.reduce(
+      (n, t) => n + (t === 'outfit' ? outfitGot : REWARDS[t].filter((r) => rewardUnlocked(t, r.id, store)).length),
+      0,
+    );
+  const totalOf = (types) => types.reduce((n, t) => n + (t === 'outfit' ? outfitAll.length : REWARDS[t].length), 0);
+  const newsOf = (types) =>
+    types.reduce(
+      (n, t) => n + (t === 'outfit' ? unseenKeys().filter((k) => k.startsWith('outfit:')).length : unseenIn(t)),
+      0,
+    );
+  const tabs = GROUPS.map((g) => {
+    const news = newsOf(g.types);
+    return `<button type="button" class="ach-tab${g.id === group.id ? ' on' : ''}" role="tab" aria-selected="${g.id === group.id}" data-custom-group="${g.id}">${icon(g.icon)}<span>${g.label}</span><small>${countOf(g.types)}/${totalOf(g.types)}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
+  }).join('');
+  // Atuendos filtra por héroe (dentro de su vista); las otras pestañas tienen una fila de filtros arriba
+  const filters =
+    group.types.length > 1
+      ? `<div class="ach-filters board-filters" role="tablist" aria-label="${group.label}">${group.types
+          .map((type) => {
+            const news = unseenIn(type);
+            return `<button type="button" class="ach-filter${activeType === type ? ' on' : ''}" role="tab" aria-selected="${activeType === type}" data-custom-type="${type}"><span>${TYPE_NAME[type]}</span><small>${countOf([type])}/${REWARDS[type].length}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
+          })
+          .join('')}</div>`
+      : '';
 
   box.innerHTML = `<div class="ach-top-summary">
       <div class="ach-total">
-        <p><b>${unlockedCount}</b> / ${ACHIEVEMENTS.length} <span>logros</span></p>
-        <u role="img" aria-label="${unlockedCount}/${ACHIEVEMENTS.length}"><i style="width:${(unlockedCount / ACHIEVEMENTS.length) * 100}%"></i></u>
-      </div>
-      <div class="ach-wallet" id="achWallet" title="Puntos disponibles para la Tienda">
-        <i aria-hidden="true">${icon('stars')}</i>
-        <div><b>${fmt(balance)}</b><small>pts</small></div>
+        <p><b>${got}</b> / ${all.length} <span>desbloqueados</span></p>
+        <u role="img" aria-label="${got}/${all.length}"><i style="width:${(got / all.length) * 100}%"></i></u>
       </div>
     </div>
-    <div class="ach-tabs" role="tablist" aria-label="Secciones de logros">
-      <button type="button" class="ach-tab${activeTab === 'list' ? ' on' : ''}" role="tab" aria-selected="${activeTab === 'list'}" data-ach-tab="list">
-        ${icon('trophy')}<span>Logros</span>${pendingCount ? `<em class="ach-tab-badge">${pendingCount}</em>` : ''}
-      </button>
-      <button type="button" class="ach-tab${activeTab === 'shop' ? ' on' : ''}" role="tab" aria-selected="${activeTab === 'shop'}" data-ach-tab="shop">
-        ${icon('purse')}<span>Canjear</span><small>${ownedTotal}/${catalogTotal}</small>
-      </button>
-    </div>
-    ${activeTab === 'shop' ? renderAchShop() : renderAchList(stats)}`;
+    <div class="ach-tabs ach-tabs-3" role="tablist" aria-label="Personalizar">${tabs}</div>
+    ${filters}
+    ${activeType === 'outfit' ? renderOutfits() : `<p class="look-note" id="lookNote" role="status">${feedback || 'Todo se desbloquea jugando. Toca un objeto para probarlo.'}</p>${renderGrid(activeType)}`}`;
 
-  // Pestañas principales: Logros / Canjear
-  box.querySelectorAll('[data-ach-tab]').forEach((btn) => {
+  box.querySelectorAll('[data-custom-group]').forEach((btn) => {
     btn.onclick = () => {
-      activeTab = btn.dataset.achTab;
-      shopFeedback = '';
+      lastType[group.id] = activeType;
+      const next = GROUPS.find((g) => g.id === btn.dataset.customGroup);
+      activeType = lastType[next.id] || next.types[0];
+      feedback = '';
       sfx.ui();
       renderAchievements();
+      markSeen(activeType === 'outfit' ? `outfit:${activeHero}` : activeType);
     };
   });
-
-  // Reclamar un logro individual
-  box.querySelectorAll('[data-claim]').forEach((btn) => {
+  box.querySelectorAll('[data-custom-type]').forEach((btn) => {
     btn.onclick = () => {
-      const before = achBalance(store);
-      const res = collectAchievement(store, btn.dataset.claim);
-      if (!res) return;
-      persist();
-      paintAchBadge();
-      sfx.unlock();
-      spawnRewardPop(btn, `+${res.points} pts`);
-      renderAchievements();
-      pulseWallet(before);
-    };
-  });
-
-  // Reclamar todos de golpe
-  const all = box.querySelector('[data-claim-all]');
-  if (all)
-    all.onclick = () => {
-      const before = achBalance(store);
-      const res = collectAllAchievements(store);
-      if (!res.achievements.length) return;
-      persist();
-      paintAchBadge();
-      sfx.fanfare();
-      spawnRewardPop(all, `+${res.points} pts`, undefined, 44);
-      renderAchievements();
-      pulseWallet(before);
-    };
-
-  // Abrir un cofre de colección
-  box.querySelectorAll('[data-chest]').forEach((btn) => {
-    btn.onclick = () => {
-      const before = achBalance(store);
-      const res = openMilestone(store, Number(btn.dataset.chest));
-      if (!res) return;
-      persist();
-      paintAchBadge();
-      sfx.fanfare();
-      spawnRewardPop(btn, `+${res.points} pts`, RARITY_FX.legendary.colors, 54);
-      renderAchievements();
-      pulseWallet(before);
-    };
-  });
-
-  // Categorías de la Tienda
-  box.querySelectorAll('[data-shop-type]').forEach((btn) => {
-    btn.onclick = () => {
-      activeShopType = btn.dataset.shopType;
-      shopFeedback = '';
+      activeType = btn.dataset.customType;
+      feedback = '';
       sfx.ui();
       renderAchievements();
+      markSeen(activeType === 'outfit' ? `outfit:${activeHero}` : activeType);
     };
   });
-
-  // Abrir el probador (tocar la tarjeta o «Ver · X pts»)
-  box.querySelectorAll('[data-open-id], [data-buy-id]').forEach((btn) => {
-    btn.onclick = () =>
-      openPreview(btn.dataset.openType || btn.dataset.buyType, btn.dataset.openId || btn.dataset.buyId);
+  box.querySelectorAll('[data-open-id]').forEach((btn) => {
+    btn.onclick = () => openPreview(btn.dataset.openType, btn.dataset.openId);
   });
-
-  // Equipar elemento ya adquirido
+  box.querySelectorAll('[data-outfit-hero-tab]').forEach((btn) => {
+    btn.onclick = () => {
+      activeHero = btn.dataset.outfitHeroTab;
+      sfx.ui();
+      renderAchievements();
+      markSeen(`outfit:${activeHero}`);
+    };
+  });
+  box.querySelectorAll('[data-outfit-id]').forEach((btn) => {
+    btn.onclick = () => {
+      const { outfitHero: hero, outfitId: id } = btn.dataset;
+      if (!setOutfit(store, hero, id)) return;
+      persist();
+      sfx.ui();
+      feedback = `Activado: ${OUTFITS[hero].find((o) => o.id === id).name}`;
+      renderAchievements();
+    };
+  });
   box.querySelectorAll('[data-equip-id]').forEach((btn) => {
     btn.onclick = () => {
       const type = btn.dataset.equipType;
@@ -684,18 +562,13 @@ export function renderAchievements() {
       persist();
       applyLook();
       sfx.ui();
-      shopFeedback = `Activado: ${rewardName(type, id)}`;
-      if (type === 'music' && !inRun()) Music.scene('menu');
-      if (type === 'fx') {
-        const fx = rewardById('fx', id)?.burst;
-        if (fx) spawnRewardPop(btn, rewardName(type, id), fx.colors);
-      }
+      feedback = `Activado: ${rewardName(type, id)}`;
       renderAchievements();
     };
   });
 }
 
-// Al arrancar: pasar el guardado a la economía actual, detectar logros ya cumplidos en silencio y aplicar el aspecto
-if (migrateShop(store)) persist();
+// Al arrancar: desbloquear en silencio lo ya cumplido (también en guardados antiguos) y aplicar el aspecto
+if (revalidateUnlocks(store)) persist(); // cierra lo abierto con reglas anteriores
 checkAchievements({ silent: true });
 applyLook();

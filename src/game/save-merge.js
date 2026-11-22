@@ -110,6 +110,7 @@ export function mergeSaves(mine = {}, disk = {}) {
     achClaimed: mergeAch(mine.achClaimed, disk?.achClaimed),
     shopOwned: mergeAch(mine.shopOwned, disk?.shopOwned),
     shopPaid: mergeAch(mine.shopPaid, disk?.shopPaid),
+    outfitsOwned: mergeAch(mine.outfitsOwned, disk?.outfitsOwned),
     achMilestones: mergeAch(mine.achMilestones, disk?.achMilestones),
     stats: mergeStats(mine.stats, disk?.stats),
   };

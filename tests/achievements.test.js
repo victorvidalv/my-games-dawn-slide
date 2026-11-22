@@ -1,37 +1,30 @@
 import { describe, it, expect } from 'vitest';
 import {
   ACHIEVEMENTS,
-  COLLECTIONS,
-  MILESTONES,
-  RARITY,
-  RARITY_ORDER,
-  collectAllAchievements,
-  migrateShop,
-  nearAchievements,
-  openMilestone,
-  readyMilestones,
   COUNTERS,
+  CUSTOM_TYPES,
+  DEFAULT_OUTFIT,
+  OUTFITS,
+  outfitUnlocked,
+  revalidateUnlocks,
+  unlockOutfits,
+  RARITY_ORDER,
+  UNLOCKS,
+  unlockProgress,
+  unlockRewards,
+  RARITY,
   DEFAULT_LOOK,
   GROUPS,
   REWARDS,
   REWARD_TYPES,
   STATS,
   TIERS,
-  achBalance,
-  boardStats,
-  bumpStat,
-  buyShopItem,
   claimAchievements,
-  collectAchievement,
-  earnedPoints,
   migrateAchievements,
   lookOf,
-  markStat,
   rewardUnlocked,
   setLook,
-  spentPoints,
   statsOf,
-  unclaimedAchievements,
   adventureStartStats,
   boardWinStats,
   flagStat,
@@ -69,7 +62,7 @@ describe('registro de logros y tienda', () => {
       collection: 20,
     });
     // La tienda tiene 5 categorías, cada una con un elemento de serie gratis y premios con precio > 0
-    expect(REWARD_TYPES).toEqual(['board', 'pieces', 'key', 'fx', 'music', 'cover']);
+    expect(REWARD_TYPES).toEqual(['board', 'pieces', 'key', 'fx', 'music', 'cover', 'card', 'bg']);
     let buyable = 0;
     for (const type of REWARD_TYPES) {
       expect(REWARDS[type][0].id).toBe(DEFAULT_LOOK[type]);
@@ -105,154 +98,189 @@ describe('registro de logros y tienda', () => {
   });
 });
 
-describe('economía de logros y canje', () => {
-  it('un logro cumplido queda pendiente hasta reclamarlo, suma puntos y permite canjear en la Tienda', () => {
-    const store = { paths: { c1: { level: 10 } }, stats: { boardsSolved: 1 } };
-    const fresh = claimAchievements(store, 100);
-    expect(fresh.map((a) => a.id)).toEqual(['firstWin', 'city1', 'lv25']);
-    // Aún no reclamados: saldo en 0 y 3 pendientes
-    expect(unclaimedAchievements(store)).toHaveLength(3);
-    expect(achBalance(store)).toBe(0);
-
-    // Reclamar uno a uno suma sus puntos
-    const r1 = collectAchievement(store, 'firstWin', 200);
-    expect(r1).toMatchObject({ points: 10, balance: 10 });
-    expect(collectAchievement(store, 'firstWin', 201)).toBeNull(); // no se puede cobrar dos veces
-    collectAchievement(store, 'city1', 203);
-    collectAchievement(store, 'lv25', 205);
-    expect(unclaimedAchievements(store)).toHaveLength(0);
-    expect(earnedPoints(store)).toBe(50);
-    expect(achBalance(store)).toBe(50);
-
-    // No alcanza para un objeto de 85 pts
-    expect(buyShopItem(store, 'board', 'celestial', 300)).toEqual({ ok: false, reason: 'funds' });
-    // Sí alcanza para Pizarra nocturna (30 pts)
-    const bought = buyShopItem(store, 'board', 'slate', 301);
-    expect(bought).toMatchObject({ ok: true, balance: 20 });
-    expect(spentPoints(store)).toBe(30);
-    expect(rewardUnlocked('board', 'slate', store)).toBe(true);
-    expect(lookOf(store).board).toBe('slate');
-    // Canjear el primer objeto desbloquea el logro cosmetic1 (pendiente de reclamar)
-    expect(unclaimedAchievements(store).map((a) => a.id)).toEqual(['cosmetic1']);
-    expect(setLook(store, 'board', 'wood')).toBe(true);
-    expect(setLook(store, 'board', 'obsidian')).toBe(false);
+describe('Personalizar: objetos que se desbloquean por acciones', () => {
+  it('cada categoría va de lo más común a lo más raro (el de serie primero) y los trajes también', () => {
+    const rank = (r) => RARITY_ORDER.indexOf(r.rarity);
+    for (const type of Object.keys(REWARDS)) {
+      const list = REWARDS[type];
+      expect(list[0].id, type).toBe(DEFAULT_LOOK[type]);
+      for (let i = 1; i < list.length; i++)
+        expect(rank(list[i]), `${type}:${list[i].id}`).toBeGreaterThanOrEqual(rank(list[i - 1]));
+    }
+    for (const [hero, list] of Object.entries(OUTFITS)) {
+      expect(list[0].id, hero).toBe(DEFAULT_OUTFIT[hero]);
+      for (let i = 1; i < list.length; i++)
+        expect(rank(list[i]), `${hero}:${list[i].id}`).toBeGreaterThanOrEqual(rank(list[i - 1]));
+      // los más raros piden más: el último de cada héroe es legendario
+      expect(list.at(-1).rarity, hero).toBe('legendary');
+    }
+    // las animaciones propias son de épicas en adelante
+    for (const type of Object.keys(REWARDS))
+      for (const r of REWARDS[type].filter((x) => x.anim))
+        expect(['epic', 'legendary'], `${type}:${r.id}`).toContain(r.rarity);
   });
-});
 
-describe('economía equilibrada: rarezas, cofres y precios justos', () => {
-  const all = () => REWARD_TYPES.flatMap((t) => REWARDS[t].slice(1).map((r) => ({ ...r, type: t })));
+  const custom = () => CUSTOM_TYPES.filter((t) => REWARDS[t]).flatMap((t) => REWARDS[t].slice(1).map((r) => [t, r]));
 
-  it('cada objeto tiene rareza y lo más vistoso cuesta más: común < rara < épica < legendaria', () => {
-    for (const r of all()) expect(RARITY[r.rarity], `${r.type}:${r.id}`).toBeTruthy();
-    for (const type of REWARD_TYPES) {
-      const by = (rar) =>
-        REWARDS[type]
-          .slice(1)
-          .filter((r) => r.rarity === rar)
-          .map((r) => r.price);
-      for (let i = 1; i < RARITY_ORDER.length; i++) {
-        const lower = by(RARITY_ORDER[i - 1]),
-          higher = by(RARITY_ORDER[i]);
-        if (lower.length && higher.length) expect(Math.min(...higher), type).toBeGreaterThan(Math.max(...lower) - 1);
-      }
+  it('categorías (tablero, fichas, llave, música, portada, fondo, atuendos) y cada objeto no inicial tiene su acción de desbloqueo', () => {
+    expect(CUSTOM_TYPES).toEqual(['board', 'pieces', 'key', 'card', 'music', 'cover', 'bg', 'outfit']);
+    for (const [type, item] of custom()) {
+      const u = UNLOCKS[`${type}:${item.id}`];
+      expect(u, `${type}:${item.id}`).toBeTruthy();
+      expect(STATS[u.stat], `${type}:${item.id}`).toBeTypeOf('function');
+      expect(u.goal).toBeGreaterThan(0);
+      expect(RARITY[item.rarity], `${type}:${item.id}`).toBeTruthy();
     }
     // Lo animado es siempre épico o legendario
-    for (const r of all().filter((x) => x.anim)) expect(['epic', 'legendary'], r.id).toContain(r.rarity);
+    for (const [, item] of custom().filter(([, r]) => r.anim))
+      expect(['epic', 'legendary'], item.id).toContain(item.rarity);
+    // Cada atuendo es un conjunto por héroe: hoy solo el traje de serie
+    expect(Object.keys(OUTFITS)).toEqual(HEROES.map((h) => h.id));
   });
 
-  it('con todos los logros y cofres se puede canjear todo el catálogo, pero solo con dedicación (≥ 85 %)', () => {
-    const earn = ACHIEVEMENTS.reduce((s, a) => s + a.points, 0) + MILESTONES.reduce((s, m) => s + m.points, 0);
-    const cost = all().reduce((s, r) => s + r.price, 0);
-    expect(cost).toBeLessThanOrEqual(earn);
-    expect(cost / earn).toBeGreaterThan(0.85);
-    // Los logros simples alcanzan para varios objetos comunes desde la primera sesión
-    const bronze = ACHIEVEMENTS.filter((a) => a.tier === 'bronze').reduce((s, a) => s + a.points, 0);
-    const commons = all()
-      .filter((r) => r.rarity === 'common')
-      .map((r) => r.price);
-    expect(bronze).toBeGreaterThan(Math.min(...commons) * 8);
+  /** Primer objeto de una categoría que pide una sola condición y que se cumple con un contador simple. */
+  const simple = (type) => {
+    const id = REWARDS[type].slice(1).find((r) => {
+      const u = UNLOCKS[`${type}:${r.id}`];
+      return u.reqs.length === 1 && COUNTERS.includes(u.stat);
+    }).id;
+    return { id, u: UNLOCKS[`${type}:${id}`] };
+  };
+
+  it('al cumplir la acción el objeto queda desbloqueado solo (sin reclamar ni gastar) y una sola vez', () => {
+    const { id, u } = simple('board');
+    const store = { stats: { [u.stat]: u.goal - 1 } };
+    expect(rewardUnlocked('board', id, store)).toBe(false);
+    store.stats[u.stat] = u.goal;
+    const fresh = unlockRewards(store, 100).map((f) => `${f.type}:${f.item.id}`);
+    expect(fresh).toContain(`board:${id}`);
+    expect(rewardUnlocked('board', id, store)).toBe(true);
+    expect(store.shopOwned[`board:${id}`]).toBe(100);
+    expect(unlockRewards(store, 101)).toEqual([]);
+    expect(setLook(store, 'board', id)).toBe(true);
+    expect(lookOf(store).board).toBe(id);
+    const locked = REWARDS.board.at(-1).id;
+    expect(setLook(store, 'board', locked)).toBe(false); // el último (legendario) sigue bloqueado
   });
 
-  it('los cofres se abren al reclamar 5, 15, 30… logros y suman sus puntos una sola vez', () => {
-    const store = { ach: {}, achClaimed: {} };
-    ACHIEVEMENTS.slice(0, 16).forEach((a, i) => (store.ach[a.id] = i + 1));
-    expect(readyMilestones(store)).toEqual([]); // cumplidos pero sin reclamar: aún no cuentan
-    const res = collectAllAchievements(store, 50);
-    expect(res.achievements).toHaveLength(16);
-    expect(readyMilestones(store).map((m) => m.n)).toEqual([5, 15]);
-    const before = achBalance(store);
-    expect(openMilestone(store, 5, 60)).toMatchObject({ points: 25, balance: before + 25 });
-    expect(openMilestone(store, 5, 61)).toBeNull();
-    expect(openMilestone(store, 30, 62)).toBeNull(); // aún no alcanzado
-    expect(readyMilestones(store).map((m) => m.n)).toEqual([15]);
+  it('el avance se limita a la meta, los de serie cuentan como hechos y varias condiciones se miden todas', () => {
+    const { id, u } = simple('pieces');
+    const half = Math.floor(u.goal / 2);
+    expect(unlockProgress('pieces', id, { stats: { [u.stat]: half } })).toMatchObject({
+      value: half,
+      goal: u.goal,
+      done: false,
+    });
+    expect(unlockProgress('pieces', id, { stats: { [u.stat]: u.goal * 5 } })).toMatchObject({
+      value: u.goal,
+      done: true,
+    });
+    expect(unlockProgress('board', 'wood', {}).done).toBe(true); // de serie
+    // Una legendaria pide tres condiciones a la vez: con una sola cumplida no basta
+    const leg = REWARDS.board.at(-1).id;
+    const reqs = UNLOCKS[`board:${leg}`].reqs;
+    expect(reqs).toHaveLength(3);
+    const saved = { ...STATS };
+    try {
+      for (const k of Object.keys(STATS)) STATS[k] = () => 0;
+      STATS[reqs[0].stat] = () => reqs[0].goal;
+      const p = unlockProgress('board', leg, {});
+      expect(p.done).toBe(false);
+      expect(p.reqs.filter((r) => r.done)).toHaveLength(1);
+    } finally {
+      Object.assign(STATS, saved);
+    }
   });
 
-  it('los canjes anteriores al reajuste se cuentan a su precio de entonces (nadie pierde saldo)', () => {
-    const store = {
-      achClaimed: { firstWin: 1, lv5: 1, city1: 1, lv20: 1, lv25: 1 },
-      shopOwned: { 'board:celestial': 1 }, // costaba 85; ahora es legendaria
+  it('el plan de desbloqueos: ninguno trivial, todos los modos cuentan y lo complejo es de las legendarias', () => {
+    const MODE_OF = (stat) =>
+      ['challengeBoards', 'challengeBest', 'challengeWonCount'].includes(stat)
+        ? 'desafio'
+        : ['dailySolved', 'dailyGold', 'bestStreak', 'dailyKinds', 'masterSolved'].includes(stat)
+          ? 'diario'
+          : 'aventura';
+    const WANT = { common: 1, rare: 1, epic: 2, legendary: 3 };
+    const modes = new Set();
+    let checked = 0;
+    const check = (key, rarity) => {
+      const u = UNLOCKS[key];
+      expect(u, key).toBeTruthy();
+      expect(u.reqs, key).toHaveLength(WANT[rarity]);
+      for (const r of u.reqs) {
+        expect(STATS[r.stat], `${key}: ${r.stat}`).toBeTypeOf('function');
+        expect(r.goal, key).toBeGreaterThanOrEqual(1);
+        // nada de metas triviales: los contadores piden al menos unas decenas de acciones o varios días
+        if (
+          COUNTERS.includes(r.stat) &&
+          !['completed', 'pacts', 'cleanRun', 'oathWin', 'maxPactsWin', 'bestGrade'].includes(r.stat)
+        )
+          expect(r.goal, key).toBeGreaterThanOrEqual(6);
+        modes.add(MODE_OF(r.stat));
+      }
+      // Las legendarias piden una condición de cada modo
+      if (rarity === 'legendary') expect(new Set(u.reqs.map((r) => MODE_OF(r.stat))).size, key).toBe(3);
+      checked++;
     };
-    expect(migrateShop(store)).toBe(true);
-    expect(spentPoints(store)).toBe(85);
-    expect(migrateShop(store)).toBe(false); // una sola vez
-    // Lo que se canjea después paga el precio nuevo
-    store.achClaimed.lv100 = 1;
-    store.achClaimed.done = 1;
-    store.achClaimed.hard100 = 1;
-    store.achClaimed.expert = 1;
-    store.achClaimed.paths3 = 1;
-    const bal = achBalance(store);
-    expect(buyShopItem(store, 'key', 'gold', 5)).toMatchObject({ ok: true, balance: bal - 280 });
-    expect(store.shopPaid['key:gold']).toBe(280);
+    for (const type of ['board', 'pieces', 'key', 'card', 'music', 'cover', 'bg'])
+      for (const r of REWARDS[type].slice(1)) check(`${type}:${r.id}`, r.rarity);
+    for (const [hero, list] of Object.entries(OUTFITS))
+      for (const o of list.slice(1))
+        check(
+          `outfit:${hero}:${o.id}`,
+          o.rarity === 'rare' && o.id === list.slice(1).find((x) => x.rarity === 'rare').id ? 'rare' : o.rarity,
+        );
+    expect([...modes].sort()).toEqual(['aventura', 'desafio', 'diario']);
+    expect(checked).toBe(203);
   });
 
-  it('«Casi lo tienes» propone los logros pendientes con más avance', () => {
-    const store = { stats: { perfects: 22, boardsSolved: 45 }, paths: { c1: { level: 4 } } };
-    claimAchievements(store, 1);
-    const near = nearAchievements(store, 3).map((a) => a.id);
-    expect(near).toHaveLength(3);
-    expect(near).toContain('perf5'); // 22 de 25 perfectos
-    expect(near).toContain('boards50'); // 45 de 50 tableros
-    for (const id of near) expect(store.ach[id]).toBeUndefined();
-  });
-});
-
-describe('estadísticas', () => {
-  it('contadores y colecciones se guardan en store.stats y se rechazan nombres desconocidos', () => {
-    const store = {};
-    bumpStat(store, 'fateCards');
-    bumpStat(store, 'fateCards', 2);
-    expect(markStat(store, 'heroes', 'lia')).toBe(true);
-    expect(markStat(store, 'heroes', 'lia')).toBe(false);
-    markStat(store, 'heroes', 'jean');
-    expect(statsOf(store)).toMatchObject({ fateCards: 3, heroes: 2 });
-    expect(() => bumpStat(store, 'nope')).toThrow();
-    expect(() => markStat(store, 'perfects', 'x')).toThrow();
-    expect(COUNTERS.some((c) => COLLECTIONS.includes(c))).toBe(false);
+  it('cada traje pide jugar con SU héroe: no se abren los de un héroe que no usas', () => {
+    const own = { lia: 'heroBoardsLia', jean: 'heroBoardsJean', van: 'heroBoardsVan' };
+    for (const [hero, list] of Object.entries(OUTFITS))
+      for (const o of list.slice(1)) {
+        const stats = UNLOCKS[`outfit:${hero}:${o.id}`].reqs.map((r) => r.stat);
+        // todos piden tableros con su héroe, o su primera victoria con él
+        expect(stats.includes(own[hero]) || stats.includes(`heroWin${own[hero].slice(10)}`), `${hero}:${o.id}`).toBe(
+          true,
+        );
+      }
+    // mucho juego con Lía no abre ni un traje de Jean ni de Juth
+    const store = { stats: { heroBoards_lia: 1000 } };
+    const fresh = unlockOutfits(store);
+    expect(fresh.length).toBeGreaterThan(0);
+    expect(fresh.every((f) => f.hero === 'lia')).toBe(true);
+    // y con un guardado vacío no se abre ninguno
+    expect(unlockOutfits({})).toEqual([]);
   });
 
-  it('un tablero resuelto suma tableros, perfectos, mecánicas y ciudad sin ayuda', () => {
-    const plain = { n: 3, moves: 9, opt: 8, pieces: [{}], walls: [] };
-    expect(boardStats(plain)).toEqual(['boardsSolved']);
-    expect(boardStats({ ...plain, moves: 8 })).toEqual(['boardsSolved', 'perfects']);
-    expect(boardStats({ ...plain, walls: [[1, 1]] })).toEqual(['boardsSolved', 'iceRock']);
-    expect(boardStats({ ...plain, pieces: [{}, { kind: 'ice' }, { kind: 'gate' }, { kind: 'heavy' }] })).toEqual([
-      'boardsSolved',
-      'iceRock',
-      'locks',
-      'heavyBoards',
-    ]);
-    const last = { ...plain, n: 6 };
-    expect(boardStats(last, { firstLevel: 1, helpAt: 0 })).toEqual(['boardsSolved', 'cleanCity']);
-    expect(boardStats(last, { firstLevel: 1, helpAt: 5 })).toEqual(['boardsSolved']);
-    expect(boardStats(last, { firstLevel: 1, helpAt: 3 })).toEqual(['boardsSolved', 'cleanCity']);
-    expect(boardStats(last, { firstLevel: 5 })).toEqual(['boardsSolved']);
+  it('lo abierto con reglas anteriores se cierra si ya no se cumple, salvo lo que ya existía', () => {
+    const hard = OUTFITS.lia.at(-1).id;
+    const store = {
+      stats: {},
+      outfitsOwned: { [`lia:${hard}`]: 1 },
+      shopOwned: { [`board:${REWARDS.board.at(-1).id}`]: 1, 'board:slate': 1 },
+    };
+    expect(revalidateUnlocks(store)).toBe(true);
+    expect(store.outfitsOwned).toEqual({});
+    expect(store.shopOwned[`board:${REWARDS.board.at(-1).id}`]).toBeUndefined(); // nuevo y sin cumplir: se cierra
+    expect(store.shopOwned['board:slate']).toBe(1); // existía antes (compra con puntos): se conserva
+    expect(revalidateUnlocks(store)).toBe(false);
   });
 
-  it('caminos y retos diarios se leen de lo que ya guarda el juego', () => {
-    const store = { paths: { c50: { level: 51 } }, stats: { paths: [75] }, daily: { by: { classic: 2, frost: 1 } } };
-    expect(statsOf(store)).toMatchObject({ hardLevel: 51, expertDone: 1, paths: 1, dailyKinds: 2 });
-    expect(claimAchievements(store).map((a) => a.id)).toEqual(expect.arrayContaining(['hard50', 'expert', 'lv50']));
+  it('con todas las acciones cumplidas se desbloquea todo lo de Personalizar', () => {
+    const saved = { ...STATS };
+    try {
+      for (const k of Object.keys(STATS)) STATS[k] = () => 1e6;
+      const store = {};
+      unlockRewards(store);
+      const missing = [];
+      for (const type of ['board', 'pieces', 'key', 'card', 'music', 'cover', 'bg'])
+        for (const r of REWARDS[type].slice(1)) if (!rewardUnlocked(type, r.id, store)) missing.push(`${type}:${r.id}`);
+      for (const [hero, list] of Object.entries(OUTFITS))
+        for (const o of list.slice(1)) if (!outfitUnlocked(store, hero, o.id)) missing.push(`${hero}:${o.id}`);
+      expect(missing).toEqual([]);
+    } finally {
+      Object.assign(STATS, saved);
+    }
   });
 });
 
@@ -263,9 +291,7 @@ describe('guardado compatible con actualizaciones', () => {
     expect(old.ach).toEqual({ city1: 3 });
     expect(old.achClaimed).toEqual({});
     expect(old.stats).toMatchObject({ legacyAchPoints: 10 + 10 + 15, fateCards: 2 });
-    expect(earnedPoints(old)).toBe(35);
     expect(migrateAchievements(old)).toBe(false);
-    expect(earnedPoints(old)).toBe(35);
   });
 
   it('una primera partida no llena de logros de relleno: llegar al 9 de Normal da solo unos pocos', () => {

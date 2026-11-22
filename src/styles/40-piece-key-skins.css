@@ -996,11 +996,11 @@
     animation: none !important;
   }
 }
-/* En modo ligero se paran en el tablero, pero no en la tienda (miniaturas y vista previa): ahí se ve lo que se compra */
-html.lite :is([data-pieces], [data-key]) .piece:not(:is(.sw-real, .look-mini) .piece) .face::before,
-html.lite :is([data-pieces], [data-key]) .piece:not(:is(.sw-real, .look-mini) .piece) .face::after,
-html.lite :is([data-pieces], [data-key]) .piece.red:not(:is(.sw-real, .look-mini) .piece) {
-  animation: none !important;
+/* Modo ligero: las fichas conservan su efecto, pero «a saltitos» (≈ 6 imágenes por segundo): repinta mucho menos y sigue
+   viéndose vivo. La llave (una sola pieza) se anima completa. */
+html.lite [data-pieces] .piece:not(.red) .face::before,
+html.lite [data-pieces] .piece:not(.red) .face::after {
+  animation-timing-function: steps(20, end) !important;
 }
 
 @keyframes skin-sheen {

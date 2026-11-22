@@ -57,7 +57,17 @@ export default defineConfig({
       // La guía (guia/) es un sitio aparte: sus páginas e imágenes no se precachean para el juego (~1 MB menos al instalar).
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,webp,png,gif,webmanifest}'],
-        globIgnores: ['guia/**', 'en/**', 'zh/**', 'melodies.html'],
+        globIgnores: [
+          'guia/**',
+          'en/**',
+          'zh/**',
+          'melodies.html',
+          // Personalización (portadas, fondos, miniaturas, trajes y portadas de héroes): NADA de esto se baja al instalar la
+          // PWA. Se guarda la primera vez que se ve (src/sw.js, CacheFirst); así la instalación y el despliegue son ligeros.
+          'portada/**',
+          'heroes/outfits/**',
+          'backgrounds/cover-*.webp',
+        ],
       },
       manifest: {
         name: 'DAWNSLIDE',

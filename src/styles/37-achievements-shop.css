@@ -525,7 +525,7 @@
 }
 
 /* Marcos de tablero: aplicación en Aventura */
-body:not(.survival-run, .daily-run)[data-board='slate'] .frame {
+body[data-board='slate'] .frame {
   background:
     repeating-linear-gradient(135deg, #ffffff08 0 2px, transparent 2px 9px),
     linear-gradient(155deg, #4b5d70, #2a3644 55%, #1c242e);
@@ -536,7 +536,7 @@ body:not(.survival-run, .daily-run)[data-board='slate'] .frame {
     0 18px 36px #0009;
 }
 
-body:not(.survival-run, .daily-run)[data-board='amber'] .frame {
+body[data-board='amber'] .frame {
   background:
     repeating-linear-gradient(92deg, #fff2c20f 0 3px, transparent 3px 9px),
     linear-gradient(155deg, #c77b24, #824412 56%, #54280a);
@@ -547,7 +547,7 @@ body:not(.survival-run, .daily-run)[data-board='amber'] .frame {
     0 18px 36px #0009;
 }
 
-body:not(.survival-run, .daily-run)[data-board='sapphire'] .frame {
+body[data-board='sapphire'] .frame {
   background:
     linear-gradient(135deg, #93c5fd24 0%, transparent 40%, #60a5fa1c 100%),
     linear-gradient(155deg, #2b60b0, #193b75 56%, #0f244a);
@@ -558,7 +558,7 @@ body:not(.survival-run, .daily-run)[data-board='sapphire'] .frame {
     0 18px 36px #000a;
 }
 
-body:not(.survival-run, .daily-run)[data-board='marble'] .frame {
+body[data-board='marble'] .frame {
   background:
     linear-gradient(125deg, #ffffff44 0%, transparent 45%, #b5a78e33 100%),
     linear-gradient(155deg, #e8dfd0, #c8bc9e 58%, #aba086);
@@ -569,7 +569,7 @@ body:not(.survival-run, .daily-run)[data-board='marble'] .frame {
     0 18px 36px #0009;
 }
 
-body:not(.survival-run, .daily-run)[data-board='jade'] .frame {
+body[data-board='jade'] .frame {
   background:
     repeating-linear-gradient(92deg, #ffffff09 0 3px, transparent 3px 10px),
     linear-gradient(155deg, #35836a, #1d5444 55%, #12362c);
@@ -580,7 +580,7 @@ body:not(.survival-run, .daily-run)[data-board='jade'] .frame {
     0 18px 36px #0009;
 }
 
-body:not(.survival-run, .daily-run)[data-board='crimson'] .frame {
+body[data-board='crimson'] .frame {
   background:
     repeating-linear-gradient(45deg, #ff9a3d10 0 2px, transparent 2px 8px),
     linear-gradient(155deg, #6e2729, #3c1419 55%, #230c10);
@@ -591,7 +591,7 @@ body:not(.survival-run, .daily-run)[data-board='crimson'] .frame {
     0 18px 36px #000a;
 }
 
-body:not(.survival-run, .daily-run)[data-board='ivory'] .frame {
+body[data-board='ivory'] .frame {
   background: var(--hatch), linear-gradient(155deg, #d8be89, #a6864f 56%, #7d6235);
   box-shadow:
     inset 0 0 0 2px #fff2cc66,
@@ -600,7 +600,7 @@ body:not(.survival-run, .daily-run)[data-board='ivory'] .frame {
     0 18px 36px #0009;
 }
 
-body:not(.survival-run, .daily-run)[data-board='celestial'] .frame {
+body[data-board='celestial'] .frame {
   background:
     linear-gradient(135deg, #f3cd7a22 0%, transparent 30%, #7dd3fc22 100%),
     linear-gradient(155deg, #2d3e61, #192440 55%, #0f172b);
@@ -611,7 +611,7 @@ body:not(.survival-run, .daily-run)[data-board='celestial'] .frame {
     0 18px 36px #000a;
 }
 
-body:not(.survival-run, .daily-run)[data-board='obsidian'] .frame {
+body[data-board='obsidian'] .frame {
   background:
     linear-gradient(135deg, #c084fc24 0%, transparent 45%, #ffd24a18 100%),
     linear-gradient(155deg, #2a2238, #141020 55%, #0a0812);
@@ -641,4 +641,359 @@ body:not(.survival-run, .daily-run)[data-board='obsidian'] .frame {
   border: 1.5px solid #091118;
   background: radial-gradient(circle at 50% 62%, #314969, #121c2c);
   padding: 4px 4px 0;
+}
+
+/* Personalizar: cuatro categorías, desbloqueo por acciones y atuendos */
+.ach-tabs.ach-tabs-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.ach-tabs-4 .ach-tab {
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 4px;
+  font-size: 12px;
+  position: relative;
+}
+
+.ach-tabs-4 .ach-tab-badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+}
+
+.ach-shop-card.locked .ach-shop-art {
+  opacity: 0.55;
+  filter: saturate(0.6);
+}
+
+.unlock-foot {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+}
+
+.unlock-how {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin: 0;
+  color: #cfd9e2;
+  font: 700 11px/1.25 var(--font-ui);
+  text-align: left;
+}
+
+.unlock-how .ic {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  margin-top: 1px;
+}
+
+.unlock-n {
+  color: #9fb0bf;
+  font: 700 10.5px/1 var(--font-ui);
+}
+
+.outfit-list {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.outfit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 2px solid #091118;
+  border-radius: var(--wob-d);
+  background: linear-gradient(160deg, #213241, #14202b);
+  color: #e6edf3;
+  font: 800 13px/1.2 var(--font-ui);
+}
+
+.outfit.on {
+  border-color: #e7b963;
+  background: linear-gradient(160deg, #4b3822, #251d17);
+}
+
+.outfit.soon {
+  opacity: 0.6;
+  justify-content: flex-start;
+}
+
+.outfit small {
+  margin-left: auto;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+/* Atuendos: tarjetas con el cuerpo entero del héroe */
+.outfit-hero .panel-h {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.outfit-art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #0d141b;
+}
+
+.outfit-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+}
+
+.outfit-card.locked .outfit-art img {
+  filter: brightness(0.38) saturate(0.5);
+}
+
+.outfit-card .ach-shop-open {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: default;
+}
+
+/* Atuendos: luz de fondo con el color del héroe, viñeta, zoom suave y brillo que cruza al traje puesto */
+.outfit-art {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 38%, color-mix(in srgb, var(--accent, #c9a45a) 42%, transparent), transparent 68%),
+    linear-gradient(180deg, #1a2330, #0b1017);
+  box-shadow:
+    inset 0 0 0 1px #ffffff1f,
+    inset 0 -26px 28px -14px #05080cd9;
+}
+
+.outfit-art img {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.outfit-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(180deg, #ffffff14, transparent 22%, transparent 70%, #05080c99);
+}
+
+.outfit-card.owned:hover .outfit-art img,
+.outfit-card.on .outfit-art img {
+  transform: scale(1.05);
+}
+
+.outfit-card.on .outfit-art {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent, #e7b963) 70%, #fff),
+    inset 0 -26px 28px -14px #05080cd9,
+    0 0 18px -4px color-mix(in srgb, var(--accent, #e7b963) 60%, transparent);
+}
+
+.outfit-card.locked .outfit-art {
+  background: linear-gradient(180deg, #141b24, #090d12);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .outfit-card.on .outfit-art::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    z-index: 3;
+    width: 40%;
+    pointer-events: none;
+    background: linear-gradient(100deg, transparent, #ffffff3d, transparent);
+    transform: skewX(-18deg) translateX(0);
+    animation: outfit-shine 4.8s ease-in-out infinite;
+  }
+}
+
+@keyframes outfit-shine {
+  0%,
+  55% {
+    transform: skewX(-18deg) translateX(0);
+  }
+  100% {
+    transform: skewX(-18deg) translateX(520%);
+  }
+}
+
+html.lite .outfit-card.on .outfit-art::before {
+  display: none;
+}
+
+/* Selección de héroe: el héroe elegido brilla con su color y respira despacio */
+#heroSelect .hero-choice.selected {
+  box-shadow:
+    0 4px 0 #091118,
+    0 0 0 2px var(--accent),
+    0 0 26px -6px var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  #heroSelect .hero-choice.selected img {
+    animation: outfit-breathe 5s ease-in-out infinite;
+  }
+}
+
+@keyframes outfit-breathe {
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+/* Llaves: siempre 3 columnas (son 30 y las muestras son pequeñas) */
+.ach-shop-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.ach-shop-grid.cols-3 .ach-shop-card {
+  padding: 8px 5px 7px;
+  gap: 5px;
+}
+
+.ach-shop-grid.cols-3 .ach-shop-name {
+  font-size: 11.5px;
+  line-height: 1.15;
+}
+
+.ach-shop-grid.cols-3 .unlock-how {
+  font-size: 9.5px;
+}
+
+.ach-shop-grid.cols-3 .shop-act {
+  padding-inline: 4px;
+  font-size: 11px;
+}
+
+.ach-shop-grid.cols-3 .rar-chip,
+.ach-shop-grid.cols-3 .anim-chip {
+  font-size: 8.5px;
+}
+
+.ach-shop-grid.cols-3 .ach-shop-card > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ach-shop-grid.cols-3 .ach-shop-open {
+  width: 100%;
+}
+
+.ach-shop-grid.cols-3 .ach-shop-art .sw-real {
+  width: 100%;
+  max-width: 100px;
+  height: 56px;
+}
+
+.ach-shop-grid.cols-3 .ach-shop-name {
+  overflow-wrap: anywhere;
+}
+
+/* Tres pestañas principales (Tablero · Atuendos · Portada) */
+.ach-tabs.ach-tabs-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.ach-tabs-3 .ach-tab {
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 4px;
+  font-size: 12.5px;
+  position: relative;
+}
+
+.ach-tabs-3 .ach-tab-badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+}
+
+/* Miniaturas de portada y fondo */
+.ach-shop-art .sw-cover.sw-bg,
+.ach-shop-art .sw-cover.sw-cover {
+  width: 100%;
+  height: 78px;
+  object-fit: cover;
+  object-position: center 30%;
+  padding: 0;
+  background: #0d141b;
+}
+
+.ach-shop-card.locked .sw-cover {
+  filter: brightness(0.55) saturate(0.7);
+}
+
+/* Condiciones de desbloqueo: una línea por condición (las legendarias piden tres, una de cada modo) */
+.unlock-reqs {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unlock-reqs li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 5px;
+  align-items: start;
+  color: #cfd9e2;
+  font: 700 11px/1.25 var(--font-ui);
+  text-align: left;
+}
+
+.unlock-reqs li .ic {
+  width: 13px;
+  height: 13px;
+  margin-top: 1px;
+}
+
+.unlock-reqs li b {
+  grid-column: 2;
+  color: #9fb0bf;
+  font: 700 10px/1.2 var(--font-ui);
+}
+
+.unlock-reqs li.ok {
+  color: #bff0c8;
+}
+
+.unlock-reqs.multi li + li {
+  padding-top: 4px;
+  border-top: 1px dashed #ffffff22;
+}
+
+.ach-shop-grid.cols-3 .unlock-reqs li {
+  font-size: 9.5px;
+}
+
+.pv-unlock {
+  width: 100%;
 }

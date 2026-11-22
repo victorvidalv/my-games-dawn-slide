@@ -1,10 +1,13 @@
 import { CHAPTERS, HERO_LORE } from '../data/story.js';
 import { ZONES, zoneIdx } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
-import { heroOf } from '../state.js';
-export function heroArt(id, pose = 'start') {
-  return pose === 'start' ? `heroes/${id}.webp` : `heroes/${id}-${pose}.webp`;
+import { outfitArt, outfitOf } from '../game/achievements.js';
+import { heroOf, store } from '../state.js';
+export function heroArt(id, pose) {
+  return `heroes/${id}-${pose}.webp`;
 }
+/** Imagen del atuendo puesto (`adv` aventura, `sel` busto y `act` pose de selección); la normal si lleva el de serie. */
+export const outfitImg = (id, pose) => outfitArt(id, outfitOf(store, id), pose);
 export function storyFor(id, level) {
   const i = zoneIdx(level),
     c = CHAPTERS[i],
@@ -29,9 +32,8 @@ export function endingStory(victory, id, level) {
     l = HERO_LORE[h.id],
     bg = `backgrounds/zone-${zoneIdx(level) + 1}.webp`;
   if (!victory) {
-    const art = heroArt(h.id, 'derrota');
-    $('overBg').src = art;
-    $('overPortrait').src = art;
+    // La imagen activa del héroe (con su traje) sobre un fondo CSS siniestro y en movimiento (47-defeat.css)
+    $('overPortrait').src = outfitImg(h.id, 'act');
     $('overPortrait').alt = `${h.name}, sin fuerzas tras la derrota`;
     return;
   }

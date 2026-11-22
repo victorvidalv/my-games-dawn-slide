@@ -1,59 +1,74 @@
 // @vitest-environment happy-dom
 import { expect, it } from 'vitest';
 import { bootApp } from './app.js';
+import { COUNTERS, REWARDS, UNLOCKS } from '../../src/game/achievements.js';
 
-it('muestra la badge de logros pendientes en inicio, permite reclamar uno a uno y canjear cosméticos', async () => {
-  const app = await bootApp({
-    save: {
-      paths: { c1: { level: 12, score: 25000 } },
-      stats: { boardsSolved: 1 },
-    },
-  });
+it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede probar y equipar', async () => {
+  // Un borde que se desbloquea con un contador simple: el guardado ya lo cumple
+  const pick = REWARDS.board
+    .slice(1)
+    .find((r) => UNLOCKS[`board:${r.id}`].reqs.length === 1 && COUNTERS.includes(UNLOCKS[`board:${r.id}`].stat));
+  const u = UNLOCKS[`board:${pick.id}`];
+  const app = await bootApp({ save: { paths: { c1: { level: 3, score: 900 } }, stats: { [u.stat]: u.goal } } });
 
-  // 5 logros cumplidos (firstWin: 10, city1: 15, lv25: 25, lv50: 35, score1k: 15 = 100 pts) -> badge con "5"
+  // Se desbloqueó solo y la insignia avisa
+  const owned = Object.keys(app.store.shopOwned);
+  expect(owned).toContain(`board:${pick.id}`);
   expect(app.$('homeAchBadge').hidden).toBe(false);
-  expect(app.$('homeAchBadge').textContent).toBe('5');
+  expect(Number(app.$('homeAchBadge').textContent)).toBeGreaterThanOrEqual(1);
 
   app.$('tabAch').click();
   const panel = app.$('panelAch');
-  expect(panel.querySelectorAll('[data-claim]').length).toBe(5);
-  expect(app.$('achWallet').textContent).toContain('0');
+  // Tres pestañas (Tablero, Atuendos y Portada) y, dentro de Tablero, los filtros Borde · Fichas · Llave · Tarjetas; no hay puntos ni «Reclamar»
+  expect([...panel.querySelectorAll('[data-custom-group]')].map((b) => b.dataset.customGroup)).toEqual([
+    'board',
+    'outfit',
+    'cover',
+  ]);
+  expect([...panel.querySelectorAll('[data-custom-type]')].map((b) => b.dataset.customType)).toEqual([
+    'board',
+    'pieces',
+    'key',
+    'card',
+  ]);
+  expect(panel.querySelector('[data-claim]')).toBeNull();
+  expect(app.$('achWallet')).toBeNull();
 
-  // Reclamar logros individualmente
-  panel.querySelector('[data-claim="firstWin"]').click();
-  expect(app.$('homeAchBadge').textContent).toBe('4');
-  expect(app.$('achWallet').textContent).toContain('10');
+  // Ver la categoría marca sus novedades como vistas
+  panel.querySelector('[data-custom-type="board"]').click();
+  expect(app.$('panelAch').querySelectorAll('.ach-shop-card.locked .unlock-reqs li').length).toBeGreaterThan(0);
 
-  for (const id of ['city1', 'lv25', 'lv50', 'score1k']) {
-    panel.querySelector(`[data-claim="${id}"]`).click();
-  }
-  expect(app.$('achWallet').textContent).toContain('100');
-  // 5 logros reclamados abren el primer cofre de colección (+25): la badge lo avisa
-  expect(app.$('homeAchBadge').textContent).toBe('1');
-  panel.querySelector('[data-chest="5"]').click();
-  expect(app.$('homeAchBadge').hidden).toBe(true);
-  expect(app.$('achWallet').textContent).toContain('125');
-
-  // Ir a la pestaña Canjear: «Ver» abre el probador con el borde puesto, sin gastar nada todavía
-  panel.querySelector('[data-ach-tab="shop"]').click();
-  panel.querySelector('[data-buy-type="board"][data-buy-id="slate"]').click();
-  const preview = document.querySelector('.look-pv-ov');
-  expect(preview).toBeTruthy();
-  expect(preview.querySelector('.look-mini')).toBeTruthy();
-  expect(document.body.dataset.board).toBe('slate');
-  expect(app.$('achWallet').textContent).toContain('125');
-  // Cerrar sin canjear devuelve el borde equipado
+  // Probar un objeto bloqueado muestra cómo conseguirlo, sin equiparlo
+  const legendary = REWARDS.board.at(-1).id;
+  app.$('panelAch').querySelector(`[data-open-type="board"][data-open-id="${legendary}"]`).click();
+  let preview = document.querySelector('.look-pv-ov');
+  expect(preview.querySelectorAll('.unlock-reqs li')).toHaveLength(3); // la legendaria pide tres condiciones
+  expect(preview.querySelector('[data-pv-equip]')).toBeNull();
+  expect(document.body.dataset.board).toBe(legendary);
   preview.querySelector('[data-pv-close]').click();
-  expect(document.querySelector('.look-pv-ov')).toBeNull();
   expect(document.body.dataset.board).toBe('wood');
 
-  // Canjear «Pizarra nocturna» (30 pts) desde el probador
-  panel.querySelector('[data-open-type="board"][data-open-id="slate"]').click();
-  document.querySelector('[data-confirm-buy]').click();
-  expect(app.$('achWallet').textContent).toContain('95');
-  document.querySelector('[data-pv-close]').click();
-  expect(document.body.dataset.board).toBe('slate');
-  // Comprar el primer elemento desbloquea "Primer estilo" -> badge vuelve a mostrar "1"
-  expect(app.$('homeAchBadge').hidden).toBe(false);
-  expect(app.$('homeAchBadge').textContent).toBe('1');
+  // Equipar uno desbloqueado desde el probador
+  app.$('panelAch').querySelector(`[data-open-type="board"][data-open-id="${pick.id}"]`).click();
+  preview = document.querySelector('.look-pv-ov');
+  preview.querySelector('[data-pv-equip]').click();
+  preview.querySelector('[data-pv-close]').click();
+  expect(document.body.dataset.board).toBe(pick.id);
+
+  // Atuendos: conjuntos por héroe
+  app.$('panelAch').querySelector('[data-custom-group="outfit"]').click();
+  expect(app.$('panelAch').querySelectorAll('[data-outfit-hero-tab]').length).toBe(3);
+  expect(app.$('panelAch').querySelectorAll('.outfit-card').length).toBe(15);
+  app.$('panelAch').querySelector('[data-outfit-hero-tab="jean"]').click();
+  expect(app.$('panelAch').querySelector('.outfit-card.on .ach-shop-name').textContent).toBe('Vigía del reloj');
+
+  // Portada: Héroes · Música · Fondo
+  app.$('panelAch').querySelector('[data-custom-group="cover"]').click();
+  expect([...app.$('panelAch').querySelectorAll('[data-custom-type]')].map((b) => b.dataset.customType)).toEqual([
+    'cover',
+    'music',
+    'bg',
+  ]);
+  app.$('panelAch').querySelector('[data-custom-type="bg"]').click();
+  expect(app.$('panelAch').querySelectorAll('.ach-shop-card').length).toBe(16); // 16 fondos
 });

@@ -1,0 +1,156 @@
+/* ===== Pantalla de derrota: la imagen activa del héroe sobre un fondo siniestro que se mueve despacio =====
+   Todo es CSS (sin imágenes de fondo): niebla carmesí y violeta que se desplaza, un latido rojo desde abajo, ceniza que
+   sube y un leve parpadeo de oscuridad. Solo se anima transform y opacity. Con «reducir movimiento» queda quieto. */
+#over .over-backdrop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 108%, #5e0b1d 0, #2a0716 42%, transparent 75%),
+    radial-gradient(ellipse 70% 50% at 50% -8%, #1d0a33 0, transparent 70%),
+    linear-gradient(180deg, #0a0610, #05030a 60%, #14040c);
+  filter: none;
+  transform: none;
+  object-fit: initial;
+}
+#over .over-backdrop i {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+/* Niebla: dos capas de bruma oscura que cruzan en sentidos contrarios */
+.ob-fog {
+  inset: -20% -40%;
+  background:
+    radial-gradient(ellipse 30% 14% at 22% 62%, #8a1a3aaa, transparent 70%),
+    radial-gradient(ellipse 36% 16% at 70% 48%, #4a1a7a99, transparent 70%),
+    radial-gradient(ellipse 26% 12% at 48% 80%, #a0182f88, transparent 70%);
+  filter: blur(22px);
+}
+.ob-fog-2 {
+  background:
+    radial-gradient(ellipse 34% 14% at 30% 30%, #3a1260aa, transparent 70%),
+    radial-gradient(ellipse 28% 12% at 80% 74%, #7a1230aa, transparent 70%);
+  opacity: 0.8;
+}
+/* Latido rojo: el resplandor sube desde abajo dos veces seguidas y descansa */
+.ob-pulse {
+  inset: 0;
+  background: radial-gradient(ellipse 70% 46% at 50% 100%, #c0102e, transparent 70%);
+  mix-blend-mode: screen;
+  opacity: 0.4;
+}
+/* Ceniza: puntos que suben despacio */
+.ob-ash {
+  inset: -10% 0 -30%;
+  opacity: 0.55;
+  background:
+    radial-gradient(circle, #ffb0a0cc 0 1px, transparent 2px) 12% 20% / 150px 170px,
+    radial-gradient(circle, #ffffffa0 0 0.8px, transparent 1.8px) 58% 60% / 210px 230px,
+    radial-gradient(circle, #ff6a5acc 0 1.3px, transparent 2.6px) 84% 40% / 260px 190px;
+}
+/* El héroe: su imagen activa, fundida en los bordes, con contorno rojizo y una respiración lenta */
+#over .over-hero {
+  position: fixed;
+  inset: 6dvh 0 auto;
+  margin-inline: auto;
+  width: min(92vw, 560px);
+  height: 56dvh;
+  object-fit: contain;
+  object-position: center;
+  filter: saturate(0.8) contrast(1.08) brightness(0.9) drop-shadow(0 0 22px #c0102e88);
+  -webkit-mask-image: radial-gradient(ellipse 52% 50% at 50% 48%, #000 52%, transparent 78%);
+  mask-image: radial-gradient(ellipse 52% 50% at 50% 48%, #000 52%, transparent 78%);
+}
+@media (min-aspect-ratio: 13/10) {
+  #over .over-hero {
+    inset: auto 3vw 0 auto;
+    margin: 0;
+    width: min(46vw, 640px);
+    height: 92dvh;
+    object-position: center bottom;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  #over.show .ob-fog {
+    animation: ob-drift 38s ease-in-out infinite alternate;
+  }
+  #over.show .ob-fog-2 {
+    animation: ob-drift-rev 52s ease-in-out infinite alternate;
+  }
+  #over.show .ob-pulse {
+    animation: ob-heartbeat 4.6s ease-in-out infinite;
+  }
+  #over.show .ob-ash {
+    animation: ob-rise 26s linear infinite;
+  }
+  #over.show .over-vignette {
+    animation: ob-flicker 9s steps(1) infinite;
+  }
+  #over.show .over-hero {
+    animation: ob-hero 8s ease-in-out infinite alternate;
+  }
+}
+@keyframes ob-drift {
+  from {
+    transform: translateX(-9%);
+  }
+  to {
+    transform: translateX(9%);
+  }
+}
+@keyframes ob-drift-rev {
+  from {
+    transform: translateX(10%) scale(1.08);
+  }
+  to {
+    transform: translateX(-10%) scale(1.08);
+  }
+}
+@keyframes ob-heartbeat {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  12% {
+    opacity: 0.75;
+  }
+  22% {
+    opacity: 0.26;
+  }
+  34% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+@keyframes ob-rise {
+  to {
+    transform: translateY(-24%);
+  }
+}
+@keyframes ob-flicker {
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.72;
+  }
+  92% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.8;
+  }
+}
+@keyframes ob-hero {
+  from {
+    transform: translateY(0) scale(1);
+  }
+  to {
+    transform: translateY(-6px) scale(1.018);
+  }
+}

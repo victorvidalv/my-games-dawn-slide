@@ -1,5 +1,5 @@
 /**
- * Aligera las imágenes de public/ sin cambiar su tamaño en píxeles: vuelve a codificar cada WebP (y la imagen social
+ * Aligera las imágenes de public/ sin cambiar su tamaño en píxeles (salvo las que pasan de 1280 px de ancho): vuelve a codificar cada WebP (y la imagen social
  * JPG) con más compresión y solo la reemplaza si queda al menos un 8 % más liviana. Es seguro repetirlo: lo que ya está
  * optimizado no se toca. Las animadas (WebP de varios fotogramas) se saltan.
  *
@@ -19,6 +19,10 @@ const DRY = process.argv.includes('--dry');
 const QUALITY = Number(arg('q', 76));
 const MIN_GAIN = 0.08;
 const ROOT = new URL('../public/', import.meta.url).pathname;
+/** Ya salen a su calidad final de scripts/slice-*.mjs (comprimir dos veces solo les restaría calidad). */
+const SKIP = [/\/portada\//, /\/heroes\/outfits\//];
+/** Ancho máximo (px) que necesita el juego: lo que pase de ahí se reduce sin cambiar la proporción. */
+const MAX_WIDTH = 1280;
 
 const walk = (dir) =>
   readdirSync(dir).flatMap((name) => {
@@ -31,14 +35,15 @@ let after = 0;
 let changed = 0;
 for (const file of walk(ROOT)) {
   const ext = extname(file).toLowerCase();
-  if (!['.webp', '.jpg', '.jpeg'].includes(ext)) continue;
+  if (!['.webp', '.jpg', '.jpeg'].includes(ext) || SKIP.some((re) => re.test(file))) continue;
   const input = readFileSync(file);
   const meta = await sharp(input, { animated: true }).metadata();
   if ((meta.pages || 1) > 1) continue; // animada: se deja como está
+  const img = sharp(input).resize({ width: MAX_WIDTH, withoutEnlargement: true });
   const out =
     ext === '.webp'
-      ? await sharp(input).webp({ quality: QUALITY, effort: 6, smartSubsample: true }).toBuffer()
-      : await sharp(input).jpeg({ quality: 80, mozjpeg: true }).toBuffer();
+      ? await img.webp({ quality: QUALITY, alphaQuality: 80, effort: 6, smartSubsample: true }).toBuffer()
+      : await img.jpeg({ quality: 80, mozjpeg: true }).toBuffer();
   before += input.length;
   const gain = 1 - out.length / input.length;
   if (gain >= MIN_GAIN) {

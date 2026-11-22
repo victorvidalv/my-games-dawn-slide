@@ -5,7 +5,8 @@
    animadas (35-lite.css) y fx.js lanza menos chispas. Se recuerda en el dispositivo durante 3 días (después se vuelve a
    medir: un bache puntual no apaga los efectos para siempre); `?lite=1` / `?lite=0` lo fuerza (para probar) y
    `?lite=auto` vuelve a la detección. «Reducir movimiento» del sistema sigue funcionando aparte.
-   En la tienda de Canjear los diseños animados se mueven siempre (ver 42-cosmetics-animated.css). */
+   Los cosméticos de Personalizar (borde, fichas, llave, portada) se siguen animando también en modo ligero: las fichas
+   a saltitos (40-piece-key-skins.css); solo «reducir movimiento» del sistema los deja quietos. */
 const KEY = 'dawnslide-lite';
 const WINDOW = 60,
   SLOW_MS = 25,

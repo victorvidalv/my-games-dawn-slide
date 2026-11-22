@@ -166,10 +166,11 @@ html.lite .piece.landed .face {
 html.lite #board.board-out .piece .face {
   filter: none;
 }
-/* la llave deja de latir y de destellar en bucle (se repintaba siempre); la pista del tutorial se mantiene */
-html.lite .piece.red:not(.hint, :is(.sw-real, .look-mini) .piece) {
+/* la llave de serie deja de latir y de destellar en bucle (se repintaba siempre); la pista del tutorial se mantiene.
+   Las llaves de Personalizar sí conservan su efecto: es una sola pieza y es justo lo que se eligió */
+html.lite [data-key='red'] .piece.red:not(.hint, :is(.sw-real, .look-mini) .piece) {
   animation: none !important;
 }
-html.lite .piece.red:not(:is(.sw-real, .look-mini) .piece) .face::before {
+html.lite [data-key='red'] .piece.red:not(:is(.sw-real, .look-mini) .piece) .face::before {
   animation: none;
 }

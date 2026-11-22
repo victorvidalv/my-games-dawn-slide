@@ -3,6 +3,7 @@ import { $ } from '../dom.js';
 import { hintMove } from '../engine/solver.js';
 import { MECHANICS, TUTORIALS } from '../game/mechanics.js';
 import { HERO_TUTORIAL_TALK } from '../data/story.js';
+import { outfitImg } from './story.js';
 import { S, heroOf, holdBusy, persist, store } from '../state.js';
 import { icon } from './icons.js';
 
@@ -121,7 +122,9 @@ function show(ids, done) {
   const t = tipFor(id);
   const modal = $('coach');
   $('coachDemo').innerHTML =
-    t.demo === 'hero' ? `<img class="hero-demo-img" src="heroes/${heroOf().id}.webp" alt="">` : DEMO[t.demo] || '';
+    t.demo === 'hero'
+      ? `<img class="hero-demo-img" src="${outfitImg(heroOf().id, 'adv')}" alt="">`
+      : DEMO[t.demo] || '';
   $('coachTag').textContent = t.tag;
   $('coachTitle').innerHTML = t.title;
   $('coachText').innerHTML = t.text;

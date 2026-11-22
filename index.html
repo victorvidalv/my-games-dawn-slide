@@ -52,7 +52,8 @@
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
-<link rel="preload" as="image" href="/backgrounds/cover-dawn.webp" fetchpriority="high">
+<link rel="preload" as="image" href="/portada/fondos/bosque-cascada.webp" fetchpriority="high">
+<link rel="preload" as="image" href="/portada/heroes/alba-arcana.webp">
 </head>
 <body>
 <noscript><main style="font:16px/1.5 Georgia,serif;max-width:640px;margin:10vh auto;padding:0 20px;color:#f6e6bd;background:#1a1528"><h1>DAWNSLIDE</h1><p>A free sliding-block puzzle adventure with roguelite elements. Choose one of three heroes, free the red key and explore seven realms across 21 levels. Available in English, Spanish and Chinese.</p><p>Please enable JavaScript to play.</p></main></noscript>
@@ -217,14 +218,12 @@
 
 <!-- Menú -->
 <div class="modal show" id="menu">
-  <div class="cover-scene" aria-hidden="true">
-    <div class="cover-landscapes">
-      <img class="cover-landscape" src="/backgrounds/cover-dawn.webp" alt="" decoding="async" fetchpriority="high">
-      <img class="cover-landscape cover-day" src="/backgrounds/cover-day.webp" alt="" decoding="async" fetchpriority="low">
-      <img class="cover-landscape cover-evening" src="/backgrounds/cover-evening.webp" alt="" decoding="async" fetchpriority="low">
-    </div>
+  <div class="cover-scene cover-world-on" style="--world-fx: #bfffd8" aria-hidden="true">
+    <img class="cover-world" src="/portada/fondos/bosque-cascada.webp" alt="" decoding="async" fetchpriority="high">
     <div class="cover-lights"></div>
-    <img class="cover-heroes" src="/backgrounds/cover-heroes.webp" alt="" decoding="async">
+    <div class="cover-fog"></div>
+    <div class="cover-fx"></div>
+    <img class="cover-heroes" src="/portada/heroes/alba-arcana.webp" alt="" decoding="async">
   </div>
   <div class="title-lockup">
     <svg class="title-crest" viewBox="0 0 64 72" aria-hidden="true"><path class="crest-shield" d="M32 3 59 12v23c0 17-12 28-27 34C17 63 5 52 5 35V12Z"/><path class="crest-inner" d="M32 9 53 16v19c0 13-9 22-21 27C20 57 11 48 11 35V16Z"/><circle class="crest-key" cx="32" cy="27" r="7"/><path class="crest-key" d="M32 34v20m0-7h7m-7-7h5"/></svg>
@@ -238,7 +237,7 @@
       <button type="button" class="home-btn hb-daily" id="tabDaily" data-view="daily"><i class="hb-ico bi" data-icon="flame" aria-hidden="true"></i><span class="hb-copy"><b>Retos diarios</b><small id="homeDailySub"></small><span class="home-record"><span class="record-pill"><span>Racha actual</span><strong id="homeDailyStreak"></strong></span></span></span><i class="hb-go" aria-hidden="true">›</i></button>
     </nav>
     <div class="home-shortcuts" id="homeShortcuts">
-      <button type="button" class="home-pill" id="tabAch" data-view="ach"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Logros</span><span class="ach-pill-badge" id="homeAchBadge" hidden>0</span></button>
+      <button type="button" class="home-pill" id="tabAch" data-view="ach"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Personalizar</span><span class="ach-pill-badge" id="homeAchBadge" hidden>0</span></button>
       <button type="button" class="home-pill" id="homeMore" aria-expanded="false" aria-controls="homeTools" title="Más opciones">Más</button>
       <div class="home-tools" id="homeTools" hidden>
         <button class="snd-btn snd-menu tool-btn" type="button"></button>
@@ -358,7 +357,7 @@
 
 <!-- Menú de pausa -->
 <div class="modal" id="pause" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
- <div class="card pause-menu"><div class="pause-head"><img class="pause-hero" id="pauseHero" alt="" width="62" height="74"><div><div class="tag">DAWNSLIDE</div><h2 id="pauseTitle">Pausa</h2><p class="pause-context" id="pauseContext"></p></div></div>
+ <div class="card pause-menu"><div class="pause-head"><img class="pause-hero" id="pauseHero" alt="" width="96" height="112"><div><div class="tag">DAWNSLIDE</div><h2 id="pauseTitle">Pausa</h2><p class="pause-context" id="pauseContext"></p></div></div>
   <div class="pause-actions">
    <button class="primary" id="pResume"><span>Continuar</span><span aria-hidden="true">→</span></button>
    <button id="pSound">Desactivar sonido</button>
@@ -453,7 +452,7 @@
 <!-- Fin de partida -->
 <div class="modal" id="over" role="dialog" aria-modal="true" aria-labelledby="overTitle">
  <div class="over-stage">
-  <img class="over-backdrop" id="overBg" alt="" aria-hidden="true">
+  <div class="over-backdrop" id="overBg" aria-hidden="true"><i class="ob-fog"></i><i class="ob-fog ob-fog-2"></i><i class="ob-pulse"></i><i class="ob-ash"></i></div>
   <img class="over-hero" id="overPortrait" alt="">
   <div class="over-vignette" aria-hidden="true"></div>
   <div class="over-shell">

@@ -13,7 +13,7 @@ import { restoreRun } from '../game/run-logic.js';
 import { bestAdventureRecord } from '../game/save-merge.js';
 import { MAX_LEVEL } from '../engine/difficulty.js';
 import { syncHero } from './heroes.js';
-import { heroArt } from './story.js';
+import { outfitImg } from './story.js';
 /* ---------- Menú: elegir camino ---------- */
 const MODE_INFO = {
   c: 'Sube puntos nivel a nivel. Si agotas los turnos (el doble del mínimo) sin sacar la llave, la partida termina.',
@@ -111,7 +111,7 @@ function openPause() {
   $('pQuit').hidden = !!survival;
   $('pauseSaveError').hidden = true;
   $('pQuit').firstElementChild.textContent = daily ? 'Salir del reto' : 'Terminar';
-  $('pauseHero').src = heroArt(heroOf().id, 'story');
+  $('pauseHero').src = outfitImg(heroOf().id, 'act');
   $('pause').style.setProperty(
     '--pause-scene',
     cssUrl(survival ? 'backgrounds/challenge-dawn.webp' : `backgrounds/zone-${zoneIdx(S.run.level) + 1}.webp`),
@@ -194,22 +194,20 @@ const VIEWS = {
   adv: { title: 'Aventura', panel: 'panelAdv' },
   survival: { title: 'Desafío', panel: 'panelSurvival' },
   daily: { title: 'Retos diarios', panel: 'panelDaily' },
-  ach: { title: 'Logros', panel: 'panelAch' },
+  ach: { title: 'Personalizar', panel: 'panelAch' },
 };
 let viewNow = 'home';
 const coverScene = $('menu').querySelector('.cover-scene');
-const [coverDawn, coverDay, coverEvening, coverHeroes] = coverScene.querySelectorAll('img');
+const coverWorld = coverScene.querySelector('.cover-world');
+const coverHeroes = coverScene.querySelector('.cover-heroes');
 const decodeCover = (img) =>
   img.decode().then(
     () => true,
     () => false,
   );
-const coverFirst = Promise.all([decodeCover(coverDawn), decodeCover(coverHeroes)]).then(([dawn, heroes]) => {
-  if (dawn && heroes) coverScene.classList.add('cover-ready');
-  return dawn && heroes;
-});
-Promise.all([coverFirst, decodeCover(coverDay), decodeCover(coverEvening)]).then((ready) => {
-  if (ready.every(Boolean)) coverScene.classList.add('cover-cycle');
+// La portada se muestra cuando el fondo y los héroes ya están listos (sin saltos al cargar)
+Promise.all([decodeCover(coverWorld), decodeCover(coverHeroes)]).then(([world, heroes]) => {
+  if (world && heroes) coverScene.classList.add('cover-ready');
 });
 
 function paintHomeRecord() {

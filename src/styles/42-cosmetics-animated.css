@@ -84,7 +84,7 @@
 }
 
 /* Marco en Aventura */
-body:not(.survival-run, .daily-run)[data-board='tide'] .frame {
+body[data-board='tide'] .frame {
   background:
     repeating-radial-gradient(ellipse at 50% 130%, #8fdcff14 0 4px, #0000 4px 12px),
     linear-gradient(155deg, #1c4c68, #11314a 55%, #0a1d30);
@@ -95,7 +95,7 @@ body:not(.survival-run, .daily-run)[data-board='tide'] .frame {
     0 0 22px #5ec8ff44,
     0 18px 36px #000a;
 }
-body:not(.survival-run, .daily-run)[data-board='sakura'] .frame {
+body[data-board='sakura'] .frame {
   background:
     repeating-linear-gradient(92deg, #ffffff08 0 3px, transparent 3px 10px),
     linear-gradient(155deg, #5c2c40, #3a1a29 55%, #24101a);
@@ -105,7 +105,7 @@ body:not(.survival-run, .daily-run)[data-board='sakura'] .frame {
     0 0 0 5px #12070c,
     0 18px 36px #000a;
 }
-body:not(.survival-run, .daily-run)[data-board='dawnfire'] .frame {
+body[data-board='dawnfire'] .frame {
   background:
     radial-gradient(ellipse at 50% 120%, #ffb84a33, #0000 60%), linear-gradient(155deg, #4a2214, #2a1210 55%, #170a0c);
   box-shadow:
@@ -117,7 +117,7 @@ body:not(.survival-run, .daily-run)[data-board='dawnfire'] .frame {
 }
 
 /* Anillo animado del marco (solo el borde, no el tablero) */
-body:not(.survival-run, .daily-run):is([data-board='tide'], [data-board='sakura'], [data-board='dawnfire'])
+body:is([data-board='tide'], [data-board='sakura'], [data-board='dawnfire'])
   .frame:is([data-rot='0'], [data-rot=''])::after {
   content: '';
   position: absolute;
@@ -133,7 +133,7 @@ body:not(.survival-run, .daily-run):is([data-board='tide'], [data-board='sakura'
   mask-composite: exclude;
 }
 /* Marea de luna: olas plateadas que recorren el marco y un reflejo de luna que da la vuelta */
-body:not(.survival-run, .daily-run)[data-board='tide'] .frame:is([data-rot='0'], [data-rot=''])::after {
+body[data-board='tide'] .frame:is([data-rot='0'], [data-rot=''])::after {
   background:
     conic-gradient(from var(--spin), #0000 0 62%, #e6f8ffcc 72%, #9fe7ff55 78%, #0000 86%),
     repeating-linear-gradient(115deg, #b9ecff33 0 2px, #0000 2px 10px);
@@ -142,7 +142,7 @@ body:not(.survival-run, .daily-run)[data-board='tide'] .frame:is([data-rot='0'],
     28px 28px;
 }
 /* Jardín de cerezos: pétalos que caen a lo largo del marco */
-body:not(.survival-run, .daily-run)[data-board='sakura'] .frame:is([data-rot='0'], [data-rot=''])::after {
+body[data-board='sakura'] .frame:is([data-rot='0'], [data-rot=''])::after {
   background:
     radial-gradient(ellipse 5px 3px at 20% 30%, #ffd1e1 98%, #0000),
     radial-gradient(ellipse 4px 2.6px at 70% 10%, #ffb3cd 98%, #0000),
@@ -157,7 +157,7 @@ body:not(.survival-run, .daily-run)[data-board='sakura'] .frame:is([data-rot='0'
     100% 100%;
 }
 /* Corona del alba (legendaria): un amanecer que gira alrededor del tablero, con rayos dorados */
-body:not(.survival-run, .daily-run)[data-board='dawnfire'] .frame:is([data-rot='0'], [data-rot=''])::after {
+body[data-board='dawnfire'] .frame:is([data-rot='0'], [data-rot=''])::after {
   background:
     repeating-conic-gradient(from var(--spin), #fff3c422 0 3deg, #0000 3deg 15deg),
     conic-gradient(from var(--spin), #ffcf5a, #ff7a3d, #ff4f7b, #a35cff, #5ec8ff, #ffcf5a);
@@ -165,23 +165,17 @@ body:not(.survival-run, .daily-run)[data-board='dawnfire'] .frame:is([data-rot='
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  html:not(.lite)
-    body:not(.survival-run, .daily-run)[data-board='tide']
-    .frame:is([data-rot='0'], [data-rot=''])::after,
+  body[data-board='tide'] .frame:is([data-rot='0'], [data-rot=''])::after,
   body[data-board='tide'] .look-mini::after {
     animation:
       spin-ring 9s linear infinite,
       tide-drift 6s linear infinite;
   }
-  html:not(.lite)
-    body:not(.survival-run, .daily-run)[data-board='sakura']
-    .frame:is([data-rot='0'], [data-rot=''])::after,
+  body[data-board='sakura'] .frame:is([data-rot='0'], [data-rot=''])::after,
   body[data-board='sakura'] .look-mini::after {
     animation: petals-fall 9s linear infinite;
   }
-  html:not(.lite)
-    body:not(.survival-run, .daily-run)[data-board='dawnfire']
-    .frame:is([data-rot='0'], [data-rot=''])::after,
+  body[data-board='dawnfire'] .frame:is([data-rot='0'], [data-rot=''])::after,
   body[data-board='dawnfire'] .look-mini::after {
     animation: spin-ring 7s linear infinite;
   }
@@ -444,46 +438,38 @@ body:not(.survival-run, .daily-run)[data-board='dawnfire'] .frame:is([data-rot='
 
 /* Animaciones de fichas y llaves (también en las miniaturas de la tienda) */
 @media (prefers-reduced-motion: no-preference) {
-  :is(
-      html:not(.lite) [data-pieces='frostedge'],
-      [data-pieces='frostedge'] .look-mini,
-      .sw-real[data-pieces='frostedge']
-    )
+  :is([data-pieces='frostedge'], [data-pieces='frostedge'] .look-mini, .sw-real[data-pieces='frostedge'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
     .face::after {
     animation: spin-ring 4.5s linear infinite;
   }
-  :is(html:not(.lite) [data-pieces='neon'], [data-pieces='neon'] .look-mini, .sw-real[data-pieces='neon'])
+  :is([data-pieces='neon'], [data-pieces='neon'] .look-mini, .sw-real[data-pieces='neon'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
     .face::after {
     animation: spin-ring 3s linear infinite;
   }
-  :is(html:not(.lite) [data-pieces='ember'], [data-pieces='ember'] .look-mini, .sw-real[data-pieces='ember'])
+  :is([data-pieces='ember'], [data-pieces='ember'] .look-mini, .sw-real[data-pieces='ember'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
     .face::after {
     animation:
       spin-ring 2.4s linear infinite,
       ember-flicker 1.3s ease-in-out infinite alternate;
   }
-  :is(html:not(.lite) [data-pieces='ember'], [data-pieces='ember'] .look-mini, .sw-real[data-pieces='ember'])
+  :is([data-pieces='ember'], [data-pieces='ember'] .look-mini, .sw-real[data-pieces='ember'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
     .face::before {
     animation: ember-rise 2.6s linear infinite;
   }
-  :is(html:not(.lite) [data-key='phoenix'], [data-key='phoenix'] .look-mini, .sw-real[data-key='phoenix'])
-    .piece.red
-    .face::before {
+  :is([data-key='phoenix'], [data-key='phoenix'] .look-mini, .sw-real[data-key='phoenix']) .piece.red .face::before {
     animation: spin-ring 2.6s linear infinite;
   }
-  :is(html:not(.lite) [data-key='phoenix'], [data-key='phoenix'] .look-mini, .sw-real[data-key='phoenix']) .piece.red {
+  :is([data-key='phoenix'], [data-key='phoenix'] .look-mini, .sw-real[data-key='phoenix']) .piece.red {
     animation: phoenix-glow 1.6s ease-in-out infinite alternate;
   }
-  :is(html:not(.lite) [data-key='eclipse'], [data-key='eclipse'] .look-mini, .sw-real[data-key='eclipse'])
-    .piece.red
-    .face::before {
+  :is([data-key='eclipse'], [data-key='eclipse'] .look-mini, .sw-real[data-key='eclipse']) .piece.red .face::before {
     animation: spin-ring 6s linear infinite;
   }
-  :is(html:not(.lite) [data-key='eclipse'], [data-key='eclipse'] .look-mini, .sw-real[data-key='eclipse']) .piece.red {
+  :is([data-key='eclipse'], [data-key='eclipse'] .look-mini, .sw-real[data-key='eclipse']) .piece.red {
     animation: eclipse-glow 3s ease-in-out infinite;
   }
 }

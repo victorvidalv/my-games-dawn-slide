@@ -3,8 +3,7 @@ import { QR_MAX_BYTES } from '../qr.js';
 import {
   ACHIEVEMENTS as ALL_ACHIEVEMENTS,
   COUNTERS as ALL_COUNTERS,
-  REWARDS,
-  REWARD_TYPES,
+  LEGACY_REWARDS,
   lookOf,
   rewardKey,
 } from './achievements.js';
@@ -96,24 +95,29 @@ const V3_ACH_IDS = ['firstWin','lv5','city1','lv20','heroes2','lv25','lv35','lv5
 // v4 se escribía con las listas de entonces: 100 logros y 17 contadores (los nuevos van siempre al final).
 const V4_ACH_IDS = ALL_ACHIEVEMENTS.slice(0, 100).map((a) => a.id);
 const V5_ACH_IDS = ALL_ACHIEVEMENTS.map((a) => a.id);
-/** Objetos de Canjear que había en v3/v4 (por tipo, los primeros de cada lista: los nuevos se añaden al final). */
+/**
+ * Orden histórico de los objetos en el código QR (v3-v5): cada objeto viaja por su POSICIÓN en estas listas, así que no se
+ * pueden reordenar ni quitar. Personalizar ordena los objetos por rareza, pero eso no afecta a este formato.
+ * Los objetos añadidos después (fichas 13-30, llaves 14-30, tableros 14-30…) no viajan: se vuelven a desbloquear jugando.
+ * En `cover` la primera posición es la portada de serie (la de cada momento).
+ */
+const QR_LISTS = LEGACY_REWARDS;
+/** Cuántos objetos de cada lista había en v3/v4. */
 const V4_REWARD_COUNTS = { board: 10, pieces: 9, key: 10, fx: 10, music: 13, cover: 6 };
+/** Y en v5 (la lista completa de QR_LISTS). */
+const V5_REWARD_COUNTS = Object.fromEntries(Object.entries(QR_LISTS).map(([type, ids]) => [type, ids.length]));
+/** Claves canjeadas que viajan en el QR: todos los de la lista menos el primero (el de serie). */
 const shopKeys = (counts) =>
-  REWARD_TYPES.flatMap((type) =>
-    REWARDS[type]
-      .slice(0, counts ? counts[type] : undefined)
-      .filter((item) => item.price > 0)
-      .map((item) => rewardKey(type, item.id)),
-  );
+  Object.entries(QR_LISTS).flatMap(([type, ids]) => ids.slice(1, counts[type]).map((id) => rewardKey(type, id)));
 const V3_SHOP_KEYS = shopKeys(V4_REWARD_COUNTS);
-const V5_SHOP_KEYS = shopKeys(null);
+const V5_SHOP_KEYS = shopKeys(V5_REWARD_COUNTS);
 // prettier-ignore
 const V3_COUNTERS = ['completed','perfects','mini5','iceRock','locks','fateCards','cleanCity','boardsSolved','heavyBoards','shopBuys','powersUsed','challengeBoards','challengeRelicsUsed'];
 const V4_COUNTERS = ALL_COUNTERS.slice(0, 17);
 const V5_COUNTERS = ALL_COUNTERS;
 const V3_CHALLENGE_ROUTES = CHALLENGE_ROUTES.map((r) => r.id);
 const V3_CHALLENGE_RELICS = CHALLENGE_RELICS.map((r) => r.id);
-const V3_LOOKS = Object.fromEntries(REWARD_TYPES.map((type) => [type, REWARDS[type].map((r) => r.id)]));
+const V3_LOOKS = QR_LISTS;
 
 // 'brave' y 'routeChosen' eran del camino heroico: se conservan sus bits para leer los enlaces v1-v3.
 const RUN_FLAGS = [
@@ -506,7 +510,8 @@ function readV3(read, readV, atEnd, now, version = V3_VERSION) {
     music: V3_LOOKS.music[musicIdx],
     cover: V3_LOOKS.cover[coverIdx],
   };
-  if (Object.entries(lookOf({ look, shopOwned })).some(([type, id]) => id !== look[type])) invalid();
+  if (Object.entries(lookOf({ look, shopOwned })).some(([type, id]) => type in V5_REWARD_COUNTS && id !== look[type]))
+    invalid();
   const lessonBits = read(1, (1 << LESSONS.length) - 1);
   const tips = Object.fromEntries(LESSONS.filter((_, i) => (lessonBits & (1 << i)) !== 0).map((id) => [id, true]));
 

@@ -40,6 +40,11 @@ import './styles/39-menu-palette.css';
 import './styles/40-piece-key-skins.css';
 import './styles/41-fate-cards.css';
 import './styles/42-cosmetics-animated.css';
+import './styles/43-key-collection.css';
+import './styles/44-piece-collection.css';
+import './styles/45-board-collection.css';
+import './styles/46-card-collection.css';
+import './styles/47-defeat.css';
 import './styles/35-lite.css'; // modo ligero automático (src/ui/perf.js): siempre la última
 import './ui/transitions.js';
 import './ui/achievements.js';

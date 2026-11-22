@@ -484,7 +484,7 @@ export function win() {
   applyAdventureWin(run, G, gain);
   raiseStat('bestRunStreak', run.streak);
   const capped = fatePoints(run, { ...G, pure: boardPure(run, G, G.moves) }) >= FATE_POINTS_RANGE[1];
-  updateStats((st) => boardWinStats(st, { ember: gain.ember, capped }));
+  updateStats((st) => boardWinStats(st, { ember: gain.ember, capped, hero: run.hero }));
   recordBest();
   saveRun();
   setTensionFx(0, false);

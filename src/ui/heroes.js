@@ -6,7 +6,7 @@ import { reviveCost, reviveShare } from '../game/shop.js';
 import { S, haltBoard, heroOf, pathOf, persist, setBusy, store } from '../state.js';
 import { acceptRescue } from '../game/run-logic.js';
 import { boardEl, layout, updateHud } from './board.js';
-import { heroArt } from './story.js';
+import { heroArt, outfitImg } from './story.js';
 import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
@@ -36,7 +36,7 @@ export function chooseHero(start, mode) {
       modal.style.setProperty('--hero-scene', cssUrl(heroArt(h.id, 'select')));
       cards.innerHTML = HEROES.map((v) => {
         const powerTag = HERO_POWER_TAG[v.id] || v.power;
-        return `<button class="hero-choice ${v.id === selected ? 'selected' : ''}" role="radio" aria-checked="${v.id === selected}" tabindex="${v.id === selected ? 0 : -1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${powerTag}"><img src="${heroArt(v.id, v.id === selected ? 'ready' : 'select')}" alt="${v.name}, ${v.role}" width="640" height="853"><span class="hero-choice-name"><b>${v.name}</b><small class="hero-choice-power">${powerTag}</small></span><span class="hero-check" aria-hidden="true">✓</span></button>`;
+        return `<button class="hero-choice ${v.id === selected ? 'selected' : ''}" role="radio" aria-checked="${v.id === selected}" tabindex="${v.id === selected ? 0 : -1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${powerTag}"><img src="${v.id === selected ? outfitImg(v.id, 'act') : outfitImg(v.id, 'sel')}" alt="${v.name}, ${v.role}" width="640" height="853"><span class="hero-choice-name"><b>${v.name}</b><small class="hero-choice-power">${powerTag}</small></span><span class="hero-check" aria-hidden="true">✓</span></button>`;
       }).join('');
       $('heroConfirm').textContent = 'Comenzar aventura ➜';
       cards.querySelectorAll('button').forEach(
@@ -92,7 +92,7 @@ export function updateHeroHud() {
   if (!S.run || !S.G) return;
   const h = heroOf(),
     prac = S.run.mode === 'p';
-  $('heroHudImg').src = `heroes/${h.id}.webp`;
+  $('heroHudImg').src = outfitImg(h.id, 'sel');
   $('heroHudImg').alt = h.name;
   $('heroHudName').textContent = h.name;
   const status = powerState(S.run, S.G);

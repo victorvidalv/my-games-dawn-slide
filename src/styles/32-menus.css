@@ -272,16 +272,27 @@
 }
 #pause .pause-hero {
   flex: none;
-  width: 62px;
-  height: 74px;
+  width: 96px;
+  height: 112px;
   object-fit: cover;
-  object-position: center 14%;
+  object-position: center 10%;
   border: 3px solid #150e0c;
   border-radius: var(--wob-c);
   box-shadow:
-    0 0 0 2px var(--hero-color, #e0b04f),
-    4px 5px 0 #150e0c;
-  background: #1c1428;
+    0 0 0 2.5px var(--hero-color, #e0b04f),
+    0 0 22px -2px color-mix(in srgb, var(--hero-color, #e0b04f) 70%, transparent),
+    5px 6px 0 #150e0c;
+  background: radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--hero-color, #e0b04f) 40%, #1c1428), #1c1428);
+}
+@media (prefers-reduced-motion: no-preference) {
+  #pause.show .pause-hero {
+    animation: pause-hero-float 4.5s ease-in-out infinite;
+  }
+}
+@keyframes pause-hero-float {
+  50% {
+    transform: translateY(-3px) scale(1.03);
+  }
 }
 #pause .pause-head .tag {
   display: block;
@@ -297,8 +308,8 @@
     margin-bottom: 8px;
   }
   #pause .pause-hero {
-    width: 44px;
-    height: 52px;
+    width: 56px;
+    height: 66px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
