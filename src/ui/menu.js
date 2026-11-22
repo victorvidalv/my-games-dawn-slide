@@ -4,7 +4,8 @@ import { zoneIdx } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
 import { leaveDaily, leaveSurvival, recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
 import { challengeById } from '../game/daily.js';
-import { paintAchBadge, renderAchievements } from './achievements.js';
+import { closeCustomView, paintAchBadge, renderAchievements, renderLorePanel } from './achievements.js';
+import { renderGuidePanel } from './guide.js';
 import { paintDailyHome, renderDaily } from './daily.js';
 import { routeById } from '../game/survival.js';
 import { paintSurvivalHome, renderSurvival } from './survival.js';
@@ -222,6 +223,9 @@ const VIEWS = {
   survival: { title: 'Desafío', panel: 'panelSurvival' },
   daily: { title: 'Retos diarios', panel: 'panelDaily' },
   ach: { title: 'Personalizar', panel: 'panelAch' },
+  lore: { title: 'Lore', panel: 'panelLore' },
+  guide: { title: 'Guía', panel: 'panelGuide' },
+  more: { title: 'Más opciones', panel: 'panelMore' },
 };
 let viewNow = 'home';
 const coverScene = $('menu').querySelector('.cover-scene');
@@ -268,23 +272,27 @@ function paintHome() {
   paintAchBadge();
 }
 function showView(view, { focus = false } = {}) {
+  const prev = viewNow;
   viewNow = VIEWS[view] ? view : 'home';
+  if (prev === 'ach' && viewNow !== 'ach') closeCustomView();
   const home = viewNow === 'home';
   $('menuCard').dataset.view = viewNow;
   $('menu').dataset.view = viewNow;
   $('menuHome').hidden = !home;
   $('homeShortcuts').hidden = !home;
+  if (!home) toggleOthers(false);
   $('menuHead').hidden = home;
   Object.entries(VIEWS).forEach(([k, v]) => {
     $(v.panel).hidden = k !== viewNow;
   });
   if (home) paintHome();
   else {
-    toggleHomeTools(false);
     $('menuTitle').textContent = VIEWS[viewNow].title;
     if (viewNow === 'daily') renderDaily();
     else if (viewNow === 'survival') renderSurvival();
     else if (viewNow === 'ach') renderAchievements();
+    else if (viewNow === 'lore') renderLorePanel();
+    else if (viewNow === 'guide') renderGuidePanel();
   }
   $('menuCard').scrollTop = 0;
   Object.values(VIEWS).forEach((v) => {
@@ -295,6 +303,23 @@ function showView(view, { focus = false } = {}) {
 setInterval(() => {
   if (viewNow === 'home' && !document.hidden && $('menu').classList.contains('show')) paintHomeRecord();
 }, 30000);
+
+/* «Otros»: Personalizar, Lore, Guía y Ajustes se pliegan en un desplegable para no saturar el inicio. */
+function toggleOthers(open) {
+  $('homeOthers').setAttribute('aria-expanded', String(open));
+  $('homeOthersList').hidden = !open;
+}
+$('homeOthers').onclick = () => toggleOthers($('homeOthersList').hidden);
+document.addEventListener('click', (e) => {
+  if (!$('homeOthersList').hidden && !$('homeShortcuts').contains(e.target)) toggleOthers(false);
+});
+$('homeShortcuts').addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('homeOthersList').hidden) {
+    e.stopPropagation();
+    toggleOthers(false);
+    $('homeOthers').focus();
+  }
+});
 
 document.querySelectorAll('#menuHome [data-view], #homeShortcuts [data-view]').forEach((b) => {
   b.onclick = () => showView(b.dataset.view, { focus: true });
@@ -351,7 +376,6 @@ const paintLang = () => {
   document
     .querySelectorAll('.lang-btn')
     .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
-  $('homeGuide').href = lang === 'es' ? './guia/' : `./guia/${lang}/`;
 };
 document.querySelectorAll('.lang-btn').forEach((b) => {
   b.onclick = () => setLang(b.dataset.lang);
@@ -363,22 +387,4 @@ document.addEventListener('langchange', () => {
   showView(viewNow);
   const sr = store.run;
   if ($('bContinue').style.display !== 'none' && sr) $('bContinue').innerHTML = continueLabel(sr);
-});
-
-/* «Más opciones» del inicio: se pliega al tocar fuera o con Escape. */
-function toggleHomeTools(open) {
-  $('homeMore').setAttribute('aria-expanded', String(open));
-  $('homeTools').hidden = !open;
-}
-$('homeMore').onclick = () => toggleHomeTools($('homeTools').hidden);
-document.addEventListener('click', (e) => {
-  if (!$('homeTools').hidden && e.target !== $('homeMore') && !$('homeTools').contains(e.target)) {
-    toggleHomeTools(false);
-  }
-});
-$('homeShortcuts').addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && !$('homeTools').hidden) {
-    toggleHomeTools(false);
-    $('homeMore').focus();
-  }
 });

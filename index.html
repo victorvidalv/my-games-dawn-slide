@@ -238,13 +238,12 @@
       <button type="button" class="home-btn hb-daily" id="tabDaily" data-view="daily"><i class="hb-ico bi" data-icon="flame" aria-hidden="true"></i><span class="hb-copy"><b>Retos diarios</b><small id="homeDailySub"></small><span class="home-record"><span class="record-pill"><span>Racha actual</span><strong id="homeDailyStreak"></strong></span></span></span><i class="hb-go" aria-hidden="true">›</i></button>
     </nav>
     <div class="home-shortcuts" id="homeShortcuts">
-      <button type="button" class="home-pill" id="tabAch" data-view="ach"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Personalizar</span><span class="ach-pill-badge" id="homeAchBadge" hidden>0</span></button>
-      <button type="button" class="home-pill" id="homeMore" aria-expanded="false" aria-controls="homeTools" title="Más opciones">Más</button>
-      <div class="home-tools" id="homeTools" hidden>
-        <button class="snd-btn snd-menu tool-btn" type="button"></button>
-        <button class="tool-btn" id="bTransfer" type="button" aria-label="Pasar partida" title="Pasar partida"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3.5 13.2 24.5 4.5l-6.6 19.8-4.4-8.4z"/><path d="m13.5 15.9 11-11.4"/></svg></button>
-        <a class="tool-btn" id="homeGuide" href="./guia/" aria-label="Guía del juego" title="Guía del juego"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 8c-3-2.2-6.8-2.8-10.5-2.2v15.6c3.7-.6 7.5 0 10.5 2.2 3-2.2 6.8-2.8 10.5-2.2V5.8C20.8 5.2 17 5.8 14 8z"/><path d="M14 8v15.6"/></svg></a>
-        <button class="share-btn tool-btn" id="bShare" type="button" aria-label="Compartir y jugar en el móvil" title="Compartir y jugar en el móvil"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="21" cy="6" r="3.2"/><circle cx="7" cy="14" r="3.2"/><circle cx="21" cy="22" r="3.2"/><path d="m9.8 12.4 8.4-4.8m-8.4 8 8.4 4.8"/></svg></button>
+      <button type="button" class="home-pill home-others" id="homeOthers" aria-expanded="false" aria-controls="homeOthersList"><span>Otros</span><span class="others-badge" id="homeOthersBadge" hidden>0</span><i class="others-caret" aria-hidden="true"></i></button>
+      <div class="home-others-list" id="homeOthersList" hidden>
+        <button type="button" class="home-pill" id="tabAch" data-view="ach"><i class="bi" data-icon="trophy" aria-hidden="true"></i><span>Personalizar</span><span class="ach-pill-badge" id="homeAchBadge" hidden>0</span></button>
+        <button type="button" class="home-pill" id="tabLore" data-view="lore"><i class="bi" data-icon="book" aria-hidden="true"></i><span>Lore</span><span class="ach-pill-badge" id="homeLoreBadge" hidden>0</span></button>
+        <button type="button" class="home-pill" id="tabGuide" data-view="guide"><i class="bi" data-icon="stars" aria-hidden="true"></i><span>Guía</span></button>
+        <button type="button" class="home-pill" id="homeMore" data-view="more"><i class="bi" data-icon="gear" aria-hidden="true"></i><span>Ajustes</span></button>
       </div>
     </div>
     <div class="menu-head" id="menuHead" hidden>
@@ -282,11 +281,61 @@
     </div>
     <div class="menu-panel" id="panelDaily" hidden></div>
     <div class="menu-panel" id="panelAch" hidden></div>
+    <div class="menu-panel" id="panelLore" hidden></div>
+    <div class="menu-panel" id="panelGuide" hidden></div>
+    <div class="menu-panel" id="panelMore" hidden>
+      <header class="lore-banner more-banner">
+        <img class="lore-banner-bg" src="/backgrounds/umbral-del-alba.webp" alt="" decoding="async">
+        <div class="lore-banner-copy">
+          <small>AJUSTES Y UTILIDADES</small>
+          <h2>Más opciones</h2>
+          <p class="guide-banner-sub">Audio, respaldo de progreso, enlace móvil e información del juego.</p>
+        </div>
+      </header>
+      <div class="more-grid">
+        <article class="more-card">
+          <div class="more-card-top">
+            <span class="more-ico" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M5 11h5l6-5v16l-6-5H5z"/><path d="M20 9.5a6 6 0 0 1 0 9"/></svg></span>
+            <div><h3>Sonido y música</h3><p>Activa o silencia la banda sonora original y los efectos del tablero en cualquier momento.</p></div>
+          </div>
+          <button class="snd-btn snd-menu more-action" type="button"></button>
+        </article>
+        <article class="more-card">
+          <div class="more-card-top">
+            <span class="more-ico" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M3.5 13.2 24.5 4.5l-6.6 19.8-4.4-8.4z"/><path d="m13.5 15.9 11-11.4"/></svg></span>
+            <div><h3>Pasar partida</h3><p>Exporta o importa tus récords, atuendos, personalización y lore mediante código QR o texto para seguir en otro dispositivo.</p></div>
+          </div>
+          <button class="more-action primary" id="bTransfer" type="button">Abrir transferencia</button>
+        </article>
+        <article class="more-card">
+          <div class="more-card-top">
+            <span class="more-ico" aria-hidden="true"><svg viewBox="0 0 28 28"><circle cx="21" cy="6" r="3.2"/><circle cx="7" cy="14" r="3.2"/><circle cx="21" cy="22" r="3.2"/><path d="m9.8 12.4 8.4-4.8m-8.4 8 8.4 4.8"/></svg></span>
+            <div><h3>Compartir y jugar en el móvil</h3><p>Muestra un código QR y el enlace directo para abrir DAWNSLIDE en tu teléfono o compartirlo con amigos.</p></div>
+          </div>
+          <button class="share-btn more-action" id="bShare" type="button">Mostrar QR</button>
+        </article>
+        <article class="more-card more-card-install">
+          <div class="more-card-top">
+            <span class="more-ico" aria-hidden="true">📲</span>
+            <div><h3>Instalar aplicación</h3><p>Instala DAWNSLIDE en tu pantalla de inicio para abrirlo a pantalla completa y jugar sin conexión.</p></div>
+          </div>
+          <button class="install more-action primary" type="button">📲 Instalar app</button>
+        </article>
+        <article class="more-card">
+          <div class="more-card-top">
+            <span class="more-ico" aria-hidden="true">✦</span>
+            <div><h3>Acerca de DAWNSLIDE</h3><p>Puzle de bloques roguelite con tres héroes, siete ciudades y 100 entradas de lore.</p></div>
+          </div>
+          <div class="more-about-foot">
+            <span class="ver" id="ver"></span>
+            <a class="more-dev" href="https://x.com/shsh23xd" target="_blank" rel="noopener noreferrer">@shsh23xd</a>
+          </div>
+        </article>
+      </div>
+    </div>
     <div class="stack">
       <button id="bResume" style="display:none">↩ Volver al juego</button>
-      <button class="install optb">📲 Instalar app</button>
     </div>
-    <div class="ver" id="ver" hidden></div>
   </div>
   <div class="lang-switch" role="group" aria-label="Language / Idioma / 语言">
     <button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="true">

@@ -47,8 +47,8 @@ export const EN_LORE = {
   'Tri fue la última guardiana del Faro del Amanecer. Cuando la sombra de Vhorn lo apagó, no huyó ni peleó: cerró. Diez puertas, diez sellos, diez reinos a salvo del olvido. Los libros la llaman carcelera. Las inscripciones, madre.':
     'Tri was the last keeper of the Dawn Beacon. When Vhorn’s shadow put it out, she neither fled nor fought: she closed. Ten doors, ten seals, ten realms safe from oblivion. The books call her jailer. The inscriptions call her mother.',
   'El precio del sello': 'The price of the seal',
-  'Sellar un reino cuesta recordarlo todo, para siempre. Tri carga con diez ciudades dentro de la memoria y no se permite dormir, por miedo a que una se apague. Su desvelo es lo único que mantiene vivas las luces bajo los sellos.':
-    'To seal a realm costs remembering it all, forever. Tri carries ten cities inside her memory and will not let herself sleep, for fear one might go dark. Her sleeplessness is the only thing keeping the lights beneath the seals alive.',
+  'Sellar un reino cuesta recordarlo todo, para siempre. Tri carga con diez reinos dentro de la memoria y no se permite dormir, por miedo a que una se apague. Su desvelo es lo único que mantiene vivas las luces bajo los sellos.':
+    'To seal a realm costs remembering it all, forever. Tri carries ten realms inside her memory and will not let herself sleep, for fear one might go dark. Her sleeplessness is the only thing keeping the lights beneath the seals alive.',
   'Los ojos cerrados': 'The closed eyes',
   'Los cerró para no ver cómo el mundo se olvidaba de sí. Pero un guardián con los ojos cerrados escucha mejor. Oyó pasos de tres luces cruzando los reinos y, bajo su sueño fingido, empezó a sonreír.':
     'She closed them so as not to watch the world forget itself. But a guardian with closed eyes listens better. She heard the footsteps of three lights crossing the realms and, beneath her feigned sleep, began to smile.',
@@ -192,14 +192,14 @@ export const EN_LORE = {
     'Whoever carries a relic carries someone else’s story. That is why relics are chosen, not found. And that is why, they say, the board shifts a little when someone uses them with respect.',
   'Lo que se recuerda, ayuda.': 'What is remembered, helps.',
   'La Senda del Silencio': 'The Path of Silence',
-  'Quien completa el camino Difícil oye un silencio nuevo, como el que queda cuando alguien deja de gritar. Es la voz de Tri, que tras mil noches en vela suspira por primera vez.':
-    'Whoever completes the Hard path hears a new silence, like the one left when someone stops shouting. It is Tri’s voice, who after a thousand sleepless nights sighs for the first time.',
+  'Quien completa el camino Difícil oye un silencio nuevo, como el que queda cuando alguien deja de gritar. Es la voz de Tri, que tras tantas noches en vela suspira por primera vez.':
+    'Whoever completes the Hard path hears a new silence, like the one left when someone stops shouting. It is Tri’s voice, who after so many sleepless nights sighs for the first time.',
   'En el último sello, las piezas se mueven solas un instante, como si alguien más empujara con ellas. No es magia. Es el eco de los viajeros que antes que tú se atrevieron.':
     'At the last seal, the pieces move on their own for an instant, as if someone else pushed with them. It is not magic. It is the echo of the travelers who dared before you.',
   'Después de lo difícil, el silencio también es premio.': 'After the hard, silence is a reward too.',
   'Epílogo del año 4134': 'Epilogue of the Year 4134',
-  'En el año 4134 Thyes despierta con un amanecer que nadie recuerda haber pedido. Los diez reinos abren sus puertas, y por cada puerta salen mil nombres que habían esperado siglos a ser dichos.':
-    'In the year 4134 Thyes wakes to a dawn no one remembers asking for. The ten realms open their doors, and through each door come a thousand names that had waited centuries to be spoken.',
+  'En el año 4134 Thyes despierta con un amanecer que nadie recuerda haber pedido. Los diez reinos abren sus puertas, y por cada puerta salen mil nombres que habían esperado en silencio a ser dichos.':
+    'In the year 4134 Thyes wakes to a dawn no one remembers asking for. The ten realms open their doors, and through each door come a thousand names that had waited in silence to be spoken.',
   'Los cronistas tardan en creerlo: nadie murió en la Noche Larga. Estaban todos guardados. Fue Tri quien cargó con la memoria de todos para que ninguno se perdiera. Y ahora devuelve lo guardado.':
     'The chroniclers are slow to believe it: no one died in the Long Night. They were all kept safe. It was Tri who carried everyone’s memory so none would be lost. And now she gives back what she kept.',
   'Nadie se perdió: solo estaban guardados.': 'No one was lost: they were only kept.',
@@ -241,4 +241,163 @@ export const EN_LORE = {
   'Quince tomos del universo. Tócalos para leer; los que faltan piden una hazaña.':
     'Fifteen volumes of the universe. Tap them to read; the missing ones ask for a feat.',
   'Resuelve tu primer tablero con Lía': 'Solve your first board with Lía',
+  Escenas: 'Scenes',
+  'Crónica de Thyes': 'Chronicle of Thyes',
+  'THYES · AÑO 4133': 'THYES · YEAR 4133',
+  'Capítulo {n}': 'Chapter {n}',
+  'Escenas y paisajes de Thyes. Tócalas para abrir cada crónica ilustrada.':
+    'Scenes and landscapes of Thyes. Tap them to open each illustrated chronicle.',
+  Anterior: 'Previous',
+  Siguiente: 'Next',
+  'Los tres en el umbral': 'Three at the threshold',
+  'Fue Lía quien insistió en viajar junto a Jean y Juth. El vigía desconfiaba del azar y el escriba prefería el silencio, pero ella repartió pan caliente al borde del camino. Desde esa noche, ninguna puerta cerrada los encontró solos.':
+    'It was Lía who insisted on traveling with Jean and Juth. The watchman distrusted chance and the scribe preferred silence, yet she shared warm bread by the roadside. From that night on, no locked door ever found them alone.',
+  'El taller del silencio': 'The workshop of silence',
+  'En la Ciudad del Reloj, Jean guarda una mesa llena de resortes rotos que nadie pudo reparar. Cada pieza lleva la fecha de un día en que alguien llegó tarde. Cuando gira su llave de cuerda, el taller entero vuelve a latir por un segundo.':
+    'In the Clock City, Jean keeps a table full of broken springs no one could mend. Each piece bears the date of a day someone arrived late. When he turns his winding key, the whole workshop beats again for a second.',
+  'El juramento de la tinta': 'The oath of ink',
+  'Antes de cruzar la primera frontera, Juth mezcló ceniza de la Aldea de Otoño en su tintero. Prometió que ninguna historia volvería a quedar sin lector. Donde otros ven un muro de bloques, él lee una frase interrumpida.':
+    'Before crossing the first border, Juth mixed ash from the Autumn Village into his inkwell. He swore no story would ever go unread again. Where others see a wall of blocks, he reads an interrupted sentence.',
+  'La vigilia de piedra': 'The stone vigil',
+  'Durante toda la Noche Larga nadie supo si la Guardiana seguía viva tras el umbral dorado. Solo quienes caían sin turnos y aceptaban su mano sentían el calor de su luz. Tri no juzga al que tropieza: le ofrece otra oportunidad.':
+    'Throughout the Long Night no one knew if the Guardian still lived beyond the golden threshold. Only those who ran out of turns and took her hand felt the warmth of her light. Tri does not judge the fallen: she offers another chance.',
+  'El primer rayo': 'The first ray',
+  'Al abrirse el año 4134, Tri entrega las llaves de los diez reinos a sus pueblos y baja por fin las escaleras del Faro. Por primera vez desde el apagón, alguien distinto vigila el horizonte mientras ella descansa.':
+    'As the year 4134 dawns, Tri returns the keys of the ten realms to their peoples and finally descends the Beacon stairs. For the first time since the blackout, someone else watches the horizon while she rests.',
+  'La voz en las murallas': 'The voice in the walls',
+  'En cada tablero sellado se escucha su murmullo entre los bloques inmóviles. No amenaza con fuego ni acero: ofrece calma, sueño y renuncia. Cada jugador que vuelve a intentarlo le quita un poco de fuerza.':
+    'On every sealed board his murmur echoes between the unmoving blocks. He does not threaten with fire or steel: he offers calm, sleep and surrender. Every player who tries again takes a little of his strength away.',
+  'El eco del nombre': 'The echo of the name',
+  'Incluso en el amanecer del año 4134, una esquina del Faro conserva una lámpara encendida en su honor. Nadie vuelve a temer la oscuridad cuando recuerda el nombre de quien cuidó la primera llama.':
+    'Even at the dawn of 4134, a corner of the Beacon keeps a lamp lit in his honor. No one fears the dark again once they remember the name of the one who tended the first flame.',
+  'Vestigio: el farol de musgo': 'Vestige: the moss lantern',
+  'En el cruce del valle cuelga un farol cubierto de musgo verde. Nunca se apaga del todo, y los niños del lugar dejan hojas secas a sus pies para agradecer que el camino siga abierto.':
+    'At the valley crossroads hangs a lantern wrapped in green moss. It never fully goes out, and local children leave dry leaves beneath it to give thanks that the road stays open.',
+  'Vestigio: la carta de mareas': 'Vestige: the tide chart',
+  'Sobre una mesa de sal descansan mapas dibujados con tinta azul. Las corrientes llevan nombres de viejos capitanes que prometieron volver cuando el Faro volviera a girar.':
+    'On a salt-stained table rest maps drawn in blue ink. The currents bear the names of old captains who promised to return once the Beacon turned again.',
+  'Vestigio: la hoja de bronce': 'Vestige: the bronze leaf',
+  'Atada a la rama más alta cuelga una hoja de bronce que suena con la brisa. Los escribas la golpeaban al caer la tarde para que ningún nombre quedara dormido bajo la escarcha.':
+    'Tied to the highest branch hangs a bronze leaf that chimes in the breeze. The scribes struck it at dusk so no name would fall asleep beneath the frost.',
+  'Vestigio: la campana dormida': 'Vestige: the sleeping bell',
+  'Cuando el viento sopla desde el norte, el hielo vibra con un tañido grave. Quienes pasan la noche en el refugio juran que la campana cuenta los pasos de cada viajero.':
+    'When the wind blows from the north, the ice hums with a low toll. Those who spend the night in the refuge swear the bell counts every traveler’s steps.',
+  'Vestigio: el péndulo quieto': 'Vestige: the still pendulum',
+  'En la plaza central, el gran péndulo cuelga inclinado hacia el este. Ningún habitante lo ha tocado desde el apagón: esperan que la primera campanada del amanecer lo empuje de nuevo.':
+    'In the central square, the great pendulum hangs tilted toward the east. No citizen has touched it since the blackout: they wait for the first chime of dawn to set it swinging again.',
+  'Vestigio: las tenazas rojas': 'Vestige: the red tongs',
+  'Junto al crisol apagado siguen unas tenazas tibias al tacto. Con ellas se templó la primera llave roja que recorrió las siete ciudades sin doblarse jamás.':
+    'Beside the cold crucible lie tongs still warm to the touch. With them was tempered the first red key that crossed the seven cities without ever bending.',
+  'Vestigio: el espejo del Faro': 'Vestige: the Beacon mirror',
+  'En la torre más alta descansa un espejo de latón pulido. No refleja rostros, sino la luz de las siete ciudades que siguen esperando al otro lado de la niebla.':
+    'In the highest tower rests a mirror of polished brass. It reflects no faces, only the light of the seven cities still waiting beyond the mist.',
+  'Legado Kogn: el farol flotante': 'Kogn legacy: the floating lantern',
+  'Sus barcos se volvieron muelles y sus cantos, señales de niebla. Aún hoy, cuando un viajero duda ante un tablero difícil, dicen que una brisa salada le recuerda mirar dos pasos más allá.':
+    'Their ships became piers and their songs, fog signals. Even today, when a traveler hesitates before a hard board, a salty breeze reminds them to look two steps ahead.',
+  'Legado Sahrim: el mapa de agua': 'Sahrim legacy: the water map',
+  'Enseñaron a los demás reinos a viajar sin perder la cuenta de los pasos. Sus cuentas de arcilla inspiraron la regla más antigua de Thyes: cada movimiento cuenta, ninguno se desperdicia.':
+    'They taught the other realms to travel without losing count of their steps. Their clay beads inspired the oldest rule of Thyes: every move counts, none is wasted.',
+  'Legado Ennari: la tinta viva': 'Ennari legacy: living ink',
+  'De sus archivos nació el primer códice que heredó Juth. Cada página se cierra con la misma advertencia: «Escribe antes de que oscurezca, lee antes de olvidar».':
+    'From their archives came the first codex Juth inherited. Every page closes with the same warning: “Write before dark, read before forgetting.”',
+  'Legado Aluen: el hilo de estrellas': 'Aluen legacy: the star thread',
+  'Sus puentes invisibles todavía unen las torres del norte. Quien supera un desafío sin rendirse escucha, al terminar, el eco lejano de una cuerda tensándose en el cielo.':
+    'Their invisible bridges still link the northern towers. Whoever clears a challenge without giving up hears, at the end, the distant hum of a cord pulling taut in the sky.',
+  'El alba sobre la cascada': 'Dawn over the waterfall',
+  'Aquí comienza el viaje de las tres luces: agua viva cayendo entre rocas antiguas mientras el primer sello despierta.':
+    'Here begins the journey of the three lights: living water falling over ancient stone as the first seal wakes.',
+  'El mirador del valle': 'The valley overlook',
+  'Frontera del Alba': 'Dawn Frontier',
+  'Desde este balcón de piedra se ven los siete caminos que cruzan Thyes. Cada viajero mira hacia el Faro antes de partir.':
+    'From this stone balcony all seven roads across Thyes can be seen. Every traveler looks toward the Beacon before setting out.',
+  'La muralla antigua': 'The ancient wall',
+  'Primer Límite': 'First Border',
+  'Levantada antes de la Noche Larga, sus piedras guardan marcas de las tres luces y avisos para quienes viajan de noche.':
+    'Raised before the Long Night, its stones bear marks of the three lights and warnings for those who travel after dark.',
+  'El puente de otoño': 'The autumn bridge',
+  'Las hojas rojas cruzan el río como cartas sin remitente. Los Ennari decían que el agua recuerda lo que el viento se lleva.':
+    'Red leaves cross the river like unsigned letters. The Ennari said water remembers what the wind carries away.',
+  'La ciudad blanca': 'The white city',
+  'Tierras Altas': 'Highlands',
+  'Torres de cal y piedra clara reflejan el último resplandor del Faro. Sus calles esperan el sonido de pasos conocidos.':
+    'Towers of lime and pale stone reflect the Beacon’s last glow. Their streets await the sound of familiar footsteps.',
+  'Ciudad de las linternas': 'City of lanterns',
+  'Miles de faroles encendidos desafían a la penumbra. Cada llama representa una promesa hecha por los marineros Kogn.':
+    'Thousands of lit lanterns defy the gloom. Each flame stands for a promise made by the Kogn sailors.',
+  'La fortaleza lunar': 'The lunar fortress',
+  'Cumbre del Norte': 'Northern Summit',
+  'Bajo la luna inmóvil, los observadores medían el paso de las estaciones y leían en el cielo las Cartas del Destino.':
+    'Beneath the still moon, watchers measured the turning seasons and read the Fate Cards in the sky.',
+  'La ciudad flotante': 'The floating city',
+  'Cielo de los Aluen': 'Sky of the Aluen',
+  'Sostenida por hilos plateados que brillan solo de madrugada, fue el último refugio de los tejedores de puentes.':
+    'Held aloft by silver threads that gleam only at daybreak, it was the last refuge of the bridge weavers.',
+  'El castillo rojo': 'The red castle',
+  'Borde del Volcán': 'Volcano Rim',
+  'Sus muros guardan el calor de la vieja fragua. Aquí se pusieron a prueba las primeras llaves forjadas contra la sombra.':
+    'Its walls keep the warmth of the old forge. Here the first keys tempered against the shadow were tested.',
+  'La calle de los cerezos': 'Cherry blossom street',
+  'Camino de los Cerezos': 'Cherry Blossom Road',
+  'Los pétalos flotan detenidos en el aire desde el año 4133, esperando la brisa del nuevo amanecer para volver a caer.':
+    'Petals hang still in the air since the year 4133, waiting for the breeze of a new dawn to fall again.',
+  'El pórtico gigante': 'The giant gate',
+  'Senda del Este': 'Eastern Path',
+  'Quien cruza este arco deja atrás la duda. Los viajeros cuelgan cintas rojas en sus pilares antes de entrar a un tramo difícil.':
+    'Whoever crosses this arch leaves doubt behind. Travelers tie red ribbons to its pillars before entering a hard stretch.',
+  'El puente del dragón': 'The dragon bridge',
+  'Paso de Piedra': 'Stone Pass',
+  'Esculpido en la roca viva, une dos reinos separados por la niebla. Solo se revela entero cuando los bloques ceden.':
+    'Carved from living rock, it joins two realms parted by mist. It reveals itself whole only when the blocks yield.',
+  'Luna de neón': 'Neon moon',
+  'Eco del Porvenir': 'Echo of Tomorrow',
+  'Una visión de un Thyes futuro donde los sellos ya no son de piedra, sino de luz pura vibrando en la noche.':
+    'A vision of a future Thyes where seals are no longer stone, but pure light humming in the night.',
+  'La plaza iluminada': 'The lit plaza',
+  'Horizonte Nuevo': 'New Horizon',
+  'En el reflejo de los relojes de Jean aparece a veces esta plaza llena de color: prueba de que el tiempo nunca se detuvo del todo.':
+    'In the reflection of Jean’s watches this bright plaza sometimes appears: proof that time never truly stopped.',
+  'El coloso de luz': 'The colossus of light',
+  'Vigía del Mañana': 'Watcher of Tomorrow',
+  'Un guardián silencioso de cristal y energía, eco lejano de los gigantes que protegían el Faro original.':
+    'A silent guardian of crystal and energy, a distant echo of the giants that once protected the original Beacon.',
+  'El santuario carmesí': 'The crimson sanctuary',
+  'Altar de los Pactos': 'Altar of Pacts',
+  'Donde se sellan los Pactos más arriesgados. La luz roja no miente: todo poder pide un precio a cambio.':
+    'Where the riskiest Pacts are sealed. The red light never lies: every power asks a price in return.',
+  'El umbral del alba': 'The dawn threshold',
+  'Cámara de Tri': 'Chamber of Tri',
+  'El lugar suspendido entre la derrota y la segunda oportunidad, donde la Guardiana ofrece su luz a quien no se rinde.':
+    'The place suspended between defeat and a second chance, where the Guardian offers her light to those who endure.',
+  'La senda del desafío': 'The challenge path',
+  'Camino Exacto': 'Exact Road',
+  'Un horizonte estrecho donde cada turno está contado desde el primer paso. Aquí se templan los maestros del tablero.':
+    'A narrow horizon where every turn is counted from the first step. Here the masters of the board are tempered.',
+  'Amanecer sobre Thyes': 'Dawn over Thyes',
+  'Faro del Amanecer': 'Dawn Beacon',
+  'El instante en que el primer rayo vuelve a cruzar las siete ciudades y el año 4134 comienza por fin.':
+    'The moment the first ray crosses the seven cities again and the year 4134 finally begins.',
+  'Retrato de la Brasa': 'Portrait of the Ember',
+  'Con la llave roja al pecho y una sonrisa terca, Lía avanza incluso cuando la niebla borra el camino.':
+    'With the red key at her chest and a stubborn smile, Lía presses on even when the mist erases the road.',
+  'Retrato de la Hora': 'Portrait of the Hour',
+  'El reloj de bolsillo marca la grieta exacta en el tiempo. Jean nunca pierde la calma ante un tablero cerrado.':
+    'The pocket watch marks the exact crack in time. Jean never loses his calm before a locked board.',
+  'Juth en solitario': 'Juth solo',
+  'Retrato de la Palabra': 'Portrait of the Word',
+  'Con el códice abierto y la mirada fija en las runas, Juth lee la salida antes de mover una sola pieza.':
+    'With his codex open and his eyes fixed on the runes, Juth reads the exit before moving a single piece.',
+  'Las Tres Luces': 'The Three Lights',
+  'Brasa, Hora y Palabra reunidas bajo un mismo cielo: la alianza que Tri esperó desde el apagón.':
+    'Ember, Hour and Word gathered under one sky: the alliance Tri waited for since the blackout.',
+  'Frente a la Sombra': 'Facing the Shadow',
+  'Cuando Vhorn oscurece el tablero, las tres luces forman un círculo y responden juntas sin dar un paso atrás.':
+    'When Vhorn darkens the board, the three lights form a circle and answer together without stepping back.',
+  'Combate en las sombras': 'Battle in the shadows',
+  'Corazón del Castillo': 'Heart of the Castle',
+  'El choque final contra el olvido: no con armas, sino abriendo cada cerradura con precisión perfecta.':
+    'The final clash against oblivion: not with weapons, but by opening every lock with perfect precision.',
+  'La victoria del amanecer': 'Victory of the dawn',
+  'Año 4134': 'Year 4134',
+  'Los sellos caen, el Faro vuelve a arder y los tres compañeros contemplan el despertar de Thyes.':
+    'The seals fall, the Beacon burns once more and the three companions watch Thyes awaken.',
 };

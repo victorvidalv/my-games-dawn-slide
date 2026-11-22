@@ -9,6 +9,7 @@ export const CHARACTERS = [
     name: 'Lía',
     epithet: 'la Brasa',
     hero: 'lia',
+    scene: 'backgrounds/zone-1.webp',
     entries: [
       {
         id: 'origen',
@@ -32,6 +33,12 @@ export const CHARACTERS = [
         ],
       },
       {
+        id: 'alianza',
+        title: 'Los tres en el umbral',
+        text: 'Fue Lía quien insistió en viajar junto a Jean y Juth. El vigía desconfiaba del azar y el escriba prefería el silencio, pero ella repartió pan caliente al borde del camino. Desde esa noche, ninguna puerta cerrada los encontró solos.',
+        req: [['heroBoardsLia', 45]],
+      },
+      {
         id: 'verdad',
         title: 'Su verdad',
         text: 'Cuando el Faro vuelve a arder, Lía comprende que la promesa nunca fue volver a casa: fue volver con todos. El valle despertó mucho antes de que ella llegara, porque la brasa que llevaba ya ardía en cada persona a la que ayudó por el camino.',
@@ -53,6 +60,7 @@ export const CHARACTERS = [
     name: 'Jean',
     epithet: 'la Hora',
     hero: 'jean',
+    scene: 'backgrounds/zone-5.webp',
     entries: [
       {
         id: 'origen',
@@ -76,6 +84,12 @@ export const CHARACTERS = [
         ],
       },
       {
+        id: 'taller',
+        title: 'El taller del silencio',
+        text: 'En la Ciudad del Reloj, Jean guarda una mesa llena de resortes rotos que nadie pudo reparar. Cada pieza lleva la fecha de un día en que alguien llegó tarde. Cuando gira su llave de cuerda, el taller entero vuelve a latir por un segundo.',
+        req: [['heroBoardsJean', 45]],
+      },
+      {
         id: 'verdad',
         title: 'Su verdad',
         text: 'Al ajustar la última aguja del Faro, Jean entiende que la culpa era otro modo de seguir de guardia. Nadie puede cuidar la noche entera. Suelta el reloj, y por primera vez el tiempo no le pesa: le pertenece.',
@@ -97,6 +111,7 @@ export const CHARACTERS = [
     name: 'Juth',
     epithet: 'la Palabra',
     hero: 'van',
+    scene: 'backgrounds/zone-3.webp',
     entries: [
       {
         id: 'origen',
@@ -120,6 +135,12 @@ export const CHARACTERS = [
         ],
       },
       {
+        id: 'juramento',
+        title: 'El juramento de la tinta',
+        text: 'Antes de cruzar la primera frontera, Juth mezcló ceniza de la Aldea de Otoño en su tintero. Prometió que ninguna historia volvería a quedar sin lector. Donde otros ven un muro de bloques, él lee una frase interrumpida.',
+        req: [['heroBoardsVan', 45]],
+      },
+      {
         id: 'verdad',
         title: 'Su verdad',
         text: 'La noche final, Juth escribe la última línea y dice en voz alta el nombre de Vhorn. No lo destruye: lo nombra. Y lo que fue olvido encuentra, al fin, quien lo recuerde. El códice se cierra completo.',
@@ -141,6 +162,7 @@ export const CHARACTERS = [
     name: 'Tri',
     epithet: 'la Guardiana',
     art: 'backgrounds/guardiana-del-alba.webp',
+    scene: 'backgrounds/umbral-del-alba.webp',
     entries: [
       {
         id: 'guardiana',
@@ -151,8 +173,14 @@ export const CHARACTERS = [
       {
         id: 'precio',
         title: 'El precio del sello',
-        text: 'Sellar un reino cuesta recordarlo todo, para siempre. Tri carga con diez ciudades dentro de la memoria y no se permite dormir, por miedo a que una se apague. Su desvelo es lo único que mantiene vivas las luces bajo los sellos.',
+        text: 'Sellar un reino cuesta recordarlo todo, para siempre. Tri carga con diez reinos dentro de la memoria y no se permite dormir, por miedo a que una se apague. Su desvelo es lo único que mantiene vivas las luces bajo los sellos.',
         req: [['maxLevel', 13]],
+      },
+      {
+        id: 'vigilia',
+        title: 'La vigilia de piedra',
+        text: 'Durante toda la Noche Larga nadie supo si la Guardiana seguía viva tras el umbral dorado. Solo quienes caían sin turnos y aceptaban su mano sentían el calor de su luz. Tri no juzga al que tropieza: le ofrece otra oportunidad.',
+        req: [['boardsSolved', 50]],
       },
       {
         id: 'ojos',
@@ -166,6 +194,12 @@ export const CHARACTERS = [
         text: 'El último sello revela lo que la frase prometía: Tri nunca fue prisionera de la noche. Fue la noche en vela. Al encenderse el Faro abre los ojos, mira a tres viajeros polvorientos y solo pregunta: «¿Han llegado a tiempo?».',
         req: [['completed', 3]],
       },
+      {
+        id: 'despertar',
+        title: 'El primer rayo',
+        text: 'Al abrirse el año 4134, Tri entrega las llaves de los diez reinos a sus pueblos y baja por fin las escaleras del Faro. Por primera vez desde el apagón, alguien distinto vigila el horizonte mientras ella descansa.',
+        req: [['heroWinsCount', 3]],
+      },
     ],
   },
   {
@@ -173,6 +207,7 @@ export const CHARACTERS = [
     name: 'Vhorn',
     epithet: 'el Apagador',
     art: 'historia/vhorn.webp',
+    scene: 'backgrounds/zone-7.webp',
     entries: [
       {
         id: 'apagador',
@@ -190,6 +225,12 @@ export const CHARACTERS = [
         ],
       },
       {
+        id: 'susurro',
+        title: 'La voz en las murallas',
+        text: 'En cada tablero sellado se escucha su murmullo entre los bloques inmóviles. No amenaza con fuego ni acero: ofrece calma, sueño y renuncia. Cada jugador que vuelve a intentarlo le quita un poco de fuerza.',
+        req: [['pactsPicked', 5]],
+      },
+      {
         id: 'devora',
         title: 'Lo que devora',
         text: 'No come carne ni oro: come memoria. Un nombre sin quien lo pronuncie, una canción sin quien la cante, un oficio sin quien lo herede. Todo lo que desaparece sin dolor alimenta su hambre. Por eso aborrece los homenajes.',
@@ -200,6 +241,15 @@ export const CHARACTERS = [
         title: 'El nombre',
         text: 'Vhorn no pide piedad: pide ser recordado. Cuando las tres luces pronuncian su nombre, la sombra duda, se encoge y pregunta: «¿Dejaréis de olvidarme?». Nadie vence al olvido con una espada. Se le vence con una frase.',
         req: [['expertDone', 1]],
+      },
+      {
+        id: 'eco',
+        title: 'El eco del nombre',
+        text: 'Incluso en el amanecer del año 4134, una esquina del Faro conserva una lámpara encendida en su honor. Nadie vuelve a temer la oscuridad cuando recuerda el nombre de quien cuidó la primera llama.',
+        req: [
+          ['expertDone', 1],
+          ['challenge200Won', 1],
+        ],
       },
     ],
   },
@@ -218,6 +268,11 @@ export const PLACES = [
       text: 'Entre colinas de esmeralda late el primer sello, el del Corazón. Aquí la niebla no se va nunca, y los vallenses dicen que es el aliento de Tri respirando en sueños. Todo viaje empieza aquí: con una brasa pequeña, una llave roja y una promesa.',
       req: [['maxLevel', 1]],
     },
+    memory: {
+      title: 'Vestigio: el farol de musgo',
+      text: 'En el cruce del valle cuelga un farol cubierto de musgo verde. Nunca se apaga del todo, y los niños del lugar dejan hojas secas a sus pies para agradecer que el camino siga abierto.',
+      req: [['boardsSolved', 8]],
+    },
     secret: {
       title: 'Nota secreta: la piedra tibia',
       text: 'Bajo las raíces del valle hay una piedra tibia que nadie logra enfriar. Dicen que es la primera brasa, dejada por quien selló el reino. No ilumina: acompaña. Quien la toca oye, muy lejos, una voz que susurra «aguanta».',
@@ -234,6 +289,11 @@ export const PLACES = [
       title: 'El sello de la Marea',
       text: 'Los Kogn encendían una vela por cada marinero que esperaban en el puerto. Cuando la Noche Larga cayó, las velas siguieron ardiendo y el mar se quedó quieto, como quien contiene el aliento esperando una noticia. El sello de la Marea guarda esa esperanza.',
       req: [['maxLevel', 4]],
+    },
+    memory: {
+      title: 'Vestigio: la carta de mareas',
+      text: 'Sobre una mesa de sal descansan mapas dibujados con tinta azul. Las corrientes llevan nombres de viejos capitanes que prometieron volver cuando el Faro volviera a girar.',
+      req: [['boardsSolved', 20]],
     },
     secret: {
       title: 'Nota secreta: la vela sin dueño',
@@ -252,6 +312,11 @@ export const PLACES = [
       text: 'Los Ennari escribían los nombres de sus muertos en la corteza de los árboles, y los árboles los guardaban. Vhorn arrancó la corteza hoja a hoja. La aldea sigue en otoño eterno, y cada hoja que cae es un nombre que busca quien lo pronuncie.',
       req: [['maxLevel', 7]],
     },
+    memory: {
+      title: 'Vestigio: la hoja de bronce',
+      text: 'Atada a la rama más alta cuelga una hoja de bronce que suena con la brisa. Los escribas la golpeaban al caer la tarde para que ningún nombre quedara dormido bajo la escarcha.',
+      req: [['boardsSolved', 35]],
+    },
     secret: {
       title: 'Nota secreta: el nombre de vigía',
       text: 'Un roble de la aldea conserva un nombre que no es de ningún Ennari: está escrito con letra de vigía. Es el primer nombre que Vhorn quiso salvar de su propio hambre. Nadie sabe leerlo. Todos sienten que deberían.',
@@ -268,6 +333,11 @@ export const PLACES = [
       title: 'El sello del Valor',
       text: 'Sobre la cumbre helada, el hielo sepultó la campana que los Aluen oían desde las estrellas. Aquí el miedo pesa más que la nieve, y el sello del Valor solo cede ante quien da el siguiente paso sabiendo que puede resbalar. Valiente no es quien no teme: es quien avanza temblando.',
       req: [['maxLevel', 10]],
+    },
+    memory: {
+      title: 'Vestigio: la campana dormida',
+      text: 'Cuando el viento sopla desde el norte, el hielo vibra con un tañido grave. Quienes pasan la noche en el refugio juran que la campana cuenta los pasos de cada viajero.',
+      req: [['boardsSolved', 55]],
     },
     secret: {
       title: 'Nota secreta: el puente de cuerda',
@@ -286,6 +356,11 @@ export const PLACES = [
       text: 'El reloj mayor se detuvo la noche en que murió el Faro, y la ciudad quedó suspendida como un suspiro. Cada engranaje lleva la firma de dos pueblos que construyeron juntos. Para que el tiempo vuelva a correr hay que encender la Chispa y confiar en el paso siguiente.',
       req: [['maxLevel', 13]],
     },
+    memory: {
+      title: 'Vestigio: el péndulo quieto',
+      text: 'En la plaza central, el gran péndulo cuelga inclinado hacia el este. Ningún habitante lo ha tocado desde el apagón: esperan que la primera campanada del amanecer lo empuje de nuevo.',
+      req: [['boardsSolved', 80]],
+    },
     secret: {
       title: 'Nota secreta: el decimotercer reloj',
       text: 'Tras la esfera del reloj mayor hay una cámara con trece relojes, todos detenidos a la misma hora. El decimotercero marca una hora que aún no ha llegado: la de la victoria. Nadie quiere tocar sus agujas; todos quieren verlas girar.',
@@ -302,6 +377,11 @@ export const PLACES = [
       title: 'El sello del Fuego',
       text: 'Bajo la ceniza duerme la fragua donde se forjó la primera llave. Aquí Vhorn susurra con más fuerza: «Descansa, nadie recordará tu luz». Romper el sello del Fuego es decirle que no con las manos aún negras de hollín, una vez más, y otra, y otra.',
       req: [['maxLevel', 16]],
+    },
+    memory: {
+      title: 'Vestigio: las tenazas rojas',
+      text: 'Junto al crisol apagado siguen unas tenazas tibias al tacto. Con ellas se templó la primera llave roja que recorrió las siete ciudades sin doblarse jamás.',
+      req: [['boardsSolved', 110]],
     },
     secret: {
       title: 'Nota secreta: la huella en el yunque',
@@ -320,6 +400,11 @@ export const PLACES = [
       text: 'Murallas de oro rodean la última cámara. Allí espera el Faro del Amanecer y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hacen falta la brasa, la hora y la palabra. Aquí termina el viaje y empieza el amanecer.',
       req: [['maxLevel', 19]],
     },
+    memory: {
+      title: 'Vestigio: el espejo del Faro',
+      text: 'En la torre más alta descansa un espejo de latón pulido. No refleja rostros, sino la luz de las siete ciudades que siguen esperando al otro lado de la niebla.',
+      req: [['completed', 1]],
+    },
     secret: {
       title: 'Nota secreta: el nombre borrado',
       text: 'En el respaldo del trono hay un nombre borrado a cincel. Fue su dueño quien lo borró, para que nadie viera cuánto había querido ser recordado. Debajo, con letra pequeña, alguien escribió: «Aquí se sentó el primero que veló».',
@@ -333,26 +418,50 @@ export const PEOPLES_LORE = [
   {
     id: 'kogn',
     name: 'Los Kogn',
+    zone: 2,
     text: 'Navegantes de las mareas antiguas. Leían las estrellas en el agua y las olas en el cielo, y su lengua tenía mil palabras para esperar. Cuando el Faro se apagó dejaron faroles flotando en el mar, y aún hoy alguno encuentra el camino a casa. Vestigio: las velas del puerto, que no se consumen.',
     req: [['maxLevel', 4]],
+    legacy: {
+      title: 'Legado Kogn: el farol flotante',
+      text: 'Sus barcos se volvieron muelles y sus cantos, señales de niebla. Aún hoy, cuando un viajero duda ante un tablero difícil, dicen que una brisa salada le recuerda mirar dos pasos más allá.',
+      req: [['fatePicked', 10]],
+    },
   },
   {
     id: 'sahrim',
     name: 'Los Sahrim',
+    zone: 3,
     text: 'Caravaneros que cuentan pozos como quien cuenta años. Cruzaban el desierto de memoria, y cada pozo era un amigo con nombre propio. Para ellos el agua es promesa y la sed, verdad. Tras la Noche Larga siguieron caminando buscando un oasis que solo existe cuando se comparte. Vestigio: cuentas de arcilla con un pozo grabado.',
     req: [['maxLevel', 7]],
+    legacy: {
+      title: 'Legado Sahrim: el mapa de agua',
+      text: 'Enseñaron a los demás reinos a viajar sin perder la cuenta de los pasos. Sus cuentas de arcilla inspiraron la regla más antigua de Thyes: cada movimiento cuenta, ninguno se desperdicia.',
+      req: [['dailySolved', 5]],
+    },
   },
   {
     id: 'ennari',
     name: 'Los Ennari',
+    zone: 3,
     text: 'Escribas de la corteza. No creían en la muerte, sino en el olvido: un nombre escrito en un árbol vive tanto como el árbol. Vhorn les robó la corteza, pero no la costumbre. Quien llega a su aldea siente un cosquilleo al pronunciar un nombre en voz alta. Vestigio: hojas con letras que cambian al amanecer.',
     req: [['maxLevel', 10]],
+    legacy: {
+      title: 'Legado Ennari: la tinta viva',
+      text: 'De sus archivos nació el primer códice que heredó Juth. Cada página se cierra con la misma advertencia: «Escribe antes de que oscurezca, lee antes de olvidar».',
+      req: [['perfects', 15]],
+    },
   },
   {
     id: 'aluen',
     name: 'Los Aluen',
+    zone: 4,
     text: 'Tejedores de puentes bajo las estrellas. Unían montañas con hilos tan finos que parecían luz. Decían que cada puente era un acuerdo entre dos orillas, y que quien lo cruzaba se volvía parte del tejido. Su campana, enterrada en hielo, aún suena en sueños. Vestigio: un hilo plateado que no se rompe.',
     req: [['maxLevel', 13]],
+    legacy: {
+      title: 'Legado Aluen: el hilo de estrellas',
+      text: 'Sus puentes invisibles todavía unen las torres del norte. Quien supera un desafío sin rendirse escucha, al terminar, el eco lejano de una cuerda tensándose en el cielo.',
+      req: [['challengeBest', 10]],
+    },
   },
 ];
 
@@ -540,7 +649,7 @@ export const BOOKS = [
     emblem: 'seal',
     title: 'La Senda del Silencio',
     pages: [
-      'Quien completa el camino Difícil oye un silencio nuevo, como el que queda cuando alguien deja de gritar. Es la voz de Tri, que tras mil noches en vela suspira por primera vez.',
+      'Quien completa el camino Difícil oye un silencio nuevo, como el que queda cuando alguien deja de gritar. Es la voz de Tri, que tras tantas noches en vela suspira por primera vez.',
       'En el último sello, las piezas se mueven solas un instante, como si alguien más empujara con ellas. No es magia. Es el eco de los viajeros que antes que tú se atrevieron.',
     ],
     quote: 'Después de lo difícil, el silencio también es premio.',
@@ -554,7 +663,7 @@ export const BOOKS = [
     emblem: 'trophy',
     title: 'Epílogo del año 4134',
     pages: [
-      'En el año 4134 Thyes despierta con un amanecer que nadie recuerda haber pedido. Los diez reinos abren sus puertas, y por cada puerta salen mil nombres que habían esperado siglos a ser dichos.',
+      'En el año 4134 Thyes despierta con un amanecer que nadie recuerda haber pedido. Los diez reinos abren sus puertas, y por cada puerta salen mil nombres que habían esperado en silencio a ser dichos.',
       'Los cronistas tardan en creerlo: nadie murió en la Noche Larga. Estaban todos guardados. Fue Tri quien cargó con la memoria de todos para que ninguno se perdiera. Y ahora devuelve lo guardado.',
     ],
     quote: 'Nadie se perdió: solo estaban guardados.',
@@ -573,5 +682,236 @@ export const BOOKS = [
     ],
     quote: 'La última página siempre es de quien la lee.',
     req: [['challenge250Won', 1]],
+  },
+];
+
+/** Escena ilustrada para la cabecera de cada tomo en el lector de libros. */
+export const BOOK_SCENES = {
+  h1: 'backgrounds/cover-dawn.webp',
+  h2: 'backgrounds/zone-7.webp',
+  h3: 'historia/vhorn.webp',
+  h4: 'backgrounds/guardiana-del-alba.webp',
+  h5: 'backgrounds/zone-6.webp',
+  p1: 'historia/kogn.webp',
+  p2: 'historia/sahrim.webp',
+  p3: 'historia/ennari.webp',
+  p4: 'historia/aluen.webp',
+  a1: 'portada/fondos/fortaleza-lunar.webp',
+  a2: 'portada/fondos/santuario-carmesi.webp',
+  a3: 'backgrounds/umbral-del-alba.webp',
+  f1: 'backgrounds/zone-4.webp',
+  f2: 'backgrounds/cover-heroes-victory.webp',
+  f3: 'backgrounds/challenge-dawn.webp',
+};
+
+/** 26 escenas ilustradas del universo (completan los 100 desbloqueables del Lore). */
+export const SCENES = [
+  {
+    id: 's01',
+    title: 'El alba sobre la cascada',
+    place: 'Valle Esmeralda',
+    src: 'portada/fondos/bosque-cascada.webp',
+    text: 'Aquí comienza el viaje de las tres luces: agua viva cayendo entre rocas antiguas mientras el primer sello despierta.',
+    req: [['boardsSolved', 1]],
+  },
+  {
+    id: 's02',
+    title: 'El mirador del valle',
+    place: 'Frontera del Alba',
+    src: 'portada/fondos/mirador.webp',
+    text: 'Desde este balcón de piedra se ven los siete caminos que cruzan Thyes. Cada viajero mira hacia el Faro antes de partir.',
+    req: [['boardsSolved', 5]],
+  },
+  {
+    id: 's03',
+    title: 'La muralla antigua',
+    place: 'Primer Límite',
+    src: 'portada/fondos/muralla.webp',
+    text: 'Levantada antes de la Noche Larga, sus piedras guardan marcas de las tres luces y avisos para quienes viajan de noche.',
+    req: [['maxLevel', 3]],
+  },
+  {
+    id: 's04',
+    title: 'El puente de otoño',
+    place: 'Aldea de Otoño',
+    src: 'portada/fondos/puente-otono.webp',
+    text: 'Las hojas rojas cruzan el río como cartas sin remitente. Los Ennari decían que el agua recuerda lo que el viento se lleva.',
+    req: [['maxLevel', 7]],
+  },
+  {
+    id: 's05',
+    title: 'La ciudad blanca',
+    place: 'Tierras Altas',
+    src: 'portada/fondos/ciudad-blanca.webp',
+    text: 'Torres de cal y piedra clara reflejan el último resplandor del Faro. Sus calles esperan el sonido de pasos conocidos.',
+    req: [['maxLevel', 9]],
+  },
+  {
+    id: 's06',
+    title: 'Ciudad de las linternas',
+    place: 'Puerto de las Velas',
+    src: 'portada/fondos/ciudad-linternas.webp',
+    text: 'Miles de faroles encendidos desafían a la penumbra. Cada llama representa una promesa hecha por los marineros Kogn.',
+    req: [['maxLevel', 4]],
+  },
+  {
+    id: 's07',
+    title: 'La fortaleza lunar',
+    place: 'Cumbre del Norte',
+    src: 'portada/fondos/fortaleza-lunar.webp',
+    text: 'Bajo la luna inmóvil, los observadores medían el paso de las estaciones y leían en el cielo las Cartas del Destino.',
+    req: [['maxLevel', 15]],
+  },
+  {
+    id: 's08',
+    title: 'La ciudad flotante',
+    place: 'Cielo de los Aluen',
+    src: 'portada/fondos/ciudad-flotante.webp',
+    text: 'Sostenida por hilos plateados que brillan solo de madrugada, fue el último refugio de los tejedores de puentes.',
+    req: [['maxLevel', 10]],
+  },
+  {
+    id: 's09',
+    title: 'El castillo rojo',
+    place: 'Borde del Volcán',
+    src: 'portada/fondos/castillo-rojo.webp',
+    text: 'Sus muros guardan el calor de la vieja fragua. Aquí se pusieron a prueba las primeras llaves forjadas contra la sombra.',
+    req: [['maxLevel', 16]],
+  },
+  {
+    id: 's10',
+    title: 'La calle de los cerezos',
+    place: 'Camino de los Cerezos',
+    src: 'portada/fondos/calle-cerezos.webp',
+    text: 'Los pétalos flotan detenidos en el aire desde el año 4133, esperando la brisa del nuevo amanecer para volver a caer.',
+    req: [['boardsSolved', 25]],
+  },
+  {
+    id: 's11',
+    title: 'El pórtico gigante',
+    place: 'Senda del Este',
+    src: 'portada/fondos/torii-gigante.webp',
+    text: 'Quien cruza este arco deja atrás la duda. Los viajeros cuelgan cintas rojas en sus pilares antes de entrar a un tramo difícil.',
+    req: [['boardsSolved', 40]],
+  },
+  {
+    id: 's12',
+    title: 'El puente del dragón',
+    place: 'Paso de Piedra',
+    src: 'portada/fondos/puente-dragon.webp',
+    text: 'Esculpido en la roca viva, une dos reinos separados por la niebla. Solo se revela entero cuando los bloques ceden.',
+    req: [['boardsSolved', 60]],
+  },
+  {
+    id: 's13',
+    title: 'Luna de neón',
+    place: 'Eco del Porvenir',
+    src: 'portada/fondos/neon-luna.webp',
+    text: 'Una visión de un Thyes futuro donde los sellos ya no son de piedra, sino de luz pura vibrando en la noche.',
+    req: [['boardsSolved', 90]],
+  },
+  {
+    id: 's14',
+    title: 'La plaza iluminada',
+    place: 'Horizonte Nuevo',
+    src: 'portada/fondos/plaza-neon.webp',
+    text: 'En el reflejo de los relojes de Jean aparece a veces esta plaza llena de color: prueba de que el tiempo nunca se detuvo del todo.',
+    req: [['boardsSolved', 120]],
+  },
+  {
+    id: 's15',
+    title: 'El coloso de luz',
+    place: 'Vigía del Mañana',
+    src: 'portada/fondos/coloso-neon.webp',
+    text: 'Un guardián silencioso de cristal y energía, eco lejano de los gigantes que protegían el Faro original.',
+    req: [['boardsSolved', 160]],
+  },
+  {
+    id: 's16',
+    title: 'El santuario carmesí',
+    place: 'Altar de los Pactos',
+    src: 'portada/fondos/santuario-carmesi.webp',
+    text: 'Donde se sellan los Pactos más arriesgados. La luz roja no miente: todo poder pide un precio a cambio.',
+    req: [['pactsPicked', 8]],
+  },
+  {
+    id: 's17',
+    title: 'El umbral del alba',
+    place: 'Cámara de Tri',
+    src: 'backgrounds/umbral-del-alba.webp',
+    text: 'El lugar suspendido entre la derrota y la segunda oportunidad, donde la Guardiana ofrece su luz a quien no se rinde.',
+    req: [['dailySolved', 3]],
+  },
+  {
+    id: 's18',
+    title: 'La senda del desafío',
+    place: 'Camino Exacto',
+    src: 'backgrounds/challenge-dawn.webp',
+    text: 'Un horizonte estrecho donde cada turno está contado desde el primer paso. Aquí se templan los maestros del tablero.',
+    req: [['challengeBest', 5]],
+  },
+  {
+    id: 's19',
+    title: 'Amanecer sobre Thyes',
+    place: 'Faro del Amanecer',
+    src: 'backgrounds/cover-dawn.webp',
+    text: 'El instante en que el primer rayo vuelve a cruzar las siete ciudades y el año 4134 comienza por fin.',
+    req: [['completed', 1]],
+  },
+  {
+    id: 's20',
+    title: 'Lía en solitario',
+    place: 'Retrato de la Brasa',
+    src: 'backgrounds/cover-heroes-lia.webp',
+    text: 'Con la llave roja al pecho y una sonrisa terca, Lía avanza incluso cuando la niebla borra el camino.',
+    req: [['heroBoardsLia', 15]],
+  },
+  {
+    id: 's21',
+    title: 'Jean en solitario',
+    place: 'Retrato de la Hora',
+    src: 'backgrounds/cover-heroes-jean.webp',
+    text: 'El reloj de bolsillo marca la grieta exacta en el tiempo. Jean nunca pierde la calma ante un tablero cerrado.',
+    req: [['heroBoardsJean', 15]],
+  },
+  {
+    id: 's22',
+    title: 'Juth en solitario',
+    place: 'Retrato de la Palabra',
+    src: 'backgrounds/cover-heroes-van.webp',
+    text: 'Con el códice abierto y la mirada fija en las runas, Juth lee la salida antes de mover una sola pieza.',
+    req: [['heroBoardsVan', 15]],
+  },
+  {
+    id: 's23',
+    title: 'Alba arcana',
+    place: 'Las Tres Luces',
+    src: 'portada/heroes/alba-arcana.webp',
+    text: 'Brasa, Hora y Palabra reunidas bajo un mismo cielo: la alianza que Tri esperó desde el apagón.',
+    req: [['fatePicked', 15]],
+  },
+  {
+    id: 's24',
+    title: 'En guardia',
+    place: 'Frente a la Sombra',
+    src: 'backgrounds/cover-heroes-battle.webp',
+    text: 'Cuando Vhorn oscurece el tablero, las tres luces forman un círculo y responden juntas sin dar un paso atrás.',
+    req: [['hardDone', 1]],
+  },
+  {
+    id: 's25',
+    title: 'Combate en las sombras',
+    place: 'Corazón del Castillo',
+    src: 'portada/heroes/combate-sombras.webp',
+    text: 'El choque final contra el olvido: no con armas, sino abriendo cada cerradura con precisión perfecta.',
+    req: [['expertDone', 1]],
+  },
+  {
+    id: 's26',
+    title: 'La victoria del amanecer',
+    place: 'Año 4134',
+    src: 'backgrounds/cover-heroes-victory.webp',
+    text: 'Los sellos caen, el Faro vuelve a arder y los tres compañeros contemplan el despertar de Thyes.',
+    req: [['challenge150Won', 1]],
   },
 ];

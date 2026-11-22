@@ -499,6 +499,8 @@ export const EN_UI = {
   /* Transferir partidas */
   'Pasar partida': 'Transfer save',
   'Más opciones': 'More options',
+  Otros: 'Others',
+  Ajustes: 'Settings',
   Más: 'More',
   'Escanea el QR en el otro dispositivo o copia el enlace.': 'Scan the QR code on your other device or copy the link.',
   'Enlace de partida': 'Save link',
@@ -838,11 +840,11 @@ export const EN_UI = {
   'PUNTAJE OBTENIDO': 'FINAL SCORE',
   'Tu combinación': 'Your build',
   '¡El amanecer responde!': 'The dawn answers!',
-  'Cruzaste los siete reinos y el Faro del Amanecer vuelve a encenderse. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
-    'You crossed all seven realms and the Dawn Lighthouse flickers back to life. Yet Vhorn still lingers, forgotten and furious, and Tri still sleeps.',
+  'Cruzaste las siete ciudades y el Faro del Amanecer vuelve a encenderse. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
+    'You crossed all seven cities and the Dawn Lighthouse flickers back to life. Yet Vhorn still lingers, forgotten and furious, and Tri still sleeps.',
   'el margen se estrecha y los puntos crecen.': 'the margin narrows and the points climb.',
-  'Recorriste otra vez los siete reinos, ya con la hora y la palabra de tu lado. El Faro arde casi entero; falta pronunciar el nombre de Vhorn.':
-    'You crossed the seven realms once more, now with the hour and the word at your side. The Lighthouse nearly blazes whole; Vhorn’s name remains unspoken.',
+  'Recorriste otra vez las siete ciudades, ya con la hora y la palabra de tu lado. El Faro arde casi entero; falta pronunciar el nombre de Vhorn.':
+    'You crossed the seven cities once more, now with the hour and the word at your side. The Lighthouse nearly blazes whole; Vhorn’s name remains unspoken.',
   'Gracias por jugar DAWNSLIDE hasta el final.': 'Thank you for playing DAWNSLIDE to the very end.',
   'Superaste los 21 niveles.': 'You cleared all 21 levels.',
   '{reason} en el nivel {n} de 21. Thyes, año {year}.': '{reason} on level {n} of 21. Thyes, year {year}.',
@@ -958,4 +960,58 @@ export const EN_UI = {
   ESTADO: 'STATUS',
   'Completa {p} ({n} niveles) para desbloquear': 'Complete {p} ({n} levels) to unlock',
   'Completa {n} turnos para desbloquear': 'Complete {n} turns to unlock',
+  'Vista previa': 'Preview',
+  entradas: 'entries',
+  Guía: 'Guide',
+  'Cómo jugar': 'How to play',
+  'Héroes y reliquias': 'Heroes & relics',
+  'Progreso y controles': 'Progress & controls',
+  'MANUAL DEL VIAJERO': "TRAVELER'S MANUAL",
+  'Guía de DAWNSLIDE': 'DAWNSLIDE Guide',
+  'Reglas, héroes, cartas del destino, modos y secretos en un solo lugar.':
+    'Rules, heroes, fate cards, modes and secrets in one place.',
+  'El objetivo': 'The goal',
+  'Puntaje, Perfectos y rachas': 'Score, Perfects & streaks',
+  'Mecánicas especiales del tablero': 'Special board mechanics',
+  'Muros de piedra': 'Stone walls',
+  'Bloques pesados': 'Heavy blocks',
+  'Bloques congelados': 'Frozen blocks',
+  'Maleficios y sellos': 'Curses & seals',
+  'Reliquias de Aventura': 'Adventure Relics',
+  'Reliquias de Desafío': 'Challenge Relics',
+  'Empieza con más turnos en cada tablero y cuenta con un rescate automático una vez por partida.':
+    'Starts with extra turns on every board and has an automatic rescue once per run.',
+  'Ideal para aprender los caminos, resistir tableros largos y asegurar victorias consistentes.':
+    'Ideal for learning the paths, enduring long boards and securing consistent wins.',
+  'Su poder Rebobinar deshace varios movimientos seguidos sin perder la partida (1 uso por tablero).':
+    'His Rewind power undoes several moves in a row without losing the run (1 use per board).',
+  'Brilla en tableros con hielo o bloques pesados donde un mal paso puede cerrar la salida.':
+    'Shines on boards with ice or heavy blocks where one wrong move can seal the exit.',
+  'Su poder Ver destino traza los próximos movimientos óptimos sobre el tablero (1 uso por tablero).':
+    'Their See Fate power traces the next optimal moves on the board (1 use per board).',
+  'Perfecto para buscar Perfectos, mantener rachas altas y superar Difícil o Experto.':
+    'Perfect for chasing Perfects, keeping long streaks and clearing Hard or Expert.',
+  'Bendiciones y Pactos': 'Blessings & Pacts',
+  'Renacer con Tri': 'Revive with Tri',
+  'Lore de Thyes (100 entradas)': 'Lore of Thyes (100 entries)',
+  'Controles y atajos': 'Controls & shortcuts',
+  'Consejos rápidos': 'Quick tips',
+  'AJUSTES Y UTILIDADES': 'SETTINGS & UTILITIES',
+  'Audio, respaldo de progreso, enlace móvil e información del juego.':
+    'Audio, progress backup, mobile link and game info.',
+  'Sonido y música': 'Sound & music',
+  'Activa o silencia la banda sonora original y los efectos del tablero en cualquier momento.':
+    'Turn the original soundtrack and board sound effects on or off at any time.',
+  'Exporta o importa tus récords, atuendos, personalización y lore mediante código QR o texto para seguir en otro dispositivo.':
+    'Export or import your records, outfits, customization and lore via QR code or text to continue on another device.',
+  'Abrir transferencia': 'Open transfer',
+  'Muestra un código QR y el enlace directo para abrir DAWNSLIDE en tu teléfono o compartirlo con amigos.':
+    'Shows a QR code and direct link to open DAWNSLIDE on your phone or share it with friends.',
+  'Mostrar QR': 'Show QR',
+  'Instalar aplicación': 'Install app',
+  'Instala DAWNSLIDE en tu pantalla de inicio para abrirlo a pantalla completa y jugar sin conexión.':
+    'Install DAWNSLIDE on your home screen to launch full-screen and play offline.',
+  'Acerca de DAWNSLIDE': 'About DAWNSLIDE',
+  'Puzle de bloques roguelite con tres héroes, siete ciudades y 100 entradas de lore.':
+    'Roguelite sliding-block puzzle with three heroes, seven cities and 100 lore entries.',
 };

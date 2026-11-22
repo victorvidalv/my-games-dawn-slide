@@ -33,7 +33,7 @@ import {
   unlockRewards,
 } from '../game/achievements.js';
 import { HEROES } from '../game/heroes.js';
-import { BOOKS, BOOK_SERIES, CHARACTERS, PEOPLES_LORE, PLACES } from '../data/lore-book.js';
+import { BOOKS, BOOK_SCENES, BOOK_SERIES, CHARACTERS, PEOPLES_LORE, PLACES, SCENES } from '../data/lore-book.js';
 import { INSCRIPTIONS } from '../data/lore.js';
 import { loreOpen, loreProgress, loreTotal, loreUnlockedKeys, sealLinesRevealed } from '../game/lore.js';
 import { FATE_CARDS } from '../game/fate.js';
@@ -59,15 +59,15 @@ const TYPE_NAME = {
   lore: 'Lore',
 };
 /**
- * Pestañas principales, cada una con sus filtros (para poder añadir más sin ocupar espacio), en filas de 3:
- *   Tablero → Borde · Fichas · Llave / Tarjetas · Estelas · Celebración     Atuendos → un filtro por héroe
- *   Portada → Héroes · Música · Fondo / Clima · Tema     Lore → Personajes · Mundo · Biblioteca (la historia de Thyes)
+ * Pestañas principales de Personalizar (Lore vive ahora en su propia sección desde el menú principal):
+ *   Tablero → Borde · Fichas · Llave · Tarjetas · Estelas · Celebración
+ *   Atuendos → Lía · Jean · Juth
+ *   Portada → Héroes · Música · Fondo · Clima · Tema
  */
 const GROUPS = [
   { id: 'board', label: 'Tablero', icon: 'flag', types: ['board', 'pieces', 'key', 'card', 'trail', 'fx'] },
   { id: 'outfit', label: 'Atuendos', icon: 'heart', types: ['outfit'] },
   { id: 'cover', label: 'Portada', icon: 'stars', types: ['cover', 'music', 'bg', 'aura', 'ui'] },
-  { id: 'lore', label: 'Lore', icon: 'book', types: ['lore'] },
 ];
 const groupOf = (type) => GROUPS.find((g) => g.types.includes(type)) || GROUPS[0];
 const TYPE_HINT = {
@@ -198,15 +198,29 @@ function markSeen(type) {
   return 1;
 }
 
-/** Actualiza la badge numérica del botón Personalizar en la pantalla principal. */
+/** Actualiza las insignias numéricas de Personalizar y Lore en la pantalla principal. */
 export function paintAchBadge() {
-  const pending = unseenKeys().length;
+  const keys = unseenKeys();
+  const lorePending = keys.filter((k) => k.startsWith('lore:')).length;
+  const customPending = keys.length - lorePending;
   const badge = $('homeAchBadge');
   if (badge) {
-    badge.hidden = pending === 0;
-    badge.textContent = pending > 99 ? '99+' : String(pending);
+    badge.hidden = customPending === 0;
+    badge.textContent = customPending > 99 ? '99+' : String(customPending);
   }
-  $('tabAch')?.classList.toggle('has-news', pending > 0);
+  $('tabAch')?.classList.toggle('has-news', customPending > 0);
+  const loreBadge = $('homeLoreBadge');
+  if (loreBadge) {
+    loreBadge.hidden = lorePending === 0;
+    loreBadge.textContent = lorePending > 99 ? '99+' : String(lorePending);
+  }
+  $('tabLore')?.classList.toggle('has-news', lorePending > 0);
+  // «Otros» resume con un número discreto lo que hay por estrenar dentro del desplegable
+  const others = $('homeOthersBadge');
+  if (others) {
+    others.hidden = keys.length === 0;
+    others.textContent = keys.length > 99 ? '99+' : String(keys.length);
+  }
 }
 
 /* ---------- aviso «objeto desbloqueado» (de uno en uno) ---------- */
@@ -384,12 +398,6 @@ function renderGrid(type) {
 /* ---------- Atuendos: conjuntos de traje por héroe ---------- */
 function renderOutfits() {
   const h = HEROES.find((x) => x.id === activeHero) || HEROES[0];
-  const picker = HEROES.map((x) => {
-    const list = OUTFITS[x.id] || [];
-    const got = list.filter((o) => outfitUnlocked(store, x.id, o.id)).length;
-    const news = unseenKeys().filter((k) => k.startsWith(`outfit:${x.id}:`)).length;
-    return `<button type="button" class="ach-filter${x.id === h.id ? ' on' : ''}" role="tab" aria-selected="${x.id === h.id}" data-outfit-hero-tab="${x.id}"><span>${x.name}</span><small>${got}/${list.length}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
-  }).join('');
   const worn = outfitOf(store, h.id);
   const cards = (OUTFITS[h.id] || [])
     .map((o) => {
@@ -405,9 +413,7 @@ function renderOutfits() {
           <span class="ach-shop-open">${o.id === DEFAULT_OUTFIT[h.id] ? '<span class="rar-chip default-chip">Por defecto</span>' : `<span class="rar-chip">${rarityOf(o).name}</span>`}<span class="outfit-art"><img src="${art}" alt="" loading="lazy" decoding="async"><button type="button" class="outfit-show" data-outfit-show="${h.id}:${o.id}" aria-label="Mostrar atuendo">${icon('stars')}<span>Mostrar</span></button></span><b class="ach-shop-name">${o.name}</b></span>${foot}</article>`;
     })
     .join('');
-  return `<div class="ach-filters outfit-heroes" role="tablist" aria-label="Héroe">${picker}</div>
-    <p class="look-note">Cada conjunto cambia a tu héroe en la aventura y en la selección de personaje.</p>
-    <div class="ach-shop-grid" style="--accent:${h.color}">${cards}</div>`;
+  return `<div class="ach-shop-grid" style="--accent:${h.color}">${cards}</div>`;
 }
 
 /* ---------- Probador: vista previa en vivo ---------- */
@@ -528,7 +534,7 @@ function startDemo(el, type, id) {
   const btn = el.querySelector('[data-pv-fx]');
   if (btn) btn.onclick = () => item?.burst && fireFx();
   if (type === 'fx' && calm) setTimeout(() => item?.burst && fireFx(), 300);
-  pv.stopDemo = () => cancelAnimationFrame(raf);
+  return () => cancelAnimationFrame(raf);
 }
 
 function paintPreview() {
@@ -592,7 +598,7 @@ export function openPreview(type, id) {
   pv = { type, id, el, opener: { type, id }, playing: false };
   if (['board', 'pieces', 'key', 'ui'].includes(type)) tryOn(type, id);
   paintPreview();
-  if (type === 'trail' || type === 'fx') startDemo(el, type, id);
+  if (type === 'trail' || type === 'fx') pv.stopDemo = startDemo(el, type, id);
   el.addEventListener('click', (e) => {
     if (e.target === el || e.target.closest('[data-pv-close]')) {
       sfx.ui();
@@ -707,40 +713,53 @@ function openShowcase(hero, id, pose = 'adv') {
   el.querySelector('[data-os-close]').focus();
 }
 
-/* ---------- Lore: la historia de Thyes (personajes, mundo y biblioteca) que se abre jugando ---------- */
+/* ---------- Lore: la historia de Thyes (personajes, mundo, biblioteca y escenas) que se abre jugando ---------- */
 const LORE_TABS = [
   ['people', 'Personajes', 'heart'],
   ['world', 'Mundo', 'flag'],
   ['library', 'Biblioteca', 'book'],
+  ['scenes', 'Escenas', 'stars'],
 ];
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV'];
 const loreFresh = () => new Set([...freshNow, ...unseenKeys()]);
 /** Un texto del lore: abierto (con el texto y, si es nuevo, su sello) o cerrado (con lo que falta). */
-function loreEntryHtml({ key, title, text, req, secret = false }, fresh) {
+function loreEntryHtml({ key, title, text, req, secret = false, badge = '' }, fresh) {
   const p = loreProgress(req, store);
   if (!p.done)
     return `<article class="lore-entry locked${secret ? ' secret' : ''}"><h4><i aria-hidden="true">${icon('lock')}</i><span>${title}</span></h4><div class="unlock-foot">${reqsHtml(p)}</div></article>`;
-  return `<article class="lore-entry open${secret ? ' secret' : ''}${fresh.has(key) ? ' fresh' : ''}"><h4><span>${secret ? `<small>Nota secreta</small>` : ''}${title}</span>${fresh.has(key) ? `<em class="lore-new">Nueva entrada</em>` : ''}</h4><p class="lore-text">${text}</p></article>`;
+  return `<article class="lore-entry open${secret ? ' secret' : ''}${fresh.has(key) ? ' fresh' : ''}"><h4><span>${badge ? `<small>${badge}</small>` : secret ? `<small>Nota secreta</small>` : ''}${title}</span>${fresh.has(key) ? `<em class="lore-new">Nueva entrada</em>` : ''}</h4><p class="lore-text">${text}</p></article>`;
 }
 const portraitOf = (c) => (c.hero ? outfitArt(c.hero, outfitOf(store, c.hero), 'sel') : `${c.art}`);
+const figureOf = (c) => (c.hero ? outfitArt(c.hero, outfitOf(store, c.hero), 'adv') : `${c.art}`);
 
 function renderPeople(fresh) {
   const c = CHARACTERS.find((x) => x.id === loreChar) || CHARACTERS[0];
   const got = (x) => x.entries.filter((e) => loreOpen(e.req, store)).length;
   const picker = CHARACTERS.map((x) => {
     const news = unseenKeys().filter((k) => k.startsWith(`lore:char:${x.id}:`)).length;
-    return `<button type="button" class="ach-filter lore-char${x.id === c.id ? ' on' : ''}" role="tab" aria-selected="${x.id === c.id}" data-lore-char="${x.id}"><span>${x.name}</span><small>${got(x)}/${x.entries.length}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
+    return `<button type="button" class="ach-filter lore-char${x.id === c.id ? ' on' : ''}" role="tab" aria-selected="${x.id === c.id}" data-lore-char="${x.id}"><img class="lore-char-av" src="/${portraitOf(x)}" alt="" decoding="async"><span>${x.name}</span><small>${got(x)}/${x.entries.length}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
   }).join('');
   const hero = HEROES.find((h) => h.id === c.hero);
+  const doneCount = got(c);
   const entries = c.entries
-    .map((e) => loreEntryHtml({ key: `lore:char:${c.id}:${e.id}`, title: e.title, text: e.text, req: e.req }, fresh))
+    .map((e, idx) =>
+      loreEntryHtml(
+        { key: `lore:char:${c.id}:${e.id}`, title: e.title, text: e.text, req: e.req, badge: `Capítulo ${ROMAN[idx]}` },
+        fresh,
+      ),
+    )
     .join('');
   return `<div class="ach-filters lore-chars" role="tablist" aria-label="Personajes">${picker}</div>
     <header class="lore-who" style="--accent:${hero?.color || '#d8ab52'}">
-      <span class="lore-portrait"><img src="/${portraitOf(c)}" alt="" decoding="async"></span>
-      <div><h3>${c.name}</h3><p class="lore-epithet">${c.epithet}</p><small>${fmt(got(c))} de ${fmt(c.entries.length)} entradas</small></div>
+      ${c.scene ? `<img class="lore-who-bg" src="/${c.scene}" alt="" decoding="async">` : ''}
+      <span class="lore-portrait${c.hero ? ' is-cutout' : ''}"><img src="/${figureOf(c)}" alt="" decoding="async"></span>
+      <div class="lore-who-copy">
+        <h3>${c.name}</h3>
+        <p class="lore-epithet">${c.epithet}</p>
+        <div class="lore-who-prog"><small>${fmt(doneCount)} de ${fmt(c.entries.length)} entradas</small><u><i style="width:${(doneCount / c.entries.length) * 100}%"></i></u></div>
+      </div>
     </header>
-    <div class="lore-list">${entries}</div>`;
+    <div class="lore-list lore-list-2">${entries}</div>`;
 }
 
 function renderWorld(fresh) {
@@ -753,10 +772,17 @@ function renderWorld(fresh) {
   const cities = PLACES.map((p) => {
     const open = loreOpen(p.main.req, store);
     return `<section class="lore-city${open ? '' : ' locked'}" style="--hue:${p.zone * 47}">
-      <span class="lore-city-img"><img src="/backgrounds/zone-${p.zone}.webp" alt="" loading="lazy" decoding="async">${open ? '' : `<i aria-hidden="true">${icon('lock')}</i>`}</span>
+      <div class="lore-city-hero">
+        <img src="/backgrounds/zone-${p.zone}.webp" alt="" loading="lazy" decoding="async">
+        <div class="lore-city-overlay">
+          <span class="lore-city-seal">Sello de ${p.seal}</span>
+          <h3>${p.name}</h3>
+        </div>
+        ${open ? '' : `<i class="lore-city-lock" aria-hidden="true">${icon('lock')}</i>`}
+      </div>
       <div class="lore-city-body">
-        <div class="lore-city-head"><small>Sello de ${p.seal}</small><h3>${p.name}</h3></div>
         ${loreEntryHtml({ key: `lore:place:${p.id}:main`, title: p.main.title, text: p.main.text, req: p.main.req }, fresh)}
+        ${p.memory ? loreEntryHtml({ key: `lore:place:${p.id}:memory`, title: p.memory.title, text: p.memory.text, req: p.memory.req }, fresh) : ''}
         ${loreEntryHtml({ key: `lore:place:${p.id}:secret`, title: p.secret.title, text: p.secret.text, req: p.secret.req, secret: true }, fresh)}
       </div>
     </section>`;
@@ -765,8 +791,11 @@ function renderWorld(fresh) {
     const open = loreOpen(p.req, store),
       pr = loreProgress(p.req, store);
     return `<article class="lore-people${open ? '' : ' locked'}${fresh.has(`lore:people:${p.id}`) ? ' fresh' : ''}">
-      <span class="lore-portrait"><img src="/historia/${p.id}.webp" alt="" loading="lazy" decoding="async">${open ? '' : `<i aria-hidden="true">${icon('lock')}</i>`}</span>
-      <div><h4>${p.name}${fresh.has(`lore:people:${p.id}`) ? `<em class="lore-new">Nueva entrada</em>` : ''}</h4>${open ? `<p class="lore-text">${p.text}</p>` : `<div class="unlock-foot">${reqsHtml(pr)}</div>`}</div>
+      <div class="lore-people-top">
+        <span class="lore-portrait"><img src="/historia/${p.id}.webp" alt="" loading="lazy" decoding="async">${open ? '' : `<i aria-hidden="true">${icon('lock')}</i>`}</span>
+        <div><h4>${p.name}${fresh.has(`lore:people:${p.id}`) ? `<em class="lore-new">Nueva entrada</em>` : ''}</h4>${open ? `<p class="lore-text">${p.text}</p>` : `<div class="unlock-foot">${reqsHtml(pr)}</div>`}</div>
+      </div>
+      ${p.legacy ? loreEntryHtml({ key: `lore:people:${p.id}:legacy`, title: p.legacy.title, text: p.legacy.text, req: p.legacy.req }, fresh) : ''}
     </article>`;
   }).join('');
   return `<section class="lore-phrase" aria-label="La Frase de los Sellos">
@@ -775,7 +804,7 @@ function renderWorld(fresh) {
       <div class="lore-lines">${phrase}</div>
       <small>Frase de los sellos: ${lines} de ${INSCRIPTIONS.length} líneas</small>
     </section>
-    <h3 class="lore-h">Ciudades</h3>${cities}
+    <h3 class="lore-h">Ciudades</h3><div class="lore-cities">${cities}</div>
     <h3 class="lore-h">Pueblos antiguos</h3><div class="lore-peoples">${peoples}</div>`;
 }
 
@@ -794,19 +823,68 @@ function renderLibrary(fresh) {
   return `<p class="look-note">Quince tomos del universo. Tócalos para leer; los que faltan piden una hazaña.</p>${shelves}`;
 }
 
+function renderScenes(fresh) {
+  const cards = SCENES.map((s) => {
+    const open = loreOpen(s.req, store),
+      p = loreProgress(s.req, store);
+    return `<button type="button" class="lore-scene-card${open ? ' open' : ' locked'}${fresh.has(`lore:scene:${s.id}`) ? ' fresh' : ''}" data-lore-scene="${s.id}" aria-label="${s.title}">
+      <span class="lore-scene-img"><img src="/${s.src}" alt="" loading="lazy" decoding="async">${open ? '' : `<i aria-hidden="true">${icon('lock')}</i>`}${fresh.has(`lore:scene:${s.id}`) ? `<em class="lore-new">Nuevo</em>` : ''}</span>
+      <span class="lore-scene-meta"><small>${s.place}</small><b>${s.title}</b>${open ? '' : `<em class="lore-scene-req">${p.reqs.find((r) => !r.done)?.text || ''}</em>`}</span>
+    </button>`;
+  }).join('');
+  return `<p class="look-note">Escenas y paisajes de Thyes. Tócalas para abrir cada crónica ilustrada.</p><div class="lore-scenes-grid">${cards}</div>`;
+}
+
 function renderLore() {
   const fresh = loreFresh();
-  const count = (prefixes) => unseenKeys().filter((k) => prefixes.some((p) => k.startsWith(p))).length;
+  const countNews = (prefixes) => unseenKeys().filter((k) => prefixes.some((p) => k.startsWith(p))).length;
+  const tabTotals = {
+    people: [
+      CHARACTERS.reduce((n, c) => n + c.entries.filter((e) => loreOpen(e.req, store)).length, 0),
+      CHARACTERS.reduce((n, c) => n + c.entries.length, 0),
+    ],
+    world: [
+      PLACES.reduce(
+        (n, p) =>
+          n +
+          (loreOpen(p.main.req, store) ? 1 : 0) +
+          (p.memory && loreOpen(p.memory.req, store) ? 1 : 0) +
+          (loreOpen(p.secret.req, store) ? 1 : 0),
+        0,
+      ) +
+        PEOPLES_LORE.reduce(
+          (n, p) => n + (loreOpen(p.req, store) ? 1 : 0) + (p.legacy && loreOpen(p.legacy.req, store) ? 1 : 0),
+          0,
+        ),
+      PLACES.reduce((n, p) => n + 2 + (p.memory ? 1 : 0), 0) +
+        PEOPLES_LORE.reduce((n, p) => n + 1 + (p.legacy ? 1 : 0), 0),
+    ],
+    library: [BOOKS.filter((b) => loreOpen(b.req, store)).length, BOOKS.length],
+    scenes: [SCENES.filter((s) => loreOpen(s.req, store)).length, SCENES.length],
+  };
   const tabs = LORE_TABS.map(([id, label, ic]) => {
-    const news = count(
-      id === 'people' ? ['lore:char'] : id === 'world' ? ['lore:place', 'lore:people'] : ['lore:book'],
+    const news = countNews(
+      id === 'people'
+        ? ['lore:char']
+        : id === 'world'
+          ? ['lore:place', 'lore:people']
+          : id === 'library'
+            ? ['lore:book']
+            : ['lore:scene'],
     );
-    return `<button type="button" class="ach-filter${loreTab === id ? ' on' : ''}" role="tab" aria-selected="${loreTab === id}" data-lore-tab="${id}">${icon(ic)}<span>${label}</span>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
+    const [gotT, totT] = tabTotals[id];
+    return `<button type="button" class="ach-filter${loreTab === id ? ' on' : ''}" role="tab" aria-selected="${loreTab === id}" data-lore-tab="${id}">${icon(ic)}<span>${label}</span><small>${gotT}/${totT}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
   }).join('');
   const body =
-    loreTab === 'world' ? renderWorld(fresh) : loreTab === 'library' ? renderLibrary(fresh) : renderPeople(fresh);
-  return `<div class="ach-filters board-filters lore-tabs" data-count="3" role="tablist" aria-label="Lore">${tabs}</div>
-    ${loreTab === 'library' ? '' : `<p class="look-note">Su historia se escribe a medida que juegas.</p>`}<div class="lore-body" data-lore="${loreTab}">${body}</div>`;
+    loreTab === 'world'
+      ? renderWorld(fresh)
+      : loreTab === 'library'
+        ? renderLibrary(fresh)
+        : loreTab === 'scenes'
+          ? renderScenes(fresh)
+          : renderPeople(fresh);
+  return `<div class="ach-filters lore-tabs" role="tablist" aria-label="Lore">${tabs}</div>
+    <div class="lore-body" data-lore="${loreTab}">${body}</div>`;
 }
 
 function bindLore(box) {
@@ -814,19 +892,87 @@ function bindLore(box) {
     b.onclick = () => {
       loreTab = b.dataset.loreTab;
       sfx.ui();
-      renderAchievements();
+      renderLorePanel();
     };
   });
   box.querySelectorAll('[data-lore-char]').forEach((b) => {
     b.onclick = () => {
       loreChar = b.dataset.loreChar;
       sfx.ui();
-      renderAchievements();
+      renderLorePanel();
     };
   });
   box.querySelectorAll('[data-lore-book]').forEach((b) => {
     b.onclick = () => openBook(b.dataset.loreBook);
   });
+  box.querySelectorAll('[data-lore-scene]').forEach((b) => {
+    b.onclick = () => openScene(b.dataset.loreScene);
+  });
+}
+
+/* ---------- Visor de escenas del Lore ---------- */
+let sceneOv = null;
+function closeScene() {
+  if (!sceneOv) return;
+  document.removeEventListener('keydown', sceneOv.onKey);
+  const { el, id } = sceneOv;
+  el.remove();
+  sceneOv = null;
+  document.querySelector(`[data-lore-scene="${id}"]`)?.focus?.();
+}
+function openScene(id) {
+  const idx = SCENES.findIndex((s) => s.id === id);
+  if (idx < 0) return;
+  if (sceneOv) closeScene();
+  const el = document.createElement('div');
+  el.className = 'book-ov scene-ov';
+  el.setAttribute('role', 'dialog');
+  el.setAttribute('aria-modal', 'true');
+  el.innerHTML = `<div class="scene-sheet">
+      <button type="button" class="book-x" data-scene-close aria-label="Cerrar">✕</button>
+      <div class="scene-stage"><img class="scene-art" alt="" decoding="async"></div>
+      <div class="scene-body"></div>
+      <footer><button type="button" data-scene-prev aria-label="Anterior">←</button><span class="scene-counter"></span><button type="button" data-scene-next aria-label="Siguiente">→</button></footer>
+    </div>`;
+  document.body.appendChild(el);
+  sceneOv = { el, index: idx, id };
+  const paint = () => {
+    const s = SCENES[sceneOv.index];
+    sceneOv.id = s.id;
+    const open = loreOpen(s.req, store);
+    const img = el.querySelector('.scene-art');
+    img.src = `/${s.src}`;
+    el.classList.toggle('is-locked', !open);
+    el.querySelector('.scene-body').innerHTML = open
+      ? `<small>${s.place}</small><h3>${s.title}</h3><p class="book-text">${s.text}</p>`
+      : `<small>${s.place}</small><h3>${s.title}</h3><div class="book-locked"><i aria-hidden="true">${icon('lock')}</i><p>Bloqueado</p>${reqsHtml(loreProgress(s.req, store))}</div>`;
+    el.querySelector('.scene-counter').textContent = `${sceneOv.index + 1} / ${SCENES.length}`;
+    el.querySelector('[data-scene-prev]').disabled = sceneOv.index === 0;
+    el.querySelector('[data-scene-next]').disabled = sceneOv.index === SCENES.length - 1;
+  };
+  const go = (d) => {
+    const n = sceneOv.index + d;
+    if (n < 0 || n >= SCENES.length) return;
+    sceneOv.index = n;
+    sfx.ui();
+    paint();
+  };
+  el.addEventListener('click', (e) => {
+    if (e.target === el || e.target.closest('[data-scene-close]')) {
+      sfx.ui();
+      closeScene();
+    } else if (e.target.closest('[data-scene-prev]')) go(-1);
+    else if (e.target.closest('[data-scene-next]')) go(1);
+  });
+  sceneOv.onKey = (e) => {
+    if (e.key === 'Escape') closeScene();
+    else if (e.key === 'ArrowLeft') go(-1);
+    else if (e.key === 'ArrowRight') go(1);
+  };
+  document.addEventListener('keydown', sceneOv.onKey);
+  paint();
+  sfx.ui();
+  el.querySelector('[data-scene-close]').focus();
 }
 
 /* ---------- Lector de libros: tapa de colores, páginas breves con capitular y cita final ---------- */
@@ -837,7 +983,7 @@ function closeBook() {
   const { el, id } = reader;
   el.remove();
   reader = null;
-  renderAchievements();
+  renderLorePanel();
   document.querySelector(`[data-lore-book="${id}"]`)?.focus?.();
 }
 function paintBook() {
@@ -862,9 +1008,10 @@ function openBook(id) {
   el.setAttribute('aria-labelledby', 'bookTitle');
   el.style.setProperty('--hue', b.hue);
   const series = BOOK_SERIES.find((s) => s.id === b.series)?.label || '';
+  const scene = BOOK_SCENES[b.id];
   el.innerHTML = `<div class="book-sheet">
       <button type="button" class="book-x" data-book-close aria-label="Cerrar libro">✕</button>
-      <header><small><span>Tomo ${b.no}</span> · <span>${series}</span></small><span class="lore-emblem">${icon(b.emblem)}</span><h3 id="bookTitle">${b.title}</h3></header>
+      <header class="${scene ? 'has-scene' : ''}">${scene ? `<img class="book-scene" src="/${scene}" alt="" decoding="async">` : ''}<small><span>Tomo ${b.no}</span> · <span>${series}</span></small><span class="lore-emblem">${icon(b.emblem)}</span><h3 id="bookTitle">${b.title}</h3></header>
       <div class="book-body"></div>
       <footer><button type="button" data-book-prev aria-label="Página anterior">←</button><span class="book-page"></span><button type="button" data-book-next aria-label="Página siguiente">→</button></footer>
     </div>`;
@@ -904,10 +1051,50 @@ function openBook(id) {
   el.querySelector('[data-book-close]').focus();
 }
 
+/** Cierra cualquier visor abierto al salir de Personalizar. */
+export function closeCustomView() {
+  closePreview();
+  closeShowcase();
+}
+
+export function renderLorePanel() {
+  const box = $('panelLore');
+  if (!box) return;
+  const view = `lore|${loreTab}|${loreChar}`;
+  if (view !== freshView) {
+    freshView = view;
+    freshNow = new Set();
+  }
+  const loreGot = loreUnlockedKeys(store).length;
+  const total = loreTotal();
+  box.innerHTML = `<header class="lore-banner">
+      <img class="lore-banner-bg" src="/backgrounds/umbral-del-alba.webp" alt="" decoding="async">
+      <div class="lore-banner-copy">
+        <small>THYES · AÑO 4133</small>
+        <h2>Crónica de Thyes</h2>
+        <div class="ach-total lore-banner-prog">
+          <p><b>${loreGot}</b> / ${total} <span>entradas</span></p>
+          <u role="img" aria-label="${loreGot}/${total}"><i style="width:${(loreGot / total) * 100}%"></i></u>
+        </div>
+      </div>
+    </header>
+    ${renderLore()}`;
+  bindLore(box);
+  const marked =
+    loreTab === 'people'
+      ? markSeen('lore:char')
+      : loreTab === 'world'
+        ? markSeen('lore:place') | markSeen('lore:people')
+        : loreTab === 'scenes'
+          ? markSeen('lore:scene')
+          : markSeen('lore:book');
+  if (marked) renderLorePanel();
+}
+
 export function renderAchievements() {
   const box = $('panelAch');
   if (!box) return;
-  const view = `${activeType}|${activeHero}|${loreTab}|${loreChar}`;
+  const view = `${activeType}|${activeHero}`;
   if (view !== freshView) {
     freshView = view;
     freshNow = new Set();
@@ -915,19 +1102,12 @@ export function renderAchievements() {
   const all = CUSTOM_TYPES.filter((t) => t !== 'outfit').flatMap((t) => REWARDS[t].map((r) => [t, r]));
   const outfitAll = Object.entries(OUTFITS).flatMap(([h, l]) => l.map((o) => [h, o]));
   const outfitGot = outfitAll.filter(([h, o]) => outfitUnlocked(store, h, o.id)).length;
-  const loreGot = loreUnlockedKeys(store).length;
-  const got = all.filter(([t, r]) => rewardUnlocked(t, r.id, store)).length + outfitGot + loreGot;
-  const grand = all.length + outfitAll.length + loreTotal();
+  const got = all.filter(([t, r]) => rewardUnlocked(t, r.id, store)).length + outfitGot;
+  const grand = all.length + outfitAll.length;
   const group = groupOf(activeType);
   const countOf = (types) =>
     types.reduce(
-      (n, t) =>
-        n +
-        (t === 'outfit'
-          ? outfitGot
-          : t === 'lore'
-            ? loreGot
-            : REWARDS[t].filter((r) => rewardUnlocked(t, r.id, store)).length),
+      (n, t) => n + (t === 'outfit' ? outfitGot : REWARDS[t].filter((r) => rewardUnlocked(t, r.id, store)).length),
       0,
     );
   const newsOf = (types) => types.reduce((n, t) => n + unseenKeys().filter((k) => k.startsWith(`${t}:`)).length, 0);
@@ -935,26 +1115,37 @@ export function renderAchievements() {
     const news = newsOf(g.types);
     return `<button type="button" class="ach-tab${g.id === group.id ? ' on' : ''}" role="tab" aria-selected="${g.id === group.id}" data-custom-group="${g.id}">${icon(g.icon)}<span>${g.label}</span>${news ? `<em class="ach-tab-badge dot" role="img" aria-label="${news} novedades"></em>` : ''}</button>`;
   }).join('');
-  // Atuendos filtra por héroe (dentro de su vista); las otras pestañas tienen una fila de filtros arriba
-  const filters =
-    group.types.length > 1
-      ? `<div class="ach-filters board-filters" data-count="${group.types.length}" role="tablist" aria-label="${group.label}">${group.types
+
+  // Una sola fila deslizable de chips (subcategorías o héroes en Atuendos)
+  const chips =
+    activeType === 'outfit'
+      ? HEROES.map((x) => {
+          const list = OUTFITS[x.id] || [];
+          const gotH = list.filter((o) => outfitUnlocked(store, x.id, o.id)).length;
+          const news = unseenKeys().filter((k) => k.startsWith(`outfit:${x.id}:`)).length;
+          return `<button type="button" class="ach-filter${x.id === activeHero ? ' on' : ''}" role="tab" aria-selected="${x.id === activeHero}" data-outfit-hero-tab="${x.id}"><span>${x.name}</span><small>${gotH}/${list.length}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
+        }).join('')
+      : group.types
           .map((type) => {
             const news = unseenIn(type);
             return `<button type="button" class="ach-filter${activeType === type ? ' on' : ''}" role="tab" aria-selected="${activeType === type}" data-custom-type="${type}"><span>${TYPE_NAME[type]}</span><small>${countOf([type])}/${REWARDS[type].length}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
           })
-          .join('')}</div>`
-      : '';
+          .join('');
 
-  box.innerHTML = `<div class="ach-top-summary">
-      <div class="ach-total">
+  box.innerHTML = `<div class="custom-header">
+      <div class="ach-tabs ach-tabs-3" role="tablist" aria-label="Personalizar">${tabs}</div>
+      <div class="ach-total custom-total">
         <p><b>${got}</b> / ${grand} <span>desbloqueados</span></p>
         <u role="img" aria-label="${got}/${grand}"><i style="width:${(got / grand) * 100}%"></i></u>
       </div>
     </div>
-    <div class="ach-tabs ach-tabs-4" role="tablist" aria-label="Personalizar">${tabs}</div>
-    ${filters}
-    ${activeType === 'outfit' ? renderOutfits() : activeType === 'lore' ? renderLore() : `<p class="look-note" id="lookNote" role="status">${feedback || 'Todo se desbloquea jugando. Toca un objeto para probarlo.'}</p>${renderGrid(activeType)}`}`;
+    <div class="custom-subbar">
+      <div class="ach-filters custom-chips" role="tablist" aria-label="${group.label}">${chips}</div>
+    </div>
+    <section class="custom-catalog">
+      <p class="look-note" id="lookNote" role="status">${feedback || (activeType === 'outfit' ? 'Cada conjunto cambia a tu héroe en la aventura y en la selección de personaje.' : 'Todo se desbloquea jugando. Toca un objeto para probarlo.')}</p>
+      ${activeType === 'outfit' ? renderOutfits() : renderGrid(activeType)}
+    </section>`;
 
   box.querySelectorAll('[data-custom-group]').forEach((btn) => {
     btn.onclick = () => {
@@ -974,7 +1165,6 @@ export function renderAchievements() {
       renderAchievements();
     };
   });
-  bindLore(box);
   box.querySelectorAll('[data-open-id]').forEach((btn) => {
     btn.onclick = () => openPreview(btn.dataset.openType, btn.dataset.openId);
   });
@@ -983,7 +1173,6 @@ export function renderAchievements() {
       activeHero = btn.dataset.outfitHeroTab;
       sfx.ui();
       renderAchievements();
-      markSeen(`outfit:${activeHero}`);
     };
   });
   box.querySelectorAll('[data-outfit-show]').forEach((btn) => {

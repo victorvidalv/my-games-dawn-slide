@@ -1,30 +1,27 @@
 // @vitest-environment happy-dom
 import { expect, it } from 'vitest';
 import { bootApp } from './app.js';
-import { BOOKS } from '../../src/data/lore-book.js';
+import { BOOKS, SCENES } from '../../src/data/lore-book.js';
+import { loreTotal } from '../../src/game/lore.js';
 
-it('Lore: pestaña principal de Personalizar con personajes, mundo y biblioteca que se abren con el progreso', async () => {
+it('Lore: sección propia con 100 desbloqueables (personajes, mundo, biblioteca y escenas)', async () => {
+  expect(loreTotal()).toBe(100);
   const app = await bootApp({
     save: {
       paths: { c1: { level: 13, score: 900 } },
       stats: { boardsSolved: 40, heroBoards_lia: 30, completed: 1, heroWins: 1 },
     },
   });
-  app.$('tabAch').click();
-  const panel = () => app.$('panelAch');
-  expect([...panel().querySelectorAll('[data-custom-group]')].map((b) => b.dataset.customGroup)).toEqual([
-    'board',
-    'outfit',
-    'cover',
-    'lore',
-  ]);
+  app.$('tabLore').click();
+  const panel = () => app.$('panelLore');
+  expect(panel().hidden).toBe(false);
 
   // Personajes: Lía con su historia abierta hasta donde ha jugado, y lo demás cerrado con su requisito
-  panel().querySelector('[data-custom-group="lore"]').click();
   expect([...panel().querySelectorAll('[data-lore-tab]')].map((b) => b.dataset.loreTab)).toEqual([
     'people',
     'world',
     'library',
+    'scenes',
   ]);
   expect([...panel().querySelectorAll('[data-lore-char]')].map((b) => b.dataset.loreChar)).toEqual([
     'lia',
@@ -64,4 +61,15 @@ it('Lore: pestaña principal de Personalizar con personajes, mundo y biblioteca 
   expect(locked.querySelector('.unlock-reqs li')).toBeTruthy();
   expect(locked.querySelector('[data-book-next]').disabled).toBe(true);
   locked.querySelector('[data-book-close]').click();
+
+  // Escenas: 26 escenas ilustradas con visor panorámico
+  panel().querySelector('[data-lore-tab="scenes"]').click();
+  expect(panel().querySelectorAll('.lore-scene-card')).toHaveLength(26);
+  expect(SCENES).toHaveLength(26);
+  panel().querySelector('[data-lore-scene="s01"]').click();
+  const sv = document.querySelector('.scene-ov');
+  expect(sv.querySelector('.scene-art').getAttribute('src')).toContain('bosque-cascada.webp');
+  expect(sv.querySelector('.book-text').textContent).toContain('tres luces');
+  sv.querySelector('[data-scene-close]').click();
+  expect(document.querySelector('.scene-ov')).toBeNull();
 });

@@ -565,7 +565,7 @@
 #menu .tool-btn.snd-btn[data-state='off'] {
   background: var(--hatch), linear-gradient(175deg, #5a3a4f, #40283d);
 }
-#menu :is(#bTransfer, #homeGuide) svg {
+#menu #bTransfer svg {
   width: 25px;
   height: 25px;
   fill: none;

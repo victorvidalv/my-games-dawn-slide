@@ -50,6 +50,7 @@ import './styles/49-cover-aura.css';
 import './styles/50-ui-themes.css';
 import './styles/51-trail-fx-swatches.css';
 import './styles/52-lore.css';
+import './styles/53-custom-fullscreen.css';
 import './styles/35-lite.css'; // modo ligero automático (src/ui/perf.js): siempre la última
 import './ui/transitions.js';
 import './ui/achievements.js';

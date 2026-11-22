@@ -47,8 +47,8 @@ export const ZH_LORE = {
   'Tri fue la última guardiana del Faro del Amanecer. Cuando la sombra de Vhorn lo apagó, no huyó ni peleó: cerró. Diez puertas, diez sellos, diez reinos a salvo del olvido. Los libros la llaman carcelera. Las inscripciones, madre.':
     'Tri是黎明灯塔最后的守护者。 Vhorn 的阴影熄灭灯塔时，她既没有逃走，也没有迎战，而是关上了门。十道门，十枚封印，十个王国从此免于遗忘。书里称她为狱卒，铭文却称她为母亲。',
   'El precio del sello': '封印的代价',
-  'Sellar un reino cuesta recordarlo todo, para siempre. Tri carga con diez ciudades dentro de la memoria y no se permite dormir, por miedo a que una se apague. Su desvelo es lo único que mantiene vivas las luces bajo los sellos.':
-    '封印一个王国的代价，是永远记住它的一切。 Tri 把十座城都装在记忆里，不敢入睡，唯恐有一座熄灭。她的不眠，是封印之下灯火不灭的唯一缘由。',
+  'Sellar un reino cuesta recordarlo todo, para siempre. Tri carga con diez reinos dentro de la memoria y no se permite dormir, por miedo a que una se apague. Su desvelo es lo único que mantiene vivas las luces bajo los sellos.':
+    '封印一个王国的代价，是永远记住它的一切。 Tri 把十个王国都装在记忆里，不敢入睡，唯恐有一座熄灭。她的不眠，是封印之下灯火不灭的唯一缘由。',
   'Los ojos cerrados': '紧闭的双眼',
   'Los cerró para no ver cómo el mundo se olvidaba de sí. Pero un guardián con los ojos cerrados escucha mejor. Oyó pasos de tres luces cruzando los reinos y, bajo su sueño fingido, empezó a sonreír.':
     '她闭上双眼，是不忍看世界遗忘自己。可闭着眼的守护者听得更清楚。她听见三道光芒的脚步穿过各个王国，在假寐之下，她开始微笑。',
@@ -191,14 +191,14 @@ export const ZH_LORE = {
     '携带遗物的人，背负的是别人的故事。所以遗物是被选择的，而不是被发现的。也因此，据说当有人怀着敬意使用它们时，棋盘会微微改变。',
   'Lo que se recuerda, ayuda.': '被记住的，就是帮助。',
   'La Senda del Silencio': '寂静之路',
-  'Quien completa el camino Difícil oye un silencio nuevo, como el que queda cuando alguien deja de gritar. Es la voz de Tri, que tras mil noches en vela suspira por primera vez.':
-    '走完困难之路的人会听见一种新的寂静，如同有人停止呐喊之后留下的静。那是特里的声音，历经千夜不眠，她第一次叹了口气。',
+  'Quien completa el camino Difícil oye un silencio nuevo, como el que queda cuando alguien deja de gritar. Es la voz de Tri, que tras tantas noches en vela suspira por primera vez.':
+    '走完困难之路的人会听见一种新的寂静，如同有人停止呐喊之后留下的静。那是特里的声音，历经无数不眠之夜，她第一次叹了口气。',
   'En el último sello, las piezas se mueven solas un instante, como si alguien más empujara con ellas. No es magia. Es el eco de los viajeros que antes que tú se atrevieron.':
     '在最后一枚封印前，方块会自行移动一瞬，仿佛有人与你一同推动。那不是魔法，而是在你之前勇敢前行的旅人们的回声。',
   'Después de lo difícil, el silencio también es premio.': '走过艰难之后，寂静也是奖赏。',
   'Epílogo del año 4134': '4134 年尾声',
-  'En el año 4134 Thyes despierta con un amanecer que nadie recuerda haber pedido. Los diez reinos abren sus puertas, y por cada puerta salen mil nombres que habían esperado siglos a ser dichos.':
-    '4134 年，提耶斯在一个无人记得自己祈求过的黎明中醒来。十个王国敞开大门，每扇门里走出上千个等待了数百年才被呼唤的名字。',
+  'En el año 4134 Thyes despierta con un amanecer que nadie recuerda haber pedido. Los diez reinos abren sus puertas, y por cada puerta salen mil nombres que habían esperado en silencio a ser dichos.':
+    '4134 年，提耶斯在一个无人记得自己祈求过的黎明中醒来。十个王国敞开大门，每扇门里走出上千个在沉默中等待被呼唤的名字。',
   'Los cronistas tardan en creerlo: nadie murió en la Noche Larga. Estaban todos guardados. Fue Tri quien cargó con la memoria de todos para que ninguno se perdiera. Y ahora devuelve lo guardado.':
     '编年史家们很难相信：漫长之夜里没有一个人死去。他们都被妥善收藏。是特里背负起所有人的记忆，才没有人迷失。而现在，她归还了所守护的一切。',
   'Nadie se perdió: solo estaban guardados.': '无人迷失，他们只是被守护着。',
@@ -240,4 +240,163 @@ export const ZH_LORE = {
   'Quince tomos del universo. Tócalos para leer; los que faltan piden una hazaña.':
     '宇宙的十五卷典籍。点按即可阅读；尚缺的几卷需要一番功绩。',
   'Resuelve tu primer tablero con Lía': '用 Lía 解开你的第一个棋盘',
+  Escenas: '场景',
+  'Crónica de Thyes': 'Thyes 编年史',
+  'THYES · AÑO 4133': 'THYES · 4133 年',
+  'Capítulo {n}': '第 {n} 章',
+  'Escenas y paisajes de Thyes. Tócalas para abrir cada crónica ilustrada.':
+    'Thyes 的场景与风光。点按即可翻开每一段插画纪事。',
+  Anterior: '上一张',
+  Siguiente: '下一张',
+  'Los tres en el umbral': '门槛上的三人',
+  'Fue Lía quien insistió en viajar junto a Jean y Juth. El vigía desconfiaba del azar y el escriba prefería el silencio, pero ella repartió pan caliente al borde del camino. Desde esa noche, ninguna puerta cerrada los encontró solos.':
+    '正是 Lía 坚持与 Jean 和 Juth 同行。守望者不信运气，抄写员偏爱沉默，可她在路边分了热面包。从那一夜起，再没有紧闭的门让他们孤身面对。',
+  'El taller del silencio': '寂静工坊',
+  'En la Ciudad del Reloj, Jean guarda una mesa llena de resortes rotos que nadie pudo reparar. Cada pieza lleva la fecha de un día en que alguien llegó tarde. Cuando gira su llave de cuerda, el taller entero vuelve a latir por un segundo.':
+    '在时钟之城，Jean 保存着一桌无人能修好的断簧。每枚零件都刻着某人迟到的日期。每当他拧动上链钥匙，整座工坊都会再次跳动一秒。',
+  'El juramento de la tinta': '墨水之誓',
+  'Antes de cruzar la primera frontera, Juth mezcló ceniza de la Aldea de Otoño en su tintero. Prometió que ninguna historia volvería a quedar sin lector. Donde otros ven un muro de bloques, él lee una frase interrumpida.':
+    '跨过第一道边界前，Juth 把秋之村的灰烬融进墨水瓶。他立誓不再让任何故事失去读者。别人看见的是石块高墙，他读出的是一句被打断的话。',
+  'La vigilia de piedra': '石之守夜',
+  'Durante toda la Noche Larga nadie supo si la Guardiana seguía viva tras el umbral dorado. Solo quienes caían sin turnos y aceptaban su mano sentían el calor de su luz. Tri no juzga al que tropieza: le ofrece otra oportunidad.':
+    '整个长夜里无人知晓守望者是否仍在金色门槛后活着。只有耗尽步数并握住她双手的人，才感受到她光芒的温度。Tri 从不责备跌倒者，只再给一次机会。',
+  'El primer rayo': '第一缕光',
+  'Al abrirse el año 4134, Tri entrega las llaves de los diez reinos a sus pueblos y baja por fin las escaleras del Faro. Por primera vez desde el apagón, alguien distinto vigila el horizonte mientras ella descansa.':
+    '4134 年破晓之际，Tri 将十国之钥交还给各地人民，终于走下灯塔台阶。自熄灯以来头一次，换作他人守望地平线，而她得以安歇。',
+  'La voz en las murallas': '墙间低语',
+  'En cada tablero sellado se escucha su murmullo entre los bloques inmóviles. No amenaza con fuego ni acero: ofrece calma, sueño y renuncia. Cada jugador que vuelve a intentarlo le quita un poco de fuerza.':
+    '在每一局被封印的棋盘里，静止石块之间都回荡着他的低语。他不用火与剑威逼，只许诺安宁、沉睡与放弃。每次重新尝试都会削弱他一分力量。',
+  'El eco del nombre': '名字的回声',
+  'Incluso en el amanecer del año 4134, una esquina del Faro conserva una lámpara encendida en su honor. Nadie vuelve a temer la oscuridad cuando recuerda el nombre de quien cuidó la primera llama.':
+    '即便在 4134 年的黎明，灯塔一角仍为他点着一盏灯。只要记得最初守护火光之人的名字，就再也没有人害怕黑夜。',
+  'Vestigio: el farol de musgo': '遗迹：青苔提灯',
+  'En el cruce del valle cuelga un farol cubierto de musgo verde. Nunca se apaga del todo, y los niños del lugar dejan hojas secas a sus pies para agradecer que el camino siga abierto.':
+    '山谷岔路口挂着一盏覆满青苔的提灯。它从未彻底熄灭，当地孩子总在灯下放上落叶，感谢道路依然敞开。',
+  'Vestigio: la carta de mareas': '遗迹：潮汐海图',
+  'Sobre una mesa de sal descansan mapas dibujados con tinta azul. Las corrientes llevan nombres de viejos capitanes que prometieron volver cuando el Faro volviera a girar.':
+    '沾满海盐的桌上铺着蓝墨绘制的海图。每道洋流都写着老船长的名字，他们曾许诺灯塔再转之日便归航。',
+  'Vestigio: la hoja de bronce': '遗迹：青铜之叶',
+  'Atada a la rama más alta cuelga una hoja de bronce que suena con la brisa. Los escribas la golpeaban al caer la tarde para que ningún nombre quedara dormido bajo la escarcha.':
+    '最高枝头系着一片随风轻响的青铜叶。抄写员每逢黄昏便轻敲它，好让任何名字都不致在霜下沉睡。',
+  'Vestigio: la campana dormida': '遗迹：沉睡之钟',
+  'Cuando el viento sopla desde el norte, el hielo vibra con un tañido grave. Quienes pasan la noche en el refugio juran que la campana cuenta los pasos de cada viajero.':
+    '北风吹过时，冰层深处便传来低沉钟鸣。在避难所过夜的人都发誓，那口钟正数着每位旅人的脚步。',
+  'Vestigio: el péndulo quieto': '遗迹：静止之摆',
+  'En la plaza central, el gran péndulo cuelga inclinado hacia el este. Ningún habitante lo ha tocado desde el apagón: esperan que la primera campanada del amanecer lo empuje de nuevo.':
+    '中央广场上，巨型钟摆朝东方斜悬不动。自灯塔熄灭以来无人触碰它，人们都在等待黎明第一声钟响再次推动它。',
+  'Vestigio: las tenazas rojas': '遗迹：赤红火钳',
+  'Junto al crisol apagado siguen unas tenazas tibias al tacto. Con ellas se templó la primera llave roja que recorrió las siete ciudades sin doblarse jamás.':
+    '熄灭的坩埚旁放着一把触手仍温的火钳。正是它淬炼出第一把走遍七座城市却从未弯折的红钥匙。',
+  'Vestigio: el espejo del Faro': '遗迹：灯塔铜镜',
+  'En la torre más alta descansa un espejo de latón pulido. No refleja rostros, sino la luz de las siete ciudades que siguen esperando al otro lado de la niebla.':
+    '最高塔楼里安放着一面擦亮的黄铜镜。它不映人影，只映出迷雾彼端仍在等待的七座城池之光。',
+  'Legado Kogn: el farol flotante': 'Kogn 遗产：漂浮提灯',
+  'Sus barcos se volvieron muelles y sus cantos, señales de niebla. Aún hoy, cuando un viajero duda ante un tablero difícil, dicen que una brisa salada le recuerda mirar dos pasos más allá.':
+    '他们的船成了码头，歌声成了雾号。至今当旅人在难局前犹豫时，据说海风仍会提醒他多看两步。',
+  'Legado Sahrim: el mapa de agua': 'Sahrim 遗产：水源地图',
+  'Enseñaron a los demás reinos a viajar sin perder la cuenta de los pasos. Sus cuentas de arcilla inspiraron la regla más antigua de Thyes: cada movimiento cuenta, ninguno se desperdicia.':
+    '他们教会各国如何在远行中牢记步数。他们的陶珠启发了 Thyes 最古老的法则：每一步都算数，没有一步白费。',
+  'Legado Ennari: la tinta viva': 'Ennari 遗产：活墨',
+  'De sus archivos nació el primer códice que heredó Juth. Cada página se cierra con la misma advertencia: «Escribe antes de que oscurezca, lee antes de olvidar».':
+    'Juth 继承的第一部典籍正出自他们的档案室。每页末尾都写着同样的忠告：“天黑前写下，遗忘前重读。”',
+  'Legado Aluen: el hilo de estrellas': 'Aluen 遗产：星辰之丝',
+  'Sus puentes invisibles todavía unen las torres del norte. Quien supera un desafío sin rendirse escucha, al terminar, el eco lejano de una cuerda tensándose en el cielo.':
+    '他们看不见的桥仍连着北方高塔。不言放弃通关挑战的人，在终点都会听见天际丝弦绷紧的远响。',
+  'El alba sobre la cascada': '瀑布上的黎明',
+  'Aquí comienza el viaje de las tres luces: agua viva cayendo entre rocas antiguas mientras el primer sello despierta.':
+    '三道光芒的旅程由此启程：活水自古岩飞落，第一道封印随之苏醒。',
+  'El mirador del valle': '山谷观景台',
+  'Frontera del Alba': '黎明边界',
+  'Desde este balcón de piedra se ven los siete caminos que cruzan Thyes. Cada viajero mira hacia el Faro antes de partir.':
+    '从这座石台可望见贯穿 Thyes 的七条道路。每位旅人启程前都会远望灯塔。',
+  'La muralla antigua': '古老城墙',
+  'Primer Límite': '第一道界碑',
+  'Levantada antes de la Noche Larga, sus piedras guardan marcas de las tres luces y avisos para quienes viajan de noche.':
+    '筑于长夜降临之前，墙石刻着三道光芒的印记与给夜行者的警示。',
+  'El puente de otoño': '秋日之桥',
+  'Las hojas rojas cruzan el río como cartas sin remitente. Los Ennari decían que el agua recuerda lo que el viento se lleva.':
+    '红叶如无署名的信笺飘过河面。Ennari 人说，水流会记住风带走的一切。',
+  'La ciudad blanca': '白色之城',
+  'Tierras Altas': '高地',
+  'Torres de cal y piedra clara reflejan el último resplandor del Faro. Sus calles esperan el sonido de pasos conocidos.':
+    '白灰与浅石高塔映出灯塔最后的余晖。街道静候熟悉脚步声归来。',
+  'Ciudad de las linternas': '灯笼之城',
+  'Miles de faroles encendidos desafían a la penumbra. Cada llama representa una promesa hecha por los marineros Kogn.':
+    '千盏灯火直面暮色。每一缕火苗都代表 Kogn 水手立下的誓言。',
+  'La fortaleza lunar': '月光要塞',
+  'Cumbre del Norte': '北方之巅',
+  'Bajo la luna inmóvil, los observadores medían el paso de las estaciones y leían en el cielo las Cartas del Destino.':
+    '静止的月轮下，观星者丈量四季更迭，并在夜空中解读命运之牌。',
+  'La ciudad flotante': '浮空之城',
+  'Cielo de los Aluen': 'Aluen 之空',
+  'Sostenida por hilos plateados que brillan solo de madrugada, fue el último refugio de los tejedores de puentes.':
+    '由仅在拂晓闪耀的银丝托举，曾是织桥者最后的避风港。',
+  'El castillo rojo': '红堡',
+  'Borde del Volcán': '火山边缘',
+  'Sus muros guardan el calor de la vieja fragua. Aquí se pusieron a prueba las primeras llaves forjadas contra la sombra.':
+    '城墙保留着古锻炉的余温。首批对抗阴影的钥匙正是在此试锋。',
+  'La calle de los cerezos': '樱花长街',
+  'Camino de los Cerezos': '樱花之路',
+  'Los pétalos flotan detenidos en el aire desde el año 4133, esperando la brisa del nuevo amanecer para volver a caer.':
+    '自 4133 年起花瓣便悬停半空，等待新黎明的微风再次拂落。',
+  'El pórtico gigante': '巨型鸟居',
+  'Senda del Este': '东方之路',
+  'Quien cruza este arco deja atrás la duda. Los viajeros cuelgan cintas rojas en sus pilares antes de entrar a un tramo difícil.':
+    '跨过此门便将迟疑抛在身后。旅人踏入险途前总在门柱系上红带。',
+  'El puente del dragón': '龙之桥',
+  'Paso de Piedra': '石之关隘',
+  'Esculpido en la roca viva, une dos reinos separados por la niebla. Solo se revela entero cuando los bloques ceden.':
+    '凿于活岩之上，连接被迷雾隔开的两个王国。唯有石块退让时才现全貌。',
+  'Luna de neón': '霓虹之月',
+  'Eco del Porvenir': '未来回响',
+  'Una visión de un Thyes futuro donde los sellos ya no son de piedra, sino de luz pura vibrando en la noche.':
+    '关于未来 Thyes 的幻象：封印不再是石块，而是夜色中震颤的纯粹光束。',
+  'La plaza iluminada': '光辉广场',
+  'Horizonte Nuevo': '新地平线',
+  'En el reflejo de los relojes de Jean aparece a veces esta plaza llena de color: prueba de que el tiempo nunca se detuvo del todo.':
+    'Jean 的怀表反光中偶现这座绚丽广场，证明时间从未真正停驻。',
+  'El coloso de luz': '光之巨像',
+  'Vigía del Mañana': '明日守望者',
+  'Un guardián silencioso de cristal y energía, eco lejano de los gigantes que protegían el Faro original.':
+    '由水晶与能量构成的沉默守卫，是昔日守护灯塔之巨人的远古回声。',
+  'El santuario carmesí': '绯红圣殿',
+  'Altar de los Pactos': '契约祭坛',
+  'Donde se sellan los Pactos más arriesgados. La luz roja no miente: todo poder pide un precio a cambio.':
+    '缔结最凶险契约之地。红光从不说谎：一切力量皆有代价。',
+  'El umbral del alba': '黎明门槛',
+  'Cámara de Tri': 'Tri 之厅',
+  'El lugar suspendido entre la derrota y la segunda oportunidad, donde la Guardiana ofrece su luz a quien no se rinde.':
+    '悬于败北与新生之间的空间，守望者在此向不屈者递出光芒。',
+  'La senda del desafío': '挑战之路',
+  'Camino Exacto': '精准之途',
+  'Un horizonte estrecho donde cada turno está contado desde el primer paso. Aquí se templan los maestros del tablero.':
+    '从第一步起便精算每步的狭路，棋盘大师正是在此百炼成钢。',
+  'Amanecer sobre Thyes': 'Thyes 破晓',
+  'Faro del Amanecer': '黎明灯塔',
+  'El instante en que el primer rayo vuelve a cruzar las siete ciudades y el año 4134 comienza por fin.':
+    '第一道曙光再度掠过七座城市、4134 年终于开启的那一瞬间。',
+  'Retrato de la Brasa': '余烬肖像',
+  'Con la llave roja al pecho y una sonrisa terca, Lía avanza incluso cuando la niebla borra el camino.':
+    '胸佩红钥匙、面带倔强微笑，即便迷雾抹去前路，Lía 依然前行。',
+  'Retrato de la Hora': '时辰肖像',
+  'El reloj de bolsillo marca la grieta exacta en el tiempo. Jean nunca pierde la calma ante un tablero cerrado.':
+    '怀表精准指向时间的裂隙。面对封锁的棋盘，Jean 从不慌乱。',
+  'Juth en solitario': '独行的 Juth',
+  'Retrato de la Palabra': '真言肖像',
+  'Con el códice abierto y la mirada fija en las runas, Juth lee la salida antes de mover una sola pieza.':
+    '手捧典籍、凝视符文，Juth 在移动第一枚棋子前便已读出出口。',
+  'Las Tres Luces': '三道光芒',
+  'Brasa, Hora y Palabra reunidas bajo un mismo cielo: la alianza que Tri esperó desde el apagón.':
+    '余烬、时辰与真言聚于同一片天空下，这是 Tri 自熄灯以来一直等待的同盟。',
+  'Frente a la Sombra': '直面阴影',
+  'Cuando Vhorn oscurece el tablero, las tres luces forman un círculo y responden juntas sin dar un paso atrás.':
+    '当 Vhorn 笼罩棋盘，三道光芒围成一圈并肩回应，寸步不退。',
+  'Combate en las sombras': '暗影之战',
+  'Corazón del Castillo': '城堡之心',
+  'El choque final contra el olvido: no con armas, sino abriendo cada cerradura con precisión perfecta.':
+    '与遗忘的最终交锋：不凭刀剑，而是以完美精准解开每一道锁。',
+  'La victoria del amanecer': '黎明的胜利',
+  'Año 4134': '4134 年',
+  'Los sellos caen, el Faro vuelve a arder y los tres compañeros contemplan el despertar de Thyes.':
+    '封印褪去，灯塔重燃，三位同伴一同凝望苏醒的 Thyes。',
 };

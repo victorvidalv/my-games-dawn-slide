@@ -4,7 +4,7 @@
  * Los textos están en src/data/lore-book.js. Lógica pura (sin DOM).
  */
 import { STATS, unlockText } from './achievements.js';
-import { BOOKS, CHARACTERS, PEOPLES_LORE, PLACES } from '../data/lore-book.js';
+import { BOOKS, CHARACTERS, PEOPLES_LORE, PLACES, SCENES } from '../data/lore-book.js';
 
 /** Avance de una entrada: cada condición [estadística, meta] con su texto; `done` cuando se cumplen todas. */
 export function loreProgress(req, store = {}) {
@@ -24,10 +24,15 @@ export function loreItems() {
   for (const c of CHARACTERS) for (const e of c.entries) items.push({ key: `lore:char:${c.id}:${e.id}`, req: e.req });
   for (const p of PLACES) {
     items.push({ key: `lore:place:${p.id}:main`, req: p.main.req });
+    if (p.memory) items.push({ key: `lore:place:${p.id}:memory`, req: p.memory.req });
     items.push({ key: `lore:place:${p.id}:secret`, req: p.secret.req });
   }
-  for (const p of PEOPLES_LORE) items.push({ key: `lore:people:${p.id}`, req: p.req });
+  for (const p of PEOPLES_LORE) {
+    items.push({ key: `lore:people:${p.id}`, req: p.req });
+    if (p.legacy) items.push({ key: `lore:people:${p.id}:legacy`, req: p.legacy.req });
+  }
   for (const b of BOOKS) items.push({ key: `lore:book:${b.id}`, req: b.req });
+  for (const s of SCENES) items.push({ key: `lore:scene:${s.id}`, req: s.req });
   return items;
 }
 /** Claves de las entradas ya abiertas. */

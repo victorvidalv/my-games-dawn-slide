@@ -1,7 +1,7 @@
 export const extraChapters = {
   es: {
     story: 'Historia', storyTitle: 'El Faro del Amanecer se apagó',
-    storyIntro: 'La sombra de Vhorn cubrió Thyes. Lía, Jean y Juth recorren siete reinos con la llave roja para encender de nuevo el Faro.',
+    storyIntro: 'La sombra de Vhorn cubrió Thyes. Lía, Jean y Juth recorren siete ciudades con la llave roja para encender de nuevo el Faro.',
     storySeals: 'Cada tres niveles cambias de escenario y de melodía, acercándote paso a paso al Castillo Dorado.',
     sound: 'Banda sonora', soundIntro: 'Cada héroe tiene su propia melodía en cada uno de los siete escenarios. En cada tramo de 3 niveles la música crece en intensidad hasta el clímax.',
     listen: 'Escuchar', stop: 'Detener', audioUnavailable: 'Revisa que el sonido esté activado en el juego y vuelve a pulsar Escuchar.',
@@ -27,9 +27,9 @@ export const extraChapters = {
   },
   en: {
     story: 'Story', storyTitle: 'The Dawn Beacon went dark',
-    storyIntro: 'Vhorn’s shadow covered Thyes. Lía, Jean and Juth cross seven realms with the red key to light the Beacon again.',
+    storyIntro: 'Vhorn’s shadow covered Thyes. Lía, Jean and Juth cross seven cities with the red key to light the Beacon again.',
     storySeals: 'Every three levels the scenery and soundtrack shift as you climb toward the Golden Castle.',
-    sound: 'Soundtrack', soundIntro: 'Each hero has a different melody in each of the seven realms. Across every 3-level leg, instruments layer in toward a climax.',
+    sound: 'Soundtrack', soundIntro: 'Each hero has a different melody in each of the seven cities. Across every 3-level leg, instruments layer in toward a climax.',
     listen: 'Listen', stop: 'Stop', audioUnavailable: 'Check that game sound is enabled, then press Listen again.',
     dailyShot: ['Daily challenge selection', 'The daily challenge screen with a five-day streak and its active hint reward.'],
     targetsTitle: 'Minimum moves per board', rewardTitle: 'Streak rewards',
@@ -53,7 +53,7 @@ export const extraChapters = {
   },
   zh: {
     story: '故事', storyTitle: '黎明灯塔熄灭了',
-    storyIntro: '沃恩的阴影笼罩了提耶斯。莉娅、让和尤斯带着红钥匙跨越七大王国，重新点亮黎明灯塔。',
+    storyIntro: '沃恩的阴影笼罩了提耶斯。莉娅、让和尤斯带着红钥匙跨越七座城市，重新点亮黎明灯塔。',
     storySeals: '每通过三关，场景和配乐都会切换，一步步迈向金色城堡。',
     sound: '原声音乐', soundIntro: '七个场景都为三位英雄准备了各自的旋律。在每 3 关的旅程中，乐器会层层叠加直至高潮。',
     listen: '试听', stop: '停止', audioUnavailable: '请确认已开启游戏声音，然后再次点击试听。',

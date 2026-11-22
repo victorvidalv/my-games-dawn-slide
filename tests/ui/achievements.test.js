@@ -16,15 +16,20 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
   expect(owned).toContain(`board:${pick.id}`);
   expect(app.$('homeAchBadge').hidden).toBe(false);
   expect(Number(app.$('homeAchBadge').textContent)).toBeGreaterThanOrEqual(1);
+  // Personalizar vive dentro de «Otros»: el desplegable está plegado y su número resume las novedades
+  expect(app.$('homeOthersList').hidden).toBe(true);
+  expect(app.$('homeOthersBadge').hidden).toBe(false);
+  app.$('homeOthers').click();
+  expect(app.$('homeOthersList').hidden).toBe(false);
+  expect(app.$('homeOthers').getAttribute('aria-expanded')).toBe('true');
 
   app.$('tabAch').click();
   const panel = app.$('panelAch');
-  // Cuatro pestañas (Tablero, Atuendos, Portada y Lore) y, dentro de Tablero, los filtros Borde · Fichas · Llave / Tarjetas · Estelas · Celebración; no hay puntos ni «Reclamar»
+  // Tres pestañas en Personalizar (Tablero, Atuendos y Portada; Lore está separado en su propia sección)
   expect([...panel.querySelectorAll('[data-custom-group]')].map((b) => b.dataset.customGroup)).toEqual([
     'board',
     'outfit',
     'cover',
-    'lore',
   ]);
   expect([...panel.querySelectorAll('[data-custom-type]')].map((b) => b.dataset.customType)).toEqual([
     'board',
@@ -77,7 +82,7 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
   show.querySelector('[data-os-close]').click();
   expect(document.querySelector('.outfit-show-ov')).toBeNull();
 
-  // Portada: Héroes · Música · Fondo / Clima · Tema
+  // Portada: Héroes · Música · Fondo · Clima · Tema
   app.$('panelAch').querySelector('[data-custom-group="cover"]').click();
   expect([...app.$('panelAch').querySelectorAll('[data-custom-type]')].map((b) => b.dataset.customType)).toEqual([
     'cover',
@@ -88,6 +93,17 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
   ]);
   app.$('panelAch').querySelector('[data-custom-type="bg"]').click();
   expect(app.$('panelAch').querySelectorAll('.ach-shop-card').length).toBe(16); // 16 fondos
+
+  // Lore separado: accesible desde su propio botón en el menú principal
+  app.$('menuBack').click();
+  app.$('tabLore').click();
+  expect(app.$('panelLore').hidden).toBe(false);
+  expect([...app.$('panelLore').querySelectorAll('[data-lore-tab]')].map((b) => b.dataset.loreTab)).toEqual([
+    'people',
+    'world',
+    'library',
+    'scenes',
+  ]);
 });
 
 it('Atuendo equipado: se muestra al seleccionar cartas del destino, al morir (rescate y derrota) y en la victoria', async () => {

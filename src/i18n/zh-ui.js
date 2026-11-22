@@ -467,6 +467,8 @@ export const ZH_UI = {
   /* Transferir partidas */
   'Pasar partida': '存档传输',
   'Más opciones': '更多选项',
+  Otros: '其他',
+  Ajustes: '设置',
   Más: '更多',
   'Escanea el QR en el otro dispositivo o copia el enlace.': '用另一台设备扫描二维码，或复制链接。',
   'Enlace de partida': '存档链接',
@@ -800,11 +802,11 @@ export const ZH_UI = {
   'PUNTAJE OBTENIDO': '本局得分',
   'Tu combinación': '你的构筑',
   '¡El amanecer responde!': '黎明回应了你！',
-  'Cruzaste los siete reinos y el Faro del Amanecer vuelve a encenderse. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
-    '你穿越了七大王国，黎明灯塔重新亮起。但被遗忘而愤怒的沃恩仍在暗处，特里也尚未苏醒。',
+  'Cruzaste las siete ciudades y el Faro del Amanecer vuelve a encenderse. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
+    '你穿越了七座城市，黎明灯塔重新亮起。但被遗忘而愤怒的沃恩仍在暗处，特里也尚未苏醒。',
   'el margen se estrecha y los puntos crecen.': '容错更小，得分更高。',
-  'Recorriste otra vez los siete reinos, ya con la hora y la palabra de tu lado. El Faro arde casi entero; falta pronunciar el nombre de Vhorn.':
-    '你再次走过七大王国，如今时辰与真言皆在你手。灯塔几乎燃尽全明，只差唤出沃恩之名。',
+  'Recorriste otra vez las siete ciudades, ya con la hora y la palabra de tu lado. El Faro arde casi entero; falta pronunciar el nombre de Vhorn.':
+    '你再次走过七座城市，如今时辰与真言皆在你手。灯塔几乎燃尽全明，只差唤出沃恩之名。',
   'Gracias por jugar DAWNSLIDE hasta el final.': '感谢你将 DAWNSLIDE 游玩至终点。',
   'Superaste los 21 niveles.': '你通过了全部 21 关。',
   '{reason} en el nivel {n} de 21. Thyes, año {year}.': '{reason}，止步于第 {n}/21 关。赛斯，{year} 年。',
@@ -916,4 +918,57 @@ export const ZH_UI = {
   ESTADO: '状态',
   'Completa {p} ({n} niveles) para desbloquear': '通关{p}（{n}关）解锁',
   'Completa {n} turnos para desbloquear': '通关{n}步路线解锁',
+  'Vista previa': '预览',
+  entradas: '条目',
+  Guía: '指南',
+  'Cómo jugar': '玩法说明',
+  'Héroes y reliquias': '英雄与遗物',
+  'Progreso y controles': '进度与操作',
+  'MANUAL DEL VIAJERO': '旅人手册',
+  'Guía de DAWNSLIDE': 'DAWNSLIDE 指南',
+  'Reglas, héroes, cartas del destino, modos y secretos en un solo lugar.':
+    '规则、英雄、命运之牌、模式与秘密尽在一处。',
+  'El objetivo': '游戏目标',
+  'Puntaje, Perfectos y rachas': '分数、完美与连胜',
+  'Mecánicas especiales del tablero': '棋盘特殊机制',
+  'Muros de piedra': '石墙',
+  'Bloques pesados': '重石块',
+  'Bloques congelados': '冰冻块',
+  'Maleficios y sellos': '诅咒与封印',
+  'Reliquias de Aventura': '冒险遗物',
+  'Reliquias de Desafío': '挑战遗物',
+  'Empieza con más turnos en cada tablero y cuenta con un rescate automático una vez por partida.':
+    '每局棋盘拥有更多步数，并自带每局一次的自动救援。',
+  'Ideal para aprender los caminos, resistir tableros largos y asegurar victorias consistentes.':
+    '非常适合熟悉路线、扛住长棋盘并稳健通关。',
+  'Su poder Rebobinar deshace varios movimientos seguidos sin perder la partida (1 uso por tablero).':
+    '他的“回溯”能力可连续撤销多步而不判负（每盘 1 次）。',
+  'Brilla en tableros con hielo o bloques pesados donde un mal paso puede cerrar la salida.':
+    '在含冰块或重石块的棋盘中表现出色，一步失误也能挽回。',
+  'Su poder Ver destino traza los próximos movimientos óptimos sobre el tablero (1 uso por tablero).':
+    '其“窥视命运”能力会在棋盘上标出接下来的最优步骤（每盘 1 次）。',
+  'Perfecto para buscar Perfectos, mantener rachas altas y superar Difícil o Experto.':
+    '非常适合追求完美通关、保持高连胜并攻克困难与专家模式。',
+  'Bendiciones y Pactos': '祝福与契约',
+  'Renacer con Tri': '向 Tri 重生',
+  'Lore de Thyes (100 entradas)': 'Thyes 编年史（100 条目）',
+  'Controles y atajos': '操作与快捷键',
+  'Consejos rápidos': '实用技巧',
+  'AJUSTES Y UTILIDADES': '设置与工具',
+  'Audio, respaldo de progreso, enlace móvil e información del juego.': '音频、进度备份、手机链接与游戏信息。',
+  'Sonido y música': '音效与音乐',
+  'Activa o silencia la banda sonora original y los efectos del tablero en cualquier momento.':
+    '随时开启或静音原创配乐与棋盘音效。',
+  'Exporta o importa tus récords, atuendos, personalización y lore mediante código QR o texto para seguir en otro dispositivo.':
+    '通过二维码或文本导出/导入纪录、装扮、自定义与故事，在其他设备继续游玩。',
+  'Abrir transferencia': '打开传输',
+  'Muestra un código QR y el enlace directo para abrir DAWNSLIDE en tu teléfono o compartirlo con amigos.':
+    '显示二维码与直达链接，方便在手机打开 DAWNSLIDE 或分享给好友。',
+  'Mostrar QR': '显示二维码',
+  'Instalar aplicación': '安装应用',
+  'Instala DAWNSLIDE en tu pantalla de inicio para abrirlo a pantalla completa y jugar sin conexión.':
+    '将 DAWNSLIDE 安装到主屏幕，全屏启动并离线游玩。',
+  'Acerca de DAWNSLIDE': '关于 DAWNSLIDE',
+  'Puzle de bloques roguelite con tres héroes, siete ciudades y 100 entradas de lore.':
+    '包含三位英雄、七座城市与 100 条故事的肉鸽滑块解谜游戏。',
 };
