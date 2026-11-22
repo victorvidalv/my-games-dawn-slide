@@ -236,6 +236,7 @@ export const EN_LORE = {
   'Frase de los sellos: {a} de {b} líneas': 'Phrase of the seals: {a} of {b} lines',
   'Usa {n} reliquias distintas': 'Use {n} different relics',
   'Completa el Desafío de 250 turnos': 'Complete the 250-turn Challenge',
+  '{n} novedades': '{n} new',
   'Sello de {n}': 'Seal of {n}',
   'Quince tomos del universo. Tócalos para leer; los que faltan piden una hazaña.':
     'Fifteen volumes of the universe. Tap them to read; the missing ones ask for a feat.',
