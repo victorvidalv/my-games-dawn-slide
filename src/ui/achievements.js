@@ -174,19 +174,28 @@ const unseenKeys = () => {
 };
 const unseenIn = (type) => unseenKeys().filter((k) => k.startsWith(`${type}:`)).length;
 /** Marca como vistas las entradas nuevas de la pestaña activa (la biblioteca marca cada tomo al abrirlo). */
+/** Entradas que eran nuevas al entrar en la vista actual: conservan su sello «Nuevo» aunque ya cuenten como vistas. */
+let freshNow = new Set();
+let freshView = '';
 const markCurrentSeen = () => {
   if (activeType === 'outfit') return markSeen(`outfit:${activeHero}`);
   if (activeType !== 'lore') return markSeen(activeType);
-  if (loreTab === 'people') markSeen('lore:char');
-  if (loreTab === 'world') (markSeen('lore:place'), markSeen('lore:people'));
+  if (loreTab === 'people') return markSeen('lore:char');
+  if (loreTab === 'world') return markSeen('lore:place') | markSeen('lore:people');
+  return markSeen('lore:book');
 };
+/** Marca como vistas las novedades de un tipo (y actualiza los avisos). Devuelve 1 si había algo nuevo. */
 function markSeen(type) {
   const keys = unseenKeys().filter((k) => k.startsWith(`${type}:`));
-  if (!keys.length) return;
+  if (!keys.length) return 0;
   const seen = (store.customSeen ||= {});
-  for (const k of keys) seen[k] = 1;
+  for (const k of keys) {
+    seen[k] = 1;
+    freshNow.add(k);
+  }
   persist();
   paintAchBadge();
+  return 1;
 }
 
 /** Actualiza la badge numérica del botón Personalizar en la pantalla principal. */
@@ -705,7 +714,7 @@ const LORE_TABS = [
   ['library', 'Biblioteca', 'book'],
 ];
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV'];
-const loreFresh = () => new Set(unseenKeys());
+const loreFresh = () => new Set([...freshNow, ...unseenKeys()]);
 /** Un texto del lore: abierto (con el texto y, si es nuevo, su sello) o cerrado (con lo que falta). */
 function loreEntryHtml({ key, title, text, req, secret = false }, fresh) {
   const p = loreProgress(req, store);
@@ -719,7 +728,7 @@ function renderPeople(fresh) {
   const c = CHARACTERS.find((x) => x.id === loreChar) || CHARACTERS[0];
   const got = (x) => x.entries.filter((e) => loreOpen(e.req, store)).length;
   const picker = CHARACTERS.map((x) => {
-    const news = [...fresh].filter((k) => k.startsWith(`lore:char:${x.id}:`)).length;
+    const news = unseenKeys().filter((k) => k.startsWith(`lore:char:${x.id}:`)).length;
     return `<button type="button" class="ach-filter lore-char${x.id === c.id ? ' on' : ''}" role="tab" aria-selected="${x.id === c.id}" data-lore-char="${x.id}"><span>${x.name}</span><small>${got(x)}/${x.entries.length}</small>${news ? `<em class="ach-tab-badge">${news}</em>` : ''}</button>`;
   }).join('');
   const hero = HEROES.find((h) => h.id === c.hero);
@@ -787,7 +796,7 @@ function renderLibrary(fresh) {
 
 function renderLore() {
   const fresh = loreFresh();
-  const count = (prefixes) => [...fresh].filter((k) => prefixes.some((p) => k.startsWith(p))).length;
+  const count = (prefixes) => unseenKeys().filter((k) => prefixes.some((p) => k.startsWith(p))).length;
   const tabs = LORE_TABS.map(([id, label, ic]) => {
     const news = count(
       id === 'people' ? ['lore:char'] : id === 'world' ? ['lore:place', 'lore:people'] : ['lore:book'],
@@ -806,7 +815,6 @@ function bindLore(box) {
       loreTab = b.dataset.loreTab;
       sfx.ui();
       renderAchievements();
-      markCurrentSeen();
     };
   });
   box.querySelectorAll('[data-lore-char]').forEach((b) => {
@@ -814,7 +822,6 @@ function bindLore(box) {
       loreChar = b.dataset.loreChar;
       sfx.ui();
       renderAchievements();
-      markCurrentSeen();
     };
   });
   box.querySelectorAll('[data-lore-book]').forEach((b) => {
@@ -900,6 +907,11 @@ function openBook(id) {
 export function renderAchievements() {
   const box = $('panelAch');
   if (!box) return;
+  const view = `${activeType}|${activeHero}|${loreTab}|${loreChar}`;
+  if (view !== freshView) {
+    freshView = view;
+    freshNow = new Set();
+  }
   const all = CUSTOM_TYPES.filter((t) => t !== 'outfit').flatMap((t) => REWARDS[t].map((r) => [t, r]));
   const outfitAll = Object.entries(OUTFITS).flatMap(([h, l]) => l.map((o) => [h, o]));
   const outfitGot = outfitAll.filter(([h, o]) => outfitUnlocked(store, h, o.id)).length;
@@ -952,7 +964,6 @@ export function renderAchievements() {
       feedback = '';
       sfx.ui();
       renderAchievements();
-      markCurrentSeen();
     };
   });
   box.querySelectorAll('[data-custom-type]').forEach((btn) => {
@@ -961,7 +972,6 @@ export function renderAchievements() {
       feedback = '';
       sfx.ui();
       renderAchievements();
-      markCurrentSeen();
     };
   });
   bindLore(box);
@@ -1006,6 +1016,8 @@ export function renderAchievements() {
       renderAchievements();
     };
   });
+  // Visitar una pestaña marca sus novedades como vistas (los avisos numéricos desaparecen; los sellos «Nuevo» de esta visita se quedan)
+  if (markCurrentSeen()) renderAchievements();
 }
 
 // Al arrancar: desbloquear en silencio lo ya cumplido (también en guardados antiguos) y aplicar el aspecto
