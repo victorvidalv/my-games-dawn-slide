@@ -14,7 +14,7 @@ import { numLocale } from '../i18n.js';
 import { S, holdBusy } from '../state.js';
 import { fateArt } from './fate-art.js';
 import { burst } from './fx.js';
-import { heroArt, storyFor } from './story.js';
+import { outfitImg, storyFor } from './story.js';
 import { wipeIn, wipeOut } from './transitions.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -141,7 +141,7 @@ $('bFate')?.addEventListener('click', openFatePanel);
 function fillStage(hero, city) {
   const story = storyFor(hero.id, city * 3 + 1);
   $('travelScene').src = `backgrounds/zone-${city + 1}.webp`;
-  $('travelHero').src = heroArt(hero.id, 'route');
+  $('travelHero').src = outfitImg(hero.id, 'adv');
   $('travelHero').alt = hero.name;
   const name = document.createElement('span');
   name.className = 'travel-city';

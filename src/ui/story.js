@@ -1,7 +1,7 @@
 import { CHAPTERS, HERO_LORE } from '../data/story.js';
 import { ZONES, zoneIdx } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
-import { outfitArt, outfitOf } from '../game/achievements.js';
+import { DEFAULT_OUTFIT, outfitArt, outfitOf } from '../game/achievements.js';
 import { heroOf, store } from '../state.js';
 export function heroArt(id, pose) {
   return `heroes/${id}-${pose}.webp`;
@@ -39,11 +39,12 @@ export function endingStory(victory, id, level) {
   }
   const port = $('fPortrait');
   port.parentElement.style.setProperty('--ending-scene', cssUrl(bg));
+  const custom = outfitOf(store, h.id) !== DEFAULT_OUTFIT[h.id];
   port.onerror = () => {
     port.onerror = null;
     port.src = heroArt(h.id, 'victory');
   };
-  port.src = heroArt(h.id, 'final');
+  port.src = custom ? outfitImg(h.id, 'act') : heroArt(h.id, 'final');
   port.alt = `${h.name} alcanza el final de su senda`;
   $('fLore').textContent = l.endingLore;
   $('fThanks').textContent = `${h.name}: ${l.thanksWin}`;

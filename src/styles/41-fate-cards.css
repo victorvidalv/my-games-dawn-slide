@@ -266,8 +266,13 @@ button.fate-card {
   text-shadow: 0 1px 0 #091118;
 }
 #travel .travel-hero {
-  bottom: clamp(230px, 40dvh, 330px);
+  inset: auto 0 clamp(230px, 40dvh, 330px);
+  margin-inline: auto;
+  width: auto;
+  max-width: min(88vw, 420px);
   height: clamp(170px, calc(100dvh - 560px), 560px);
+  -webkit-mask-image: radial-gradient(ellipse 50% 48% at 50% 48%, #000 54%, transparent 82%);
+  mask-image: radial-gradient(ellipse 50% 48% at 50% 48%, #000 54%, transparent 82%);
 }
 .fate-ask {
   margin: 0;
@@ -364,7 +369,10 @@ button.fate-card {
 }
 @media (min-aspect-ratio: 11/10) {
   #travel .travel-hero {
-    bottom: 0;
+    inset: auto auto 0 2vw;
+    margin: 0;
+    width: auto;
+    max-width: min(44vw, 560px);
     height: min(88dvh, 850px);
   }
   .fate-offer {

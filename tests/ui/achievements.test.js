@@ -84,3 +84,57 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
   app.$('panelAch').querySelector('[data-custom-type="bg"]').click();
   expect(app.$('panelAch').querySelectorAll('.ach-shop-card').length).toBe(16); // 16 fondos
 });
+
+it('Atuendo equipado: se muestra al seleccionar cartas del destino, al morir (rescate y derrota) y en la victoria', async () => {
+  const { OUTFITS, outfitArt } = await import('../../src/game/achievements.js');
+  const customId = OUTFITS.lia[1].id; // 'aviadora' (pide 16 tableros con Lía)
+  const app = await bootApp({
+    save: {
+      paths: { c1: { level: 3, score: 900 } },
+      stats: { heroBoards_lia: 16 },
+      run: { level: 2, seed: 123, start: 1, mode: 'c', hero: 'lia', score: 50, hints: 2, adj: 0, streak: 0 },
+    },
+  });
+  const { fateOffer } = await import('../../src/game/fate.js');
+  const { showFateDialog } = await import('../../src/ui/fate.js');
+  const { showRescue } = await import('../../src/ui/heroes.js');
+  const { endingStory } = await import('../../src/ui/story.js');
+  const { HEROES } = await import('../../src/game/heroes.js');
+
+  // Equipar desde la pestaña Atuendos en Personalizar
+  app.$('tabAch').click();
+  app.$('panelAch').querySelector('[data-custom-group="outfit"]').click();
+  const equipBtn = app.$('panelAch').querySelector(`[data-outfit-hero="lia"][data-outfit-id="${customId}"]`);
+  expect(equipBtn).toBeTruthy();
+  equipBtn.click();
+  expect(app.store.outfit?.lia).toBe(customId);
+
+  // Cartas del destino
+  const lia = HEROES.find((h) => h.id === 'lia');
+  const run = { seed: 9, mode: 'c', fate: [], fatePicked: 0, pendingClear: { level: 10 } };
+  showFateDialog({
+    run,
+    hero: lia,
+    city: 1,
+    cards: fateOffer(run, 1),
+    rewards: null,
+    onChoose: () => {},
+    isActive: () => false,
+  });
+  expect(app.$('travelHero').getAttribute('src')).toBe(outfitArt('lia', customId, 'adv'));
+
+  // Al morir: rescate y derrota
+  app.S.run = { hero: 'lia', level: 2, revive: 0, rescue: { kind: 'lia' } };
+  app.S.G = { done: false };
+  showRescue('lia');
+  expect(app.$('rescueHero').getAttribute('src')).toBe(outfitArt('lia', customId, 'act'));
+  showRescue('learn');
+  expect(app.$('rescueHero').getAttribute('src')).toBe(outfitArt('lia', customId, 'adv'));
+
+  endingStory(false, 'lia', 5);
+  expect(app.$('overPortrait').getAttribute('src')).toBe(outfitArt('lia', customId, 'act'));
+
+  // Victoria con traje personalizado
+  endingStory(true, 'lia', 21);
+  expect(app.$('fPortrait').getAttribute('src')).toBe(outfitArt('lia', customId, 'act'));
+});

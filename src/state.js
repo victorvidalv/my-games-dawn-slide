@@ -110,6 +110,7 @@ export function importProgress(incoming, { replaceRun = false } = {}) {
   const updated = mergeSaves(mergeSaves(store, disk), incoming);
   updated.run = incoming.run || localRun || null;
   updated.look = incoming.look;
+  if (incoming.outfit) updated.outfit = { ...updated.outfit, ...incoming.outfit };
   updated.tips = { ...disk.tips, ...store.tips, ...incoming.tips };
   migrateAchievements(updated);
   return persist(updated) ? 'done' : 'error';

@@ -540,6 +540,7 @@ function openShowcase(hero, id, pose = 'adv') {
     el.querySelector('[data-os-equip]')?.addEventListener('click', () => {
       if (!setOutfit(store, hero, id)) return;
       persist();
+      if (S.run?.hero === hero && $('heroHudImg')) $('heroHudImg').src = outfitArt(hero, id, 'sel');
       sfx.ui();
       feedback = `Activado: ${o.name}`;
       paint();
@@ -653,6 +654,7 @@ export function renderAchievements() {
       const { outfitHero: hero, outfitId: id } = btn.dataset;
       if (!setOutfit(store, hero, id)) return;
       persist();
+      if (S.run?.hero === hero && $('heroHudImg')) $('heroHudImg').src = outfitArt(hero, id, 'sel');
       sfx.ui();
       feedback = `Activado: ${OUTFITS[hero].find((o) => o.id === id).name}`;
       renderAchievements();

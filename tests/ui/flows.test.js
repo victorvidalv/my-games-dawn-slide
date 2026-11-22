@@ -40,6 +40,7 @@ describe('interfaz: aventura', () => {
   it('al cerrar la ciudad muestra al héroe de la partida y reparte 3 cartas del destino; elegir una la aplica una vez', async () => {
     const app = await bootApp();
     const { HEROES } = await import('../../src/game/heroes.js');
+    const { DEFAULT_OUTFIT, outfitArt } = await import('../../src/game/achievements.js');
     const { fateOffer } = await import('../../src/game/fate.js');
     const { showFateDialog } = await import('../../src/ui/fate.js');
     for (const hero of HEROES) {
@@ -57,7 +58,7 @@ describe('interfaz: aventura', () => {
       });
       await until(() => shown(app, 'travel'));
       const portrait = app.$('travelHero');
-      expect(portrait.getAttribute('src')).toBe(`heroes/${hero.id}-route.webp`);
+      expect(portrait.getAttribute('src')).toBe(outfitArt(hero.id, DEFAULT_OUTFIT[hero.id], 'adv'));
       expect(portrait.alt).toBe(hero.name);
       expect(app.$('travel').classList.contains('intro'), 'primero la entrada «Ciudad completada»').toBe(true);
       buttons0(app)[0].click(); // durante la entrada no se elige nada
