@@ -2130,6 +2130,8 @@ export const UNLOCK_TEXT = {
   maxPactsWin: (n) => `Completa una aventura llevando ${n} Pactos`,
   cleanRun: () => 'Completa una aventura sin usar ninguna pista',
   oathWin: () => 'Completa una aventura con el Pacto Juramento',
+  relicsSeenCount: (n) => `Usa ${n} reliquias distintas`,
+  challenge250Won: () => 'Completa el Desafío de 250 turnos',
 };
 export const unlockText = (stat, goal) => UNLOCK_TEXT[stat]?.(goal) || '';
 

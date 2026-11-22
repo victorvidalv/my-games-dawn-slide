@@ -1,0 +1,577 @@
+/**
+ * Lore de Thyes para Personalizar → Lore: personajes, mundo y biblioteca. Los textos son breves (45-60 palabras) y épicos;
+ * cada entrada se desbloquea con acciones que el juego ya guarda (`req`: lista de [estadística, meta] que deben cumplirse todas).
+ * Las traducciones (EN/ZH) están en src/i18n/en-lore.js y zh-lore.js, con el texto español como clave.
+ */
+export const CHARACTERS = [
+  {
+    id: 'lia',
+    name: 'Lía',
+    epithet: 'la Brasa',
+    hero: 'lia',
+    entries: [
+      {
+        id: 'origen',
+        title: 'Nacida del valle',
+        text: 'En el Valle Esmeralda, donde la niebla jamás se marcha, una niña guardaba una brasa en el hueco de la mano. Los ancianos decían que no se apagaría mientras alguien la necesitara. Lía prometió volver con el amanecer, y salió al camino con la gorra torcida y el corazón en llamas.',
+        req: [['heroBoardsLia', 3]],
+      },
+      {
+        id: 'don',
+        title: 'La Brasa que no se rinde',
+        text: 'Su poder no es fuego que destruye, sino calor que sostiene. Cuando todo se enfría, Lía sopla sobre la ceniza y la ceniza recuerda. Los viejos forjadores de Thyes decían que una brasa vale más que mil antorchas: la antorcha ilumina, pero la brasa resiste.',
+        req: [['heroBoardsLia', 25]],
+      },
+      {
+        id: 'busca',
+        title: 'Lo que busca en Thyes',
+        text: 'Busca el Faro del Amanecer, pero sobre todo busca a quienes ya no recuerdan su propio calor. En cada ciudad pregunta un nombre y deja una vela. «Si alguien me espera», dice, «no puedo llegar tarde».',
+        req: [
+          ['maxLevel', 10],
+          ['heroBoardsLia', 10],
+        ],
+      },
+      {
+        id: 'verdad',
+        title: 'Su verdad',
+        text: 'Cuando el Faro vuelve a arder, Lía comprende que la promesa nunca fue volver a casa: fue volver con todos. El valle despertó mucho antes de que ella llegara, porque la brasa que llevaba ya ardía en cada persona a la que ayudó por el camino.',
+        req: [['heroWinLia', 1]],
+      },
+      {
+        id: 'secreto',
+        title: 'Secreto de Experto',
+        text: 'En el último tramo del camino más duro, la ceniza le susurra con voz de Vhorn: «Descansa». Lía se ríe. Ha descubierto que el miedo y la llama comparten el mismo temblor. Una tiembla para retirarse; la otra, para avanzar.',
+        req: [
+          ['heroWinLia', 1],
+          ['hardDone', 1],
+        ],
+      },
+    ],
+  },
+  {
+    id: 'jean',
+    name: 'Jean',
+    epithet: 'la Hora',
+    hero: 'jean',
+    entries: [
+      {
+        id: 'origen',
+        title: 'La noche de la guardia',
+        text: 'Jean estaba de guardia en la torre cuando el Faro del Amanecer murió. Contó los segundos de la oscuridad uno a uno y juró que jamás perdería otro. Desde aquella noche lleva un reloj de bolsillo cuyas agujas, aseguran, a veces giran hacia atrás.',
+        req: [['heroBoardsJean', 3]],
+      },
+      {
+        id: 'don',
+        title: 'La Hora que sabe volver',
+        text: 'No puede deshacer el pasado, pero sí encontrar el instante exacto en que aún había salida. Con su don, la hora tropieza, retrocede y vuelve a empezar. «Todo error deja una grieta», dice, «y por la grieta se vuelve».',
+        req: [['heroBoardsJean', 25]],
+      },
+      {
+        id: 'busca',
+        title: 'Lo que busca en Thyes',
+        text: 'Busca la hora detenida del reloj mayor y, con ella, el perdón que no se concede a sí mismo. En cada engranaje halla la firma de dos pueblos que trabajaron juntos: la prueba de que nada roto está perdido si se arregla en compañía.',
+        req: [
+          ['maxLevel', 10],
+          ['heroBoardsJean', 10],
+        ],
+      },
+      {
+        id: 'verdad',
+        title: 'Su verdad',
+        text: 'Al ajustar la última aguja del Faro, Jean entiende que la culpa era otro modo de seguir de guardia. Nadie puede cuidar la noche entera. Suelta el reloj, y por primera vez el tiempo no le pesa: le pertenece.',
+        req: [['heroWinJean', 1]],
+      },
+      {
+        id: 'secreto',
+        title: 'Secreto de Experto',
+        text: 'Entre los Pactos más duros, Jean descubre que Vhorn jamás tuvo prisa: el olvido es paciente. Por eso decide ser más paciente aún. Quien aprende a esperar sin rendirse puede hacer del tiempo un aliado, no un verdugo.',
+        req: [
+          ['heroWinJean', 1],
+          ['maxPactsWin', 2],
+        ],
+      },
+    ],
+  },
+  {
+    id: 'van',
+    name: 'Juth',
+    epithet: 'la Palabra',
+    hero: 'van',
+    entries: [
+      {
+        id: 'origen',
+        title: 'La página que falta',
+        text: 'Juth heredó un códice con un secreto: faltaba una página, la del nombre que el mundo olvidó. Nadie recordaba haberla arrancado. Entonces el joven escriba comprendió que algunas páginas no se pierden: se borran, y quien las borra se alimenta de ellas.',
+        req: [['heroBoardsVan', 3]],
+      },
+      {
+        id: 'don',
+        title: 'La Palabra que nombra',
+        text: 'Lo que se nombra deja de ser sombra. Con una runa y un susurro, Juth abre pasos donde otros solo ven piedra. «Lo que no se nombra», dice, «sigue buscando salida». Su pluma no inventa: devuelve.',
+        req: [['heroBoardsVan', 25]],
+      },
+      {
+        id: 'busca',
+        title: 'Lo que busca en Thyes',
+        text: 'Recoge nombres: el de cada pueblo, el de cada muerto escrito en la corteza, el de cada vela. Sospecha que el último, el que completa su códice, es justo el que nadie quiere pronunciar.',
+        req: [
+          ['maxLevel', 10],
+          ['heroBoardsVan', 10],
+        ],
+      },
+      {
+        id: 'verdad',
+        title: 'Su verdad',
+        text: 'La noche final, Juth escribe la última línea y dice en voz alta el nombre de Vhorn. No lo destruye: lo nombra. Y lo que fue olvido encuentra, al fin, quien lo recuerde. El códice se cierra completo.',
+        req: [['heroWinVan', 1]],
+      },
+      {
+        id: 'secreto',
+        title: 'Secreto de Experto',
+        text: 'En lo más hondo del reino sellado, una runa responde con la letra de Juth: alguien más escribía en su códice. Eran notas de Tri, ansiosa por que alguien las leyera algún día. Nunca estuvo solo en la tarea.',
+        req: [
+          ['heroWinVan', 1],
+          ['expertDone', 1],
+        ],
+      },
+    ],
+  },
+  {
+    id: 'tri',
+    name: 'Tri',
+    epithet: 'la Guardiana',
+    art: 'backgrounds/guardiana-del-alba.webp',
+    entries: [
+      {
+        id: 'guardiana',
+        title: 'La Guardiana del Faro',
+        text: 'Tri fue la última guardiana del Faro del Amanecer. Cuando la sombra de Vhorn lo apagó, no huyó ni peleó: cerró. Diez puertas, diez sellos, diez reinos a salvo del olvido. Los libros la llaman carcelera. Las inscripciones, madre.',
+        req: [['maxLevel', 7]],
+      },
+      {
+        id: 'precio',
+        title: 'El precio del sello',
+        text: 'Sellar un reino cuesta recordarlo todo, para siempre. Tri carga con diez ciudades dentro de la memoria y no se permite dormir, por miedo a que una se apague. Su desvelo es lo único que mantiene vivas las luces bajo los sellos.',
+        req: [['maxLevel', 13]],
+      },
+      {
+        id: 'ojos',
+        title: 'Los ojos cerrados',
+        text: 'Los cerró para no ver cómo el mundo se olvidaba de sí. Pero un guardián con los ojos cerrados escucha mejor. Oyó pasos de tres luces cruzando los reinos y, bajo su sueño fingido, empezó a sonreír.',
+        req: [['completed', 1]],
+      },
+      {
+        id: 'abre',
+        title: 'Cuando abre los ojos',
+        text: 'El último sello revela lo que la frase prometía: Tri nunca fue prisionera de la noche. Fue la noche en vela. Al encenderse el Faro abre los ojos, mira a tres viajeros polvorientos y solo pregunta: «¿Han llegado a tiempo?».',
+        req: [['completed', 3]],
+      },
+    ],
+  },
+  {
+    id: 'vhorn',
+    name: 'Vhorn',
+    epithet: 'el Apagador',
+    art: 'historia/vhorn.webp',
+    entries: [
+      {
+        id: 'apagador',
+        title: 'El Apagador',
+        text: 'Vhorn no nació sombra. Se hizo sombra, hoja a hoja, nombre a nombre, devorando lo que el mundo dejaba de recordar. Cuanto más lo temen, más lo olvidan; cuanto más lo olvidan, más hambre tiene. Es el único monstruo que crece con el silencio.',
+        req: [['maxLevel', 16]],
+      },
+      {
+        id: 'vigia',
+        title: 'El primer vigía',
+        text: 'Antes de apagar el Faro, lo encendió. Fue su primer vigía, el que velaba cuando nadie velaba. Cuando el mundo dio por hecha su luz, dejó de agradecerla; después, de recordarla. Ese fue su primer olvido, y su primera herida.',
+        req: [
+          ['completed', 1],
+          ['hardLevel', 9],
+        ],
+      },
+      {
+        id: 'devora',
+        title: 'Lo que devora',
+        text: 'No come carne ni oro: come memoria. Un nombre sin quien lo pronuncie, una canción sin quien la cante, un oficio sin quien lo herede. Todo lo que desaparece sin dolor alimenta su hambre. Por eso aborrece los homenajes.',
+        req: [['hardDone', 1]],
+      },
+      {
+        id: 'nombre',
+        title: 'El nombre',
+        text: 'Vhorn no pide piedad: pide ser recordado. Cuando las tres luces pronuncian su nombre, la sombra duda, se encoge y pregunta: «¿Dejaréis de olvidarme?». Nadie vence al olvido con una espada. Se le vence con una frase.',
+        req: [['expertDone', 1]],
+      },
+    ],
+  },
+];
+
+/** Ciudades (zona 1-7 de la aventura). `lines`: cuántas líneas de La Frase de los Sellos revela al alcanzarla (suman 10). */
+export const PLACES = [
+  {
+    id: 'c1',
+    zone: 1,
+    name: 'Valle Esmeralda',
+    seal: 'Corazón',
+    lines: 2,
+    main: {
+      title: 'El sello del Corazón',
+      text: 'Entre colinas de esmeralda late el primer sello, el del Corazón. Aquí la niebla no se va nunca, y los vallenses dicen que es el aliento de Tri respirando en sueños. Todo viaje empieza aquí: con una brasa pequeña, una llave roja y una promesa.',
+      req: [['maxLevel', 1]],
+    },
+    secret: {
+      title: 'Nota secreta: la piedra tibia',
+      text: 'Bajo las raíces del valle hay una piedra tibia que nadie logra enfriar. Dicen que es la primera brasa, dejada por quien selló el reino. No ilumina: acompaña. Quien la toca oye, muy lejos, una voz que susurra «aguanta».',
+      req: [['hardLevel', 3]],
+    },
+  },
+  {
+    id: 'c2',
+    zone: 2,
+    name: 'Puerto de las Velas',
+    seal: 'Marea',
+    lines: 1,
+    main: {
+      title: 'El sello de la Marea',
+      text: 'Los Kogn encendían una vela por cada marinero que esperaban en el puerto. Cuando la Noche Larga cayó, las velas siguieron ardiendo y el mar se quedó quieto, como quien contiene el aliento esperando una noticia. El sello de la Marea guarda esa esperanza.',
+      req: [['maxLevel', 4]],
+    },
+    secret: {
+      title: 'Nota secreta: la vela sin dueño',
+      text: 'En el muelle más viejo arde una vela que no pertenece a ningún marinero. Los Kogn la dejaban encendida «por quien aún no ha nacido». Fue la primera luz que Tri sintió al sellar el puerto, y la última que se atrevió a apagar.',
+      req: [['hardLevel', 6]],
+    },
+  },
+  {
+    id: 'c3',
+    zone: 3,
+    name: 'Aldea de Otoño',
+    seal: 'Memoria',
+    lines: 2,
+    main: {
+      title: 'El sello de la Memoria',
+      text: 'Los Ennari escribían los nombres de sus muertos en la corteza de los árboles, y los árboles los guardaban. Vhorn arrancó la corteza hoja a hoja. La aldea sigue en otoño eterno, y cada hoja que cae es un nombre que busca quien lo pronuncie.',
+      req: [['maxLevel', 7]],
+    },
+    secret: {
+      title: 'Nota secreta: el nombre de vigía',
+      text: 'Un roble de la aldea conserva un nombre que no es de ningún Ennari: está escrito con letra de vigía. Es el primer nombre que Vhorn quiso salvar de su propio hambre. Nadie sabe leerlo. Todos sienten que deberían.',
+      req: [['hardLevel', 9]],
+    },
+  },
+  {
+    id: 'c4',
+    zone: 4,
+    name: 'Refugio Glacial',
+    seal: 'Valor',
+    lines: 1,
+    main: {
+      title: 'El sello del Valor',
+      text: 'Sobre la cumbre helada, el hielo sepultó la campana que los Aluen oían desde las estrellas. Aquí el miedo pesa más que la nieve, y el sello del Valor solo cede ante quien da el siguiente paso sabiendo que puede resbalar. Valiente no es quien no teme: es quien avanza temblando.',
+      req: [['maxLevel', 10]],
+    },
+    secret: {
+      title: 'Nota secreta: el puente de cuerda',
+      text: 'Bajo el hielo duerme un puente tejido con hilos de estrella. Los Aluen lo cruzaban sin mirar abajo. Dicen que resiste mientras uno cree en el siguiente paso, y que más de un viajero lo ha cruzado sin saberlo.',
+      req: [['hardLevel', 12]],
+    },
+  },
+  {
+    id: 'c5',
+    zone: 5,
+    name: 'Ciudad del Reloj',
+    seal: 'Chispa',
+    lines: 1,
+    main: {
+      title: 'El sello de la Chispa',
+      text: 'El reloj mayor se detuvo la noche en que murió el Faro, y la ciudad quedó suspendida como un suspiro. Cada engranaje lleva la firma de dos pueblos que construyeron juntos. Para que el tiempo vuelva a correr hay que encender la Chispa y confiar en el paso siguiente.',
+      req: [['maxLevel', 13]],
+    },
+    secret: {
+      title: 'Nota secreta: el decimotercer reloj',
+      text: 'Tras la esfera del reloj mayor hay una cámara con trece relojes, todos detenidos a la misma hora. El decimotercero marca una hora que aún no ha llegado: la de la victoria. Nadie quiere tocar sus agujas; todos quieren verlas girar.',
+      req: [['expertLevel', 15]],
+    },
+  },
+  {
+    id: 'c6',
+    zone: 6,
+    name: 'Puerto del Volcán',
+    seal: 'Fuego',
+    lines: 1,
+    main: {
+      title: 'El sello del Fuego',
+      text: 'Bajo la ceniza duerme la fragua donde se forjó la primera llave. Aquí Vhorn susurra con más fuerza: «Descansa, nadie recordará tu luz». Romper el sello del Fuego es decirle que no con las manos aún negras de hollín, una vez más, y otra, y otra.',
+      req: [['maxLevel', 16]],
+    },
+    secret: {
+      title: 'Nota secreta: la huella en el yunque',
+      text: 'Sobre el yunque más antiguo se ve la huella de una mano pequeña. No es de herrero. Es de la guardiana, que forjó con sus propias manos el cerrojo del puerto y lloró cuando tuvo que cerrarlo.',
+      req: [['expertLevel', 18]],
+    },
+  },
+  {
+    id: 'c7',
+    zone: 7,
+    name: 'Castillo Dorado',
+    seal: 'Amanecer',
+    lines: 2,
+    main: {
+      title: 'El sello del Amanecer',
+      text: 'Murallas de oro rodean la última cámara. Allí espera el Faro del Amanecer y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hacen falta la brasa, la hora y la palabra. Aquí termina el viaje y empieza el amanecer.',
+      req: [['maxLevel', 19]],
+    },
+    secret: {
+      title: 'Nota secreta: el nombre borrado',
+      text: 'En el respaldo del trono hay un nombre borrado a cincel. Fue su dueño quien lo borró, para que nadie viera cuánto había querido ser recordado. Debajo, con letra pequeña, alguien escribió: «Aquí se sentó el primero que veló».',
+      req: [['expertDone', 1]],
+    },
+  },
+];
+
+/** Pueblos antiguos (retratos en public/historia). */
+export const PEOPLES_LORE = [
+  {
+    id: 'kogn',
+    name: 'Los Kogn',
+    text: 'Navegantes de las mareas antiguas. Leían las estrellas en el agua y las olas en el cielo, y su lengua tenía mil palabras para esperar. Cuando el Faro se apagó dejaron faroles flotando en el mar, y aún hoy alguno encuentra el camino a casa. Vestigio: las velas del puerto, que no se consumen.',
+    req: [['maxLevel', 4]],
+  },
+  {
+    id: 'sahrim',
+    name: 'Los Sahrim',
+    text: 'Caravaneros que cuentan pozos como quien cuenta años. Cruzaban el desierto de memoria, y cada pozo era un amigo con nombre propio. Para ellos el agua es promesa y la sed, verdad. Tras la Noche Larga siguieron caminando buscando un oasis que solo existe cuando se comparte. Vestigio: cuentas de arcilla con un pozo grabado.',
+    req: [['maxLevel', 7]],
+  },
+  {
+    id: 'ennari',
+    name: 'Los Ennari',
+    text: 'Escribas de la corteza. No creían en la muerte, sino en el olvido: un nombre escrito en un árbol vive tanto como el árbol. Vhorn les robó la corteza, pero no la costumbre. Quien llega a su aldea siente un cosquilleo al pronunciar un nombre en voz alta. Vestigio: hojas con letras que cambian al amanecer.',
+    req: [['maxLevel', 10]],
+  },
+  {
+    id: 'aluen',
+    name: 'Los Aluen',
+    text: 'Tejedores de puentes bajo las estrellas. Unían montañas con hilos tan finos que parecían luz. Decían que cada puente era un acuerdo entre dos orillas, y que quien lo cruzaba se volvía parte del tejido. Su campana, enterrada en hielo, aún suena en sueños. Vestigio: un hilo plateado que no se rompe.',
+    req: [['maxLevel', 13]],
+  },
+];
+
+export const BOOK_SERIES = [
+  { id: 'history', label: 'Historia antigua' },
+  { id: 'peoples', label: 'Los pueblos' },
+  { id: 'artifacts', label: 'Artefactos y cartas' },
+  { id: 'forbidden', label: 'Libros prohibidos' },
+];
+/** Los 15 tomos de la biblioteca; `hue` y `emblem` dibujan su tapa en CSS. */
+export const BOOKS = [
+  {
+    id: 'h1',
+    no: 1,
+    series: 'history',
+    hue: 28,
+    emblem: 'flame',
+    title: 'El Año 4133',
+    pages: [
+      'Thyes tenía diez reinos y un solo Faro. En el año 4133 la luz del Faro tembló tres veces y se apagó. Los relojes se detuvieron, las velas se doblaron al revés y el cielo olvidó sus colores. Así empezó la Noche Larga.',
+      'Los cronistas discuten la fecha, pero coinciden en algo: nadie vio entrar a Vhorn. Entró como entra el olvido, sin ruido, por la puerta que nadie vigilaba, y ya estaba dentro cuando alguien se preguntó qué faltaba.',
+    ],
+    quote: 'Lo peor de apagarse no es la oscuridad, sino que nadie lo note.',
+    req: [['boardsSolved', 30]],
+  },
+  {
+    id: 'h2',
+    no: 2,
+    series: 'history',
+    hue: 38,
+    emblem: 'crown',
+    title: 'La Forja del Faro',
+    pages: [
+      'Antes del Faro había fuego sin dueño. Los primeros herreros de Thyes lo domaron con un martillo y un nombre. Cada anillo del Faro se forjó con una promesa, y cada promesa con el aliento de quien la hizo.',
+      'El Faro no daba luz: la reunía. Era un espejo para todo lo que el mundo hacía bien. Mientras alguien encendía una vela, el Faro brillaba un poco más. Por eso apagarlo exigió olvidar a todos a la vez.',
+    ],
+    quote: 'Una luz no se enciende: se mantiene.',
+    req: [['maxLevel', 8]],
+  },
+  {
+    id: 'h3',
+    no: 3,
+    series: 'history',
+    hue: 268,
+    emblem: 'stars',
+    title: 'El Olvido de Vhorn',
+    pages: [
+      'Los viejos archivos tienen una línea raspada en cada página donde debería estar su nombre. Hubo un primer vigía del Faro, dicen, alguien que veló tantas noches que el mundo dio por sentada su guardia.',
+      'Quien da por sentada una luz acaba por olvidarla. Y quien es olvidado cada noche, durante siglos, termina por creer que el olvido es lo único que el mundo sabe dar. Así nació un apagador.',
+    ],
+    quote: 'El olvido también empieza por una pequeña descortesía.',
+    req: [['maxLevel', 16]],
+  },
+  {
+    id: 'h4',
+    no: 4,
+    series: 'history',
+    hue: 200,
+    emblem: 'seal',
+    title: 'El Sello de Tri',
+    pages: [
+      'Diez puertas selló Tri la noche del apagón. En cada una grabó una línea, porque sabía que a quienes sobrevivieran les costaría entenderla. Leídas en orden, las diez líneas componen su explicación y su disculpa.',
+      'No cerró por miedo a lo que entraba. Cerró por lo que aún respiraba dentro. Sabía que Vhorn devoraba lo olvidado; así que escondió lo que quería salvar donde ningún olvido pudiera alcanzarlo: tras una puerta cerrada.',
+    ],
+    quote: 'Hay cerraduras que son brazos.',
+    req: [['completed', 1]],
+  },
+  {
+    id: 'h5',
+    no: 5,
+    series: 'history',
+    hue: 2,
+    emblem: 'key',
+    title: 'El Origen de la Llave Roja',
+    pages: [
+      'La llave roja se forjó en el Puerto del Volcán con la primera brasa de Thyes. No abre cerraduras: abre salidas. Sus dientes recuerdan el camino de cada reino, y por eso, entre mil puertas cerradas, siempre encuentra la siguiente.',
+      'Tri la entregó a quien aún no había nacido. «Cuando la lleve alguien que dude de ser digno», dijo, «sabré que es el indicado». Desde entonces espera, con paciencia de brasa, a quien se atreva a empujar el primer bloque.',
+    ],
+    quote: 'Una salida también es un comienzo.',
+    req: [['perfects', 50]],
+  },
+  {
+    id: 'p1',
+    no: 6,
+    series: 'peoples',
+    hue: 205,
+    emblem: 'flag',
+    title: 'Crónica de los Kogn',
+    pages: [
+      'Cuenta el cuaderno de a bordo que los Kogn nunca perdieron una nave que alguien esperara. «El mar devuelve lo que se lleva a quien sabe esperarlo», decía el capitán más viejo, y encendía una vela más.',
+      'Cuando el Faro murió, ordenó apagar las linternas del puerto. Nadie obedeció. Esa noche los Kogn aprendieron que la desobediencia, bien encendida, también es un modo de ser fiel.',
+    ],
+    quote: 'Esperar también es navegar.',
+    req: [['dailySolved', 6]],
+  },
+  {
+    id: 'p2',
+    no: 7,
+    series: 'peoples',
+    hue: 36,
+    emblem: 'hourglass',
+    title: 'Crónica de los Sahrim',
+    pages: [
+      'Los Sahrim miden el desierto en pozos. Dos pozos de distancia son un día; tres, una vida. Entre pozo y pozo se cuentan historias, y la mejor es la que cabe en una jarra y alcanza para todos.',
+      'Hay un pozo que ya no figura en ningún mapa. Los ancianos dicen que desapareció porque alguien dejó de visitarlo. Desde entonces cada caravana lleva una jarra del último pozo para no dejar a ninguno solo.',
+    ],
+    quote: 'El agua que se comparte siempre sobra.',
+    req: [['challengeBoards', 25]],
+  },
+  {
+    id: 'p3',
+    no: 8,
+    series: 'peoples',
+    hue: 18,
+    emblem: 'heart',
+    title: 'Crónica de los Ennari',
+    pages: [
+      'En la aldea del otoño eterno cada árbol tiene un nombre y cada nombre un árbol. Los Ennari mueren sabiendo que alguien les escribirá en la corteza. Para ellos, la muerte es apenas un cambio de hoja.',
+      'Cuando Vhorn desgarró los troncos, no robó solo nombres: robó la certeza de ser recordados. Los Ennari no lloraron; eligieron escribir de nuevo, con tinta nueva, sobre árboles jóvenes. Todavía lo hacen.',
+    ],
+    quote: 'Escribir es plantar.',
+    req: [['fateCards', 30]],
+  },
+  {
+    id: 'p4',
+    no: 9,
+    series: 'peoples',
+    hue: 215,
+    emblem: 'stars',
+    title: 'Crónica de los Aluen',
+    pages: [
+      'Los Aluen tejían puentes con hilo de estrella. Decían que cada nudo era un acuerdo y cada tramo, una promesa. Ningún puente aluen se rompió jamás: se descolgó solo cuando ya no hacía falta.',
+      'Su campana colgaba del cielo, no de una torre. Sonaba cuando alguien cruzaba bien. En la Noche Larga el hielo la sepultó, pero algunos juran que, cuando alguien da un paso valiente, resuena bajo la nieve.',
+    ],
+    quote: 'Cruzar es creer.',
+    req: [['bestStreak', 5]],
+  },
+  {
+    id: 'a1',
+    no: 10,
+    series: 'artifacts',
+    hue: 290,
+    emblem: 'stars',
+    title: 'Las Cartas del Destino',
+    pages: [
+      'Nadie sabe quién las dibujó. Cada carta es una oferta del destino: un don, un riesgo, un camino. Las barajó Tri antes de sellar los reinos, para que las tres luces tuvieran algo que elegir cuando ya no quedara nadie que aconsejara.',
+      'Elegir una carta es declarar quién eres. Las prudentes no siempre ganan; las audaces no siempre pierden. Pero toda carta, bien elegida, deja una huella en la senda.',
+    ],
+    quote: 'El destino ofrece; tú eliges.',
+    req: [['fateCards', 15]],
+  },
+  {
+    id: 'a2',
+    no: 11,
+    series: 'artifacts',
+    hue: 340,
+    emblem: 'crown',
+    title: 'El Precio de los Pactos',
+    pages: [
+      'Un Pacto es una promesa con dientes. Concede poder a cambio de algo: un paso menos, un respiro, una ayuda. Los Pactos no mienten, y por eso son peligrosos: siempre cobran lo que dicen.',
+      'Los sabios llevan pocos Pactos y los cumplen todos. Los audaces los apilan hasta que el peso los dobla. Y existe un Pacto, el Juramento, que solo se ofrece a quienes están dispuestos a terminar lo que empiezan.',
+    ],
+    quote: 'Todo poder prestado tiene fecha.',
+    req: [['pacts', 6]],
+  },
+  {
+    id: 'a3',
+    no: 12,
+    series: 'artifacts',
+    hue: 160,
+    emblem: 'heart',
+    title: 'Las Reliquias',
+    pages: [
+      'Cada reliquia es un recuerdo que se resistió a ser olvidado. Una brújula que apunta a casa, un reloj que marca lo que falta, un cuaderno que anota lo que se calla. No son armas: son testigos.',
+      'Quien lleva una reliquia carga con una historia ajena. Por eso las reliquias se eligen, no se encuentran. Y por eso, dicen, el tablero cambia un poco cuando alguien las usa con respeto.',
+    ],
+    quote: 'Lo que se recuerda, ayuda.',
+    req: [['relicsSeenCount', 4]],
+  },
+  {
+    id: 'f1',
+    no: 13,
+    series: 'forbidden',
+    hue: 252,
+    emblem: 'seal',
+    title: 'La Senda del Silencio',
+    pages: [
+      'Quien completa el camino Difícil oye un silencio nuevo, como el que queda cuando alguien deja de gritar. Es la voz de Tri, que tras mil noches en vela suspira por primera vez.',
+      'En el último sello, las piezas se mueven solas un instante, como si alguien más empujara con ellas. No es magia. Es el eco de los viajeros que antes que tú se atrevieron.',
+    ],
+    quote: 'Después de lo difícil, el silencio también es premio.',
+    req: [['hardDone', 1]],
+  },
+  {
+    id: 'f2',
+    no: 14,
+    series: 'forbidden',
+    hue: 46,
+    emblem: 'trophy',
+    title: 'Epílogo del año 4134',
+    pages: [
+      'En el año 4134 Thyes despierta con un amanecer que nadie recuerda haber pedido. Los diez reinos abren sus puertas, y por cada puerta salen mil nombres que habían esperado siglos a ser dichos.',
+      'Los cronistas tardan en creerlo: nadie murió en la Noche Larga. Estaban todos guardados. Fue Tri quien cargó con la memoria de todos para que ninguno se perdiera. Y ahora devuelve lo guardado.',
+    ],
+    quote: 'Nadie se perdió: solo estaban guardados.',
+    req: [['expertDone', 1]],
+  },
+  {
+    id: 'f3',
+    no: 15,
+    series: 'forbidden',
+    hue: 48,
+    emblem: 'hourglass',
+    title: 'Los Doscientos Cincuenta Turnos',
+    pages: [
+      'Hay una prueba que no figura en ningún mapa: caminar doscientos cincuenta turnos con el reino entero a la espalda. Quien la supera no recibe corona, sino un nombre, escrito por primera vez en un libro sin dueño.',
+      'Ese libro es el último. Sus páginas están en blanco y se llenan cuando alguien llega hasta aquí. Tri deja en cada una una sola palabra: «Gracias». Es el único epílogo que el Faro escribe a mano.',
+    ],
+    quote: 'La última página siempre es de quien la lee.',
+    req: [['challenge250Won', 1]],
+  },
+];

@@ -19,11 +19,12 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
 
   app.$('tabAch').click();
   const panel = app.$('panelAch');
-  // Tres pestañas (Tablero, Atuendos y Portada) y, dentro de Tablero, los filtros Borde · Fichas · Llave / Tarjetas · Estelas · Celebración; no hay puntos ni «Reclamar»
+  // Cuatro pestañas (Tablero, Atuendos, Portada y Lore) y, dentro de Tablero, los filtros Borde · Fichas · Llave / Tarjetas · Estelas · Celebración; no hay puntos ni «Reclamar»
   expect([...panel.querySelectorAll('[data-custom-group]')].map((b) => b.dataset.customGroup)).toEqual([
     'board',
     'outfit',
     'cover',
+    'lore',
   ]);
   expect([...panel.querySelectorAll('[data-custom-type]')].map((b) => b.dataset.customType)).toEqual([
     'board',
