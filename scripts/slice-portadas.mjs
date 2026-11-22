@@ -126,7 +126,11 @@ for (const sheet of HEROES) {
       .png()
       .toBuffer();
     const img = await cutout(cell);
-    const out = await img.webp({ quality: 74, alphaQuality: 80, effort: 6, smartSubsample: true }).toBuffer();
+    const out = await img
+      .resize({ width: 1000, height: 1400, fit: 'inside', kernel: 'lanczos3' })
+      .sharpen({ sigma: 0.8, m1: 0.7, m2: 1.6 })
+      .webp({ quality: 80, alphaQuality: 90, effort: 6, smartSubsample: true })
+      .toBuffer();
     await sharp(out).toFile(`${OUT}heroes/${sheet.ids[i]}.webp`);
     await thumb(sharp(out), sheet.ids[i], 240);
     console.log('héroes ·', sheet.ids[i]);
@@ -146,7 +150,9 @@ for (const sheet of FONDOS) {
         width: cw - 2 * INSET,
         height: ch - 2 * INSET,
       })
-      .webp({ quality: 68, effort: 6, smartSubsample: true })
+      .resize({ width: 1440, kernel: 'lanczos3' })
+      .sharpen({ sigma: 0.8, m1: 0.7, m2: 1.6 })
+      .webp({ quality: 74, effort: 6, smartSubsample: true })
       .toBuffer();
     await sharp(out).toFile(`${OUT}fondos/${sheet.ids[i]}.webp`);
     await thumb(sharp(out), sheet.ids[i], 260);

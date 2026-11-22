@@ -56,7 +56,9 @@ for (const sheet of OUTFIT_SHEETS) {
       let cell = sharp(SRC + sheet.file).extract({ left, top, width: w, height: bottom - top });
       if (sheet.keyWhite) cell = await keyOutWhite(await cell.png().toBuffer());
       await cell
-        .webp({ quality: 75, alphaQuality: 90, effort: 6, smartSubsample: true })
+        .resize({ width: 440, kernel: 'lanczos3' }) // las láminas traen ~225–323 px por celda: se amplía con Lanczos y se afina
+        .sharpen({ sigma: 0.8, m1: 0.7, m2: 1.6 })
+        .webp({ quality: 72, alphaQuality: 85, effort: 6, smartSubsample: true })
         .toFile(`${OUT}/${sheet.hero}-${sheet.ids[c]}-${POSES[r]}.webp`);
     }
 }
