@@ -44,6 +44,9 @@ export function paintDailyHome(day = dayNumber()) {
   const done = streakEarned(store.daily, day);
   const streak = currentStreak(store.daily, day);
   $('homeDailyStreak').textContent = `${streak.toLocaleString(numLocale())} ${streak === 1 ? 'día' : 'días'}`;
+  // Sin racha no hay nada que mostrar: la tarjeta queda limpia
+  const streakRow = $('homeDailyStreak').closest('.home-record');
+  if (streakRow) streakRow.hidden = streak === 0;
   $('homeDailySub').textContent = done ? 'Hecho hoy' : 'Reto de hoy pendiente';
   $('tabDaily').classList.toggle('has-news', !done);
 }

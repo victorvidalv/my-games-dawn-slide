@@ -1014,4 +1014,10 @@ export const EN_UI = {
   'Acerca de DAWNSLIDE': 'About DAWNSLIDE',
   'Puzle de bloques roguelite con tres héroes, siete ciudades y 100 entradas de lore.':
     'Roguelite sliding-block puzzle with three heroes, seven cities and 100 lore entries.',
+  'Más secciones': 'More sections',
+  Equipado: 'Equipped',
+  Tuyos: 'Yours',
+  Filtro: 'Filter',
+  'Ver equipado: {name}': 'Show equipped: {name}',
+  'Continuar · nivel {n}': 'Continue · level {n}',
 };

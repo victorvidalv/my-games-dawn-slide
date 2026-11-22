@@ -146,8 +146,8 @@ const es = {
     ['lore-library', 'Lore · Biblioteca'],
   ],
   newsTitle: 'Dónde está cada cosa',
-  news: 'Personalizar, Lore, Guía y Ajustes están en el desplegable <b>Otros</b> del inicio. Un número discreto junto a «Otros» avisa cuando hay algo por estrenar.',
-  newsShot: 'El desplegable «Otros» del inicio.',
+  news: 'Personalizar, Lore, Guía y Ajustes están siempre a la vista bajo los modos de juego. Un número sobre Personalizar o Lore avisa cuando hay algo por estrenar.',
+  newsShot: 'Los accesos a Personalizar, Lore, Guía y Ajustes en el inicio.',
 
   tipsTitle: 'Consejos rápidos',
   tips: [
@@ -162,7 +162,7 @@ const es = {
   controls:
     '<b>Táctil y ratón:</b> arrastra cualquier bloque en su eje. <b>Teclado:</b> Esc abre la pausa o vuelve atrás en los menús.',
   saveTitle: 'Guardado y otros dispositivos',
-  save: 'Tu partida y tu progreso se guardan solos en este dispositivo. Para seguir en otro, usa <b>Otros → Ajustes → Pasar partida</b> (código QR o texto). Desde Ajustes también puedes instalar la app para jugar sin conexión.',
+  save: 'Tu partida y tu progreso se guardan solos en este dispositivo. Para seguir en otro, usa <b>Ajustes → Pasar partida</b> (código QR o texto). Desde Ajustes también puedes instalar la app para jugar sin conexión.',
   moreShot: 'Ajustes: sonido, pasar partida, compartir e instalar.',
   faqTitle: 'Preguntas frecuentes',
   faq: [
@@ -176,7 +176,7 @@ const es = {
     ],
     [
       '¿Dónde leo el Lore?',
-      'En <b>Otros → Lore</b>. Las entradas se abren solas al cumplir su requisito; las nuevas llevan un aviso.',
+      'En <b>Lore</b>, en el inicio. Las entradas se abren solas al cumplir su requisito; las nuevas llevan un aviso.',
     ],
     [
       '¿Puedo cambiar de héroe a mitad de partida?',
@@ -324,8 +324,8 @@ const en = {
     ['lore-library', 'Lore · Library'],
   ],
   newsTitle: 'Where everything is',
-  news: 'Customize, Lore, Guide and Settings live in the <b>Others</b> dropdown on the start screen. A discreet number next to “Others” tells you when something new is waiting.',
-  newsShot: 'The “Others” dropdown on the start screen.',
+  news: 'Customize, Lore, Guide and Settings are always visible below the game modes. A number on Customize or Lore tells you when something new is waiting.',
+  newsShot: 'The Customize, Lore, Guide and Settings shortcuts on the start screen.',
 
   tipsTitle: 'Quick tips',
   tips: [
@@ -340,7 +340,7 @@ const en = {
   controls:
     '<b>Touch & mouse:</b> drag any block along its axis. <b>Keyboard:</b> Esc opens the pause menu or goes back in the menus.',
   saveTitle: 'Saving & other devices',
-  save: 'Your run and progress save automatically on this device. To continue on another one, use <b>Others → Settings → Transfer save</b> (QR code or text). In Settings you can also install the app to play offline.',
+  save: 'Your run and progress save automatically on this device. To continue on another one, use <b>Settings → Transfer save</b> (QR code or text). In Settings you can also install the app to play offline.',
   moreShot: 'Settings: sound, transfer save, share and install.',
   faqTitle: 'Frequently asked questions',
   faq: [
@@ -354,7 +354,7 @@ const en = {
     ],
     [
       'Where do I read the Lore?',
-      'In <b>Others → Lore</b>. Entries open on their own once you meet their requirement; new ones carry a notice.',
+      'In <b>Lore</b>, on the start screen. Entries open on their own once you meet their requirement; new ones carry a notice.',
     ],
     [
       'Can I switch heroes mid-run?',
@@ -487,8 +487,8 @@ const zh = {
     ['lore-library', '传说 · 藏书'],
   ],
   newsTitle: '功能在哪里',
-  news: '个性化、传说、指南和设置都在主界面的<b>其他</b>下拉菜单中。有新内容可查看时，“其他”旁会出现一个低调的数字。',
-  newsShot: '主界面的“其他”下拉菜单。',
+  news: '个性化、传说、指南和设置始终显示在游戏模式下方。有新内容时，个性化或传说上会出现数字提示。',
+  newsShot: '主界面上的个性化、传说、指南和设置入口。',
 
   tipsTitle: '小技巧',
   tips: [
@@ -502,7 +502,7 @@ const zh = {
   controlsTitle: '操作',
   controls: '<b>触屏与鼠标：</b>沿着方块的方向拖动。<b>键盘：</b>按 Esc 打开暂停菜单，或在菜单中返回。',
   saveTitle: '存档与其他设备',
-  save: '你的进度会自动保存在本设备。要在另一台设备上继续，请使用<b>其他 → 设置 → 存档传输</b>（二维码或文本）。在设置中还可以安装应用，离线游玩。',
+  save: '你的进度会自动保存在本设备。要在另一台设备上继续，请使用<b>设置 → 存档传输</b>（二维码或文本）。在设置中还可以安装应用，离线游玩。',
   moreShot: '设置：声音、存档传输、分享与安装。',
   faqTitle: '常见问题',
   faq: [
@@ -514,7 +514,7 @@ const zh = {
       '如何获得更多个性化物品？',
       '靠游玩。打开锁定的物品可以查看条件：解开的棋盘、城市、完美、每日挑战、用各位英雄获胜……',
     ],
-    ['在哪里阅读传说？', '在<b>其他 → 传说</b>。条目满足条件后会自动开启，新条目会有提示。'],
+    ['在哪里阅读传说？', '在主界面的<b>传说</b>中。条目满足条件后会自动开启，新条目会有提示。'],
     ['可以在局中换英雄吗？', '不行：英雄和遗物在开局时选择。下一局可以选别的。'],
     ['关闭游戏会丢失进度吗？', '不会。进行中的冒险会在每块棋盘后保存，并在主界面显示为“继续”。'],
   ],

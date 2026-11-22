@@ -115,6 +115,7 @@ let loreTab = 'people'; // Lore: people · world · library
 let loreChar = 'lia';
 let activeHero = 'lia';
 const lastType = {}; // último filtro usado en cada pestaña principal
+let ownedOnly = false; // filtro «Tuyos»: solo lo ya desbloqueado
 let feedback = '';
 
 /** Aplica el aspecto guardado: atributos en <body> para tablero, fichas y llave (y lo ya equipado de otras versiones). */
@@ -215,12 +216,6 @@ export function paintAchBadge() {
     loreBadge.textContent = lorePending > 99 ? '99+' : String(lorePending);
   }
   $('tabLore')?.classList.toggle('has-news', lorePending > 0);
-  // «Otros» resume con un número discreto lo que hay por estrenar dentro del desplegable
-  const others = $('homeOthersBadge');
-  if (others) {
-    others.hidden = keys.length === 0;
-    others.textContent = keys.length > 99 ? '99+' : String(keys.length);
-  }
 }
 
 /* ---------- aviso «objeto desbloqueado» (de uno en uno) ---------- */
@@ -373,6 +368,7 @@ function reqsHtml(p) {
 function renderGrid(type) {
   const look = lookOf(store);
   const cards = REWARDS[type]
+    .filter((item) => !ownedOnly || rewardUnlocked(type, item.id, store))
     .map((item) => {
       const owned = rewardUnlocked(type, item.id, store);
       const equipped = look[type] === item.id;
@@ -400,6 +396,7 @@ function renderOutfits() {
   const h = HEROES.find((x) => x.id === activeHero) || HEROES[0];
   const worn = outfitOf(store, h.id);
   const cards = (OUTFITS[h.id] || [])
+    .filter((o) => !ownedOnly || outfitUnlocked(store, h.id, o.id))
     .map((o) => {
       const owned = outfitUnlocked(store, h.id, o.id),
         on = worn === o.id;
@@ -1162,6 +1159,30 @@ export function renderAchievements() {
           })
           .join('');
 
+  // Lo equipado ahora y el filtro: así se ve de un vistazo qué llevas sin bajar hasta su tarjeta
+  const isOutfit = activeType === 'outfit';
+  const wornId = isOutfit ? outfitOf(store, activeHero) : lookOf(store)[activeType];
+  const wornName = isOutfit
+    ? (OUTFITS[activeHero] || []).find((o) => o.id === wornId)?.name || ''
+    : rewardName(activeType, wornId);
+  const wornArt = isOutfit
+    ? `<img src="${outfitArt(activeHero, wornId, 'sel')}" alt="" decoding="async">`
+    : swatch(activeType, wornId);
+  const listAll = isOutfit ? (OUTFITS[activeHero] || []).length : REWARDS[activeType].length;
+  const listOwned = isOutfit
+    ? (OUTFITS[activeHero] || []).filter((o) => outfitUnlocked(store, activeHero, o.id)).length
+    : REWARDS[activeType].filter((r) => rewardUnlocked(activeType, r.id, store)).length;
+  const bar = `<div class="custom-bar">
+      <button type="button" class="custom-equipped" data-jump-equipped aria-label="Ver equipado: ${wornName}">
+        <span class="ce-art" data-type="${activeType}" aria-hidden="true">${wornArt}</span>
+        <span class="ce-copy"><small>Equipado</small><b>${wornName}</b></span>
+      </button>
+      <div class="custom-filter" role="group" aria-label="Filtro">
+        <button type="button" data-owned-filter="all" aria-pressed="${!ownedOnly}"><span>Todos</span><small>${listAll}</small></button>
+        <button type="button" data-owned-filter="owned" aria-pressed="${ownedOnly}"><span>Tuyos</span><small>${listOwned}</small></button>
+      </div>
+    </div>`;
+
   const restore = view === prevView ? snapScroll(box) : null;
   box.innerHTML = `<div class="custom-header">
       <div class="ach-tabs ach-tabs-3" role="tablist" aria-label="Personalizar">${tabs}</div>
@@ -1174,7 +1195,8 @@ export function renderAchievements() {
       <div class="ach-filters custom-chips" role="tablist" aria-label="${group.label}">${chips}</div>
     </div>
     <section class="custom-catalog">
-      <p class="look-note" id="lookNote" role="status">${feedback || (activeType === 'outfit' ? 'Cada conjunto cambia a tu héroe en la aventura y en la selección de personaje.' : 'Todo se desbloquea jugando. Toca un objeto para probarlo.')}</p>
+      ${bar}
+      <p class="look-note is-feedback" id="lookNote" role="status"${feedback ? '' : ' hidden'}>${feedback}</p>
       ${activeType === 'outfit' ? renderOutfits() : renderGrid(activeType)}
     </section>`;
   restore?.();
@@ -1200,6 +1222,29 @@ export function renderAchievements() {
   box.querySelectorAll('[data-open-id]').forEach((btn) => {
     btn.onclick = () => openPreview(btn.dataset.openType, btn.dataset.openId);
   });
+  box.querySelectorAll('[data-owned-filter]').forEach((btn) => {
+    btn.onclick = () => {
+      const next = btn.dataset.ownedFilter === 'owned';
+      if (next === ownedOnly) return;
+      ownedOnly = next;
+      sfx.ui();
+      renderAchievements();
+      box.querySelector('.custom-catalog')?.scrollTo(0, 0);
+    };
+  });
+  const jump = box.querySelector('[data-jump-equipped]');
+  if (jump)
+    jump.onclick = () => {
+      const card = box.querySelector('.ach-shop-card.on');
+      if (!card) return;
+      sfx.ui();
+      card.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+      card.classList.remove('flash');
+      void card.offsetWidth; // reinicia la animación si se pulsa dos veces
+      card.classList.add('flash');
+      setTimeout(() => card.classList.remove('flash'), 1400);
+      (card.querySelector('.ach-shop-open') || card).focus?.({ preventScroll: true });
+    };
   box.querySelectorAll('[data-outfit-hero-tab]').forEach((btn) => {
     btn.onclick = () => {
       activeHero = btn.dataset.outfitHeroTab;

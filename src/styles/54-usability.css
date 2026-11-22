@@ -1,0 +1,725 @@
+/*
+ * Usabilidad y minimalismo de los menús (va al final de la cascada, antes del modo ligero):
+ *   · Personalizar, Lore, Guía y Ajustes ocupan toda la pantalla también en PC y tablet apaisada (antes quedaban
+ *     encajonados en la columna derecha de la portada).
+ *   · Inicio: los cuatro accesos secundarios siempre a la vista (sin desplegable «Otros») y la partida guardada se ve
+ *     ya en la tarjeta de Aventura.
+ *   · Personalizar: subcategorías siempre visibles (sin carrusel oculto), barra «Equipado» y filtro «Todos / Tuyos».
+ *   · Lore: pestañas y personajes en rejilla (nada queda fuera de la pantalla en el móvil) y cabecera compacta.
+ */
+
+/* ───────── Vistas a pantalla completa: una sola columna en cualquier orientación ───────── */
+#menu.show:is([data-view='ach'], [data-view='lore'], [data-view='guide'], [data-view='more']) {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-areas: 'card' !important;
+  column-gap: 0 !important;
+  row-gap: 0 !important;
+}
+#menu:is([data-view='ach'], [data-view='lore'], [data-view='guide'], [data-view='more']) #menuCard {
+  grid-area: card;
+  justify-self: center;
+}
+/* Cabecera: «Volver» con área táctil cómoda y el título centrado de verdad aunque el botón sea ancho */
+#menu:is([data-view='ach'], [data-view='lore'], [data-view='guide'], [data-view='more']) #menuHead {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+#menu:is([data-view='ach'], [data-view='lore'], [data-view='guide'], [data-view='more']) #menuHead[hidden] {
+  display: none;
+}
+#menu:is([data-view='ach'], [data-view='lore'], [data-view='guide'], [data-view='more']) .menu-back {
+  justify-self: start;
+  min-height: 40px;
+}
+#menu:is([data-view='ach'], [data-view='lore'], [data-view='guide'], [data-view='more']) .menu-title {
+  grid-column: 2;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* ───────── Inicio: accesos secundarios siempre visibles ───────── */
+#menu .home-shortcuts {
+  display: grid !important;
+  /* Cada acceso mide al menos lo que su nombre: «Personalizar» nunca se corta y el resto del ancho se reparte */
+  grid-template-columns: repeat(4, minmax(max-content, 1fr));
+  gap: 6px;
+  width: 100%;
+  max-width: none;
+  margin: 12px 0 0;
+}
+#menu .home-shortcuts[hidden] {
+  display: none !important;
+}
+#menu .home-shortcuts .home-pill {
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  min-height: 58px;
+  padding: 8px 6px 7px;
+  border-radius: 14px;
+  font: 750 clamp(10.5px, 3vw, 12px) / 1.1 var(--font-ui);
+  letter-spacing: 0;
+}
+#menu .home-shortcuts .home-pill > span:not(.ach-pill-badge) {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#menu .home-shortcuts .home-pill .ic {
+  width: 21px;
+  height: 21px;
+}
+#menu .home-shortcuts .ach-pill-badge {
+  position: absolute;
+  top: -7px;
+  right: -3px;
+  margin: 0;
+  min-width: 19px;
+  height: 19px;
+  font-size: 10.5px;
+}
+#menu .home-shortcuts .home-pill:hover {
+  transform: translateY(-1px);
+}
+#menu .home-shortcuts .home-pill:active {
+  transform: translateY(1px);
+}
+/* Partida guardada en la tarjeta de Aventura */
+#menu #homeAdvSaved:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffe08a;
+  font-weight: 800;
+}
+#menu #homeAdvSaved:not([hidden])::before {
+  content: '▶';
+  font-size: 0.8em;
+}
+/* Con la partida guardada a la vista, el subtítulo genérico sobra */
+#menu .hb-adv.has-saved .hb-copy > small:first-of-type:not(#homeAdvSaved) {
+  display: none;
+}
+
+/* ───────── Personalizar ───────── */
+/* Subcategorías: todas a la vista (se reparten en filas en vez de esconderse en un carrusel) */
+#panelAch .custom-chips {
+  flex-wrap: wrap !important;
+  overflow: visible;
+  justify-content: flex-start;
+  padding: 6px 0 0;
+}
+#panelAch .custom-chips .ach-filter {
+  position: relative;
+  flex: 1 1 auto;
+  justify-content: center;
+  min-height: 34px;
+}
+@media (min-width: 900px) {
+  #panelAch .custom-chips .ach-filter {
+    flex: 0 1 auto;
+  }
+  #panelAch .custom-equipped {
+    flex: 0 1 380px;
+    margin-right: auto;
+  }
+}
+/* Barra «Equipado» + filtro */
+#panelAch .custom-bar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  padding: 6px 0 8px;
+  background: linear-gradient(180deg, rgba(11, 16, 28, 0.98) 70%, rgba(11, 16, 28, 0));
+}
+#panelAch .custom-equipped {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 48px;
+  margin: 0;
+  padding: 4px 12px 4px 4px;
+  border: 1.5px solid #e7b96399;
+  border-radius: 12px;
+  background: linear-gradient(155deg, #3a2e1f, #1d1914);
+  color: #fff2cf;
+  text-align: left;
+  box-shadow: 0 2px 0 #091118;
+  cursor: pointer;
+}
+#panelAch .custom-equipped:hover {
+  border-color: #e7b963;
+}
+#panelAch .custom-equipped:focus-visible {
+  outline: 3px solid #ffdb8f;
+  outline-offset: 2px;
+}
+#panelAch .ce-art {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #0d1420;
+}
+#panelAch .ce-art > * {
+  max-width: 100%;
+  max-height: 100%;
+}
+#panelAch .ce-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+#panelAch .ce-art .sw {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+}
+/* Muestras con tamaño propio: la carta se reduce entera; estelas, celebraciones, temas y climas llenan la miniatura */
+#panelAch .ce-art[data-type='card'] > * {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: none;
+  max-height: none;
+  transform: translate(-50%, -50%) scale(0.32);
+}
+#panelAch .ce-art:is([data-type='trail'], [data-type='fx'], [data-type='ui'], [data-type='aura']) > * {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+}
+#panelAch .ce-copy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+#panelAch .ce-copy small {
+  color: #f3d291;
+  font: 800 9.5px/1 var(--font-ui);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+#panelAch .ce-copy b {
+  overflow: hidden;
+  font: 800 13.5px/1.15 var(--font-ui);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#panelAch .custom-filter {
+  display: inline-flex;
+  flex: none;
+  padding: 3px;
+  border: 1.5px solid #091118;
+  border-radius: 99px;
+  background: #121c27;
+}
+#panelAch .custom-filter button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 99px;
+  background: transparent;
+  color: #a9bacb;
+  font: 750 12px/1 var(--font-ui);
+  box-shadow: none;
+  cursor: pointer;
+}
+#panelAch .custom-filter button small {
+  opacity: 0.7;
+  font-size: 10.5px;
+}
+#panelAch .custom-filter button[aria-pressed='true'] {
+  background: linear-gradient(155deg, #4b3a24, #282019);
+  color: #fff2cf;
+  box-shadow: inset 0 0 0 1.5px #e7b963;
+}
+#panelAch .custom-filter button:focus-visible {
+  outline: 3px solid #ffdb8f;
+  outline-offset: 1px;
+}
+#panelAch .look-note {
+  margin: 0 0 10px;
+  font-size: 12px;
+  text-align: center;
+}
+#panelAch .look-note.is-feedback {
+  color: #9be8b4;
+  font-weight: 800;
+}
+/* La tarjeta equipada destaca más y parpadea al saltar a ella */
+#panelAch .ach-shop-card.on {
+  box-shadow:
+    0 0 0 2px #e7b963,
+    0 0 18px #ffd24a40;
+}
+#panelAch .ach-shop-card.flash {
+  animation: equipped-flash 1.3s ease-out;
+}
+@keyframes equipped-flash {
+  0%,
+  40% {
+    box-shadow:
+      0 0 0 3px #ffe7a3,
+      0 0 30px #ffd24acc;
+  }
+}
+/* Las tarjetas bloqueadas pesan menos: lo que ya es tuyo salta a la vista */
+#panelAch .ach-shop-card.locked .ach-shop-art {
+  filter: saturate(0.55) brightness(0.85);
+}
+
+@media (max-width: 560px) {
+  #panelAch .custom-header {
+    gap: 8px;
+  }
+  #panelAch .custom-total {
+    flex: 1 1 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  #panelAch .custom-total p {
+    margin: 0;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  #panelAch .custom-total p b {
+    font-size: 16px;
+  }
+  #panelAch .custom-total u {
+    flex: 1;
+    margin: 0;
+  }
+  #panelAch .custom-bar {
+    gap: 8px;
+  }
+  #panelAch .custom-filter button {
+    padding: 0 9px;
+  }
+}
+@media (max-width: 360px) {
+  #panelAch .custom-filter button small {
+    display: none;
+  }
+  #panelAch .custom-equipped {
+    padding-right: 8px;
+  }
+}
+
+/* ───────── Lore ───────── */
+/* Pestañas: las cuatro siempre a la vista */
+#panelLore .lore-tabs {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  overflow: visible;
+}
+#panelLore .lore-tabs .ach-filter {
+  position: relative;
+  min-width: 0;
+  padding: 9px 6px;
+}
+#panelLore .lore-tabs .ach-filter > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Personajes: rejilla de avatares, todos visibles */
+#panelLore .lore-chars {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
+  gap: 6px;
+  overflow: visible;
+  margin-bottom: 12px;
+}
+#panelLore .lore-char {
+  position: relative;
+  justify-content: flex-start;
+  min-width: 0;
+}
+#panelLore .lore-char > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 640px) {
+  /* Cabecera compacta: el contenido empieza antes */
+  #panelLore .lore-banner {
+    margin-bottom: 10px;
+    padding: 10px 14px;
+  }
+  #panelLore .lore-banner-copy {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    max-width: none;
+    column-gap: 12px;
+  }
+  #panelLore .lore-banner-copy small {
+    grid-column: 1 / -1;
+  }
+  #panelLore .lore-banner-copy h2 {
+    min-width: 0;
+    overflow: hidden;
+    font-size: clamp(15px, 4.6vw, 19px);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #panelLore .lore-banner-prog {
+    margin-top: 0 !important;
+    min-width: 96px;
+    max-width: none;
+  }
+  #panelLore .lore-tabs .ach-filter {
+    flex-direction: column;
+    gap: 3px;
+    padding: 7px 2px;
+    font-size: 11px;
+    border-radius: 12px;
+  }
+  #panelLore .lore-chars .lore-char {
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px 2px !important;
+    border-radius: 12px;
+    font-size: 11px;
+  }
+  #panelLore .lore-char-av {
+    width: 36px;
+    height: 36px;
+  }
+  #panelLore .lore-who {
+    min-height: 0;
+    padding: 12px 14px;
+  }
+}
+
+/* ───────── Pantallas bajas (móvil apaisado): nada fijo que se coma la pantalla ───────── */
+@media (max-height: 560px) {
+  /* Inicio: los accesos van en una fila baja (icono y nombre en línea) */
+  #menu .home-shortcuts {
+    margin-top: 8px;
+  }
+  #menu .home-shortcuts .home-pill {
+    flex-direction: row;
+    gap: 5px;
+    min-height: 38px;
+    padding: 4px 8px;
+    border-radius: 99px;
+  }
+  #menu .home-shortcuts .home-pill .ic {
+    width: 16px;
+    height: 16px;
+  }
+  /* Personalizar: se desplaza toda la sección (pestañas incluidas); la barra «Equipado» queda fija arriba */
+  #menu[data-view='ach'] #panelAch {
+    display: block;
+    overflow-y: auto;
+    padding-top: 8px;
+  }
+  #menu[data-view='ach'] #panelAch > * + * {
+    margin-top: 8px;
+  }
+  #panelAch .custom-catalog {
+    overflow: visible;
+    padding-right: 0;
+  }
+  #panelAch .custom-chips .ach-filter {
+    min-height: 30px;
+  }
+  #menu:is([data-view='ach'], [data-view='lore'], [data-view='guide'], [data-view='more']) #menuHead {
+    padding-top: calc(env(safe-area-inset-top) + 4px);
+    padding-bottom: 4px;
+  }
+  #menu:is([data-view='ach'], [data-view='lore'], [data-view='guide'], [data-view='more']) .menu-back {
+    min-height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #panelAch .ach-shop-card.flash {
+    animation: none;
+    box-shadow:
+      0 0 0 3px #ffe7a3,
+      0 0 24px #ffd24a99;
+  }
+  #menu .home-shortcuts .home-pill:is(:hover, :active) {
+    transform: none;
+  }
+}
+
+/* ═════════ Minimalismo: menos ruido, jerarquía clara ═════════ */
+
+/* Avisos de novedades: un punto discreto, sin números ni pulso (el número sigue para lectores de pantalla) */
+.ach-pill-badge,
+.ach-tab-badge {
+  width: 9px !important;
+  min-width: 9px !important;
+  height: 9px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #ffd24a !important;
+  box-shadow: 0 0 0 2px #0b1220 !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  animation: none !important;
+}
+#menu .home-shortcuts .ach-pill-badge {
+  top: 7px;
+  right: 9px;
+}
+.ach-filter .ach-tab-badge,
+.ach-tab .ach-tab-badge {
+  top: 4px !important;
+  right: 4px !important;
+}
+
+/* ---------- Inicio ---------- */
+/* Récord y racha como texto sencillo, no como píldoras con borde */
+#menu .home-btn .record-pill {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  opacity: 0.85;
+}
+#menu .home-record[hidden] {
+  display: none !important;
+}
+/* Subtítulo del logo sin cápsula */
+#menu .title-sub {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  opacity: 0.8;
+}
+/* Idioma: selector compacto y discreto */
+#menu .lang-switch {
+  gap: 4px;
+}
+#menu .lang-btn {
+  min-height: 32px;
+  padding: 4px 10px;
+  border-color: transparent;
+  font-size: 12px;
+  box-shadow: none !important;
+}
+#menu .lang-btn[aria-pressed='false'] {
+  background: rgba(16, 20, 38, 0.55);
+  opacity: 0.8;
+}
+#menu .lang-btn[aria-pressed='true'] {
+  border-color: #e7b96399;
+  background: rgba(60, 44, 28, 0.85);
+}
+#menu .lang-btn .flag {
+  width: 16px;
+  height: auto;
+}
+/* El crédito ya está en Ajustes → Acerca de */
+#menu .home-credit {
+  display: none !important;
+}
+
+/* ---------- Aventura ---------- */
+/* «Elige dificultad» es un rótulo, no un botón */
+#menu .menu-pick {
+  margin: 4px 0 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: #c9b896;
+  font: 750 11px/1.2 var(--font-ui);
+  letter-spacing: 0.14em;
+}
+/* Caminos bloqueados: el candado basta, sin «Estado: Bloqueado»; el requisito se lee entero */
+#menu .path.locked .pscore {
+  display: none;
+}
+#menu .path.locked .path-lock-note {
+  white-space: normal;
+}
+#menu .path.locked .path-lock-note span {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+/* ---------- Personalizar ---------- */
+#panelAch .custom-total {
+  display: none !important;
+}
+#panelAch .custom-chips .ach-filter small {
+  display: none;
+}
+#panelAch .look-note[hidden] {
+  display: none;
+}
+/* Tarjetas: la rareza se lee en el color del borde; sin etiquetas «Común», «Por defecto» o «Animado» encima */
+#panelAch .ach-shop-card .rar-chip,
+#panelAch .ach-shop-card .anim-chip {
+  display: none;
+}
+/* «Equipar» discreto; el equipado se marca con el borde dorado */
+#panelAch .ach-shop-card .shop-act.equip {
+  border: 1.5px solid #e7b96366;
+  background: transparent;
+  color: #ffe7b5;
+  box-shadow: none;
+}
+#panelAch .ach-shop-card .shop-act.equip:hover {
+  background: #e7b96322;
+  border-color: #e7b963;
+}
+#panelAch .ach-shop-card .shop-act.equipped {
+  border: 0;
+  background: none;
+  color: #ffd98a;
+  box-shadow: none;
+}
+/* Requisitos de lo bloqueado: más pequeños y apagados */
+#panelAch .ach-shop-card.locked .unlock-foot {
+  opacity: 0.75;
+}
+
+/* ---------- Lore ---------- */
+#panelLore .look-note {
+  display: none;
+}
+#panelLore .lore-tabs .ach-filter small,
+#panelLore .lore-char small {
+  opacity: 0.6;
+}
+@media (max-width: 640px) {
+  /* En el móvil la cabecera ya dice «Lore»: el banner se reduce al avance */
+  #panelLore .lore-banner {
+    padding: 8px 12px;
+    border-color: rgba(231, 185, 99, 0.2);
+    box-shadow: none;
+  }
+  #panelLore .lore-banner-bg,
+  #panelLore .lore-banner-copy small,
+  #panelLore .lore-banner-copy h2 {
+    display: none;
+  }
+  #panelLore .lore-banner-copy {
+    display: block;
+  }
+  #panelLore .lore-banner-prog {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #panelLore .lore-banner-prog p {
+    margin: 0;
+    white-space: nowrap;
+  }
+  #panelLore .lore-banner-prog u {
+    flex: 1;
+    margin: 0;
+  }
+}
+
+/* ---------- Ajustes: lista limpia (la cabecera ya dice «Ajustes») ---------- */
+#panelMore .more-banner {
+  display: none;
+}
+#panelMore .more-grid {
+  grid-template-columns: 1fr;
+  gap: 8px;
+  max-width: 640px;
+}
+#panelMore .more-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+#panelMore .more-card-top {
+  flex: 1;
+  min-width: 0;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+}
+#panelMore .more-ico {
+  width: 36px;
+  height: 36px;
+  font-size: 17px;
+}
+#panelMore .more-ico svg {
+  width: 19px;
+  height: 19px;
+}
+#panelMore .more-card h3 {
+  margin: 0;
+  font: 750 14px/1.25 var(--font-ui);
+  letter-spacing: 0;
+  text-transform: none;
+}
+#panelMore .more-card:not(:last-child) p {
+  display: none;
+}
+#panelMore .more-card p {
+  margin-top: 2px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+#panelMore .more-action {
+  flex: none;
+  width: auto;
+  min-width: 96px;
+  min-height: 38px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+}
+#panelMore .more-card:last-child {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Subcategorías en rejilla regular (3 + 3, 3 + 2…), nunca una suelta en su propia fila */
+#panelAch .custom-chips {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 6px;
+}
+#panelAch .custom-chips .ach-filter {
+  min-width: 0;
+}
+
+/* Ajustes: todos los botones con el mismo estilo sobrio */
+#panelMore .more-action,
+#panelMore .more-action.primary {
+  border: 1.5px solid #e7b96366 !important;
+  background: rgba(231, 185, 99, 0.08) !important;
+  color: #ffe7b5 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+#panelMore .more-action:hover {
+  border-color: #e7b963 !important;
+  background: rgba(231, 185, 99, 0.18) !important;
+}

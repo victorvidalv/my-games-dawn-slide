@@ -16,12 +16,15 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
   expect(owned).toContain(`board:${pick.id}`);
   expect(app.$('homeAchBadge').hidden).toBe(false);
   expect(Number(app.$('homeAchBadge').textContent)).toBeGreaterThanOrEqual(1);
-  // Personalizar vive dentro de «Otros»: el desplegable está plegado y su número resume las novedades
-  expect(app.$('homeOthersList').hidden).toBe(true);
-  expect(app.$('homeOthersBadge').hidden).toBe(false);
-  app.$('homeOthers').click();
-  expect(app.$('homeOthersList').hidden).toBe(false);
-  expect(app.$('homeOthers').getAttribute('aria-expanded')).toBe('true');
+  // Personalizar está siempre a la vista en el inicio (sin desplegable intermedio)
+  expect(app.$('homeOthers')).toBeNull();
+  expect(app.$('homeShortcuts').hidden).toBe(false);
+  expect([...app.$('homeShortcuts').querySelectorAll('[data-view]')].map((b) => b.dataset.view)).toEqual([
+    'ach',
+    'lore',
+    'guide',
+    'more',
+  ]);
 
   app.$('tabAch').click();
   const panel = app.$('panelAch');

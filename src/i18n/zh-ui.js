@@ -971,4 +971,10 @@ export const ZH_UI = {
   'Acerca de DAWNSLIDE': '关于 DAWNSLIDE',
   'Puzle de bloques roguelite con tres héroes, siete ciudades y 100 entradas de lore.':
     '包含三位英雄、七座城市与 100 条故事的肉鸽滑块解谜游戏。',
+  'Más secciones': '更多版块',
+  Equipado: '已装备',
+  Tuyos: '已拥有',
+  Filtro: '筛选',
+  'Ver equipado: {name}': '查看已装备：{name}',
+  'Continuar · nivel {n}': '继续 · 第 {n} 关',
 };

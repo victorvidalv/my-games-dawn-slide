@@ -225,7 +225,7 @@ const VIEWS = {
   ach: { title: 'Personalizar', panel: 'panelAch' },
   lore: { title: 'Lore', panel: 'panelLore' },
   guide: { title: 'Guía', panel: 'panelGuide' },
-  more: { title: 'Más opciones', panel: 'panelMore' },
+  more: { title: 'Ajustes', panel: 'panelMore' },
 };
 let viewNow = 'home';
 const coverScene = $('menu').querySelector('.cover-scene');
@@ -265,8 +265,12 @@ function paintHomeRecord() {
 
 function paintHome() {
   paintHomeRecord();
-  $('homeAdvSaved').hidden = true;
-  $('homeAdvSaved').textContent = '';
+  // Partida guardada: se avisa ya en el inicio (antes solo se veía al entrar en Aventura)
+  const sr = store.run,
+    saved = Number.isFinite(sr?.level) && !(S.run && S.G && !S.G.done);
+  $('homeAdvSaved').hidden = !saved;
+  $('homeAdvSaved').textContent = saved ? `Continuar · nivel ${sr.level}` : '';
+  $('tabAdv').classList.toggle('has-saved', saved);
   paintDailyHome();
   paintSurvivalHome();
   paintAchBadge();
@@ -280,7 +284,6 @@ function showView(view, { focus = false } = {}) {
   $('menu').dataset.view = viewNow;
   $('menuHome').hidden = !home;
   $('homeShortcuts').hidden = !home;
-  if (!home) toggleOthers(false);
   $('menuHead').hidden = home;
   Object.entries(VIEWS).forEach(([k, v]) => {
     $(v.panel).hidden = k !== viewNow;
@@ -303,23 +306,6 @@ function showView(view, { focus = false } = {}) {
 setInterval(() => {
   if (viewNow === 'home' && !document.hidden && $('menu').classList.contains('show')) paintHomeRecord();
 }, 30000);
-
-/* «Otros»: Personalizar, Lore, Guía y Ajustes se pliegan en un desplegable para no saturar el inicio. */
-function toggleOthers(open) {
-  $('homeOthers').setAttribute('aria-expanded', String(open));
-  $('homeOthersList').hidden = !open;
-}
-$('homeOthers').onclick = () => toggleOthers($('homeOthersList').hidden);
-document.addEventListener('click', (e) => {
-  if (!$('homeOthersList').hidden && !$('homeShortcuts').contains(e.target)) toggleOthers(false);
-});
-$('homeShortcuts').addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && !$('homeOthersList').hidden) {
-    e.stopPropagation();
-    toggleOthers(false);
-    $('homeOthers').focus();
-  }
-});
 
 document.querySelectorAll('#menuHome [data-view], #homeShortcuts [data-view]').forEach((b) => {
   b.onclick = () => showView(b.dataset.view, { focus: true });
