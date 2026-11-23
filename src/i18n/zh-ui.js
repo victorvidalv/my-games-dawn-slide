@@ -994,7 +994,13 @@ export const ZH_UI = {
   'Sí, rendirme': '确认放弃',
   'Seguir jugando': '继续游玩',
   '¿Rendirse en el desafío?': '要放弃本次挑战吗？',
+  '¿Rendirse en la aventura?': '要放弃本次冒险吗？',
+  'Terminarás esta partida y se guardará tu récord actual. Si quieres seguir más tarde, usa «Guardar y salir».':
+    '你将结束本局并保存当前纪录。如果想稍后继续，请使用“保存并退出”。',
   'Terminarás este intento del desafío de hoy con tu avance actual y podrás ver tus resultados o empezar de nuevo.':
     '你将以当前进度结束今天的这次挑战，并可查看结果或重新开始。',
   'Te has rendido': '已放弃',
+  'Pistas para el modo Aventura': '冒险模式提示奖励',
+  '+1 pista para el modo Aventura': '冒险模式 +1 提示',
+  '+{n} pistas para el modo Aventura': '冒险模式 +{n} 提示',
 };

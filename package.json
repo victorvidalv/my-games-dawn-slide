@@ -1,6 +1,6 @@
 {
   "name": "slide-and-slay",
-  "version": "48.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "DAWNSLIDE: puzle de bloques roguelite con tres héroes y 21 niveles (PWA).",

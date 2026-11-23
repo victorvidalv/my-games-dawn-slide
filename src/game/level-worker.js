@@ -18,7 +18,9 @@ self.onmessage = ({ data }) => {
     if (!bankData) throw new Error('level worker: banks not loaded');
     const banks = { levels: bankData.levels, special: bankData.special, tips };
     const d = run.daily;
-    const G = d ? buildDaily(challengeById(d.id), d.day, banks, d.index, d.remaining) : buildAdventureLevel(run, banks);
+    const G = d
+      ? buildDaily(challengeById(d.id), d.seed ?? d.day, banks, d.index, d.remaining)
+      : buildAdventureLevel(run, banks);
     self.postMessage({ id, G });
   } catch (error) {
     self.postMessage({ id, error: String(error?.message || error) });

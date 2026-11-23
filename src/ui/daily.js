@@ -16,8 +16,6 @@ import {
   dayNumber,
   emptyDaily,
   medalFor,
-  msToReset,
-  resetText,
   shareText,
   todayResult,
 } from '../game/daily.js';
@@ -60,11 +58,6 @@ export function paintDailyHome(day = dayNumber()) {
   if (active) {
     $('homeDailySub').textContent =
       `Tablero ${currentBoard}/${DAILY_TOTAL_BOARDS} · ${activeUsed}/${DAILY_TURN_BUDGET} turnos`;
-  } else if (best?.cleared >= DAILY_TOTAL_BOARDS) {
-    $('homeDailySub').textContent = `Completado hoy · ${best.cleared}/${DAILY_TOTAL_BOARDS}`;
-  } else if (best?.cleared > 0) {
-    $('homeDailySub').textContent =
-      `Hoy: ${best.cleared}/${DAILY_TOTAL_BOARDS} · ${best.used}/${DAILY_TURN_BUDGET} turnos`;
   } else {
     $('homeDailySub').textContent = '15 tableros · 150 turnos';
   }
@@ -97,13 +90,12 @@ export function showDailyResult(daily, result = {}) {
           : 'Sin turnos';
   $('dailyEndDelta').textContent = `${cleared}/${DAILY_TOTAL_BOARDS}`;
   $('dailyEndPoints').textContent = `${used}/${DAILY_TURN_BUDGET}`;
-  $('dailyEndReward').hidden = !hintsEarned;
+  $('dailyEndReward').hidden = false;
   $('dailyEndReward').textContent = hintsEarned
     ? hintsEarned === 1
-      ? '+1 pista al iniciar Aventura'
-      : `+${hintsEarned} pistas al iniciar Aventura`
-    : '';
-  $('dailyEndReset').textContent = resetText(msToReset());
+      ? '+1 pista para el modo Aventura'
+      : `+${hintsEarned} pistas para el modo Aventura`
+    : 'Pistas para el modo Aventura';
 
   boardsBox.replaceChildren(
     ...DAILY_HINT_MILESTONES.map(({ board, hints }) => {

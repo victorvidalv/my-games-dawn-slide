@@ -124,16 +124,6 @@ export const TUTORIALS = {
       '¡Patina en un solo movimiento! Ahora saca la llave roja.',
     ],
   },
-  curse: {
-    level: TUTORIAL_LEVELS.curse,
-    rot: 180, // el tablero se ve girado: la salida queda a la izquierda
-    board: 'h2.2.0 v3.3.0 h2.4.3 h2.1.0', // 3 movimientos: aparta la barra de abajo, baja la vertical y saca la llave
-    steps: [
-      '¡Maleficio! El tablero giró: la salida ➜ está ahora a la IZQUIERDA. Mueve el bloque que brilla.',
-      'Bien. Piensa en la llave roja: ella siempre sale hacia la flecha dorada.',
-      '¡Camino libre! Saca la llave roja por la izquierda.',
-    ],
-  },
 };
 
 /** ¿Hay un nivel extra de tutorial antes de este nivel (si no se completó ya)? Va ANTES del nivel real: no da puntos ni cuenta como nivel. */

@@ -17,20 +17,20 @@ import {
 const board = (t) => decodeBoard(t.board);
 
 describe('tableros de aprendizaje', () => {
-  it('uno por mecánica (cuatro piezas y el maleficio), en el nivel que decide el calibrador, y ese nivel es de esa mecánica', () => {
-    expect(Object.keys(TUTORIALS).sort()).toEqual(['curse', 'gate', 'heavy', 'ice', 'wall']);
+  it('uno por mecánica (cuatro piezas), en el nivel que decide el calibrador, y ese nivel es de esa mecánica', () => {
+    expect(Object.keys(TUTORIALS).sort()).toEqual(['gate', 'heavy', 'ice', 'wall']);
     for (const [mech, t] of Object.entries(TUTORIALS)) {
       expect(t.level, mech).toBe(TUTORIAL_LEVELS[mech]);
       const plan = levelPlan(t.level);
       expect(plan.intro, `nivel ${t.level}`).toBe(true);
-      if (mech !== 'curse') expect(plan.mechanics, `nivel ${t.level}`).toContain(mech);
+      expect(plan.mechanics, `nivel ${t.level}`).toContain(mech);
     }
-    // el orden de aprendizaje de las piezas: roca → pesada → candado → hielo (el maleficio, entre medias)
+    // el orden de aprendizaje de las piezas: roca → pesada → candado → hielo
     const L = (m) => TUTORIALS[m].level;
     expect(L('wall')).toBeLessThan(L('heavy'));
     expect(L('heavy')).toBeLessThan(L('gate'));
     expect(L('gate')).toBeLessThan(L('ice'));
-    expect(new Set(Object.values(TUTORIALS).map((t) => t.level)).size).toBe(5); // nunca dos tutoriales en el mismo nivel
+    expect(new Set(Object.values(TUTORIALS).map((t) => t.level)).size).toBe(4); // nunca dos tutoriales en el mismo nivel
   });
 
   it('cada tablero es válido, se resuelve en exactamente 3 movimientos y contiene la pieza que enseña', () => {

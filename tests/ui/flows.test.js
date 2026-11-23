@@ -181,6 +181,9 @@ describe('interfaz: aventura', () => {
     app.$('bContinue').click();
     await untilPlayable(app, 2);
     app.$('pQuit').click();
+    await until(() => shown(app, 'ask'));
+    app.$('askYes').click();
+    await until(() => app.S.run === null);
     expect(app.S.run).toBeNull();
     expect(saved().run ?? null).toBeNull();
     expect(saved().paths.c1).toMatchObject({ level: 2, runs: 1 });
@@ -274,5 +277,15 @@ describe('interfaz: desafío diario', () => {
     expect(shown(app, 'dailyEnd')).toBe(false);
     expect(shown(app, 'menu')).toBe(true);
     expect(saved().run.level).toBe(2);
+  });
+
+  it('si el jugador nunca jugó, muestra el tutorial de sacar la llave también al entrar en Desafío', async () => {
+    const app = await bootApp({ save: {} });
+    app.$('tabDaily').click();
+    await until(() => shown(app, 'coach'));
+    expect(app.$('coachTitle').textContent).toBe('¡Saca la llave roja!');
+    app.$('coachOk').click();
+    expect(shown(app, 'coach')).toBe(false);
+    expect(saved().tips.drag).toBe(true);
   });
 });

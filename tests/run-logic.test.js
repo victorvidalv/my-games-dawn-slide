@@ -105,6 +105,7 @@ describe('crear partidas', () => {
     expect(run.daily).toEqual({
       id: 'classic',
       day: 900,
+      seed: 900,
       index: 1,
       used: 0,
       remaining: 150,

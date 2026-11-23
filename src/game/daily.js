@@ -212,8 +212,7 @@ export function recordDaily(state, id, day, { cleared, used, opt = DAILY_TURN_BU
   };
 }
 
-export const dailyProgress = (store, id = DAILY_CHALLENGE.id, day = dayNumber()) =>
-  store.dailyPlay?.day === day ? store.dailyPlay.challenges?.[id] : undefined;
+export const dailyProgress = (store, id = DAILY_CHALLENGE.id) => store.dailyPlay?.challenges?.[id];
 
 /** Conserva el avance del reto diario (tablero actual, turnos usados y posición) separado de la aventura. */
 export function writeDailyProgress(store, daily, progress) {

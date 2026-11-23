@@ -205,6 +205,15 @@ $('pQuit').onclick = async () => {
     surrenderDaily();
     return;
   }
+  const ok = await ask({
+    ico: '🏳️',
+    danger: true,
+    yes: 'Sí, rendirme',
+    no: 'Seguir jugando',
+    title: '¿Rendirse en la aventura?',
+    text: 'Terminarás esta partida y se guardará tu récord actual. Si quieres seguir más tarde, usa «Guardar y salir».',
+  });
+  if (!ok) return;
   recordBest(true);
   closeRun();
   discardRun();

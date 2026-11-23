@@ -1038,7 +1038,13 @@ export const EN_UI = {
   'Sí, rendirme': 'Yes, give up',
   'Seguir jugando': 'Keep playing',
   '¿Rendirse en el desafío?': 'Give up on the challenge?',
+  '¿Rendirse en la aventura?': 'Give up on the adventure?',
+  'Terminarás esta partida y se guardará tu récord actual. Si quieres seguir más tarde, usa «Guardar y salir».':
+    'You will end this run and save your current record. If you want to continue later, use "Save and exit".',
   'Terminarás este intento del desafío de hoy con tu avance actual y podrás ver tus resultados o empezar de nuevo.':
     'You will end this attempt at today’s challenge with your current progress and see your results or start again.',
   'Te has rendido': 'You gave up',
+  'Pistas para el modo Aventura': 'Hints for Adventure mode',
+  '+1 pista para el modo Aventura': '+1 hint for Adventure mode',
+  '+{n} pistas para el modo Aventura': '+{n} hints for Adventure mode',
 };

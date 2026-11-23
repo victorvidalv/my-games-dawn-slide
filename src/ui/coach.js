@@ -110,6 +110,7 @@ function tipFor(id) {
 }
 
 let showing = false;
+let guidedFirstBoard = false;
 /** Explicaciones que pueden esperar a otro nivel si en este ya hay algo más importante que enseñar. */
 const CAN_WAIT = ['score', 'tools', 'hero', 'seal'];
 
@@ -164,7 +165,7 @@ function guide() {
   if (G.tutorial && TUTORIALS[G.tutorial]) {
     const steps = TUTORIALS[G.tutorial].steps;
     pointAtNextMove('', steps[Math.min(G.moves, steps.length - 1)]);
-  } else if (G.n === 1 && !G.moves) pointAtNextMove();
+  } else if (G.n === 1 && !G.moves && (!S.run?.daily || guidedFirstBoard)) pointAtNextMove();
 }
 
 /** Se llama al empezar cada nivel. */
@@ -174,17 +175,18 @@ export function startCoach() {
   renderLegend();
   if (!G || !run || G.done || run.mode === 'p' || showing) return;
   store.tips = store.tips || {};
+  guidedFirstBoard = false;
   const queue = [];
+  if (G.n === 1) queue.push('drag');
   if (!run.daily) {
-    // los retos diarios no enseñan el juego: solo las piezas que traen
-    if (G.n === 1) queue.push('drag');
+    // en Desafío no se enseñan puntos/ayudas/héroe de Aventura: solo sacar la llave la primera vez y piezas especiales
     if (G.n >= 2) queue.push('score');
     if (G.n >= 3) queue.push('tools');
     if (G.n >= 4) queue.push('hero');
   }
   if (run.fate?.length) queue.push('fate');
   if (G.seal) queue.push('seal');
-  queue.push(...mechanicsPresent(G));
+  queue.push(...mechanicsPresent(G).filter((id) => id !== 'curse'));
   // Una sola explicación general por nivel: lo que hace falta YA para jugar este tablero (arrastrar, piezas nuevas, cartas)
   // se enseña siempre; las demás (puntos, ayudas, héroe, sellos) esperan su turno si ya hay otra ventana en este nivel.
   const pending = queue.filter((id) => !store.tips[id]);
@@ -194,6 +196,7 @@ export function startCoach() {
     guide();
     return;
   }
+  if (todo.includes('drag')) guidedFirstBoard = true;
   showing = true;
   const release = holdBusy();
   show(todo, () => {
@@ -211,6 +214,6 @@ export function coachOnMove() {
     guide();
     return;
   }
-  if (G.n !== 1) return;
+  if (G.n !== 1 || (S.run?.daily && !guidedFirstBoard)) return;
   pointAtNextMove('¡Muy bien! ');
 }

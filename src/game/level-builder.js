@@ -44,7 +44,9 @@ async function buildHere(run, tips) {
   const { levelBank, specialBank } = await loadBanks();
   const banks = { levels: levelBank.ratings, special: specialBank, tips };
   const d = run.daily;
-  return d ? buildDaily(challengeById(d.id), d.day, banks, d.index, d.remaining) : buildAdventureLevel(run, banks);
+  return d
+    ? buildDaily(challengeById(d.id), d.seed ?? d.day, banks, d.index, d.remaining)
+    : buildAdventureLevel(run, banks);
 }
 /** Manda los bancos al hilo una sola vez (los mensajes llegan en orden: los tableros pedidos después ya los tienen). */
 const sendBanks = (w) =>

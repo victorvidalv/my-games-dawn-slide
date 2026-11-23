@@ -101,12 +101,13 @@ export function restoreRun(saved) {
   return run;
 }
 
-/** Partida de reto diario: 15 tableros progresivos con reserva compartida de 150 turnos exactos. */
-export function newDailyRun({ challenge, day, index, boards, used = 0, attempt = null }) {
+/** Partida de Desafío: 15 tableros progresivos con semilla aleatoria y reserva compartida de 150 turnos exactos. */
+export function newDailyRun({ challenge, day, seed, index, boards, used = 0, attempt = null }) {
   const remaining = Math.max(0, DAILY_TURN_BUDGET - used);
+  const runSeed = Number.isFinite(seed) ? seed : day;
   return {
-    daily: { id: challenge.id, day, index, used, remaining, boards, attempt },
-    seed: day,
+    daily: { id: challenge.id, day, seed: runSeed, index, used, remaining, boards, attempt },
+    seed: runSeed,
     level: challenge.level,
     start: 1,
     mode: 'c',
@@ -127,16 +128,21 @@ export function newDailyRun({ challenge, day, index, boards, used = 0, attempt =
   };
 }
 
-/** Estado inicial o reanudado del reto diario de hoy. */
-export function dailyEntry(progress, targets, { restart = false } = {}) {
-  const fresh = () => ({ boards: targets.map(() => null), used: 0, attempt: null, index: 0 });
+/** Estado inicial (semilla aleatoria nueva) o reanudado (misma semilla) del Desafío. */
+export function dailyEntry(
+  progress,
+  targets,
+  { restart = false, randomSeed = () => Math.floor(Math.random() * 0x7fffffff) + 1 } = {},
+) {
+  const fresh = () => ({ seed: randomSeed(), boards: targets.map(() => null), used: 0, attempt: null, index: 0 });
   if (restart || !progress || progress.finished) return fresh();
   const boards = targets.map((_, i) => progress.boards?.[i] || null);
   const used = Number.isFinite(progress.used) ? progress.used : 0;
   const attempt = progress.attempt || null;
   const index = attempt?.index ?? boards.findIndex((board) => !board);
   if (index < 0 || used >= DAILY_TURN_BUDGET) return fresh();
-  return { boards, used, attempt, index };
+  const seed = Number.isFinite(progress.seed) ? progress.seed : randomSeed();
+  return { seed, boards, used, attempt, index };
 }
 
 /** Huella del tablero (piezas, inicio y rocas): distingue un tablero de otro aunque tengan las mismas piezas. */

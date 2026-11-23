@@ -87,9 +87,10 @@ export function saveRun() {
     G = S.G;
   if (run?.daily) {
     const d = run.daily;
-    if (G && !G.done && d.day === dayNumber()) {
+    if (G && !G.done) {
       d.attempt = dailyAttempt(d, G);
       writeDailyProgress(store, d, {
+        seed: d.seed,
         boards: d.boards,
         used: d.used,
         remaining: d.remaining,
@@ -178,6 +179,7 @@ export function surrenderDaily() {
     boards: d.boards.slice(),
   });
   writeDailyProgress(store, d, {
+    seed: d.seed,
     boards: d.boards.slice(),
     used,
     remaining: d.remaining,
@@ -399,7 +401,7 @@ function winDaily() {
     finished || cleared >= 13
       ? recordDaily((store.daily ||= emptyDaily()), d.id, d.day, { cleared, used, boards: d.boards.slice() })
       : null;
-  writeDailyProgress(store, d, { boards: d.boards.slice(), used, remaining, finished, attempt: null });
+  writeDailyProgress(store, d, { seed: d.seed, boards: d.boards.slice(), used, remaining, finished, attempt: null });
   countStat('challengeBoards');
   if (finished) raiseStat('challengePure', 1);
   if (out && finished) raiseStat('dailyBestDay', 1);
@@ -437,6 +439,7 @@ export function fail(why) {
         boards: d.boards.slice(),
       });
       writeDailyProgress(store, d, {
+        seed: d.seed,
         boards: d.boards.slice(),
         used: DAILY_TURN_BUDGET,
         remaining: 0,
