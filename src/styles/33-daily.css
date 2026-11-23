@@ -424,23 +424,8 @@
 body.daily-run #bShop,
 body.daily-run #bHint,
 body.daily-run #bPower,
-body.daily-run .scores,
-body:not(.daily-run) #bDailyReset {
+body.daily-run .scores {
   display: none !important;
-}
-body.daily-run #bDailyReset {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-height: 44px;
-  padding: 8px 16px;
-  border-radius: var(--wob-c);
-  font: 800 13px/1 var(--font-ui);
-}
-body.daily-run #bDailyReset:disabled {
-  opacity: 0.45;
-  cursor: default;
 }
 body.daily-run .top .lv b {
   font-size: clamp(15px, 4.6vw, 20px);

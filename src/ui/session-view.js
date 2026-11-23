@@ -5,7 +5,7 @@
 import { HERO_TALK } from '../data/story.js';
 import { ZONES, zoneIdx } from '../data/zones.js';
 import { $ } from '../dom.js';
-import { challengeById, challengeTargets } from '../game/daily.js';
+import { DAILY_TOTAL_BOARDS, DAILY_TURN_BUDGET, challengeById } from '../game/daily.js';
 import { baseScore } from '../engine/scoring.js';
 import { numLocale } from '../i18n.js';
 import { celebrate } from './achievements.js';
@@ -29,7 +29,7 @@ export function tipFor(G, heroId) {
 
 export const setDailyMode = (on) => {
   document.body.classList.toggle('daily-run', on);
-  if ($('bDailyReset')) $('bDailyReset').hidden = !on;
+  if ($('bHint')) $('bHint').hidden = on;
 };
 export const setMessage = (text) => {
   $('msg').textContent = text;
@@ -46,24 +46,21 @@ export function showScore(run) {
 /** HUD inicial de un tablero: nivel, mínimo, puntos base, puntaje, límite, deshacer y consejo. */
 export function renderLevelHud(run, G, heroId) {
   const prac = run.mode === 'p';
-  const dailyChallenge = run.daily && challengeById(run.daily.id);
-  const dailyTotal = dailyChallenge ? challengeTargets(dailyChallenge).length : 0;
-  const dailyPrev = run.daily?.boards?.[run.daily.index];
+  const dailyUsed = run.daily ? (run.daily.used || 0) + G.moves : 0;
+  const dailyRem = run.daily ? Math.max(0, DAILY_TURN_BUDGET - dailyUsed) : 0;
   $('lvl').textContent = run.daily
-    ? `${dailyChallenge.name} · ${run.daily.index + 1}/${dailyTotal}`
+    ? `${run.daily.index + 1}/${DAILY_TOTAL_BOARDS}`
     : G.tutorial
       ? `${G.n} · TUTORIAL`
       : G.n;
   $('mn').textContent = G.opt;
   $('base').textContent = prac ? '—' : baseScore(G.opt);
   showScore(run);
-  $('lim').textContent = prac ? '∞' : G.limit;
+  $('lim').textContent = run.daily ? DAILY_TURN_BUDGET : prac ? '∞' : G.limit;
   $('bUndo').disabled = !G.hist.length;
   setMessage(
     run.daily
-      ? dailyPrev
-        ? `Mejorando ${dailyPrev.moves}/${dailyPrev.opt} · mínimo ${G.opt} movimientos.`
-        : `Tablero ${run.daily.index + 1} de ${dailyTotal} · mínimo ${G.opt} movimientos.`
+      ? `Tablero ${run.daily.index + 1}/${DAILY_TOTAL_BOARDS} · Mínimo ${G.opt} mov. · Quedan ${dailyRem} turnos`
       : G.n === 1
         ? 'Desliza los bloques y saca la llave roja ➜ Cada movimiento cuenta.'
         : tipFor(G, heroId),
@@ -74,7 +71,7 @@ export function renderLevelHud(run, G, heroId) {
 export function levelBannerText(run, G) {
   if (run.daily) {
     const c = challengeById(run.daily.id);
-    return [c.name, `Tablero ${run.daily.index + 1} de ${challengeTargets(c).length}`];
+    return [c.name, `Tablero ${run.daily.index + 1} de ${DAILY_TOTAL_BOARDS}`];
   }
   const title = G.tutorial ? 'Tutorial' : `Nivel ${G.n}`;
   return [title, ZONES[zoneIdx(G.n)].n];

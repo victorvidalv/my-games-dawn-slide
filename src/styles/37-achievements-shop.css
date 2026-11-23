@@ -915,12 +915,13 @@ html.lite .outfit-card.on .outfit-art::before {
   overflow-wrap: anywhere;
 }
 
-/* Tres pestañas principales (Tablero · Atuendos · Portada) */
-.ach-tabs.ach-tabs-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+/* Pestañas principales (Tablero · Atuendos) */
+.ach-tabs.ach-tabs-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
+.ach-tabs-2 .ach-tab,
 .ach-tabs-3 .ach-tab {
   flex-direction: column;
   gap: 4px;
@@ -929,10 +930,16 @@ html.lite .outfit-card.on .outfit-art::before {
   position: relative;
 }
 
+.ach-tabs-2 .ach-tab-badge,
 .ach-tabs-3 .ach-tab-badge {
   position: absolute;
   top: -6px;
   right: -4px;
+}
+
+.ach-tabs.ach-tabs-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
 }
 
 /* Miniaturas de portada y fondo */

@@ -12,7 +12,7 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 
 /* Personalización (portadas, fondos, miniaturas y trajes): no se descarga al instalar; se guarda la primera vez que se ve. */
 registerRoute(
-  ({ url }) => /\/(portada|heroes\/outfits)\/.+\.webp$|\/backgrounds\/cover-.+\.webp$/.test(url.pathname),
+  ({ url }) => /\/imagenes\/atuendo-.+\.webp$/.test(url.pathname),
   new CacheFirst({
     cacheName: 'cosmeticos-v3',
     plugins: [new ExpirationPlugin({ maxEntries: 500, purgeOnQuotaError: true })],

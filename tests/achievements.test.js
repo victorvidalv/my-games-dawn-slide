@@ -228,10 +228,25 @@ describe('Personalizar: objetos que se desbloquean por acciones', () => {
     const WANT = { common: 1, rare: 1, epic: 2, legendary: 3 };
     const modes = new Set();
     let checked = 0;
+    const SINGLE_REQ_OVERRIDES = new Set([
+      'key:neon',
+      'key:galaxy',
+      'pieces:silk',
+      'pieces:lava',
+      'trail:starlight',
+      'trail:comet',
+      'outfit:lia:ingeniera',
+      'outfit:lia:brasas',
+      'outfit:jean:oni',
+      'outfit:jean:sakura',
+      'outfit:van:carmesi',
+      'outfit:van:cuervos',
+    ]);
     const check = (key, rarity) => {
       const u = UNLOCKS[key];
       expect(u, key).toBeTruthy();
-      expect(u.reqs, key).toHaveLength(WANT[rarity]);
+      const expectedLen = SINGLE_REQ_OVERRIDES.has(key) ? 1 : WANT[rarity];
+      expect(u.reqs, key).toHaveLength(expectedLen);
       for (const r of u.reqs) {
         expect(STATS[r.stat], `${key}: ${r.stat}`).toBeTypeOf('function');
         expect(r.goal, key).toBeGreaterThanOrEqual(1);
@@ -243,8 +258,9 @@ describe('Personalizar: objetos que se desbloquean por acciones', () => {
           expect(r.goal, key).toBeGreaterThanOrEqual(6);
         modes.add(MODE_OF(r.stat));
       }
-      // Las legendarias piden una condición de cada modo
-      if (rarity === 'legendary') expect(new Set(u.reqs.map((r) => MODE_OF(r.stat))).size, key).toBe(3);
+      // Las legendarias piden una condición de cada modo (salvo las simplificadas a una condición directa)
+      if (rarity === 'legendary' && !SINGLE_REQ_OVERRIDES.has(key))
+        expect(new Set(u.reqs.map((r) => MODE_OF(r.stat))).size, key).toBe(3);
       checked++;
     };
     for (const type of ['board', 'pieces', 'key', 'card', 'trail', 'fx', 'music', 'cover', 'bg', 'aura', 'ui'])
@@ -264,10 +280,12 @@ describe('Personalizar: objetos que se desbloquean por acciones', () => {
     for (const [hero, list] of Object.entries(OUTFITS))
       for (const o of list.slice(1)) {
         const stats = UNLOCKS[`outfit:${hero}:${o.id}`].reqs.map((r) => r.stat);
-        // todos piden tableros con su héroe, o su primera victoria con él
-        expect(stats.includes(own[hero]) || stats.includes(`heroWin${own[hero].slice(10)}`), `${hero}:${o.id}`).toBe(
-          true,
-        );
+        // todos piden tableros con su héroe, o victoria en Normal / Difícil con él
+        const suffix = own[hero].slice(10);
+        expect(
+          stats.includes(own[hero]) || stats.includes(`heroWin${suffix}`) || stats.includes(`heroHardWin${suffix}`),
+          `${hero}:${o.id}`,
+        ).toBe(true);
       }
     // mucho juego con Lía no abre ni un traje de Jean ni de Juth
     const store = { stats: { heroBoards_lia: 1000 } };

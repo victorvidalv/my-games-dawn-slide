@@ -62,6 +62,7 @@ export function showResult({ gain, moves, opt, previous, total }) {
     const perfect = moves <= opt;
     const ms = reduced() ? 450 : perfect ? 1650 : 1100;
     el.classList.toggle('perfect', perfect);
+    el.dataset.tier = perfect ? 'perfect' : moves - opt <= 2 ? 'near' : 'ok';
     let ring = el.querySelector('.res-ring'); // aro de luz que se abre detrás de la placa
     if (!ring) {
       ring = document.createElement('i');

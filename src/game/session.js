@@ -9,9 +9,10 @@ import { calcGain } from '../engine/scoring.js';
 import { startHintsFor } from '../engine/difficulty.js';
 import { buildLevelAsync } from './level-builder.js';
 import {
+  DAILY_CHALLENGE,
+  DAILY_TURN_BUDGET,
   challengeById,
   challengeTargets,
-  currentStreak,
   dailyProgress,
   dayNumber,
   emptyDaily,
@@ -21,19 +22,6 @@ import {
 } from './daily.js';
 import { FLAG_STATS, adventureStartStats, boardStats, boardWinStats, flagStat } from './achievements.js';
 import { boardPure } from './run-points.js';
-import { hintMove } from '../engine/solver.js';
-import {
-  buildSurvival,
-  canUseChallengeRelic,
-  newSurvival,
-  spendSurvivalTurn,
-  survivalProgress,
-  survivalRouteUnlocked,
-  useChallengeHint,
-  useChallengeReset,
-  useChallengeUndo,
-  writeSurvival,
-} from './survival.js';
 import { canPaidRevive, payRevive } from './shop.js';
 import {
   advanceRun,
@@ -56,7 +44,7 @@ import { playReviveEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { showDailyResult } from '../ui/daily.js';
 import { countStat, markStat, pauseAchievementToasts, raiseStat, updateStats } from '../ui/achievements.js';
-import { boardEl, buildPieces, fitBoard, layout, updateHud } from '../ui/board.js';
+import { buildPieces, fitBoard, layout, updateHud } from '../ui/board.js';
 import {
   FATE_CARDS,
   FATE_EVERY,
@@ -75,11 +63,8 @@ import { showFateDialog, syncFateHud } from '../ui/fate.js';
 import { endRun } from '../ui/finale.js';
 import { showResult } from '../ui/result.js';
 import { chooseHero, showRescue, showReviveOffer, syncHero } from '../ui/heroes.js';
-import { burst } from '../ui/fx.js';
-import { applyChallengeScenery, applyZone, renderStage } from '../ui/map.js';
+import { applyZone, renderStage } from '../ui/map.js';
 import { openMenu } from '../ui/menu.js';
-import { flashSurvivalTurns, setSurvivalMode, showSurvivalResult, updateSurvivalHud } from '../ui/survival.js';
-import { $ } from '../dom.js';
 import {
   dimBoard,
   levelBannerText,
@@ -100,12 +85,17 @@ import { boardSwapDone, boardSwapOut, levelBanner, playLevelScenery, wipeOut } f
 export function saveRun() {
   const run = S.run,
     G = S.G;
-  if (run?.survival) return persist();
   if (run?.daily) {
     const d = run.daily;
     if (G && !G.done && d.day === dayNumber()) {
       d.attempt = dailyAttempt(d, G);
-      writeDailyProgress(store, d, { boards: d.boards, attempt: d.attempt });
+      writeDailyProgress(store, d, {
+        boards: d.boards,
+        used: d.used,
+        remaining: d.remaining,
+        finished: false,
+        attempt: d.attempt,
+      });
       persist();
     }
     return;
@@ -115,7 +105,7 @@ export function saveRun() {
   persist();
 }
 export function recordBest(final) {
-  if (!S.run || S.run.daily || S.run.survival) return;
+  if (!S.run || S.run.daily) return;
   updateBest(store.paths, rkey(), S.run, { final });
   persist();
 }
@@ -129,7 +119,7 @@ export async function startRun(start, mode, preset) {
     return;
   }
   if (S.run) recordBest(true); // si abandonas, lo logrado cuenta
-  const hints = startHintsFor(start) + streakHintBonus(currentStreak(store.daily, dayNumber()));
+  const hints = startHintsFor(start) + streakHintBonus(store.daily, dayNumber());
   setBoard(null);
   setRun(
     newAdventureRun({
@@ -149,22 +139,19 @@ export async function startRun(start, mode, preset) {
   saveRun();
   await resumeAdventure();
 }
-/** Retoma el tablero en curso, o abre el tablero que se eligió para mejorar la marca. */
-export async function startDaily(id, index) {
-  const c = challengeById(id),
+/** Entra directo al Desafío diario de hoy (15 tableros · 150 turnos exactos), retomando si estaba en curso. */
+export async function startDaily(opts = {}) {
+  const restart = typeof opts === 'object' && opts !== null ? !!opts.restart : false;
+  const c = challengeById(DAILY_CHALLENGE.id),
     day = dayNumber();
-  const entry = dailyEntry(dailyProgress(store, c.id, day), challengeTargets(c), index);
-  if (entry.index < 0) {
-    showDailyResult({ id: c.id, day });
-    return;
-  }
+  const entry = dailyEntry(dailyProgress(store, c.id, day), challengeTargets(c), { restart });
   if (S.run && !S.run.daily && S.G && !S.G.done) saveRun();
   if (S.G) S.G.done = true;
   setBoard(null);
   setRun(newDailyRun({ challenge: c, day, ...entry }));
   syncHero();
   syncFateHud();
-  applyZone(zoneIdx(c.level));
+  applyZone(zoneIdx(1));
   await startLevel();
 }
 /** Sale del reto diario sin tocar la partida guardada de la aventura. */
@@ -176,164 +163,36 @@ export function leaveDaily() {
   Music.stop(0.2);
   setTensionFx(0, false);
 }
-/** Reinicia el tablero actual del reto diario al instante (para buscar el oro sin gastar turnos). */
-export function resetDailyBoard() {
-  const { run, G } = S;
-  if (!run?.daily || !G || G.done || S.busy || !G.moves) return;
-  G.pos = G.start.slice();
-  G.moves = 0;
-  G.hist = [];
-  saveRun();
-  layout();
-  updateHud();
-  sfx.hint();
-  setMessage('Tablero reiniciado. ¡A por el oro!');
-}
 
-/* ---------- Desafío ---------- */
-export function startSurvival({ restart = false, route, relic } = {}) {
-  if (S.run?.survival) return;
-  if (S.run) saveRun();
-  closeRun();
-  const previous = survivalProgress(store);
-  const resume = !restart && !route && !relic && previous?.status === 'active';
-  const requested = route || previous?.route || '150';
-  const safeRoute = survivalRouteUnlocked(store, requested) ? requested : '150';
-  const progress = resume
-    ? previous
-    : writeSurvival(store, {
-        ...newSurvival(safeRoute, relic || previous?.relic || 'hint'),
-        updatedAt: store.survival?.updatedAt,
-      });
-  setRun({ survival: progress, level: progress.cleared + 1 });
-  markStat('challengeRoutesPlayed', progress.route);
-  markStat('challengeRelics', progress.relic);
+/** Termina el intento actual del Desafío diario por rendición, conservando el avance logrado hoy. */
+export function surrenderDaily() {
+  if (!S.run?.daily) return;
+  const d = S.run.daily;
+  const cleared = d.boards.filter(Boolean).length;
+  const used = Math.min(DAILY_TURN_BUDGET, (d.used || 0) + (S.G?.moves || 0));
+  d.used = used;
+  d.remaining = Math.max(0, DAILY_TURN_BUDGET - used);
+  const out = recordDaily((store.daily ||= emptyDaily()), d.id, d.day, {
+    cleared,
+    used,
+    boards: d.boards.slice(),
+  });
+  writeDailyProgress(store, d, {
+    boards: d.boards.slice(),
+    used,
+    remaining: d.remaining,
+    finished: true,
+    attempt: null,
+  });
   persist();
-  setDailyMode(false);
-  setSurvivalMode(true);
+  if (S.G) {
+    S.G.done = true;
+    lockBoard();
+    dimBoard(S.G);
+  }
   setTensionFx(0, false);
-  Music.survival();
-  showSurvivalBoard();
-}
-
-export function leaveSurvival() {
-  closeRun();
-  setSurvivalMode(false);
-  Music.stop(0.2);
-}
-
-function showSurvivalBoard() {
-  const run = S.run;
-  const G = buildSurvival(run.survival);
-  G.colors = Array.from({ length: 8 }, (_, i) => (i + G.n - 1) % 8);
-  run.level = G.n;
-  setBoard(G);
-  $('lvl').textContent = `${G.n}/${G.total}`;
-  updateSurvivalHud(run.survival, G);
-  applyChallengeScenery();
-  syncFateHud();
-  buildPieces();
-  setMessage(
-    G.n === 1
-      ? `Tablero 1 de ${G.total} · mínimo ${G.opt} movimientos. Cada paso gasta 1 turno.`
-      : `Tablero ${G.n} de ${G.total} · mínimo ${G.opt} movimientos.`,
-  );
-  setBusy(false);
-  fitBoard();
-}
-
-export function activateChallengeRelic() {
-  const { run, G } = S;
-  if (!run?.survival || !G || G.done || S.busy) return;
-  if (!canUseChallengeRelic(run.survival).ok) return;
-  const kind = run.survival.relic;
-  if (kind === 'hint') {
-    const h = hintMove(G.pieces, G.pos, G.walls);
-    if (!h) {
-      setMessage('No encuentro pista desde aquí.');
-      return;
-    }
-    run.survival = writeSurvival(store, useChallengeHint(run.survival));
-    countStat('challengeRelicsUsed');
-    persist();
-    updateSurvivalHud(run.survival, G);
-    const p = G.pieces[h.i];
-    const n = Math.abs(h.to - h.from);
-    const dir = p.o === 'h' ? (h.to > h.from ? 'derecha' : 'izquierda') : h.to > h.from ? 'abajo' : 'arriba';
-    setMessage(`Mueve la pieza brillante ${n} casilla${n > 1 ? 's' : ''} hacia ${dir}. Quedan ${h.left} movimientos.`);
-    const el = G.els[h.i];
-    el.classList.remove('hint');
-    void el.offsetWidth;
-    el.classList.add('hint');
-    sfx.hint();
-    const r = el.getBoundingClientRect();
-    burst(r.left + r.width / 2, r.top + r.height / 2, 14, ['#fff', '#ffcf6b'], 3);
-    return;
-  }
-  if (kind === 'reset') {
-    run.survival = writeSurvival(store, useChallengeReset(run.survival));
-    countStat('challengeRelicsUsed');
-    G.pos = G.start.slice();
-    G.moves = 0;
-    G.hist = [];
-    persist();
-    layout();
-    updateSurvivalHud(run.survival, G);
-    sfx.hint();
-    boardEl.classList.remove('survival-clear');
-    void boardEl.offsetWidth;
-    boardEl.classList.add('survival-clear');
-    setTimeout(() => boardEl.classList.remove('survival-clear'), 240);
-    setMessage('Tablero reiniciado. Recuperaste los turnos de este tablero.');
-    return;
-  }
-  if (kind === 'undo') {
-    run.survival = writeSurvival(store, useChallengeUndo(run.survival));
-    countStat('challengeRelicsUsed');
-    G.pos = run.survival.pos.slice();
-    G.moves = Math.max(0, G.moves - 1);
-    G.hist.pop();
-    persist();
-    layout();
-    updateSurvivalHud(run.survival, G);
-    sfx.move();
-    setMessage('Último movimiento deshecho (+1 turno).');
-  }
-}
-
-export function playSurvivalTurn(won) {
-  const { run, G } = S;
-  const prevPos = G.hist.at(-1) || null;
-  run.survival = writeSurvival(store, spendSurvivalTurn(run.survival, G.pos, won, prevPos));
-  persist();
-  updateSurvivalHud(run.survival, G);
-  if (!won && run.survival.status === 'active') {
-    if (G.moves > G.opt) setMessage(`Superaste el mínimo de este tablero (${G.moves}/${G.opt}).`);
-    return;
-  }
-
-  haltBoard();
-  lockBoard();
-  if (won) {
-    countStat('challengeBoards');
-    if (run.survival.status === 'won' && !run.survival.relicUsed) raiseStat('challengePure', 1);
-    sfx.success();
-    playKeyExit(G, { party: false });
-    boardEl.classList.add('survival-clear');
-    if (run.survival.status === 'active') flashSurvivalTurns(run.survival.remaining);
-  }
-  const next = () => {
-    boardEl.classList.remove('survival-clear');
-    if (S.run !== run) return;
-    if (run.survival.status === 'active') showSurvivalBoard();
-    else {
-      Music.stop(0.25);
-      showSurvivalResult(run.survival);
-      setBusy(false);
-    }
-  };
-  if (won && !reducedMotion()) setTimeout(next, 220);
-  else next();
+  Music.stop(0.25);
+  showDailyResult(d, { ...out, surrendered: true });
 }
 
 /* ---------- Tablero ---------- */
@@ -343,7 +202,6 @@ async function startLevel() {
   const G = await buildLevelAsync(run, store.tips || {});
   if (S.run !== run) return; // se salió mientras se preparaba
   restoreDailyAttempt(G, run.daily);
-  setSurvivalMode(false);
   setDailyMode(!!run.daily);
   // Entre tableros las piezas se disuelven en su sitio.
   await boardSwapOut();
@@ -536,11 +394,13 @@ function winDaily() {
     G = S.G,
     d = run.daily;
   const gain = calcGain(G.moves, G.opt, 0);
-  const { next, totals } = applyDailyWin(d, G, gain.total);
+  const { next, finished, cleared, used, remaining } = applyDailyWin(d, G, gain.total);
   const out =
-    totals && recordDaily((store.daily ||= emptyDaily()), d.id, d.day, totals.moves, totals.opt, d.boards.slice());
-  writeDailyProgress(store, d, { boards: d.boards.slice(), attempt: null });
-  if (out) raiseStat('dailyBestDay', Object.keys(store.daily.days[d.day] || {}).length);
+    finished || cleared >= 13
+      ? recordDaily((store.daily ||= emptyDaily()), d.id, d.day, { cleared, used, boards: d.boards.slice() })
+      : null;
+  writeDailyProgress(store, d, { boards: d.boards.slice(), used, remaining, finished, attempt: null });
+  if (out && finished) raiseStat('dailyBestDay', 1);
   persist();
   setTensionFx(0, false);
   Music.duck(0.55);
@@ -551,7 +411,7 @@ function winDaily() {
       if (S.run !== run) return;
       await showResult({ gain, moves: G.moves, opt: G.opt });
       if (S.run !== run) return;
-      if (out) {
+      if (finished) {
         showDailyResult(d, out);
         return;
       }
@@ -566,11 +426,30 @@ function winDaily() {
 export function fail(why) {
   if (S.G.done) return;
   switch (resolveFail(S.run, S.G, why)) {
-    case 'daily':
-      writeDailyProgress(store, S.run.daily, { boards: S.run.daily.boards, attempt: S.run.daily.attempt });
+    case 'daily_end': {
+      const d = S.run.daily;
+      const cleared = d.boards.filter(Boolean).length;
+      const out = recordDaily((store.daily ||= emptyDaily()), d.id, d.day, {
+        cleared,
+        used: DAILY_TURN_BUDGET,
+        boards: d.boards.slice(),
+      });
+      writeDailyProgress(store, d, {
+        boards: d.boards.slice(),
+        used: DAILY_TURN_BUDGET,
+        remaining: 0,
+        finished: true,
+        attempt: null,
+      });
       persist();
-      showRescue('daily');
-      return; // reto diario: se repite cuantas veces se quiera
+      S.G.done = true;
+      lockBoard();
+      dimBoard(S.G);
+      setTensionFx(0, false);
+      Music.stop(0.25);
+      showDailyResult(d, out);
+      return;
+    }
     case 'retry':
       saveRun();
       showRescue();

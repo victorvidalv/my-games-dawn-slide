@@ -9,7 +9,6 @@
  *            resultados de cada día: el mejor.
  * Lo demás (partida en curso, aspecto elegido, avisos vistos…) es de la pestaña que guarda. Lógica pura (sin DOM).
  */
-import { CHALLENGE_ROUTES, survivalBestFor, survivalBestLevel, survivalWonFor } from './survival.js';
 
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 const obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
@@ -118,20 +117,6 @@ export function mergeSaves(mine = {}, disk = {}) {
   if (daily) out.daily = daily;
   const shopEco = Math.max(num(mine.shopEco), num(disk?.shopEco));
   if (shopEco) out.shopEco = shopEco;
-  if (disk?.survival && (!mine.survival || disk.survival.updatedAt > mine.survival.updatedAt)) {
-    out.survival = disk.survival;
-  }
-  const survivalBests = {};
-  const survivalWon = {};
-  for (const route of CHALLENGE_ROUTES) {
-    const b = Math.max(survivalBestFor(mine, route.id), disk ? survivalBestFor(disk, route.id) : 0);
-    if (b) survivalBests[route.id] = b;
-    if (survivalWonFor(mine, route.id) || (disk && survivalWonFor(disk, route.id))) survivalWon[route.id] = true;
-  }
-  if (Object.keys(survivalBests).length) out.survivalBests = survivalBests;
-  if (Object.keys(survivalWon).length) out.survivalWon = survivalWon;
-  const survivalBest = Math.max(survivalBestLevel(mine), disk ? survivalBestLevel(disk) : 0);
-  if (survivalBest) out.survivalBest = survivalBest;
   const a = mine.dailyPlay,
     b = disk?.dailyPlay;
   if (!a || (b && b.day > a.day)) {

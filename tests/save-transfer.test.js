@@ -53,23 +53,6 @@ const snapshot = {
   daily: { last: dayNumber(now), streak: 5, best: 7, solved: 25, gold: 12, by: { classic: 13, all: 12 } },
   look: { board: 'celestial', music: 's2', key: 'crystal', pieces: 'brass', fx: 'prism', cover: 'battle' },
   tips: { tut_heavy: true },
-  survivalBests: { 150: 15, 200: 9, 250: 20 },
-  survivalWon: { 150: true, 250: true },
-  survival: {
-    routeVersion: 2,
-    route: '200',
-    relic: 'reset',
-    cleared: 8,
-    remaining: 112,
-    boardStartRemaining: 112,
-    pos: null,
-    lastPos: null,
-    hintUsedTurn: false,
-    resetUsed: true,
-    undoUsedBoard: false,
-    status: 'active',
-    updatedAt: recordAt,
-  },
   run,
 };
 
@@ -183,8 +166,6 @@ describe('importar al guardado local', () => {
       ach: { clean: local.ach.clean, perf10: recordAt, ch250: recordAt },
       achClaimed: { clean: local.achClaimed.clean, perf10: recordAt, ch250: recordAt },
       shopOwned: { 'board:slate': local.shopOwned['board:slate'], 'board:celestial': recordAt },
-      survivalWon: { 150: true, 250: true },
-      survival: { route: '200', relic: 'reset', cleared: 8 },
       daily: { streak: 5, best: 9 },
       look: snapshot.look,
     });

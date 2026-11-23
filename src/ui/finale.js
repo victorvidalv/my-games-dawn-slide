@@ -14,7 +14,6 @@ import { openMenu } from './menu.js';
 import { countStat, markStat, updateStats } from './achievements.js';
 import { victoryStats } from '../game/achievements.js';
 import { endingStory } from './story.js';
-import { WORLD } from '../data/lore.js';
 import { numLocale } from '../i18n.js';
 /* Final del camino (nivel 21): personaje, agradecimiento, puntaje obtenido y resumen de la build */
 let crowdTimer = 0;
@@ -170,7 +169,7 @@ function showFinale(prac, p, score, broken, snapshot, bestScore) {
   tone(523, 0.45, 'sine', 0.035, 0.15);
 }
 
-export function endRun(victory, why) {
+export function endRun(victory) {
   const prac = S.run.mode === 'p',
     p = pathOf(S.run.start),
     endingHero = heroOf().id,
@@ -192,6 +191,7 @@ export function endRun(victory, why) {
     updateStats((st) =>
       victoryStats(st, {
         hero: endingHero,
+        start: snapshot.start,
         grade,
         pacts: pacts.length,
         oath: pacts.some((c) => c.id === 'juramento'),
@@ -205,11 +205,7 @@ export function endRun(victory, why) {
     return;
   }
   endingStory(false, endingHero, S.run.level);
-  $('overTag').textContent = 'LA NOCHE SE CIERRA · ' + p.n.toUpperCase();
-  const timeUp = why === 'time';
-  $('overTitle').textContent = timeUp ? 'Sin tiempo' : 'Sin turnos';
-  $('overTxt').textContent =
-    `${timeUp ? 'Se agotó el tiempo' : 'Te quedaste sin movimientos'} en el nivel ${S.run.level} de 21. Thyes, año ${WORLD.year}.`;
+  $('overTitle').textContent = 'Es el final';
   $('overRec').innerHTML = !prac && S.run.recBroken ? '<span class="rec">★ NUEVO RÉCORD ★</span>' : '';
   $('overLvl').textContent = S.run.level;
   $('overBest').textContent = rec.score.toLocaleString(numLocale());
@@ -222,15 +218,8 @@ export function endRun(victory, why) {
     bestScore: rec.score,
   });
   renderBuildSummary($('overBuild'), snapshot);
-  const retryBtn = $('bRetryOver');
-  if (retryBtn) {
-    retryBtn.onclick = () => {
-      $('over').classList.remove('show');
-      startRun(snapshot.start, snapshot.mode, { hero: snapshot.hero, relic: snapshot.relic });
-    };
-  }
   $('over').classList.add('show');
   countUp($('overScore'), 0, S.run.score, 1200);
-  (retryBtn || $('bToMenu')).focus();
+  $('bToMenu').focus();
   discardRun();
 }

@@ -186,7 +186,7 @@ describe('interfaz: aventura', () => {
     expect(saved().paths.c1).toMatchObject({ level: 2, runs: 1 });
   });
 
-  it('al perder muestra rango, estadísticas y permite reintentar en 1 toque con el mismo héroe y reliquia', async () => {
+  it('al perder muestra «Es el final», estadísticas y solo la opción de volver al menú', async () => {
     const app = await bootApp({
       save: {
         paths: { c50: { score: 8000, level: 12, runs: 2 } },
@@ -212,46 +212,67 @@ describe('interfaz: aventura', () => {
     await untilPlayable(app, 10);
     app.session.fail('limit');
     await until(() => shown(app, 'over'));
+    expect(app.$('overTitle').textContent).toBe('Es el final');
+    expect(app.$('bRetryOver')).toBeNull();
     expect(app.$('overGrade').textContent).toBe('B');
     expect(app.$('overNear').textContent).toContain('1.500');
     expect(app.$('overStats').textContent).toContain('5/9');
-    app.$('bRetryOver').click();
-    await untilPlayable(app, 1);
+    app.$('bToMenu').click();
     expect(shown(app, 'over')).toBe(false);
-    expect(app.S.run).toMatchObject({ start: 50, hero: 'jean', relic: 'lantern', level: 1 });
+    expect(shown(app, 'menu')).toBe(true);
   });
 });
 
-describe('interfaz: reto diario', () => {
-  it('muestra la racha vigente en el inicio aunque el reto de hoy esté pendiente', async () => {
+describe('interfaz: desafío diario', () => {
+  it('muestra el estado de hoy y el récord de tablero en el botón de inicio', async () => {
     const { dayNumber, emptyDaily } = await import('../../src/game/daily.js');
     const day = dayNumber();
-    const app = await bootApp({ save: { daily: { ...emptyDaily(), last: day - 1, streak: 3, best: 8 } } });
-    expect(app.$('homeDailyStreak').textContent).toBe('3 días');
-    expect(app.$('homeDailySub').textContent).toBe('Reto de hoy pendiente');
+    const app = await bootApp({ save: { daily: { ...emptyDaily(), bestCleared: 9 } } });
+    expect(app.$('homeDailySub').textContent).toBe('15 tableros · 150 turnos');
+    expect(app.$('homeDailyRecord').hidden).toBe(false);
+    expect(app.$('homeDailyBest').textContent).toBe('9/15');
 
     const { paintDailyHome } = await import('../../src/ui/daily.js');
-    paintDailyHome(day - 1);
-    expect(app.$('homeDailyStreak').textContent).toBe('3 días');
-    expect(app.$('homeDailySub').textContent).toBe('Hecho hoy');
-    paintDailyHome(day + 1);
-    expect(app.$('homeDailyStreak').textContent).toBe('0 días');
-    expect(app.$('homeDailySub').textContent).toBe('Reto de hoy pendiente');
+    paintDailyHome(day);
+    expect(app.$('homeDailyBest').textContent).toBe('9/15');
   });
 
-  it('abre el primer tablero, se puede repetir al perder y salir no toca la aventura', async () => {
+  it('entra directo en 1 clic, muestra 1/15 y 150 turnos, sin pistas ni reinicio, y salir no toca la aventura', async () => {
     const app = await bootApp({ save: savedRun });
-    const { CHALLENGES } = await import('../../src/game/daily.js');
-    await app.session.startDaily(CHALLENGES[0].id);
-    await untilPlayable(app, app.S.G.n);
+    app.$('tabDaily').click();
+    await untilPlayable(app, app.S.G?.n || 1);
     expect(document.body.classList.contains('daily-run')).toBe(true);
-    expect(app.$('lvl').textContent).toMatch(/· 1\/3$/);
+    expect(app.$('lvl').textContent).toBe('1/15');
+    expect(app.$('lim').textContent).toBe('150');
+    expect(app.$('bHint').hidden).toBe(true);
+    expect(app.$('bDailyReset')).toBeNull();
     app.session.fail('limit');
-    expect(app.S.run.rescue.kind).toBe('daily');
-    expect(shown(app, 'rescue')).toBe(true);
+    expect(shown(app, 'dailyEnd')).toBe(true);
     app.session.leaveDaily();
     expect(app.S.run).toBeNull();
     expect(document.body.classList.contains('daily-run')).toBe(false);
+    expect(saved().run.level).toBe(2);
+  });
+
+  it('el menú de pausa ofrece «Rendirse» y termina el intento mostrando resultados', async () => {
+    const app = await bootApp({ save: savedRun });
+    app.$('tabDaily').click();
+    await untilPlayable(app, app.S.G?.n || 1);
+    app.$('bMenu').click();
+    expect(shown(app, 'pause')).toBe(true);
+    expect(app.$('pQuit').hidden).toBe(false);
+    expect(app.$('pQuit').firstElementChild.textContent).toBe('Rendirme');
+    app.$('pQuit').click();
+    await until(() => shown(app, 'ask'));
+    app.$('askYes').click();
+    await until(() => shown(app, 'dailyEnd'));
+    expect(app.$('dailyEndTitle').textContent).toBe('Te has rendido');
+    expect(app.$('dailyRetry').hidden).toBe(true);
+    expect(app.$('dailyShare').hidden).toBe(true);
+    expect(app.$('dailyBack').textContent).toBe('Entendido');
+    app.$('dailyBack').click();
+    expect(shown(app, 'dailyEnd')).toBe(false);
+    expect(shown(app, 'menu')).toBe(true);
     expect(saved().run.level).toBe(2);
   });
 });

@@ -100,18 +100,30 @@ describe('crear partidas', () => {
       lifeUsed: true,
       hints: 0,
     });
-    expect(run.fate).toBeUndefined();
+    expect(run.fate).toEqual([]);
     expect(run.route).toBeUndefined();
-    expect(run.daily).toEqual({ id: 'classic', day: 900, index: 1, boards: [null, null, null], attempt: null });
+    expect(run.daily).toEqual({
+      id: 'classic',
+      day: 900,
+      index: 1,
+      used: 0,
+      remaining: 150,
+      boards: [null, null, null],
+      attempt: null,
+    });
   });
 
-  it('el reto retoma el intento guardado o el primer tablero sin resolver', () => {
+  it('el reto retoma el intento guardado o reinicia si se pide', () => {
     const targets = [1, 2, 3];
     expect(dailyEntry(null, targets).index).toBe(0);
-    expect(dailyEntry({ boards: [{ moves: 5 }] }, targets).index).toBe(1);
-    expect(dailyEntry({ boards: [], attempt: { index: 2 } }, targets).index).toBe(2);
-    expect(dailyEntry({ boards: [], attempt: { index: 2 } }, targets, 0)).toMatchObject({ index: 0, attempt: null });
-    expect(dailyEntry({ boards: [{}, {}, {}] }, targets).index).toBe(-1);
+    expect(dailyEntry({ boards: [{ moves: 5 }], used: 5 }, targets).index).toBe(1);
+    expect(dailyEntry({ boards: [], used: 0, attempt: { index: 2 } }, targets).index).toBe(2);
+    expect(dailyEntry({ boards: [], used: 10, attempt: { index: 2 } }, targets, { restart: true })).toMatchObject({
+      index: 0,
+      used: 0,
+      attempt: null,
+    });
+    expect(dailyEntry({ boards: [{}, {}, {}], used: 20, finished: true }, targets).index).toBe(0);
   });
 });
 
@@ -216,15 +228,25 @@ describe('victoria', () => {
     expect(run).toMatchObject({ streak: 0, adj: -2 });
   });
 
-  it('el reto diario se queda con la mejor marca y suma al terminar todos', () => {
-    const d = { index: 0, boards: [{ moves: 9, opt: 6, points: 1 }, null], attempt: { index: 0 } };
-    expect(applyDailyWin(d, board({ moves: 7 }), 50)).toEqual({ next: 1, totals: null });
+  it('el reto diario descuenta turnos compartidos y termina al completar todos', () => {
+    const d = { index: 0, used: 0, remaining: 150, boards: [null, null], attempt: { index: 0 } };
+    expect(applyDailyWin(d, board({ moves: 7 }), 50)).toEqual({
+      next: 1,
+      finished: false,
+      cleared: 1,
+      used: 7,
+      remaining: 143,
+    });
     expect(d.boards[0]).toEqual({ moves: 7, opt: 6, points: 50 });
     expect(d.attempt).toBeNull();
-    applyDailyWin(d, board({ moves: 8 }), 40);
-    expect(d.boards[0].moves).toBe(7); // una marca peor no reemplaza a la mejor
     d.index = 1;
-    expect(applyDailyWin(d, board({ moves: 5, opt: 4 }), 80)).toEqual({ next: -1, totals: { moves: 12, opt: 10 } });
+    expect(applyDailyWin(d, board({ moves: 5, opt: 4 }), 80)).toEqual({
+      next: -1,
+      finished: true,
+      cleared: 2,
+      used: 12,
+      remaining: 138,
+    });
   });
 });
 
@@ -254,12 +276,12 @@ describe('avance entre niveles', () => {
 });
 
 describe('derrota', () => {
-  it('el reto diario siempre se puede repetir desde el inicio', () => {
-    const run = { daily: { index: 1, boards: [] } };
-    expect(resolveFail(run, board(), 'limit')).toBe('daily');
-    expect(run.daily.attempt).toMatchObject({ index: 1, pos: [0, 0], moves: 0, hist: [] });
-    expect(run.daily.attempt.key).toBe(boardKey(board()));
-    expect(run.rescue.kind).toBe('daily');
+  it('el reto diario termina el intento cuando se agotan los 150 turnos', () => {
+    const run = { daily: { index: 1, used: 140, remaining: 10, boards: [{ moves: 10, opt: 10 }] } };
+    expect(resolveFail(run, board({ moves: 10 }), 'limit')).toBe('daily_end');
+    expect(run.daily.used).toBe(150);
+    expect(run.daily.remaining).toBe(0);
+    expect(run.daily.attempt).toBeNull();
   });
 
   it('en el camino Normal los primeros niveles se reintentan gratis', () => {

@@ -6,7 +6,6 @@
  */
 import { CHALLENGES, maxLevelReached } from './daily.js';
 import { PLAN } from './unlock-plan.js';
-import { survivalBestLevel, survivalCompletedCount, survivalWonFor } from './survival.js';
 
 export const TIERS = {
   bronze: { id: 'bronze', name: 'Simple' },
@@ -86,12 +85,12 @@ export const REWARDS = {
     { id: 'marble', name: 'Mármol pulido', price: 70, rarity: 'rare' },
     { id: 'jelly', name: 'Gelatina', price: 70, rarity: 'rare' },
     { id: 'copper', name: 'Cobre patinado', price: 75, rarity: 'rare' },
-    { id: 'silk', name: 'Seda', price: 80, rarity: 'rare' },
+    { id: 'silk', name: 'Seda', price: 80, rarity: 'epic' },
     { id: 'pearl', name: 'Nácar', price: 85, rarity: 'rare' },
     { id: 'aurora', name: 'Aurora boreal', price: 160, rarity: 'epic', anim: true },
     { id: 'plasma', name: 'Plasma', price: 170, rarity: 'epic', anim: true },
     { id: 'holo', name: 'Holograma', price: 180, rarity: 'epic', anim: true },
-    { id: 'lava', name: 'Lava viva', price: 190, rarity: 'epic', anim: true },
+    { id: 'lava', name: 'Lava viva', price: 190, rarity: 'legendary', anim: true },
     { id: 'tide', name: 'Marea', price: 200, rarity: 'rare' },
     { id: 'volt', name: 'Voltaje', price: 210, rarity: 'rare' },
     { id: 'galaxia', name: 'Galaxia', price: 300, rarity: 'legendary', anim: true },
@@ -715,7 +714,7 @@ export const COUNTERS = [
 ];
 
 /** Contadores que son máscaras de bits (se marcan con `flagStat` y se leen contando bits). */
-export const FLAG_STATS = ['relicsSeen', 'heroWins', 'fateSeen'];
+export const FLAG_STATS = ['relicsSeen', 'heroWins', 'heroHardWins', 'fateSeen'];
 const bitCount = (n) => {
   let c = 0;
   for (let x = Number(n) || 0; x > 0; x = Math.floor(x / 2)) c += x % 2;
@@ -748,20 +747,32 @@ export const STATS = {
   // el reto Maestro se retiró: cuenta «Todo junto» (y los Maestro que ya tenías)
   masterSolved: (store) => (store.daily?.by?.all || 0) + (store.daily?.by?.master || 0),
   dailyKinds: (store) => CHALLENGES.filter((c) => store.daily?.by?.[c.id]).length,
-  challengeBest: (store) => survivalBestLevel(store),
-  challenge150Won: (store) => (survivalWonFor(store, '150') ? 1 : 0),
-  challenge200Won: (store) => (survivalWonFor(store, '200') ? 1 : 0),
-  challenge250Won: (store) => (survivalWonFor(store, '250') ? 1 : 0),
-  challengeWonCount: (store) => survivalCompletedCount(store),
+  dailyBestBoard: (store) =>
+    Math.max(
+      Number(store.daily?.bestCleared) || 0,
+      ...Object.values(store.daily?.days || {}).flatMap((d) =>
+        Object.values(d || {}).map((r) => Number(r?.cleared) || 0),
+      ),
+    ),
+  challengeBest: (store) =>
+    Math.max(Number(store.survivalBest) || 0, ...Object.values(store.survivalBests || {}).map(Number)),
+  challenge150Won: (store) => (store.survivalWon?.['150'] ? 1 : 0),
+  challenge200Won: (store) => (store.survivalWon?.['200'] ? 1 : 0),
+  challenge250Won: (store) => (store.survivalWon?.['250'] ? 1 : 0),
+  challengeWonCount: (store) => Object.values(store.survivalWon || {}).filter(Boolean).length,
   cosmeticsOwned: (store) => Object.keys(store.shopOwned || {}).length,
   relicsSeenCount: (store) => bitCount(store.stats?.relicsSeen),
   heroWinsCount: (store) => bitCount(store.stats?.heroWins),
+  heroHardWinsCount: (store) => bitCount(store.stats?.heroHardWins),
   heroBoardsLia: (store) => Number(store.stats?.heroBoards_lia) || 0,
   heroBoardsJean: (store) => Number(store.stats?.heroBoards_jean) || 0,
   heroBoardsVan: (store) => Number(store.stats?.heroBoards_van) || 0,
   heroWinLia: (store) => ((Number(store.stats?.heroWins) || 0) & 1 ? 1 : 0),
   heroWinJean: (store) => ((Number(store.stats?.heroWins) || 0) & 2 ? 1 : 0),
   heroWinVan: (store) => ((Number(store.stats?.heroWins) || 0) & 4 ? 1 : 0),
+  heroHardWinLia: (store) => ((Number(store.stats?.heroHardWins) || 0) & 1 ? 1 : 0),
+  heroHardWinJean: (store) => ((Number(store.stats?.heroHardWins) || 0) & 2 ? 1 : 0),
+  heroHardWinVan: (store) => ((Number(store.stats?.heroHardWins) || 0) & 4 ? 1 : 0),
   fateSeenCount: (store) => bitCount(store.stats?.fateSeen),
 };
 
@@ -838,8 +849,9 @@ export function adventureStartStats(store, run) {
  * Al completar una aventura: héroe, rango, Pactos, sin pistas y Juramento. `grade` es el de `runGrade` ('S+', 'S'…),
  * `pacts` cuántos Pactos llevaba y `oath` si uno era Juramento. Devuelve true si algo cambió.
  */
-export function victoryStats(store, { hero, grade, pacts = 0, oath = false, helped = false }) {
+export function victoryStats(store, { hero, start = 1, grade, pacts = 0, oath = false, helped = false }) {
   let changed = flagStat(store, 'heroWins', HERO_BITS.indexOf(hero));
+  if (start >= 50) changed = flagStat(store, 'heroHardWins', HERO_BITS.indexOf(hero)) || changed;
   changed = raiseStat(store, 'bestGrade', GRADE_VALUE[grade] || 0) || changed;
   changed = raiseStat(store, 'maxPactsWin', pacts) || changed;
   if (!helped) changed = raiseStat(store, 'cleanRun', 1) || changed;
@@ -2096,10 +2108,14 @@ export const UNLOCK_TEXT = {
   paths: () => 'Completa los tres caminos',
   completed: (n) => (n === 1 ? 'Completa una aventura entera' : `Completa ${n} aventuras enteras`),
   heroes: (n) => (n >= 3 ? 'Juega una partida con cada héroe' : `Juega con ${n} héroes distintos`),
-  heroWinLia: () => 'Completa una aventura con Lía',
-  heroWinJean: () => 'Completa una aventura con Jean',
-  heroWinVan: () => 'Completa una aventura con Juth',
-  heroWinsCount: () => 'Completa una aventura con cada héroe',
+  heroWinLia: () => 'Completa el modo Normal con Lía',
+  heroWinJean: () => 'Completa el modo Normal con Jean',
+  heroWinVan: () => 'Completa el modo Normal con Juth',
+  heroHardWinLia: () => 'Completa el modo Difícil con Lía',
+  heroHardWinJean: () => 'Completa el modo Difícil con Jean',
+  heroHardWinVan: () => 'Completa el modo Difícil con Juth',
+  heroWinsCount: () => 'Completa el modo Normal con los 3 héroes',
+  heroHardWinsCount: () => 'Completa el modo Difícil con los 3 héroes',
   heroBoardsLia: (n) => `Resuelve ${n} tableros con Lía`,
   heroBoardsJean: (n) => `Resuelve ${n} tableros con Jean`,
   heroBoardsVan: (n) => `Resuelve ${n} tableros con Juth`,
@@ -2123,6 +2139,7 @@ export const UNLOCK_TEXT = {
   dailyGold: (n) => `Gana ${n} medallas de oro en retos diarios`,
   bestStreak: (n) => `Juega retos diarios ${n} días seguidos`,
   dailyKinds: (n) => (n >= 5 ? 'Resuelve los 5 tipos de reto diario' : `Resuelve ${n} tipos de reto diario`),
+  dailyBestBoard: (n) => `Completa el tablero ${n} del Desafío`,
   masterSolved: (n) => `Resuelve ${n} retos diarios Todo junto`,
   challengeBoards: (n) => `Supera ${n} tableros en Desafío`,
   challengeBest: (n) => `Alcanza el nivel ${n} en cualquier ruta de Desafío`,
@@ -2224,7 +2241,7 @@ export const OUTFITS = {
     ['cartografa', 'Cartógrafa', 'common'],
     ['alquimista', 'Alquimista errante', 'rare'],
     ['buscatesoros', 'Buscatesoros', 'rare'],
-    ['ingeniera', 'Ingeniera de luz', 'rare'],
+    ['ingeniera', 'Ingeniera de luz', 'epic'],
     ['mecanica', 'Mecánica de la forja', 'rare'],
     ['piloto', 'Piloto estelar', 'epic'],
     ['neon', 'Hackeadora neón', 'epic'],
@@ -2245,9 +2262,9 @@ export const OUTFITS = {
     ['principe', 'Príncipe de las arenas', 'rare'],
     ['centurion', 'Centurión del sol', 'epic'],
     ['astrologo', 'Astrólogo estelar', 'epic'],
-    ['sakura', 'Ninja de las flores', 'epic'],
+    ['sakura', 'Ninja de las flores', 'legendary'],
     ['cibernetico', 'Sombra cibernética', 'epic'],
-    ['oni', 'Máscara oni', 'legendary'],
+    ['oni', 'Máscara oni', 'epic'],
     ['violeta', 'Hacker violeta', 'legendary'],
     ['shogun', 'Shogun dorado', 'legendary'],
   ]),
@@ -2257,7 +2274,7 @@ export const OUTFITS = {
     ['maga', 'Maga de la pluma', 'common'],
     ['boticaria', 'Boticaria', 'common'],
     ['oraculo', 'Oráculo del laurel', 'rare'],
-    ['carmesi', 'Hechicera carmesí', 'rare'],
+    ['carmesi', 'Hechicera carmesí', 'epic'],
     ['astral', 'Hechicera del cosmos', 'rare'],
     ['verde', 'Alquimista del veneno', 'rare'],
     ['cuervo', 'Doctora cuervo', 'epic'],
@@ -2301,7 +2318,7 @@ export function setOutfit(store, hero, id) {
 }
 
 /** Imagen de un atuendo: `adv` cuerpo entero (aventura), `sel` busto y `act` pose (selección). */
-export const outfitArt = (hero, id, pose) => `heroes/outfits/${hero}-${id}-${pose}.webp?v=3`;
+export const outfitArt = (hero, id, pose) => `imagenes/atuendo-${hero}-${id}-${pose}.webp?v=3`;
 
 export function rewardUnlocked(type, id, storeOrOwned = {}) {
   if (DEFAULT_LOOK[type] === id) return true;

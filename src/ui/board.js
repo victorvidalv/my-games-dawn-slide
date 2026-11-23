@@ -2,8 +2,9 @@ import { setTensionFx } from '../audio/music.js';
 import { sfx, vib } from '../audio/sound.js';
 import { isLocked, slideRange, snapDrag } from '../engine/board.js';
 import { isLow, isWon, moveStatus, movesLeft } from '../engine/rules.js';
+import { DAILY_TOTAL_BOARDS, DAILY_TURN_BUDGET } from '../game/daily.js';
 import { $ } from '../dom.js';
-import { fail, playSurvivalTurn, saveRun, win } from '../game/session.js';
+import { fail, saveRun, win } from '../game/session.js';
 import { S, gainNow, pathOf, rkey, store } from '../state.js';
 import { applyMove } from '../game/run-logic.js';
 import { zoneIdx } from '../data/zones.js';
@@ -64,7 +65,7 @@ export function buildPieces() {
   boardEl.querySelectorAll('.piece,.wall,.plate,.links,.seal-floor').forEach((e) => e.remove());
   boardEl.dataset.city = zoneIdx(S.G.n);
   boardEl.classList.remove('board-win');
-  S.G.rot = S.run?.survival ? 0 : boardRotation(S.run?.seed, S.G.n, S.G.tutorial || false);
+  S.G.rot = boardRotation(S.run?.seed, S.G.n, S.G.tutorial || false);
   boardEl.parentElement.style.setProperty('--rot', S.G.rot + 'deg');
   boardEl.parentElement.dataset.rot = S.G.rot;
   S.G.gateLocked = {};
@@ -237,11 +238,10 @@ function syncSpecials(animate = true) {
         vib([15, 20, 15]);
         flashEl(el, 'just-open', 900);
         flashEl(plate, 'pulse', 900);
-        if (!S.run.survival)
-          $('msg').textContent = '¡Candado abierto! Ya puedes moverla mientras la placa siga cubierta.';
+        $('msg').textContent = '¡Candado abierto! Ya puedes moverla mientras la placa siga cubierta.';
       } else {
         sfx.plate();
-        if (!S.run.survival) $('msg').textContent = 'Sin nadie sobre la placa, el candado se cierra otra vez.';
+        $('msg').textContent = 'Sin nadie sobre la placa, el candado se cierra otra vez.';
       }
     }
   });
@@ -310,10 +310,8 @@ function attach(el, i) {
       // candado cerrado: sacude, avisa y señala la placa
       flashEl(el, 'deny', 450);
       flashEl(boardEl.parentElement, 'board-shake', 260);
-      if (!S.run.survival) {
-        flashEl(S.G.plateEls[i], 'hint', 1500);
-        $('msg').textContent = 'Está atrapada. Cubre la placa 🔒 con otra pieza para abrirla.';
-      }
+      flashEl(S.G.plateEls[i], 'hint', 1500);
+      $('msg').textContent = 'Está atrapada. Cubre la placa 🔒 con otra pieza para abrirla.';
       sfx.locked();
       vib([30, 30, 30]);
       return;
@@ -404,10 +402,6 @@ function attach(el, i) {
 export function afterMove() {
   if (!S.run || !S.G || S.G.done) return;
   const won = isWon(S.G.pos);
-  if (S.run.survival) {
-    playSurvivalTurn(won);
-    return;
-  }
   updateHud();
   if (!S.run.daily) saveRun();
   coachOnMove();
@@ -470,11 +464,22 @@ export function recLine() {
 }
 export function updateHud() {
   updateHeroHud();
-  $('mv').textContent = S.G.moves;
+  const d = S.run.daily;
+  const shownMoves = d ? (d.used || 0) + S.G.moves : S.G.moves;
+  const shownLimit = d ? DAILY_TURN_BUDGET : S.G.limit;
+  $('mv').textContent = shownMoves;
+  if (d) {
+    $('lim').textContent = DAILY_TURN_BUDGET;
+    const rem = Math.max(0, DAILY_TURN_BUDGET - shownMoves);
+    $('msg').textContent =
+      `Tablero ${d.index + 1}/${DAILY_TOTAL_BOARDS} · Mínimo ${S.G.opt} mov. · Quedan ${rem} turnos`;
+  }
   const f = $('fill'),
-    pct = Math.min(100, (S.G.moves / S.G.limit) * 100);
+    pct = Math.min(100, (shownMoves / shownLimit) * 100);
   f.style.width = pct + '%';
-  const pz = Math.min(100, (S.G.opt / S.G.limit) * 100);
+  const pz = d
+    ? Math.min(100, (((d.used || 0) + S.G.opt) / DAILY_TURN_BUDGET) * 100)
+    : Math.min(100, (S.G.opt / S.G.limit) * 100);
   $('meter').style.setProperty('--pz', pz + '%'); // zona «perfecta»: hasta el mínimo de movimientos
   const over = Math.max(0, S.G.moves - S.G.opt) / S.G.opt,
     hue = 140 * (1 - Math.min(1, over));
@@ -486,8 +491,6 @@ export function updateHud() {
   $('meter').classList.toggle('danger', !prac && isLow(S.G.moves, S.G.limit));
   const { low, last } = lowState(); // pocos turnos: solo aviso visual, la música no cambia
   setTensionFx(low, last);
-  const resetBtn = $('bDailyReset');
-  if (resetBtn) resetBtn.disabled = S.busy || !S.G.moves;
   renderTurns();
 }
 

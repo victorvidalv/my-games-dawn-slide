@@ -6,7 +6,8 @@
 import { MAX_LEVEL } from '../engine/difficulty.js';
 import { encodeBoard, isValidState } from '../engine/board.js';
 import { analyze } from '../engine/solver.js';
-import { clearRewards, snapshotRescue } from './heroes.js';
+import { DAILY_TURN_BUDGET } from './daily.js';
+import { clearRewards } from './heroes.js';
 import { relicFor } from './relics.js';
 import { canPaidRevive, hasRevive, useFreeRetry, useRevive } from './shop.js';
 import { FATE_EVERY, FATE_PICKS, fateById, fateDeck, fatePerfectHints, nextStreak } from './fate.js';
@@ -85,7 +86,7 @@ export function restoreRun(saved) {
     delete run.board.timeLeft;
     delete run.board.seal;
   }
-  if (!run.daily && !run.survival) {
+  if (!run.daily) {
     if (run.level > MAX_LEVEL) {
       run.level = MAX_LEVEL;
       delete run.board;
@@ -100,15 +101,17 @@ export function restoreRun(saved) {
   return run;
 }
 
-/** Partida de reto diario: sin héroe, sin vidas y con la ruta normal. */
-export function newDailyRun({ challenge, day, index, boards, attempt }) {
+/** Partida de reto diario: 15 tableros progresivos con reserva compartida de 150 turnos exactos. */
+export function newDailyRun({ challenge, day, index, boards, used = 0, attempt = null }) {
+  const remaining = Math.max(0, DAILY_TURN_BUDGET - used);
   return {
-    daily: { id: challenge.id, day, index, boards, attempt },
+    daily: { id: challenge.id, day, index, used, remaining, boards, attempt },
     seed: day,
     level: challenge.level,
     start: 1,
     mode: 'c',
     hero: 'none',
+    fate: [],
     score: 0,
     hints: 0,
     adj: 0,
@@ -124,12 +127,16 @@ export function newDailyRun({ challenge, day, index, boards, attempt }) {
   };
 }
 
-/** Tableros elegidos del reto y el intento a retomar. Devuelve `index` −1 si ya están todos resueltos. */
-export function dailyEntry(progress, targets, index) {
-  const boards = targets.map((_, i) => progress?.boards?.[i] || null);
-  const attempt = index === undefined ? progress?.attempt : null;
-  index ??= attempt?.index ?? boards.findIndex((board) => !board);
-  return { boards, attempt, index };
+/** Estado inicial o reanudado del reto diario de hoy. */
+export function dailyEntry(progress, targets, { restart = false } = {}) {
+  const fresh = () => ({ boards: targets.map(() => null), used: 0, attempt: null, index: 0 });
+  if (restart || !progress || progress.finished) return fresh();
+  const boards = targets.map((_, i) => progress.boards?.[i] || null);
+  const used = Number.isFinite(progress.used) ? progress.used : 0;
+  const attempt = progress.attempt || null;
+  const index = attempt?.index ?? boards.findIndex((board) => !board);
+  if (index < 0 || used >= DAILY_TURN_BUDGET) return fresh();
+  return { boards, used, attempt, index };
 }
 
 /** Huella del tablero (piezas, inicio y rocas): distingue un tablero de otro aunque tengan las mismas piezas. */
@@ -233,30 +240,36 @@ export function runGrade({ victory = false, level = 1, score = 0, perfects = 0, 
 }
 
 /**
- * Registra un tablero del reto diario (se queda la mejor marca). Devuelve el siguiente tablero sin resolver
- * (−1 si ya no quedan) y, al completarlos todos, los totales del reto.
+ * Registra un tablero superado del reto diario y descuenta sus turnos de la reserva de 150.
+ * Devuelve el siguiente tablero (−1 si se completaron los 15 o se agotaron los 150 turnos).
  */
 export function applyDailyWin(daily, G, points) {
-  const previous = daily.boards[daily.index];
-  if (!previous || G.moves < previous.moves) daily.boards[daily.index] = { moves: G.moves, opt: G.opt, points };
+  daily.boards[daily.index] = { moves: G.moves, opt: G.opt, points };
+  daily.used = Math.min(DAILY_TURN_BUDGET, (daily.used || 0) + G.moves);
+  daily.remaining = Math.max(0, DAILY_TURN_BUDGET - daily.used);
   daily.attempt = null;
-  const next = daily.boards.findIndex((board) => !board);
-  if (next >= 0) return { next, totals: null };
-  const moves = daily.boards.reduce((sum, board) => sum + board.moves, 0);
-  const opt = daily.boards.reduce((sum, board) => sum + board.opt, 0);
-  return { next, totals: { moves, opt } };
+  const cleared = daily.boards.filter(Boolean).length;
+  const finished = cleared >= daily.boards.length || daily.remaining <= 0;
+  return {
+    next: finished ? -1 : daily.index + 1,
+    finished,
+    cleared,
+    used: daily.used,
+    remaining: daily.remaining,
+  };
 }
 
 /**
  * Qué pasa al perder un tablero, en orden de preferencia. Aplica el rescate elegido sobre `run` y devuelve:
- * 'daily' (el reto se repite), 'retry' (reintento gratis), 'revive' (vida guardada), 'offer' (renacer pagando)
- * o 'gameover'.
+ * 'daily_end' (sin turnos en el reto diario), 'retry' (reintento gratis), 'revive' (vida guardada),
+ * 'offer' (renacer pagando) o 'gameover'.
  */
 export function resolveFail(run, G, why) {
   if (run.daily) {
-    run.daily.attempt = { index: run.daily.index, key: boardKey(G), pos: G.start.slice(), moves: 0, hist: [] };
-    run.rescue = { ...snapshotRescue(G), kind: 'daily' };
-    return 'daily';
+    run.daily.used = Math.min(DAILY_TURN_BUDGET, (run.daily.used || 0) + G.moves);
+    run.daily.remaining = 0;
+    run.daily.attempt = null;
+    return 'daily_end';
   }
   if (useFreeRetry(run, G)) return 'retry';
   if (hasRevive(run)) {

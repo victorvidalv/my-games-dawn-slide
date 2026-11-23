@@ -205,24 +205,148 @@ button.primary:active {
   border-radius: var(--wob-b);
 }
 
-/* Colores del resto de la interfaz con la misma paleta */
+/* Colores del resto de la interfaz con la misma paleta oscura y animada que el inicio */
 body {
-  background: #1a1528;
+  --zb1: #070b18;
+  --zb2: #11182c;
+  --zb3: #1b1830;
+  --zg1: #3ca6b828;
+  --zg2: #f4a44d24;
+  --zg3: #a662cf1e;
+  --zmote: #ffe5a3;
+  background: var(--zb1);
+}
+/* 7 atmósferas oscuras en CSS (una por cada zona de la aventura) para que el tablero y las piezas destaquen */
+body[data-zone='1'] {
+  /* Valle Esmeralda */
+  --zb1: #061014;
+  --zb2: #0c1b20;
+  --zb3: #132226;
+  --zg1: #2eb8922b;
+  --zg2: #e8b86522;
+  --zg3: #2a7ea024;
+  --zmote: #c2f5df;
+}
+body[data-zone='2'] {
+  /* Puerto de las Velas */
+  --zb1: #060d1c;
+  --zb2: #0d192e;
+  --zb3: #162034;
+  --zg1: #3ba6cc2c;
+  --zg2: #e8944828;
+  --zg3: #2d5c9e24;
+  --zmote: #ffe0a8;
+}
+body[data-zone='3'] {
+  /* Aldea de Otoño */
+  --zb1: #110a16;
+  --zb2: #1d1221;
+  --zb3: #26161d;
+  --zg1: #d978342c;
+  --zg2: #a0447224;
+  --zg3: #e8b35a20;
+  --zmote: #ffd29e;
+}
+body[data-zone='4'] {
+  /* Refugio Glacial */
+  --zb1: #060e1c;
+  --zb2: #0b192f;
+  --zb3: #11223a;
+  --zg1: #5cc9eb2c;
+  --zg2: #8c7be324;
+  --zg3: #4ea0cc22;
+  --zmote: #d4f4ff;
+}
+body[data-zone='5'] {
+  /* Ciudad del Reloj */
+  --zb1: #0b091c;
+  --zb2: #16112e;
+  --zb3: #1e1636;
+  --zg1: #a45ee62c;
+  --zg2: #e6b45824;
+  --zg3: #4496c422;
+  --zmote: #ebd2ff;
+}
+body[data-zone='6'] {
+  /* Puerto del Volcán */
+  --zb1: #120810;
+  --zb2: #1e0d15;
+  --zb3: #281316;
+  --zg1: #de51302e;
+  --zg2: #f0a14026;
+  --zg3: #8c2e5422;
+  --zmote: #ffc28a;
+}
+body[data-zone='7'] {
+  /* Castillo Dorado */
+  --zb1: #0b0b1a;
+  --zb2: #181428;
+  --zb3: #241b23;
+  --zg1: #f2c25c30;
+  --zg2: #4a7ec426;
+  --zg3: #d97c4624;
+  --zmote: #ffeaad;
 }
 body::before {
   background:
-    linear-gradient(var(--scene-shade, transparent), var(--scene-shade, transparent)),
-    radial-gradient(ellipse at 50% 52%, #1a12202e 0, #110c1ab0 100%),
-    var(--scene) center/cover;
+    radial-gradient(ellipse 88% 54% at 50% 104%, var(--zg2) 0%, transparent 70%),
+    radial-gradient(ellipse 68% 48% at 16% 18%, var(--zg1) 0%, transparent 66%),
+    radial-gradient(ellipse 64% 46% at 84% 24%, var(--zg3) 0%, transparent 66%),
+    linear-gradient(180deg, var(--zb1) 0%, var(--zb2) 48%, var(--zb3) 100%);
+  transition:
+    opacity 0.9s ease,
+    background 0.8s ease;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: -12%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.42;
+  background:
+    radial-gradient(circle at 24% 32%, var(--zg1) 0%, transparent 40%),
+    radial-gradient(circle at 76% 68%, var(--zg2) 0%, transparent 42%),
+    radial-gradient(circle, color-mix(in srgb, var(--zmote) 75%, transparent) 0 1px, transparent 2.4px) 14% 28%/164px
+      128px,
+    radial-gradient(circle, color-mix(in srgb, var(--zmote) 55%, transparent) 0 1.1px, transparent 2.8px) 62% 74%/208px
+      172px;
+  transition: opacity 0.9s ease;
+}
+body.low-turns::after {
+  opacity: 0.24;
+}
+body.last-turn::after {
+  opacity: 0.14;
+}
+#board::before {
+  background:
+    linear-gradient(#ffffff0a 1px, transparent 1px) 0 0 / var(--cell) var(--cell),
+    linear-gradient(90deg, #ffffff0a 1px, transparent 1px) 0 0 / var(--cell) var(--cell),
+    radial-gradient(ellipse at 50% 45%, var(--zg1), transparent 78%),
+    linear-gradient(180deg, #0b1121e6, #080d1af2);
 }
 @media (prefers-reduced-motion: no-preference) {
+  html:not(.lite) body::after {
+    animation: zone-drift 22s ease-in-out infinite alternate;
+  }
   html:not(.lite) body.level-scenery-in::before {
-    animation: level-scenery-in 2.2s cubic-bezier(0.2, 0.65, 0.3, 1);
+    animation: level-scenery-in 1.8s cubic-bezier(0.2, 0.65, 0.3, 1);
+  }
+}
+@keyframes zone-drift {
+  from {
+    transform: translate3d(-2.5%, 1.5%, 0) scale(1);
+    opacity: 0.34;
+  }
+  to {
+    transform: translate3d(3%, -2.5%, 0) scale(1.06);
+    opacity: 0.52;
   }
 }
 @keyframes level-scenery-in {
   from {
-    transform: translate(-1%, 0.55%) scale(1.045);
+    transform: translate(-0.8%, 0.45%) scale(1.03);
   }
   to {
     transform: none;

@@ -94,7 +94,7 @@ export const PLAN = {
     marble: [['locks', 10]],
     jelly: [['dailySolved', 13]],
     copper: [['heavyBoards', 11]],
-    silk: [['dailyGold', 6]],
+    silk: [['heroWinsCount', 3]],
     pearl: [['challengeBoards', 15]],
     tide: [['cleanCity', 10]],
     volt: [['bestStreak', 10]],
@@ -130,10 +130,7 @@ export const PLAN = {
       ['iceRock', 90],
       ['challengeBoards', 50],
     ],
-    lava: [
-      ['locks', 85],
-      ['dailyGold', 25],
-    ],
+    lava: [['heroHardWinsCount', 3]],
     ember: [
       ['expertDone', 1],
       ['challengeWonCount', 2],
@@ -205,10 +202,7 @@ export const PLAN = {
       ['perfects', 140],
       ['dailySolved', 65],
     ],
-    neon: [
-      ['boardsSolved', 625],
-      ['challengeBoards', 60],
-    ],
+    neon: [['boardsSolved', 100]],
     gold: [
       ['expertDone', 1],
       ['challengeWonCount', 2],
@@ -219,11 +213,7 @@ export const PLAN = {
       ['challengeWonCount', 3],
       ['dailyGold', 40],
     ],
-    galaxy: [
-      ['completed', 20],
-      ['challengeBest', 14],
-      ['dailyGold', 60],
-    ],
+    galaxy: [['boardsSolved', 300]],
     dragon: [
       ['perfects', 450],
       ['challengeBest', 12],
@@ -460,15 +450,8 @@ export const PLAN = {
       ['heavyBoards', 50],
       ['challengeBoards', 35],
     ],
-    starlight: [
-      ['locks', 85],
-      ['dailyGold', 25],
-    ],
-    comet: [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
+    starlight: [['dailyBestBoard', 14]],
+    comet: [['dailyBestBoard', 15]],
     phoenix: [
       ['completed', 20],
       ['challengeWonCount', 3],
@@ -568,7 +551,7 @@ export const PLAN = {
     'lia:cartografa': [['heroBoardsLia', 25]],
     'lia:alquimista': [['heroWinLia', 1]],
     'lia:buscatesoros': [['heroBoardsLia', 30]],
-    'lia:ingeniera': [['heroBoardsLia', 55]],
+    'lia:ingeniera': [['heroWinLia', 1]],
     'lia:mecanica': [['heroBoardsLia', 75]],
     'lia:piloto': [
       ['heroBoardsLia', 100],
@@ -582,11 +565,7 @@ export const PLAN = {
       ['heroBoardsLia', 240],
       ['bestStreak', 27],
     ],
-    'lia:brasas': [
-      ['heroBoardsLia', 283],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
+    'lia:brasas': [['heroHardWinLia', 1]],
     'lia:vampira': [
       ['heroBoardsLia', 425],
       ['challengeWonCount', 3],
@@ -617,19 +596,12 @@ export const PLAN = {
       ['heroBoardsJean', 140],
       ['challengeBest', 7],
     ],
-    'jean:sakura': [
-      ['heroBoardsJean', 180],
-      ['bestStreak', 20],
-    ],
+    'jean:sakura': [['heroHardWinJean', 1]],
     'jean:cibernetico': [
       ['heroBoardsJean', 250],
       ['challengeBoards', 60],
     ],
-    'jean:oni': [
-      ['heroBoardsJean', 295],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
+    'jean:oni': [['heroWinJean', 1]],
     'jean:violeta': [
       ['heroBoardsJean', 525],
       ['challengeWonCount', 3],
@@ -644,7 +616,7 @@ export const PLAN = {
     'van:maga': [['heroBoardsVan', 20]],
     'van:boticaria': [['heroBoardsVan', 25]],
     'van:oraculo': [['heroWinVan', 1]],
-    'van:carmesi': [['heroBoardsVan', 30]],
+    'van:carmesi': [['heroWinVan', 1]],
     'van:astral': [['heroBoardsVan', 55]],
     'van:verde': [['heroBoardsVan', 75]],
     'van:cuervo': [
@@ -673,10 +645,6 @@ export const PLAN = {
       ['challengeWonCount', 3],
       ['dailyGold', 60],
     ],
-    'van:cuervos': [
-      ['heroBoardsVan', 600],
-      ['challengeBest', 14],
-      ['dailyGold', 40],
-    ],
+    'van:cuervos': [['heroHardWinVan', 1]],
   },
 };

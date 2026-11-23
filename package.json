@@ -21,7 +21,6 @@
     "levels:all": "npm run levels && npm run levels:special",
     "simulate": "node scripts/simulate-heroes.mjs",
     "balance": "node scripts/analyze-balance.mjs",
-    "images": "node scripts/optimize-images.mjs",
     "melodies:html": "node scripts/build-melodies.mjs",
     "calibrator": "node tools/calibrator/server.mjs",
     "calibrate": "node scripts/calibrate.mjs"

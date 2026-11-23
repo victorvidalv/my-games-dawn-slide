@@ -180,7 +180,7 @@
   display: block;
   width: clamp(35px, 11vw, 54px);
   aspect-ratio: 1;
-  background: url('/icons/hero-relics.webp') var(--relic-x) var(--relic-y) / 300% 200% no-repeat;
+  background: url('/imagenes/reliquias-heroes.webp') var(--relic-x) var(--relic-y) / 300% 200% no-repeat;
 }
 .relic-option input:checked + .relic-card {
   border-color: #e7b963;

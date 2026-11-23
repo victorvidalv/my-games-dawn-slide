@@ -1,34 +1,29 @@
 /**
- * Retos diarios: panel del menú (racha, cuenta atrás y los cinco retos) y pantalla de resultado (medalla, racha, compartir).
- * Las reglas están en src/game/daily.js; el tablero se juega con el mismo motor que la aventura (startDaily en session.js).
+ * Desafío diario único: 15 tableros (mínimos 3→17) con 150 turnos exactos.
+ * Desde el menú principal entra directo a jugar en 1 clic; aquí se pinta el avance en el botón del inicio
+ * y la pantalla final con los premios por hitos (13 → +1 pista, 14 → +3 pistas, 15 → +5 pistas).
  */
 import { Music } from '../audio/music.js';
 import { sfx } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import {
-  CHALLENGES,
-  STREAK_HINT_REWARDS,
-  challengeById,
-  challengeTargets,
-  currentStreak,
+  DAILY_CHALLENGE,
+  DAILY_HINT_MILESTONES,
+  DAILY_TOTAL_BOARDS,
+  DAILY_TURN_BUDGET,
+  dailyHintReward,
   dailyProgress,
   dayNumber,
   emptyDaily,
-  isUnlocked,
-  maxLevelReached,
   medalFor,
   msToReset,
   resetText,
   shareText,
-  streakEarned,
-  streakHintBonus,
-  todayFamily,
   todayResult,
 } from '../game/daily.js';
 import { leaveDaily, startDaily } from '../game/session.js';
 import { store } from '../state.js';
-import { resultRating } from '../engine/scoring.js';
-import { numLocale, tr } from '../i18n.js';
+import { tr } from '../i18n.js';
 import { checkAchievements } from './achievements.js';
 import { burst } from './fx.js';
 import { icon } from './icons.js';
@@ -37,181 +32,123 @@ import { openMenu } from './menu.js';
 const MEDAL_TITLE = { gold: 'Medalla de oro', silver: 'Medalla de plata', bronze: 'Medalla de bronce' };
 const MEDAL_ICON = { gold: 'seal3', silver: 'seal2', bronze: 'seal1' };
 const state = () => (store.daily ||= emptyDaily());
-let ticker = 0,
-  shownDay = -1;
 
 export function paintDailyHome(day = dayNumber()) {
-  const done = streakEarned(store.daily, day);
-  const streak = currentStreak(store.daily, day);
-  $('homeDailyStreak').textContent = `${streak.toLocaleString(numLocale())} ${streak === 1 ? 'día' : 'días'}`;
-  $('homeDailySub').textContent = done ? 'Hecho hoy' : 'Reto de hoy pendiente';
+  const progress = dailyProgress(store, DAILY_CHALLENGE.id, day);
+  const best = todayResult(store.daily, DAILY_CHALLENGE.id, day);
+  const done = (best?.cleared || 0) >= 13;
+  const active = progress && !progress.finished && (progress.used > 0 || progress.attempt?.moves > 0);
+  const currentBoard = active
+    ? Math.min(DAILY_TOTAL_BOARDS, (progress.attempt?.index ?? progress.boards?.filter(Boolean).length ?? 0) + 1)
+    : 0;
+  const activeUsed = active ? (progress.used || 0) + (progress.attempt?.moves || 0) : 0;
+
+  const activeCleared = active ? progress.boards?.filter(Boolean).length || 0 : 0;
+  const bestRecord = Math.max(
+    Number(store.daily?.bestCleared) || 0,
+    activeCleared,
+    ...Object.values(store.daily?.days || {}).flatMap((d) =>
+      Object.values(d || {}).map((r) => Number(r?.cleared) || 0),
+    ),
+  );
+  const recEl = $('homeDailyRecord');
+  if (recEl) {
+    recEl.hidden = bestRecord <= 0;
+    if (bestRecord > 0) $('homeDailyBest').textContent = `${bestRecord}/${DAILY_TOTAL_BOARDS}`;
+  }
+
+  if (active) {
+    $('homeDailySub').textContent =
+      `Tablero ${currentBoard}/${DAILY_TOTAL_BOARDS} · ${activeUsed}/${DAILY_TURN_BUDGET} turnos`;
+  } else if (best?.cleared >= DAILY_TOTAL_BOARDS) {
+    $('homeDailySub').textContent = `Completado hoy · ${best.cleared}/${DAILY_TOTAL_BOARDS}`;
+  } else if (best?.cleared > 0) {
+    $('homeDailySub').textContent =
+      `Hoy: ${best.cleared}/${DAILY_TOTAL_BOARDS} · ${best.used}/${DAILY_TURN_BUDGET} turnos`;
+  } else {
+    $('homeDailySub').textContent = '15 tableros · 150 turnos';
+  }
   $('tabDaily').classList.toggle('has-news', !done);
 }
 
-function paintReset() {
-  const el = $('dailyReset');
-  if (el) el.textContent = resetText(msToReset());
-  const end = $('dailyEndReset');
-  if (end) end.textContent = resetText(msToReset());
-  if (dayNumber() !== shownDay && $('menu').classList.contains('show')) renderDaily(); // pasó la medianoche con el menú abierto
-}
-export function renderDaily() {
-  const box = $('panelDaily');
-  if (!box) return;
-  const day = (shownDay = dayNumber()),
-    d = state(),
-    maxLevel = maxLevelReached(store.paths),
-    streak = currentStreak(d, day);
-  const bonus = streakHintBonus(streak);
-  const rewards = STREAK_HINT_REWARDS.map(({ days, hints }) => {
-    const label = hints === 1 ? '+1 pista' : `+${hints} pistas`;
-    return `<li class="${hints === bonus ? 'active' : ''}"><span>${days} días</span><b>${label}</b>${hints === bonus ? '<small>Premio activo</small>' : ''}</li>`;
-  }).join('');
-  const solvedToday = CHALLENGES.filter((c) => todayResult(d, c.id, day)?.boards).length;
-  const cards = CHALLENGES.map((c) => {
-    const open = isUnlocked(c, maxLevel),
-      res = todayResult(d, c.id, day),
-      targets = challengeTargets(c);
-    const progress = dailyProgress(store, c.id, day),
-      done = progress?.boards?.filter(Boolean).length || 0;
-    const todayTag = c.families.length > 1 ? (todayFamily(c, day) === 'ice' ? 'Hoy: Hielo' : 'Hoy: Rocas') : '';
-    const meta = `${targets.join(' · ')} mov.${todayTag ? ` · ${todayTag}` : ''}`;
-    const side = !open
-      ? `<span class="dc-side lock">${icon('lock')}<small>Nivel ${c.unlock}</small></span>`
-      : res?.boards
-        ? `<span class="dc-side done ${res.medal}">${icon(MEDAL_ICON[res.medal])}<small>${res.moves}/${res.opt}</small></span>`
-        : `<span class="dc-side go"><b>${done || progress?.attempt ? 'Continuar' : 'Jugar'}</b><small>${done}/${targets.length}</small></span>`;
-    const noticeId = `dailyUnlock-${c.id}`;
-    return `<div class="daily-entry">
-      <button type="button" class="daily-card${open ? '' : ' locked'}${res?.boards ? ' done' : ''}" data-id="${c.id}" ${open ? '' : `aria-disabled="true" aria-describedby="${noticeId}"`}><i class="dc-ico" aria-hidden="true">${icon(c.icon)}</i><span class="dc-copy"><b>${c.name}</b><small>${c.desc}</small><span class="dc-meta">${meta}</span></span>${side}</button>
-      ${open ? '' : `<p class="daily-unlock" id="${noticeId}" role="status" hidden>Llega al nivel ${c.unlock} en Aventura para abrir este reto.</p>`}
-    </div>`;
-  }).join('');
-  box.innerHTML = `<div class="daily-head"><div class="daily-streak${streak ? ' on' : ''}"><i aria-hidden="true">${icon('flame')}</i><b>${streak}</b><span>${streak === 1 ? 'día de racha' : 'días de racha'}</span></div><div class="daily-reset"><small>Nuevos retos en</small><b id="dailyReset">${resetText(msToReset())}</b></div></div>
-    <p class="daily-note" id="dailyNote" role="status">${streakEarned(d, day) ? `Racha asegurada por hoy · ${solvedToday}/${CHALLENGES.length} completados` : 'Completa cualquier reto para sumar un día de racha.'}</p>
-    <div class="daily-rewards">
-      <b>Pistas extra al iniciar Aventura</b>
-      <ul>${rewards}</ul>
-      <small>Si se rompe la racha, las próximas aventuras empiezan sin el premio.</small>
-    </div>
-    <div class="daily-list">${cards}</div>`;
-  let shownNotice;
-  box.querySelectorAll('.daily-card').forEach((b) => {
-    b.onclick = () => {
-      if (day !== dayNumber()) {
-        renderDaily();
-        return;
-      }
-      const c = challengeById(b.dataset.id);
-      if (!isUnlocked(c, maxLevelReached(store.paths))) {
-        if (shownNotice) shownNotice.hidden = true;
-        shownNotice = $(`dailyUnlock-${c.id}`);
-        shownNotice.hidden = false;
-        shownNotice.scrollIntoView({ block: 'nearest' });
-        b.classList.remove('shake');
-        void b.offsetWidth;
-        b.classList.add('shake');
-        return;
-      }
-      const saved = dailyProgress(store, c.id, day);
-      if (!saved?.attempt && todayResult(state(), c.id, day)?.boards) {
-        showDailyResult({ id: c.id, day });
-        return;
-      }
-      $('menu').classList.remove('show');
-      Music.muffle(false);
-      startDaily(c.id);
-    };
-  });
-  paintDailyHome(day);
-  clearInterval(ticker);
-  ticker = setInterval(paintReset, 20000);
-}
+/** Pantalla de resultado del Desafío diario: tableros superados, turnos usados y premios por hitos (13 / 14 / 15). */
+export function showDailyResult(daily, result = {}) {
+  const d = state();
+  const best = todayResult(d, DAILY_CHALLENGE.id, daily.day);
+  const cleared = result.cleared ?? daily.boards?.filter(Boolean).length ?? best?.cleared ?? 0;
+  const used = daily.used ?? best?.used ?? DAILY_TURN_BUDGET;
+  const bestCleared = Math.max(cleared, best?.cleared || 0);
+  const medal = medalFor(cleared);
+  const hintsEarned = dailyHintReward(bestCleared);
 
-/** Muestra la mejor serie del día y permite repetir cualquier tablero mejorable. */
-export function showDailyResult(daily, { streakUp = false } = {}) {
-  const c = challengeById(daily.id),
-    d = state(),
-    best = todayResult(d, c.id, daily.day);
-  if (!best?.boards) {
-    leaveDaily();
-    openMenu('daily');
-    return;
-  }
-  const streak = currentStreak(d, dayNumber());
-  const rating = resultRating(best.moves, best.opt);
-  const points = best.boards.reduce((sum, board) => sum + board.points, 0);
-  const modal = $('dailyEnd'),
-    retry = $('dailyBoards');
-  $('dailyEndTag').textContent = `Reto diario · ${c.name}`;
-  $('dailyEndMedal').innerHTML = icon(MEDAL_ICON[best.medal]);
-  $('dailyEndMedal').setAttribute('title', MEDAL_TITLE[best.medal]);
-  modal.dataset.medal = best.medal;
-  $('dailyEndTitle').textContent = rating.title;
-  $('dailyEndDelta').textContent = rating.delta;
-  $('dailyEndPoints').textContent = '+' + points.toLocaleString(numLocale());
-  $('dailyEndStreak').textContent = String(streak);
-  $('dailyEndStreakLabel').textContent = streakUp
-    ? streak === 1
-      ? '¡Empieza tu racha!'
-      : '¡Un día más de racha!'
-    : streak === 1
-      ? 'día de racha'
-      : 'días de racha';
-  $('dailyEndStreakBox').classList.toggle('up', streakUp);
-  const bonus = streakHintBonus(streak);
-  $('dailyEndReward').hidden = !bonus;
-  $('dailyEndReward').textContent = bonus
-    ? bonus === 1
+  const modal = $('dailyEnd');
+  const boardsBox = $('dailyBoards');
+  $('dailyEndTag').textContent = 'Desafío · 150 turnos';
+  $('dailyEndMedal').innerHTML = icon(MEDAL_ICON[medal]);
+  $('dailyEndMedal').setAttribute('title', MEDAL_TITLE[medal]);
+  modal.dataset.medal = medal;
+  $('dailyEndTitle').textContent =
+    cleared >= DAILY_TOTAL_BOARDS
+      ? '¡Desafío completado!'
+      : cleared >= 13
+        ? '¡Premio conseguido!'
+        : result.surrendered
+          ? 'Te has rendido'
+          : 'Sin turnos';
+  $('dailyEndDelta').textContent = `${cleared}/${DAILY_TOTAL_BOARDS}`;
+  $('dailyEndPoints').textContent = `${used}/${DAILY_TURN_BUDGET}`;
+  $('dailyEndReward').hidden = !hintsEarned;
+  $('dailyEndReward').textContent = hintsEarned
+    ? hintsEarned === 1
       ? '+1 pista al iniciar Aventura'
-      : `+${bonus} pistas al iniciar Aventura`
+      : `+${hintsEarned} pistas al iniciar Aventura`
     : '';
   $('dailyEndReset').textContent = resetText(msToReset());
+
+  boardsBox.replaceChildren(
+    ...DAILY_HINT_MILESTONES.map(({ board, hints }) => {
+      const hit = bestCleared >= board;
+      const row = document.createElement('div');
+      row.className = `daily-board-row ${hit ? 'gold' : 'bronze'}`;
+      const hintLabel = hints === 1 ? '+1 pista' : `+${hints} pistas`;
+      row.innerHTML = `<span class="daily-board-label"><i class="daily-board-ico" aria-hidden="true">${icon(hit ? 'unlock' : 'lock')}</i><span>Tablero ${board}</span></span><b>${hintLabel}</b>`;
+      return row;
+    }),
+  );
+
   const close = () => {
     modal.classList.remove('show');
     Music.duck(1);
   };
-  retry.replaceChildren(
-    ...best.boards.map((board, index) => {
-      const boardMedal = medalFor(board.moves, board.opt);
-      const row = document.createElement('div');
-      row.className = `daily-board-row ${boardMedal}`;
-      const label = document.createElement('span');
-      label.className = 'daily-board-label';
-      label.innerHTML = `<i class="daily-board-ico" aria-hidden="true">${icon(MEDAL_ICON[boardMedal])}</i><span>Tablero ${index + 1} · ${board.moves}/${board.opt}</span>`;
-      row.append(label);
-      if (board.moves > board.opt && daily.day === dayNumber()) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = 'Mejorar';
-        button.onclick = () => {
-          close();
-          $('menu').classList.remove('show');
-          startDaily(c.id, daily.day === dayNumber() ? index : undefined);
-        };
-        row.append(button);
-      }
-      return row;
-    }),
-  );
   modal.classList.add('show');
-  if (streakUp) {
-    if (best.medal === 'gold') sfx.perfect();
+  if (cleared >= 13) {
+    if (cleared >= DAILY_TOTAL_BOARDS) sfx.perfect();
     else sfx.win();
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const r = $('dailyEndMedal').getBoundingClientRect();
       burst(r.left + r.width / 2, r.top + r.height / 2, 40, ['#ffd24a', '#fff6c9', '#e0b04f', '#ffffff'], 8);
     }
   }
+  const surrendered = !!result.surrendered;
+  if ($('dailyRetry')) {
+    $('dailyRetry').hidden = surrendered;
+    $('dailyRetry').onclick = () => {
+      close();
+      $('menu').classList.remove('show');
+      startDaily({ restart: true });
+    };
+  }
+  if ($('dailyShare')) $('dailyShare').hidden = surrendered;
+  $('dailyBack').textContent = surrendered ? 'Entendido' : 'Volver al menú';
+  $('dailyBack').classList.toggle('primary', surrendered);
   $('dailyBack').onclick = () => {
     close();
     leaveDaily();
-    openMenu('daily');
+    openMenu();
   };
   $('dailyShare').onclick = async () => {
-    const text = shareText(c, daily.day, best, streak, {
-      name: tr(c.name),
-      streakUnit: tr('días de racha'),
+    const text = shareText(DAILY_CHALLENGE, daily.day, { cleared, used }, 0, {
+      name: tr(DAILY_CHALLENGE.name),
     });
     try {
       if (typeof navigator.share === 'function') await navigator.share({ text, url: location.href });
@@ -220,10 +157,10 @@ export function showDailyResult(daily, { streakUp = false } = {}) {
         $('dailyShare').lastElementChild.textContent = '¡Copiado!';
       }
     } catch {
-      /* cancelado o sin permiso: no pasa nada */
+      /* cancelado o sin permiso */
     }
   };
   $('dailyShare').lastElementChild.textContent = 'Compartir';
-  $('dailyBack').focus();
+  (surrendered ? $('dailyBack') : $('dailyRetry') || $('dailyBack')).focus();
   checkAchievements();
 }

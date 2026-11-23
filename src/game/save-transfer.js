@@ -11,15 +11,13 @@ import { dayNumber, emptyDaily } from './daily.js';
 import { relicFor } from './relics.js';
 import { MAX_REVIVES } from './shop.js';
 import { FATE_CARDS, FATE_PICKS } from './fate.js';
-import {
-  CHALLENGE_RELICS,
-  CHALLENGE_ROUTES,
-  RESET_BONUS_TURNS,
-  routeById,
-  survivalBestFor,
-  survivalProgress,
-  survivalWonFor,
-} from './survival.js';
+
+const LEGACY_CHALLENGE_ROUTES = [
+  { id: '150', levels: 20, turns: 150 },
+  { id: '200', levels: 26, turns: 200 },
+  { id: '250', levels: 30, turns: 250 },
+];
+const LEGACY_RESET_BONUS_TURNS = 5;
 
 const BASE_VERSION = 1;
 const RELIC_VERSION = 2;
@@ -115,8 +113,8 @@ const V5_SHOP_KEYS = shopKeys(V5_REWARD_COUNTS);
 const V3_COUNTERS = ['completed','perfects','mini5','iceRock','locks','fateCards','cleanCity','boardsSolved','heavyBoards','shopBuys','powersUsed','challengeBoards','challengeRelicsUsed'];
 const V4_COUNTERS = ALL_COUNTERS.slice(0, 17);
 const V5_COUNTERS = ALL_COUNTERS;
-const V3_CHALLENGE_ROUTES = CHALLENGE_ROUTES.map((r) => r.id);
-const V3_CHALLENGE_RELICS = CHALLENGE_RELICS.map((r) => r.id);
+const V3_CHALLENGE_ROUTES = LEGACY_CHALLENGE_ROUTES.map((r) => r.id);
+const V3_CHALLENGE_RELICS = ['hint', 'reset', 'undo'];
 const V3_LOOKS = QR_LISTS;
 
 // 'brave' y 'routeChosen' eran del camino heroico: se conservan sus bits para leer los enlaces v1-v3.
@@ -235,28 +233,13 @@ export function exportSaveLink(store = {}) {
   write(indexOf(V3_LOOKS.music, look.music) | (indexOf(V3_LOOKS.cover, look.cover) << 4));
   write(maskOf(LESSONS, (id) => Boolean(store.tips?.[id])));
 
-  // 7. Modo Desafío: récords por ruta, rutas completadas y partida activa opcional
-  const activeSurv = survivalProgress(store);
-  const hasSurvRun = activeSurv?.status === 'active';
-  const survWonMask = maskOf(V3_CHALLENGE_ROUTES, (id) => survivalWonFor(store, id)) | (hasSurvRun ? 1 << 3 : 0);
-  write(survWonMask);
-  for (const route of CHALLENGE_ROUTES) write(bounded(survivalBestFor(store, route.id), route.levels));
-  if (hasSurvRun) {
-    const meta =
-      indexOf(V3_CHALLENGE_ROUTES, activeSurv.route) |
-      (indexOf(V3_CHALLENGE_RELICS, activeSurv.relic) << 2) |
-      (activeSurv.resetUsed ? 1 << 4 : 0) |
-      (activeSurv.undoUsedBoard || activeSurv.undoCount > 0 ? 1 << 5 : 0) |
-      (activeSurv.hintUsedTurn ? 1 << 6 : 0);
-    write(meta);
-    const route = routeById(activeSurv.route);
-    write(bounded(activeSurv.cleared, route.levels));
-    writeV(activeSurv.boardStartRemaining ?? activeSurv.remaining, route.turns + RESET_BONUS_TURNS);
-  }
+  // 7. Bloque legacy de Desafío v3 (ya retirado; se escriben ceros para compatibilidad del formato)
+  write(0);
+  for (let i = 0; i < LEGACY_CHALLENGE_ROUTES.length; i++) write(0);
 
   // 8. Partida de Aventura activa (opcional)
   const run = store.run;
-  const level = !run?.daily && !run?.survival && run?.mode !== 'p' ? bounded(run?.level, MAX_LEVEL) : 0;
+  const level = !run?.daily && run?.mode !== 'p' ? bounded(run?.level, MAX_LEVEL) : 0;
   write(level);
   if (level) {
     const relic = relicFor(run);
@@ -515,43 +498,20 @@ function readV3(read, readV, atEnd, now, version = V3_VERSION) {
   const lessonBits = read(1, (1 << LESSONS.length) - 1);
   const tips = Object.fromEntries(LESSONS.filter((_, i) => (lessonBits & (1 << i)) !== 0).map((id) => [id, true]));
 
-  // 7. Modo Desafío
+  // 7. Bloque legacy de Modo Desafío v3 (se valida y se descarta)
   const survMask = read(1, 0x0f);
-  const survivalWon = {};
-  const survivalBests = {};
-  CHALLENGE_ROUTES.forEach((route, i) => {
-    if ((survMask & (1 << i)) !== 0) survivalWon[route.id] = true;
-    const best = read(1, route.levels);
-    if (best) survivalBests[route.id] = best;
+  LEGACY_CHALLENGE_ROUTES.forEach((route) => {
+    read(1, route.levels);
   });
-  let survival = null;
   if ((survMask & (1 << 3)) !== 0) {
     const meta = read(1, 0x7f);
     const routeIdx = meta & 0x03;
     const relicIdx = (meta >> 2) & 0x03;
     if (routeIdx >= V3_CHALLENGE_ROUTES.length || relicIdx >= V3_CHALLENGE_RELICS.length) invalid();
-    const route = routeById(V3_CHALLENGE_ROUTES[routeIdx]);
-    const cleared = read(1, route.levels - 1);
-    const remaining = readV(route.turns + RESET_BONUS_TURNS, 1);
-    survival = {
-      routeVersion: 2,
-      route: route.id,
-      relic: V3_CHALLENGE_RELICS[relicIdx],
-      cleared,
-      remaining,
-      boardStartRemaining: remaining,
-      pos: null,
-      lastPos: null,
-      hintUsedTurn: (meta & (1 << 6)) !== 0,
-      resetUsed: (meta & (1 << 4)) !== 0,
-      undoUsedBoard: false,
-      undoCount: (meta & (1 << 5)) !== 0 ? 1 : 0, // el código solo guarda si se usó: se cuenta como un uso
-      undoStack: [],
-      status: 'active',
-      updatedAt: ts,
-    };
+    const route = LEGACY_CHALLENGE_ROUTES[routeIdx];
+    read(1, route.levels - 1);
+    readV(route.turns + LEGACY_RESET_BONUS_TURNS, 1);
   }
-  const survivalBest = Math.max(0, ...Object.values(survivalBests));
 
   // 8. Partida de Aventura activa
   const level = read(1, MAX_LEVEL);
@@ -617,10 +577,6 @@ function readV3(read, readV, atEnd, now, version = V3_VERSION) {
     daily,
     look,
     tips,
-    ...(survival ? { survival } : {}),
-    ...(Object.keys(survivalBests).length ? { survivalBests } : {}),
-    ...(Object.keys(survivalWon).length ? { survivalWon } : {}),
-    ...(survivalBest ? { survivalBest } : {}),
     run,
   };
 }

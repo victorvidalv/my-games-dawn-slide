@@ -1,118 +1,110 @@
 // @vitest-environment happy-dom
 import { expect, it } from 'vitest';
 import { bootApp } from './app.js';
-import { COUNTERS, REWARDS, UNLOCKS } from '../../src/game/achievements.js';
 
-it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede probar y equipar', async () => {
-  // Un borde que se desbloquea con un contador simple: el guardado ya lo cumple
-  const pick = REWARDS.board
-    .slice(1)
-    .find((r) => UNLOCKS[`board:${r.id}`].reqs.length === 1 && COUNTERS.includes(UNLOCKS[`board:${r.id}`].stat));
-  const u = UNLOCKS[`board:${pick.id}`];
-  const app = await bootApp({ save: { paths: { c1: { level: 3, score: 900 } }, stats: { [u.stat]: u.goal } } });
+it('Personalizar: está en el menú principal, solo muestra los cosméticos seleccionados y permite probar y equipar', async () => {
+  // Ficha Seda (épica): se desbloquea al completar el modo Normal con los 3 héroes (heroWins = 1|2|4 = 7)
+  const app = await bootApp({ save: { paths: { c1: { level: 3, score: 900 } }, stats: { heroWins: 7 } } });
 
-  // Se desbloqueó solo y la insignia avisa
+  // Menú principal: Aventura, Desafío (entra directo) y Personalizar (sin Lore ni Guía)
+  expect([...app.$('menuHome').querySelectorAll('button')].map((b) => b.id)).toEqual(['tabAdv', 'tabDaily', 'tabAch']);
+  expect(app.$('tabSurvival')).toBeNull();
+  expect(app.$('tabLore')).toBeNull();
+  expect(app.$('tabGuide')).toBeNull();
+  expect(app.$('homeOthers')).toBeNull();
+  expect(app.$('homeMore')).toBeTruthy();
+
+  // Se desbloqueó solo y la insignia avisa en el botón principal de Personalizar
   const owned = Object.keys(app.store.shopOwned);
-  expect(owned).toContain(`board:${pick.id}`);
+  expect(owned).toContain('pieces:silk');
   expect(app.$('homeAchBadge').hidden).toBe(false);
   expect(Number(app.$('homeAchBadge').textContent)).toBeGreaterThanOrEqual(1);
-  // Personalizar vive dentro de «Otros»: el desplegable está plegado y su número resume las novedades
-  expect(app.$('homeOthersList').hidden).toBe(true);
-  expect(app.$('homeOthersBadge').hidden).toBe(false);
-  app.$('homeOthers').click();
-  expect(app.$('homeOthersList').hidden).toBe(false);
-  expect(app.$('homeOthers').getAttribute('aria-expanded')).toBe('true');
 
   app.$('tabAch').click();
   const panel = app.$('panelAch');
-  // Tres pestañas en Personalizar (Tablero, Atuendos y Portada; Lore está separado en su propia sección)
-  expect([...panel.querySelectorAll('[data-custom-group]')].map((b) => b.dataset.customGroup)).toEqual([
-    'board',
-    'outfit',
-    'cover',
-  ]);
+  // Una sola fila de pestañas (sin pestañas principales): Atuendos primero, luego Llave, Fichas y Estelas
+  expect(panel.querySelectorAll('[data-custom-group]')).toHaveLength(0);
   expect([...panel.querySelectorAll('[data-custom-type]')].map((b) => b.dataset.customType)).toEqual([
-    'board',
-    'pieces',
+    'outfit',
     'key',
-    'card',
+    'pieces',
     'trail',
-    'fx',
   ]);
   expect(panel.querySelector('[data-claim]')).toBeNull();
   expect(app.$('achWallet')).toBeNull();
 
-  // Ver la categoría marca sus novedades como vistas
-  panel.querySelector('[data-custom-type="board"]').click();
-  expect(app.$('panelAch').querySelectorAll('.ach-shop-card.locked .unlock-reqs li').length).toBeGreaterThan(0);
-
-  // Probar un objeto bloqueado muestra cómo conseguirlo, sin equiparlo
-  const legendary = REWARDS.board.at(-1).id;
-  app.$('panelAch').querySelector(`[data-open-type="board"][data-open-id="${legendary}"]`).click();
-  let preview = document.querySelector('.look-pv-ov');
-  expect(preview.querySelectorAll('.unlock-reqs li')).toHaveLength(3); // la legendaria pide tres condiciones
-  expect(preview.querySelector('[data-pv-equip]')).toBeNull();
-  expect(document.body.dataset.board).toBe(legendary);
-  preview.querySelector('[data-pv-close]').click();
-  expect(document.body.dataset.board).toBe('wood');
-
-  // Equipar uno desbloqueado desde el probador
-  app.$('panelAch').querySelector(`[data-open-type="board"][data-open-id="${pick.id}"]`).click();
-  preview = document.querySelector('.look-pv-ov');
-  preview.querySelector('[data-pv-equip]').click();
-  preview.querySelector('[data-pv-close]').click();
-  expect(document.body.dataset.board).toBe(pick.id);
-
-  // Atuendos: conjuntos por héroe
-  app.$('panelAch').querySelector('[data-custom-group="outfit"]').click();
-  expect(app.$('panelAch').querySelectorAll('[data-outfit-hero-tab]').length).toBe(3);
-  expect(app.$('panelAch').querySelectorAll('.outfit-card').length).toBe(15);
-  app.$('panelAch').querySelector('[data-outfit-hero-tab="jean"]').click();
-  expect(app.$('panelAch').querySelector('.outfit-card.on .ach-shop-name').textContent).toBe('Vigía del reloj');
+  // Atuendos (primera pestaña): todos los héroes juntos (3 por héroe)
+  expect([...panel.querySelectorAll('[data-outfit-show]')].map((b) => b.dataset.outfitShow)).toEqual([
+    'lia:capitana',
+    'lia:ingeniera',
+    'lia:brasas',
+    'jean:vigia',
+    'jean:oni',
+    'jean:sakura',
+    'van:escriba',
+    'van:carmesi',
+    'van:cuervos',
+  ]);
 
   // Visor de atuendos: el botón «Mostrar» abre el traje en grande (también los bloqueados), con sus poses
-  app.$('panelAch').querySelector('[data-outfit-show="jean:aviador"]').click();
+  panel.querySelector('[data-outfit-show="jean:sakura"]').click();
   const show = document.querySelector('.outfit-show-ov');
   expect(show).toBeTruthy();
-  expect(show.querySelector('.os-art').getAttribute('src')).toContain('jean-aviador-adv');
+  expect(show.querySelector('.os-art').getAttribute('src')).toContain('jean-sakura-adv');
   show.querySelector('[data-os-pose="act"]').click();
-  expect(show.querySelector('.os-art').getAttribute('src')).toContain('jean-aviador-act');
+  expect(show.querySelector('.os-art').getAttribute('src')).toContain('jean-sakura-act');
   expect(show.classList.contains('is-locked')).toBe(true); // aún no lo tienes: muestra qué falta
   expect(show.querySelector('.unlock-reqs li')).toBeTruthy();
   show.querySelector('[data-os-close]').click();
   expect(document.querySelector('.outfit-show-ov')).toBeNull();
 
-  // Portada: Héroes · Música · Fondo · Clima · Tema
-  app.$('panelAch').querySelector('[data-custom-group="cover"]').click();
-  expect([...app.$('panelAch').querySelectorAll('[data-custom-type]')].map((b) => b.dataset.customType)).toEqual([
-    'cover',
-    'music',
-    'bg',
-    'aura',
-    'ui',
+  // Llaves: solo default, neon y galaxy
+  panel.querySelector('[data-custom-type="key"]').click();
+  expect([...panel.querySelectorAll('[data-open-type="key"]')].map((b) => b.dataset.openId)).toEqual([
+    'red',
+    'neon',
+    'galaxy',
   ]);
-  app.$('panelAch').querySelector('[data-custom-type="bg"]').click();
-  expect(app.$('panelAch').querySelectorAll('.ach-shop-card').length).toBe(16); // 16 fondos
 
-  // Lore separado: accesible desde su propio botón en el menú principal
-  app.$('menuBack').click();
-  app.$('tabLore').click();
-  expect(app.$('panelLore').hidden).toBe(false);
-  expect([...app.$('panelLore').querySelectorAll('[data-lore-tab]')].map((b) => b.dataset.loreTab)).toEqual([
-    'people',
-    'world',
-    'library',
-    'scenes',
+  // Probar una llave bloqueada muestra cómo conseguirla, sin equiparla
+  panel.querySelector('[data-open-type="key"][data-open-id="galaxy"]').click();
+  let preview = document.querySelector('.look-pv-ov');
+  expect(preview.querySelectorAll('.unlock-reqs li')).toHaveLength(1);
+  expect(preview.querySelector('.unlock-reqs li').textContent).toContain('300');
+  expect(preview.querySelector('[data-pv-equip]')).toBeNull();
+  expect(document.body.dataset.key).toBe('galaxy');
+  preview.querySelector('[data-pv-close]').click();
+  expect(document.body.dataset.key).toBe('red');
+
+  // Fichas: solo default, silk y lava; equipar silk desde el probador
+  panel.querySelector('[data-custom-type="pieces"]').click();
+  expect([...panel.querySelectorAll('[data-open-type="pieces"]')].map((b) => b.dataset.openId)).toEqual([
+    'paint',
+    'silk',
+    'lava',
+  ]);
+  panel.querySelector('[data-open-type="pieces"][data-open-id="silk"]').click();
+  preview = document.querySelector('.look-pv-ov');
+  preview.querySelector('[data-pv-equip]').click();
+  preview.querySelector('[data-pv-close]').click();
+  expect(document.body.dataset.pieces).toBe('silk');
+
+  // Estelas: solo default, starlight y comet
+  panel.querySelector('[data-custom-type="trail"]').click();
+  expect([...panel.querySelectorAll('[data-open-type="trail"]')].map((b) => b.dataset.openId)).toEqual([
+    'none',
+    'starlight',
+    'comet',
   ]);
 });
 
 it('Atuendo equipado: se muestra al seleccionar cartas del destino, al morir (rescate y derrota) y en la victoria', async () => {
-  const { OUTFITS, outfitArt } = await import('../../src/game/achievements.js');
-  const customId = OUTFITS.lia[1].id; // 'aviadora' (pide 16 tableros con Lía)
+  const { outfitArt } = await import('../../src/game/achievements.js');
+  const customId = 'ingeniera'; // épica: pide completar el modo Normal con Lía
   const app = await bootApp({
     save: {
       paths: { c1: { level: 3, score: 900 } },
-      stats: { heroBoards_lia: 16 },
+      stats: { heroWins: 1 },
       run: { level: 2, seed: 123, start: 1, mode: 'c', hero: 'lia', score: 50, hints: 2, adj: 0, streak: 0 },
     },
   });
@@ -122,9 +114,8 @@ it('Atuendo equipado: se muestra al seleccionar cartas del destino, al morir (re
   const { endingStory } = await import('../../src/ui/story.js');
   const { HEROES } = await import('../../src/game/heroes.js');
 
-  // Equipar desde la pestaña Atuendos en Personalizar
+  // Equipar desde la pestaña Atuendos (activa por defecto en Personalizar)
   app.$('tabAch').click();
-  app.$('panelAch').querySelector('[data-custom-group="outfit"]').click();
   const equipBtn = app.$('panelAch').querySelector(`[data-outfit-hero="lia"][data-outfit-id="${customId}"]`);
   expect(equipBtn).toBeTruthy();
   equipBtn.click();

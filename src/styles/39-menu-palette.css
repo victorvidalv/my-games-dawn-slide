@@ -187,7 +187,8 @@ button.primary:hover,
   --hb1: rgba(170, 60, 44, 0.93);
   --hb2: rgba(114, 34, 26, 0.95);
 }
-#menu .home-btn.hb-survival {
+#menu .home-btn.hb-survival,
+#menu .home-btn.hb-ach {
   --hb1: rgba(86, 61, 110, 0.93);
   --hb2: rgba(52, 35, 72, 0.95);
 }
@@ -195,7 +196,7 @@ button.primary:hover,
   --hb1: rgba(61, 108, 117, 0.93);
   --hb2: rgba(35, 68, 76, 0.95);
 }
-#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily) {
+#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily, .hb-ach) {
   min-height: 76px;
   padding: 11px 14px 11px 12px;
   gap: 12px;
@@ -208,12 +209,12 @@ button.primary:hover,
     var(--mp-card-shadow);
   text-shadow: none;
 }
-#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily):hover {
+#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily, .hb-ach):hover {
   transform: translateY(-1px);
   border-color: var(--mp-border-strong);
   filter: brightness(1.06);
 }
-#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily):active {
+#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily, .hb-ach):active {
   transform: translateY(1px);
   box-shadow: 0 2px 6px rgba(8, 9, 18, 0.35);
 }
@@ -665,8 +666,11 @@ button.primary:hover,
     max-width: 460px;
   }
   #menu[data-view='home'].show {
-    grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
-    grid-template-areas: '. lockup' '. card' '. lang' '. credit';
+    grid-template-columns: minmax(340px, 460px);
+    grid-template-areas: 'lockup' 'card' 'lang';
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
     padding-bottom: max(10px, env(safe-area-inset-bottom));
   }
   #menu[data-view='home'] .home-credit {
@@ -674,7 +678,7 @@ button.primary:hover,
     grid-area: credit;
     margin-top: -6px;
   }
-  #menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily) {
+  #menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily, .hb-ach) {
     min-height: 82px;
   }
 }

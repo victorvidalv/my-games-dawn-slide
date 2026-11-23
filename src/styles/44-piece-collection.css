@@ -669,64 +669,106 @@
   }
 }
 
-/* ---- Fichas: lava (epic) ---- */
+/* ---- Fichas: lava (legendary) — obsidiana agrietada con venas de magma vivo y brasas ---- */
 @scope ([data-pieces='lava']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
-    background: linear-gradient(180deg, #2c1311, #120606);
+    background:
+      radial-gradient(ellipse 90% 75% at 50% 92%, color-mix(in oklab, var(--a) 22%, #ff7a18) 0%, transparent 62%),
+      radial-gradient(ellipse 55% 45% at 22% 24%, #401c16 0%, transparent 68%),
+      radial-gradient(ellipse 50% 42% at 78% 72%, #3a1712 0%, transparent 65%),
+      linear-gradient(155deg, #271212 0%, #150809 48%, #210c0b 100%);
     box-shadow:
-      0 3px 0 #0a0303,
-      0 0 14px #ff6a1a77,
-      0 6px 10px #0007,
-      inset 0 1px 0 #ff9a6a40;
-    border-color: #120e14;
+      0 3px 0 #080203,
+      0 0 12px #ff5e1470,
+      0 6px 12px #0009,
+      inset 0 0 0 1.5px #ff963c55,
+      inset 0 -3px 8px #ff450085,
+      inset 0 1.5px 3px #ffe08a55;
+    border-color: #160706;
     border-radius: 9px;
+    overflow: hidden;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
+    position: absolute;
     inset: 0;
     margin: 0;
     padding: 0;
     width: auto;
     height: auto;
-    background: none;
-    background-size: auto;
     border-radius: inherit;
     transform: none;
     animation: none;
-    opacity: 1;
+    opacity: 0.95;
     filter: none;
     mask: none;
     -webkit-mask: none;
     box-shadow: none;
     aspect-ratio: auto;
-    inset: 0;
-    background: linear-gradient(
-      0deg,
-      color-mix(in oklab, var(--a) 55%, #ffd24a) 0,
-      color-mix(in oklab, var(--b) 45%, #ff5a1a) 32%,
-      #0000 84%
-    );
-    border-radius: inherit;
+    /* Grietas incandescentes de magma que cruzan la obsidiana y brillan desde el núcleo */
+    background:
+      linear-gradient(
+        118deg,
+        transparent 0 24%,
+        #ff3c0099 28%,
+        #ffb338ee 30.5%,
+        #fff4b8 31.5%,
+        #ff6a14cc 33%,
+        transparent 38% 100%
+      ),
+      linear-gradient(
+        56deg,
+        transparent 0 58%,
+        #ff3b0088 62%,
+        #ff9a2aee 64.5%,
+        #fff0a8 65.5%,
+        #e63200aa 67.5%,
+        transparent 72% 100%
+      ),
+      radial-gradient(
+        ellipse 62% 38% at 48% 84%,
+        #fff1a8cc 0%,
+        color-mix(in oklab, var(--a) 28%, #ff7b1a) 38%,
+        #d9260066 68%,
+        transparent 100%
+      ),
+      radial-gradient(ellipse 46% 32% at 24% 38%, #ff6a1488 0%, transparent 72%);
+    background-size:
+      170% 170%,
+      160% 160%,
+      120% 120%,
+      130% 130%;
+    background-position:
+      15% 20%,
+      80% 75%,
+      50% 100%,
+      20% 30%;
   }
   .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
+    display: block;
     content: '';
+    position: absolute;
     inset: 0;
-    margin: auto;
+    margin: 0;
     width: auto;
     height: auto;
-    background: none;
     mask: none;
     -webkit-mask: none;
-    opacity: 1;
+    opacity: 0.9;
     filter: none;
-    border-radius: 0;
+    border-radius: inherit;
     animation: none;
     box-shadow: none;
     aspect-ratio: auto;
+    /* Chispas de brasas flotantes y reflejo vítreo sutil de la piedra volcánica */
+    background:
+      radial-gradient(circle, #fff8c8 0 1.2px, #ff9d2e99 2.2px, transparent 3.4px) 18% 72% / 36px 30px,
+      radial-gradient(circle, #ffd25a 0 1px, #ff510088 2px, transparent 3px) 74% 34% / 44px 34px,
+      radial-gradient(circle, #ffffffdd 0 0.9px, transparent 2.2px) 48% 54% / 52px 42px,
+      linear-gradient(180deg, #ffe2a826 0%, transparent 32%, transparent 74%, #ff510038 100%);
   }
 }
 
@@ -1223,7 +1265,16 @@
   :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
     .face::before {
-    animation: pc-lava 2.4s ease-in-out infinite alternate;
+    animation: pc-lava 4.6s ease-in-out infinite alternate;
+  }
+  :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::after {
+    animation: pc-lava-embers 5.5s linear infinite;
+  }
+  :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) {
+    animation: pc-pulse-lava 2.8s ease-in-out infinite;
   }
   :is([data-pieces='tide'], [data-pieces='tide'] .look-mini, .sw-real[data-pieces='tide'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
@@ -1293,11 +1344,57 @@
   }
 }
 @keyframes pc-lava {
+  0% {
+    background-position:
+      10% 15%,
+      85% 80%,
+      45% 100%,
+      15% 25%;
+    opacity: 0.78;
+    filter: brightness(0.94);
+  }
+  50% {
+    background-position:
+      55% 45%,
+      45% 40%,
+      55% 92%,
+      45% 42%;
+    opacity: 1;
+    filter: brightness(1.16);
+  }
+  100% {
+    background-position:
+      88% 78%,
+      16% 20%,
+      48% 98%,
+      72% 55%;
+    opacity: 0.86;
+    filter: brightness(1.04);
+  }
+}
+@keyframes pc-lava-embers {
   from {
-    opacity: 0.5;
+    background-position:
+      0 0,
+      0 0,
+      0 0,
+      0 0;
   }
   to {
-    opacity: 1;
+    background-position:
+      14px -30px,
+      -12px -34px,
+      8px -42px,
+      0 0;
+  }
+}
+@keyframes pc-pulse-lava {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px #ff541266);
+  }
+  50% {
+    filter: drop-shadow(0 0 13px #ff8a2acc);
   }
 }
 @keyframes pc-tide {

@@ -1,5 +1,4 @@
-/* Thyes, año 4133: la Noche Larga de Vhorn y el viaje de tres luces para encender de nuevo el Faro del Amanecer. Nombres y trama: src/data/lore.js */
-import { INSCRIPTIONS } from './lore.js';
+/* Textos de héroes y diálogos de partida. */
 
 /**
  * Cada capítulo = una ciudad = un sello que romper. Todos siguen la misma lógica:
@@ -95,7 +94,7 @@ export const CHAPTERS = [
     vhorn: 'Si me nombráis… ¿dejaréis de olvidarme?',
     end: 'El último sello se rompe. Las tres luces encienden el Faro, nombran a Vhorn y su sombra se calma. Tri abre los ojos: amanece.',
   },
-].map((c, i) => ({ ...c, inscription: INSCRIPTIONS[i] }));
+];
 
 /**
  * Cada héroe tiene un objetivo propio, además del común (encender el Faro):

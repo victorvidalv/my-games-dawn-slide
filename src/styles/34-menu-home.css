@@ -53,10 +53,23 @@
   --hb2: #244a62;
   --hbg: #65c3c6;
 }
-#menu .hb-survival {
+#menu .hb-survival,
+#menu .hb-ach {
   --hb1: #813c66;
   --hb2: #5a2a50;
   --hbg: #e19bcd;
+}
+#menu .home-btn .home-btn-badge {
+  position: absolute;
+  top: -7px;
+  right: -6px;
+  margin-left: 0;
+}
+#menu .home-btn .home-btn-badge[hidden] {
+  display: none;
+}
+#menu #tabAch.has-news::after {
+  display: none;
 }
 #menu .home-btn:hover {
   transform: translate(-1px, -2px);
@@ -288,7 +301,7 @@
 
 /* ---------- móvil en vertical: en una sección se oculta el adorno del título y el idioma para dar sitio a la lista ---------- */
 @media (max-aspect-ratio: 13/10) {
-  #menu[data-view]:not([data-view='home']) :is(.lang-switch, .title-crest, .title-sub) {
+  #menu[data-view]:not([data-view='home']) :is(.title-crest, .title-sub) {
     display: none;
   }
   #menu[data-view]:not([data-view='home']) .card {
@@ -373,21 +386,25 @@
   }
 }
 
-/* En horizontal la ilustración queda a la izquierda y los controles a la derecha. */
+/* En móvil y web, el menú principal queda centrado horizontal y verticalmente. */
+#menu[data-view='home'].show {
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+}
 @media (min-aspect-ratio: 13/10) {
   #menu[data-view='home'].show {
-    grid-template-columns: minmax(0, 1fr) minmax(350px, 465px);
-    grid-template-areas: '. lockup' '. card' '. lang';
-    column-gap: clamp(18px, 4vw, 64px);
+    grid-template-columns: minmax(340px, 465px);
+    grid-template-areas: 'lockup' 'card';
+    place-content: center;
+    justify-items: center;
+    column-gap: 0;
     row-gap: 18px;
-  }
-  #menu[data-view='home'] .lang-switch {
-    flex-wrap: wrap;
   }
 }
 @media (min-aspect-ratio: 13/10) and (max-height: 520px) {
   #menu[data-view='home'].show {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, min(57vw, 465px));
+    grid-template-columns: minmax(280px, min(68vw, 465px));
     row-gap: 10px;
   }
   #menu[data-view='home'] :is(.title-crest, .title-sub) {

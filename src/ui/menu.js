@@ -1,14 +1,17 @@
 import { Music, setTensionFx } from '../audio/music.js';
-import { soundLabel, toggleSound } from '../audio/sound.js';
-import { zoneIdx } from '../data/zones.js';
-import { $, cssUrl } from '../dom.js';
-import { leaveDaily, leaveSurvival, recordBest, resumeAdventure, saveRun, startRun } from '../game/session.js';
-import { challengeById } from '../game/daily.js';
-import { closeCustomView, paintAchBadge, renderAchievements, renderLorePanel } from './achievements.js';
-import { renderGuidePanel } from './guide.js';
-import { paintDailyHome, renderDaily } from './daily.js';
-import { routeById } from '../game/survival.js';
-import { paintSurvivalHome, renderSurvival } from './survival.js';
+import { $ } from '../dom.js';
+import {
+  leaveDaily,
+  recordBest,
+  resumeAdventure,
+  saveRun,
+  startDaily,
+  startRun,
+  surrenderDaily,
+} from '../game/session.js';
+import { DAILY_TOTAL_BOARDS } from '../game/daily.js';
+import { closeCustomView, paintAchBadge, renderAchievements } from './achievements.js';
+import { paintDailyHome } from './daily.js';
 import {
   PATHS,
   S,
@@ -128,23 +131,16 @@ async function pickPath(s, mode) {
 /* ---------- Opciones (pausa) ---------- */
 function openPause() {
   if (!S.run || !S.G || S.G.done) return;
-  const { daily, survival } = S.run;
-  $('pauseContext').textContent = survival
-    ? `Desafío · ${routeById(survival.route).name} · Nivel ${S.run.level}`
-    : daily
-      ? `Reto diario · ${challengeById(daily.id).name}`
-      : `${heroOf().name} · Nivel ${S.run.level} de ${MAX_LEVEL}`;
-  $('pauseHero').hidden = !!(daily || survival);
-  $('pSave').hidden = !!daily;
-  $('pQuit').hidden = !!survival;
+  const { daily } = S.run;
+  $('pauseContext').textContent = daily
+    ? `Desafío · Tablero ${daily.index + 1}/${DAILY_TOTAL_BOARDS}`
+    : `${heroOf().name} · Nivel ${S.run.level} de ${MAX_LEVEL}`;
+  $('pauseHero').hidden = !!daily;
+  $('pSave').hidden = false;
+  $('pQuit').hidden = false;
   $('pauseSaveError').hidden = true;
-  $('pQuit').firstElementChild.textContent = daily ? 'Salir del reto' : 'Terminar';
+  $('pQuit').firstElementChild.textContent = 'Rendirme';
   $('pauseHero').src = outfitImg(heroOf().id, 'act');
-  $('pause').style.setProperty(
-    '--pause-scene',
-    cssUrl(survival ? 'backgrounds/challenge-dawn.webp' : `backgrounds/zone-${zoneIdx(S.run.level) + 1}.webp`),
-  );
-  soundLabel();
   $('pause').classList.add('show');
   Music.muffle(true);
   $('pResume').focus();
@@ -179,14 +175,10 @@ $('pause').addEventListener('keydown', (e) => {
 });
 $('pSave').onclick = () => {
   if (!S.run || !S.G || S.G.done) return;
-  if (S.run.survival) {
-    if (!saveRun()) {
-      $('pauseSaveError').hidden = false;
-      return;
-    }
-    leaveSurvival();
+  if (S.run.daily) {
+    leaveDaily();
     $('pause').classList.remove('show');
-    openMenu('survival');
+    openMenu();
     return;
   }
   saveRun();
@@ -196,12 +188,21 @@ $('pSave').onclick = () => {
   setTensionFx(0, false);
   openMenu();
 };
-$('pQuit').onclick = () => {
-  if (!S.run || S.run.survival) return;
+$('pQuit').onclick = async () => {
+  if (!S.run) return;
   if (S.run.daily) {
-    leaveDaily();
+    const ok = await ask({
+      ico: '🏳️',
+      danger: true,
+      yes: 'Sí, rendirme',
+      no: 'Seguir jugando',
+      title: '¿Rendirse en el desafío?',
+      text: 'Terminarás este intento del desafío de hoy con tu avance actual y podrás ver tus resultados o empezar de nuevo.',
+    });
+    if (!ok) return;
     $('pause').classList.remove('show');
-    openMenu('daily');
+    Music.muffle(false);
+    surrenderDaily();
     return;
   }
   recordBest(true);
@@ -212,7 +213,6 @@ $('pQuit').onclick = () => {
   setTensionFx(0, false);
   openMenu();
 };
-$('pSound').onclick = toggleSound;
 const continueLabel = (sr) =>
   `<span class="cont-ico" aria-hidden="true">▶</span><span class="cont-copy"><b>Continuar</b><small>${pathOf(sr.start || 1).n} · Nivel ${sr.level} de ${MAX_LEVEL}` +
   (sr.mode === 'p' ? ' · Práctica' : ` · ${sr.score.toLocaleString(numLocale())} pts`) +
@@ -220,26 +220,10 @@ const continueLabel = (sr) =>
 /* Cada entrada del menú abre su sección con «Volver». */
 const VIEWS = {
   adv: { title: 'Aventura', panel: 'panelAdv' },
-  survival: { title: 'Desafío', panel: 'panelSurvival' },
-  daily: { title: 'Retos diarios', panel: 'panelDaily' },
   ach: { title: 'Personalizar', panel: 'panelAch' },
-  lore: { title: 'Lore', panel: 'panelLore' },
-  guide: { title: 'Guía', panel: 'panelGuide' },
   more: { title: 'Más opciones', panel: 'panelMore' },
 };
 let viewNow = 'home';
-const coverScene = $('menu').querySelector('.cover-scene');
-const coverWorld = coverScene.querySelector('.cover-world');
-const coverHeroes = coverScene.querySelector('.cover-heroes');
-const decodeCover = (img) =>
-  img.decode().then(
-    () => true,
-    () => false,
-  );
-// La portada se muestra cuando el fondo y los héroes ya están listos (sin saltos al cargar)
-Promise.all([decodeCover(coverWorld), decodeCover(coverHeroes)]).then(([world, heroes]) => {
-  if (world && heroes) coverScene.classList.add('cover-ready');
-});
 
 function paintHomeRecord() {
   const record = bestAdventureRecord(store.paths);
@@ -268,7 +252,6 @@ function paintHome() {
   $('homeAdvSaved').hidden = true;
   $('homeAdvSaved').textContent = '';
   paintDailyHome();
-  paintSurvivalHome();
   paintAchBadge();
 }
 function showView(view, { focus = false } = {}) {
@@ -280,7 +263,6 @@ function showView(view, { focus = false } = {}) {
   $('menu').dataset.view = viewNow;
   $('menuHome').hidden = !home;
   $('homeShortcuts').hidden = !home;
-  if (!home) toggleOthers(false);
   $('menuHead').hidden = home;
   Object.entries(VIEWS).forEach(([k, v]) => {
     $(v.panel).hidden = k !== viewNow;
@@ -288,11 +270,7 @@ function showView(view, { focus = false } = {}) {
   if (home) paintHome();
   else {
     $('menuTitle').textContent = VIEWS[viewNow].title;
-    if (viewNow === 'daily') renderDaily();
-    else if (viewNow === 'survival') renderSurvival();
-    else if (viewNow === 'ach') renderAchievements();
-    else if (viewNow === 'lore') renderLorePanel();
-    else if (viewNow === 'guide') renderGuidePanel();
+    if (viewNow === 'ach') renderAchievements();
   }
   $('menuCard').scrollTop = 0;
   Object.values(VIEWS).forEach((v) => {
@@ -304,26 +282,15 @@ setInterval(() => {
   if (viewNow === 'home' && !document.hidden && $('menu').classList.contains('show')) paintHomeRecord();
 }, 30000);
 
-/* «Otros»: Personalizar, Lore, Guía y Ajustes se pliegan en un desplegable para no saturar el inicio. */
-function toggleOthers(open) {
-  $('homeOthers').setAttribute('aria-expanded', String(open));
-  $('homeOthersList').hidden = !open;
-}
-$('homeOthers').onclick = () => toggleOthers($('homeOthersList').hidden);
-document.addEventListener('click', (e) => {
-  if (!$('homeOthersList').hidden && !$('homeShortcuts').contains(e.target)) toggleOthers(false);
-});
-$('homeShortcuts').addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && !$('homeOthersList').hidden) {
-    e.stopPropagation();
-    toggleOthers(false);
-    $('homeOthers').focus();
-  }
-});
-
 document.querySelectorAll('#menuHome [data-view], #homeShortcuts [data-view]').forEach((b) => {
   b.onclick = () => showView(b.dataset.view, { focus: true });
 });
+if ($('tabDaily'))
+  $('tabDaily').onclick = () => {
+    $('menu').classList.remove('show');
+    Music.muffle(false);
+    startDaily();
+  };
 $('menuBack').onclick = () => {
   const from = viewNow;
   showView('home');
@@ -337,7 +304,7 @@ $('menu').addEventListener('keydown', (e) => {
 });
 export function openMenu(view = 'home') {
   renderPaths();
-  renderDaily(); // también fuera de su sección: marca si el reto de hoy está pendiente
+  paintDailyHome();
   const active = S.run && S.G && !S.G.done,
     canCont = Number.isFinite(store.run?.level) && !active;
   const b = $('bContinue');

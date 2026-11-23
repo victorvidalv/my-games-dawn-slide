@@ -93,7 +93,6 @@ describe('el mazo de 31 cartas del destino (6 elecciones cada 3 niveles)', () =>
     expect(usesFate(run())).toBe(true);
     expect(usesFate({ ...run(), mode: 'p' })).toBe(false);
     expect(usesFate({ ...run(), daily: {} })).toBe(false);
-    expect(usesFate({ survival: {} })).toBe(false);
     const r = newAdventureRun({ seed: 46, start: 1, hero: 'jean', hints: 3 });
     expect(needsFatePick(r, 3)).toBe(true);
     expect(needsFatePick(r, 4)).toBe(false);

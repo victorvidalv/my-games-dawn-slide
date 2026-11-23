@@ -1,5 +1,5 @@
 import { ZONES, ZONE_LEVELS, zoneOf, zoneStep } from '../data/zones.js';
-import { $, cssUrl } from '../dom.js';
+import { $ } from '../dom.js';
 import { S } from '../state.js';
 let curZone = -1;
 
@@ -8,25 +8,9 @@ const softSat = (s) => Math.round(s * 0.72);
 
 function paintScenery(i) {
   const style = document.documentElement.style;
-  style.setProperty('--scene', cssUrl(`backgrounds/zone-${i + 1}.webp`));
+  document.body.dataset.zone = String(i + 1);
+  style.setProperty('--scene', 'none');
   style.setProperty('--scene-shade', ZONES[i].shade || 'transparent');
-}
-export function applyChallengeScenery() {
-  const r = document.documentElement.style;
-  curZone = -1;
-  r.setProperty('--scene', cssUrl('backgrounds/challenge-dawn.webp'));
-  r.setProperty('--scene-shade', 'transparent');
-  const hues = [188, 38, 214, 152, 266, 18, 46, 174];
-  for (let k = 0; k < 8; k++) {
-    const l = 58 + (k % 2 ? 4 : -3);
-    const s = softSat(58) - (k % 3 === 0 ? 4 : 0);
-    r.setProperty(`--p${k}a`, `hsl(${hues[k]} ${s}% ${Math.min(l + 15, 86)}%)`);
-    r.setProperty(`--p${k}b`, `hsl(${hues[k]} ${s}% ${l - 5}%)`);
-    r.setProperty(`--p${k}d`, `hsl(${hues[k]} ${Math.max(24, s - 10)}% ${Math.max(16, l - 28)}%)`);
-  }
-  document.body.style.setProperty('--t1', '#141b2d');
-  document.body.style.setProperty('--t2', '#1d2740');
-  document.body.style.setProperty('--cc', '#f3c974');
 }
 export function applyZone(i) {
   const idx = Math.max(0, Math.min(ZONES.length - 1, i));

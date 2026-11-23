@@ -1,85 +1,65 @@
-/** Retos diarios de tres tableros, determinados por la fecha local y el tipo de reto. */
-import { minReach, moveLimit } from '../engine/difficulty.js';
+/** Reto diario único: 15 tableros progresivos (mínimos de 3 a 17) con una reserva compartida de 150 turnos exactos. */
+import { minReach } from '../engine/difficulty.js';
 import { buildLevel, pickBoard } from '../engine/levels.js';
 import { hash32, mulberry32 } from '../engine/rng.js';
 import { levelPlan } from './mechanics.js';
 
-export const DAILY_TARGETS = [5, 9, 12];
-export const STREAK_HINT_REWARDS = [
-  { days: 3, hints: 1 },
-  { days: 5, hints: 2 },
-  { days: 7, hints: 3 },
+export const DAILY_TURN_BUDGET = 150;
+export const DAILY_TARGETS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+export const DAILY_TOTAL_BOARDS = DAILY_TARGETS.length;
+/** Familias de piezas que van apareciendo progresivamente del tablero 1 al 15. */
+export const DAILY_FAMILIES = [
+  'plain',
+  'plain',
+  'plain',
+  'walls',
+  'walls',
+  'heavy',
+  'heavy',
+  'ice',
+  'ice',
+  'gates',
+  'gates',
+  'combo_wh',
+  'combo_hg',
+  'combo_whgi',
+  'combo_whgi',
 ];
-export const streakHintBonus = (days) =>
-  STREAK_HINT_REWARDS.reduce((bonus, reward) => (days >= reward.days ? reward.hints : bonus), 0);
-/**
- * Cinco retos, cada uno con su pieza y una escalera de mínimos: el Clásico pide 5, 9 y 12 movimientos y cada reto
- * siguiente uno más en cada tablero (Rocas 6·10·13, Hielo 7·11·14, Mecanismos 8·12·15, Todo junto 9·13·16).
- * `level` solo decide la ciudad de fondo, su música y el margen de turnos; `ratings` es el tramo de dificultad del banco.
- * Los id se conservan por compatibilidad: «frost» es ahora solo el hielo y «rocks» es nuevo.
- */
-export const DAILY_STEP = 1;
-const ladder = (k) => DAILY_TARGETS.map((t) => t + k * DAILY_STEP);
-export const CHALLENGES = [
-  {
-    id: 'classic',
-    unlock: 0,
-    icon: 'flag',
-    name: 'Clásico',
-    desc: 'Sin piezas especiales',
-    families: ['plain'],
-    targets: ladder(0),
-    ratings: [1, 60],
-    level: 1,
-  },
-  {
-    id: 'rocks',
-    unlock: 10,
-    icon: 'rock',
-    name: 'Rocas',
-    desc: 'Rocas que bloquean el paso',
-    families: ['walls'],
-    targets: ladder(1),
-    ratings: [15, 75],
-    level: 7,
-  },
-  {
-    id: 'frost',
-    unlock: 13,
-    icon: 'ice',
-    name: 'Hielo',
-    desc: 'Piezas que resbalan hasta chocar',
-    families: ['ice'],
-    targets: ladder(2),
-    ratings: [20, 80],
-    level: 10,
-  },
-  {
-    id: 'gears',
-    unlock: 18,
-    icon: 'lock',
-    name: 'Mecanismos',
-    desc: 'Candados y piezas pesadas',
-    families: ['combo_hg'],
-    targets: ladder(3),
-    ratings: [25, 85],
-    level: 13,
-  },
-  {
-    id: 'all',
-    unlock: 21,
-    icon: 'crystal',
-    name: 'Todo junto',
-    desc: 'Todas las piezas especiales',
-    families: ['combo_whgi'],
-    targets: ladder(4),
-    ratings: [50, 92],
-    level: 16,
-  },
+/** Hitos de premio del reto diario: llegar al tablero 13, 14 o 15 suma pistas extra para Aventura. */
+export const DAILY_HINT_MILESTONES = [
+  { board: 13, hints: 1 },
+  { board: 14, hints: 3 },
+  { board: 15, hints: 5 },
 ];
-export const challengeById = (id) => CHALLENGES.find((c) => c.id === id) || CHALLENGES[0];
-export const challengeTargets = (challenge) => challenge?.targets || DAILY_TARGETS;
-export const todayFamily = (challenge, day) => challenge.families[day % challenge.families.length];
+export const STREAK_HINT_REWARDS = DAILY_HINT_MILESTONES;
+
+/** Pistas de premio según los tableros superados hoy (13 → +1, 14 → +3, 15 → +5). */
+export const dailyHintReward = (cleared = 0) =>
+  DAILY_HINT_MILESTONES.reduce((bonus, m) => (cleared >= m.board ? m.hints : bonus), 0);
+
+/** Pistas extra ganadas hoy por el reto diario (para sumar al iniciar Aventura). */
+export const streakHintBonus = (stateOrDays, day = dayNumber()) => {
+  if (typeof stateOrDays === 'number') return dailyHintReward(stateOrDays);
+  const res = todayResult(stateOrDays, DAILY_CHALLENGE.id, day);
+  return dailyHintReward(res?.cleared || 0);
+};
+
+export const DAILY_CHALLENGE = {
+  id: 'daily150',
+  unlock: 0,
+  icon: 'flame',
+  name: 'Desafío',
+  desc: '15 tableros · 150 turnos exactos',
+  families: DAILY_FAMILIES,
+  targets: DAILY_TARGETS,
+  ratings: [1, 100],
+  level: 1,
+};
+
+export const CHALLENGES = [DAILY_CHALLENGE];
+export const challengeById = () => DAILY_CHALLENGE;
+export const challengeTargets = () => DAILY_TARGETS;
+export const todayFamily = (_challenge, _day, index = 0) => DAILY_FAMILIES[index] || 'plain';
 
 /* ───────────── fechas (hora local del jugador) ───────────── */
 
@@ -97,99 +77,145 @@ export function resetText(ms) {
   return h ? `${h} h ${m} min` : m ? `${m} min` : 'menos de 1 min';
 }
 
-/* ───────────── desbloqueo por avance en Aventura ───────────── */
+/* ───────────── desbloqueo (el reto diario siempre está abierto) ───────────── */
 
-/** Nivel más alto alcanzado en cualquier camino (queda para siempre, aunque se pierda la partida). */
 export const maxLevelReached = (paths = {}) =>
   Object.values(paths || {}).reduce((m, r) => Math.max(m, r?.level || 0), 0);
-export const isUnlocked = (challenge, maxLevel) => maxLevel >= challenge.unlock;
+export const isUnlocked = () => true;
 
 /* ───────────── el tablero del día ───────────── */
 
-/** Genera la etapa indicada con el mínimo exacto y la mecánica propia del reto. */
-export function buildDaily(challenge, day, { levels, special }, index = 0) {
-  const target = challengeTargets(challenge)[index];
-  const seed = hash32(day, CHALLENGES.indexOf(challenge) + 1, 9001 + index);
-  const family = todayFamily(challenge, day);
-  const bank = family === 'plain' ? levels : special[family];
-  const [lo, hi] = challenge.ratings || [1, 100];
-  const ratings = Object.keys(bank)
-    .map((i) => Number(i) + 1)
-    .filter((r) => r >= lo && r <= hi && bank[r - 1]?.length && minReach(r) >= target)
-    .slice(0, 12);
-  const rating = ratings[seed % ratings.length];
-  const base = pickBoard(levels, rating, seed, index + 1, family, special);
-  const built = buildLevel(base, { rating, target, rng: mulberry32(seed) });
-  if (built.opt !== target) throw new Error(`Daily ${challenge.id}: expected ${target} moves, got ${built.opt}`);
-  const limit = moveLimit(built.opt, 1, challenge.level, false, challenge.tight ? 1.15 : false);
+/** Genera el tablero `index` (0..14) del día con el mínimo exacto (3..17) y su mecánica progresiva. */
+export function buildDaily(challenge, day, { levels, special }, index = 0, remaining = DAILY_TURN_BUDGET) {
+  const target = DAILY_TARGETS[index];
+  const seed = hash32(day, 1, 9001 + index);
+  const preferred = DAILY_FAMILIES[index] || 'plain';
+  const tryFamilies = preferred === 'plain' ? ['plain'] : [preferred, 'walls', 'plain'];
+  let built = null;
+  let chosenFamily = preferred;
+  let chosenRating = 1;
+  let baseWalls = [];
+
+  for (const family of tryFamilies) {
+    const bank = family === 'plain' ? levels : special?.[family];
+    if (!bank) continue;
+    const ratings = Object.keys(bank)
+      .map((i) => Number(i) + 1)
+      .filter((r) => bank[r - 1]?.length && minReach(r) >= target)
+      .slice(0, 14);
+    if (!ratings.length) continue;
+    for (let attempt = 0; attempt < Math.min(6, ratings.length); attempt++) {
+      const rating = ratings[(seed + attempt) % ratings.length];
+      const base = pickBoard(levels, rating, seed + attempt * 31, index + 1, family, special);
+      const candidate = buildLevel(base, { rating, target, rng: mulberry32(seed + attempt * 97) });
+      if (candidate.opt === target) {
+        built = candidate;
+        chosenFamily = base.family;
+        chosenRating = rating;
+        baseWalls = candidate.walls || [];
+        break;
+      }
+    }
+    if (built) break;
+  }
+
+  if (!built) throw new Error(`Daily #${index + 1}: could not build target ${target}`);
+  const zoneLevel = Math.min(21, Math.floor((index / DAILY_TOTAL_BOARDS) * 21) + 1);
   return {
-    n: challenge.level,
-    rate: rating,
+    n: zoneLevel,
+    rate: chosenRating,
     pieces: built.pieces,
     pos: built.pos.slice(),
     start: built.pos.slice(),
-    walls: built.walls || [],
+    walls: baseWalls,
     opt: built.opt,
-    limit,
+    limit: Math.max(1, remaining),
     moves: 0,
     hist: [],
     bought: 0,
-    family: base.family,
+    family: chosenFamily,
     tutorial: null,
     seal: null,
     done: false,
     els: [],
-    plan: levelPlan(challenge.level),
-    daily: challenge.id,
+    plan: levelPlan(zoneLevel),
+    daily: challenge?.id || DAILY_CHALLENGE.id,
   };
 }
 
 /* ───────────── medallas, racha y registro ───────────── */
 
 export const MEDALS = ['bronze', 'silver', 'gold'];
-/** Oro: en el mínimo exacto · Plata: hasta un 15 % más (al menos 2 movimientos) · Bronce: resuelto. */
-export function medalFor(moves, opt) {
-  if (moves <= opt) return 'gold';
-  return moves <= opt + Math.max(2, Math.ceil(opt * 0.15)) ? 'silver' : 'bronze';
-}
-const rank = (medal) => MEDALS.indexOf(medal);
-
-export const emptyDaily = () => ({ streak: 0, best: 0, last: -1, solved: 0, gold: 0, by: {}, days: {} });
-/** Racha vigente si se completó algún reto hoy o ayer. */
-export const currentStreak = (state, day) => (state && state.last >= day - 1 ? state.streak : 0);
-/** Resultado de hoy en un reto ({moves, opt, medal}) o null. */
-export const streakEarned = (state, day) => state?.last === day;
-export const todayResult = (state, id, day) => state?.days?.[day]?.[id] || null;
-/**
- * Anota un reto resuelto. Devuelve { medal, first (primera vez hoy), improved (mejor medalla o menos movimientos), streak, streakUp }.
- * Cualquier reto completo cuenta para la racha, una sola vez por día.
- */
-export function recordDaily(state, id, day, moves, opt, boards) {
-  const medal = medalFor(moves, opt);
-  const today = (state.days[day] ||= {}),
-    prev = today[id] || null;
-  const first = !prev,
-    improved = first || (boards && !prev.boards) || rank(medal) > rank(prev.medal) || moves < prev.moves;
-  if (first) {
-    state.solved++;
-    state.by[id] = (state.by[id] || 0) + 1;
+/** Oro: 15 tableros · Plata: 14 tableros · Bronce: 13 tableros (o menos si no llegó). */
+export function medalFor(clearedOrMoves, opt) {
+  if (opt === undefined) {
+    if (clearedOrMoves >= 15) return 'gold';
+    if (clearedOrMoves >= 14) return 'silver';
+    return 'bronze';
   }
-  if (medal === 'gold' && (!prev || prev.medal !== 'gold')) state.gold++;
-  if (improved || (boards && moves === prev?.moves)) today[id] = { moves, opt, medal, ...(boards ? { boards } : {}) };
+  if (clearedOrMoves <= opt) return 'gold';
+  return clearedOrMoves <= opt + Math.max(2, Math.ceil(opt * 0.15)) ? 'silver' : 'bronze';
+}
+
+export const emptyDaily = () => ({
+  streak: 0,
+  best: 0,
+  last: -1,
+  solved: 0,
+  gold: 0,
+  bestCleared: 0,
+  by: {},
+  days: {},
+});
+/** Racha vigente si se completó el reto hoy o ayer. */
+export const currentStreak = (state, day) => (state && state.last >= day - 1 ? state.streak : 0);
+export const streakEarned = (state, day) => state?.last === day;
+export const todayResult = (state, id = DAILY_CHALLENGE.id, day = dayNumber()) => state?.days?.[day]?.[id] || null;
+
+/**
+ * Anota el resultado de un intento del reto diario (al llegar a 15 o al quedarse sin turnos).
+ * Llegar a 13+ asegura la racha del día y otorga las pistas de premio (13 → +1, 14 → +3, 15 → +5).
+ */
+export function recordDaily(state, id, day, { cleared, used, opt = DAILY_TURN_BUDGET, boards = [] }) {
+  const key = id || DAILY_CHALLENGE.id;
+  const medal = medalFor(cleared);
+  const today = (state.days[day] ||= {});
+  const prev = today[key] || null;
+  const first = !prev;
+  const improved =
+    first || cleared > (prev.cleared || 0) || (cleared === (prev.cleared || 0) && used < (prev.used ?? Infinity));
+  if (cleared >= 13 && (!prev || (prev.cleared || 0) < 13)) {
+    state.solved++;
+    state.by[key] = (state.by[key] || 0) + 1;
+  }
+  state.bestCleared = Math.max(state.bestCleared || 0, cleared);
+  if (cleared >= DAILY_TOTAL_BOARDS && (!prev || (prev.cleared || 0) < DAILY_TOTAL_BOARDS)) state.gold++;
+  if (improved) today[key] = { cleared, used, moves: used, opt, medal, boards };
   let streakUp = false;
-  if (day > state.last) {
+  if (cleared >= 13 && day > state.last) {
     state.streak = state.last === day - 1 ? state.streak + 1 : 1;
     state.last = day;
     state.best = Math.max(state.best, state.streak);
     streakUp = true;
   }
-  for (const d of Object.keys(state.days)) if (Number(d) < day - 6) delete state.days[d]; // solo se guarda la última semana
-  return { medal: today[id].medal, first, improved, streak: currentStreak(state, day), streakUp };
+  for (const d of Object.keys(state.days)) if (Number(d) < day - 6) delete state.days[d];
+  const best = today[key];
+  return {
+    medal: best.medal,
+    cleared,
+    bestCleared: best.cleared,
+    hints: dailyHintReward(best.cleared),
+    first,
+    improved,
+    streak: currentStreak(state, day),
+    streakUp,
+  };
 }
-export const dailyProgress = (store, id, day) =>
-  store.dailyPlay?.day === day ? store.dailyPlay.challenges[id] : undefined;
 
-/** Conserva la partida y las marcas por tablero separadas de la aventura. */
+export const dailyProgress = (store, id = DAILY_CHALLENGE.id, day = dayNumber()) =>
+  store.dailyPlay?.day === day ? store.dailyPlay.challenges?.[id] : undefined;
+
+/** Conserva el avance del reto diario (tablero actual, turnos usados y posición) separado de la aventura. */
 export function writeDailyProgress(store, daily, progress) {
   if (store.dailyPlay?.day > daily.day) return;
   if (store.dailyPlay?.day !== daily.day) store.dailyPlay = { day: daily.day, challenges: {} };
@@ -200,13 +226,10 @@ export function writeDailyProgress(store, daily, progress) {
   };
 }
 
-const MEDAL_GLYPH = { gold: '🥇', silver: '🥈', bronze: '🥉' };
-
-/** Texto para compartir, sin desvelar la solución. */
+/** Texto para compartir el resultado del día. */
 export function shareText(challenge, day, result, streak, { name = challenge.name, streakUnit = '' } = {}) {
-  const boards = result.boards?.length
-    ? ` ${result.boards.map((b) => MEDAL_GLYPH[medalFor(b.moves, b.opt)]).join('')}`
-    : '';
+  const cleared = result.cleared ?? result.boards?.filter(Boolean).length ?? 0;
+  const used = result.used ?? result.moves ?? 0;
   const streakPart = streak > 1 ? ` · ${streak}${streakUnit ? ` ${streakUnit}` : ''}` : '';
-  return `DAWNSLIDE · ${name} #${day} · ${result.moves}/${result.opt}${boards}${streakPart}`;
+  return `DAWNSLIDE · ${name} #${day} · ${cleared}/${DAILY_TOTAL_BOARDS} · ${used}/${DAILY_TURN_BUDGET}${streakPart}`;
 }

@@ -1,29 +1,78 @@
-/* Paradas para elegir camino: la imagen de la ciudad de fondo con el héroe encima; arriba el nombre de la ciudad y la frase de la historia,
-   abajo «Elige tu camino» y los dos caminos bien destacados. */
+/* Selección de carta del destino: fondo oscuro CSS animado acorde al menú, imagen del héroe y las cartas. */
 .travel-legacy {
   display: none !important;
 }
 #travel {
-  background: #08121a;
+  background: #070b18;
   overflow-y: auto;
   align-items: flex-start;
 }
-.travel-city-bg {
+.travel-css-bg,
+.travel-css-bg::before,
+.travel-css-bg::after {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  filter: brightness(0.8) saturate(1.05);
   pointer-events: none;
+}
+.travel-css-bg {
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 92% 56% at 50% 106%, #d97a3a4a 0%, #7d364d2e 40%, transparent 72%),
+    radial-gradient(ellipse 68% 48% at 18% 22%, #30688442 0%, transparent 66%),
+    radial-gradient(ellipse 68% 46% at 84% 24%, #6a3b7d42 0%, transparent 66%),
+    linear-gradient(180deg, #060916 0%, #0f162b 46%, #1b1732 82%, #24192b 100%);
+}
+.travel-css-bg::before {
+  content: '';
+  inset: -16%;
+  background:
+    radial-gradient(circle at 26% 32%, #44b0c230 0%, transparent 38%),
+    radial-gradient(circle at 74% 66%, #f4b25434 0%, transparent 42%),
+    radial-gradient(circle at 52% 18%, #a662cf28 0%, transparent 36%);
+  filter: blur(26px);
+}
+.travel-css-bg::after {
+  content: '';
+  inset: -12%;
+  opacity: 0.46;
+  background:
+    radial-gradient(circle, #fff1b0 0 1.1px, transparent 2.5px) 12% 28%/152px 118px,
+    radial-gradient(circle, #ffd890aa 0 1.2px, transparent 3px) 58% 72%/192px 158px,
+    radial-gradient(circle, #9adcf099 0 1px, transparent 2.4px) 36% 48%/218px 180px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lite) #travel.show .travel-css-bg::before {
+    animation: travel-aurora 18s ease-in-out infinite alternate;
+  }
+  html:not(.lite) #travel.show .travel-css-bg::after {
+    animation: travel-motes 16s ease-in-out infinite alternate;
+  }
+}
+@keyframes travel-aurora {
+  from {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+    opacity: 0.76;
+  }
+  to {
+    transform: translate3d(4%, 3%, 0) scale(1.08);
+    opacity: 1;
+  }
+}
+@keyframes travel-motes {
+  to {
+    transform: translate3d(4%, -7%, 0);
+    opacity: 0.7;
+  }
 }
 .travel-vignette {
   position: fixed;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(180deg, #08121acf 0%, #08121a38 30%, #08121a55 56%, #08121af2 100%);
+  background:
+    radial-gradient(ellipse at 50% 30%, #ffe8ad1c, transparent 52%),
+    linear-gradient(180deg, #060a1680 0%, transparent 28%, #070b1848 64%, #060914e6 100%);
 }
 .travel-hero {
   position: fixed;
@@ -34,7 +83,7 @@
   width: 100%;
   object-fit: contain;
   object-position: center bottom;
-  filter: drop-shadow(0 10px 26px #000b);
+  filter: drop-shadow(0 0 22px #f2c87433) drop-shadow(0 12px 28px #000c);
   mask-image: linear-gradient(#000 84%, transparent);
   pointer-events: none;
   user-select: none;

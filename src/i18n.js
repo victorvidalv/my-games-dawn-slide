@@ -45,18 +45,22 @@ const stored = (() => {
   }
 })();
 /* Solo en el navegador: en Node (tests, scripts) el idioma por defecto es siempre el inglés, sea cual sea el del sistema. */
-const browser = (() => {
+const browserLocales = () => {
   try {
-    return typeof document === 'undefined' || typeof navigator === 'undefined'
-      ? []
-      : navigator.languages?.length
-        ? navigator.languages
-        : [navigator.language];
+    if (typeof document === 'undefined' || typeof navigator === 'undefined') return [];
+    const list = navigator.languages?.length
+      ? [...navigator.languages]
+      : navigator.language
+        ? [navigator.language]
+        : [];
+    const sys = Intl.DateTimeFormat().resolvedOptions().locale;
+    if (sys) list.push(sys);
+    return list;
   } catch {
     return [];
   }
-})();
-export let lang = LANGS.includes(stored) ? stored : detectLang(browser);
+};
+export let lang = LANGS.includes(stored) ? stored : detectLang(browserLocales());
 /** true cuando el idioma activo es el inglés (se conserva por compatibilidad; para saber si hay que traducir usa `lang !== 'es'`). */
 export let isEnglish = lang === 'en';
 export const numLocale = () => LANG_INFO[lang].locale;
@@ -195,14 +199,16 @@ function stopTranslating() {
 }
 
 /** Cambia de idioma al instante: guarda la elección, retraduce la pantalla y avisa a la interfaz (`langchange`). */
-export function setLang(next) {
+export function setLang(next, { persist = true } = {}) {
   if (!LANGS.includes(next) || next === lang) return;
   lang = next;
   isEnglish = next === 'en';
-  try {
-    localStorage.setItem(KEY, next);
-  } catch {
-    /* sin almacenamiento: no se recuerda */
+  if (persist) {
+    try {
+      localStorage.setItem(KEY, next);
+    } catch {
+      /* sin almacenamiento: no se recuerda */
+    }
   }
   stopTranslating(); // vuelve al español de origen y, si toca, traduce desde ahí al idioma nuevo
   if (DICTS[lang]) startTranslating();
@@ -216,4 +222,14 @@ if (typeof document !== 'undefined') {
   };
   if (document.body) start();
   else document.addEventListener('DOMContentLoaded', start);
+  if (typeof window !== 'undefined') {
+    window.addEventListener('languagechange', () => {
+      try {
+        if (localStorage.getItem(KEY)) return;
+      } catch {
+        /* sin almacenamiento */
+      }
+      setLang(detectLang(browserLocales()), { persist: false });
+    });
+  }
 }

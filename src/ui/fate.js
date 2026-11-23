@@ -6,15 +6,13 @@
  */
 import { Music } from '../audio/music.js';
 import { sfx } from '../audio/sound.js';
-import { LORE_PORTRAITS, WORLD, lorePortraitSrc } from '../data/lore.js';
-import { ZONES } from '../data/zones.js';
 import { $ } from '../dom.js';
 import { FATE_CARDS, FATE_PICKS, STREAK_TURNS_EVERY, fateMuted, fateSummary, usesFate } from '../game/fate.js';
 import { numLocale } from '../i18n.js';
 import { S, holdBusy } from '../state.js';
 import { fateArt } from './fate-art.js';
 import { burst } from './fx.js';
-import { outfitImg, storyFor } from './story.js';
+import { outfitImg } from './story.js';
 import { wipeIn, wipeOut } from './transitions.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -136,37 +134,12 @@ export function openFatePanel() {
 }
 $('bFate')?.addEventListener('click', openFatePanel);
 
-/* ---------- Elección al cerrar la ciudad ---------- */
-/** Paisaje, héroe y texto de la ciudad a la que se llega (city = 1..9: la siguiente es ZONES[city]). */
-function fillStage(hero, city) {
-  const story = storyFor(hero.id, city * 3 + 1);
-  $('travelScene').src = `backgrounds/zone-${city + 1}.webp`;
+/* ---------- Elección de carta del destino ---------- */
+/** Héroe y título sobre el fondo animado oscuro. */
+function fillStage(hero) {
   $('travelHero').src = outfitImg(hero.id, 'adv');
   $('travelHero').alt = hero.name;
-  const name = document.createElement('span');
-  name.className = 'travel-city';
-  name.textContent = ZONES[city].n;
-  $('travelTitle').replaceChildren(name);
-  $('travelInscription').textContent = `«${story.inscription}»`;
-  $('fateChapter').textContent =
-    `THYES · AÑO ${WORLD.year} · TRAMO ${city + 1} DE ${ZONES.length} · NIVELES ${city * 3 + 1}–${(city + 1) * 3}`;
-  const portrait = LORE_PORTRAITS[city],
-    chip = $('travelLoreChip'),
-    line = story.vhorn ? `Vhorn: «${story.vhorn}»` : story.cityLines?.[0] || story.body || '';
-  chip.hidden = !portrait && !line;
-  if (portrait) {
-    $('travelChipImg').src = lorePortraitSrc(portrait.id);
-    $('travelChipImg').alt = portrait.name;
-    const who = document.createElement('bdi'),
-      caption = document.createElement('bdi');
-    who.textContent = portrait.name;
-    caption.textContent = portrait.caption;
-    $('travelChipName').replaceChildren(who, ' · ', caption);
-  } else {
-    $('travelChipImg').removeAttribute('src');
-    $('travelChipName').textContent = ZONES[city].n;
-  }
-  $('travelChipLine').textContent = line;
+  $('travelTitle').textContent = 'Carta del destino';
 }
 
 /** Lo que acaban de pagar las cartas que ya tenías (Brújula, Cosecha). */
@@ -188,15 +161,14 @@ function sparkle(el, card) {
  * Diálogo de cartas: `cards` son las 3 de la oferta. `onChoose(id)` aplica la elección y la guarda (se llama una vez);
  * la promesa se resuelve cuando termina la animación de salida. `isActive()` evita aplicarla si la partida cambió.
  */
-export function showFateDialog({ run, hero, city, cards, canReroll = false, rewards, onReroll, onChoose, isActive }) {
+export function showFateDialog({ run, hero, cards, canReroll = false, rewards, onReroll, onChoose, isActive }) {
   return new Promise((resolve) => {
     const modal = $('travel'),
       box = $('fateOffer'),
       rerollBtn = $('fateReroll');
     let currentCards = cards;
     let buttons = [];
-    fillStage(hero, city);
-    $('fateAsk').textContent = `Carta del destino ${city} de ${FATE_PICKS}`;
+    fillStage(hero);
     const reward = rewardsText(rewards);
     $('fateRewards').hidden = !reward;
     $('fateRewards').textContent = reward;
@@ -230,10 +202,6 @@ export function showFateDialog({ run, hero, city, cards, canReroll = false, rewa
     };
     const renderCards = (list) => {
       currentCards = list;
-      $('fateSub').textContent =
-        list.length > 2
-          ? 'Se suma a las que ya tienes. Las otras dos no vuelven.'
-          : 'Se suma a las que ya tienes. La otra no vuelve.';
       box.innerHTML = list
         .map((card, i) =>
           fateCardHtml(card, {
@@ -280,8 +248,7 @@ export function showFateDialog({ run, hero, city, cards, canReroll = false, rewa
         buttons[(Math.max(0, at) + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
       }
     };
-    // Entrada: «Ciudad completada» con una carta que brilla (≈1,4 s, se salta con un toque) y después se reparten las cartas.
-    $('fateIntroCity').textContent = ZONES[city - 1].n;
+    // Entrada breve con carta brillante (se salta con un toque) y después se reparten las cartas.
     let dealt = false;
     const deal = () => {
       if (dealt) return;

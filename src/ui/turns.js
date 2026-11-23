@@ -31,7 +31,7 @@ export function lowState() {
 function announceLow(last) {
   const G = S.G;
   const left = movesLeft(G.moves, G.limit);
-  const retry = S.run.daily || freeRetry(S.run, G.n);
+  const retry = freeRetry(S.run, G.n);
   $('lowTitle').textContent = last ? '¡Último movimiento!' : `Te quedan ${left} movimientos`;
   $('lowSub').textContent = last
     ? retry

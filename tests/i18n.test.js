@@ -4,7 +4,6 @@ import path from 'node:path';
 import { tr, isEnglish, lang, LANGS, DICTS, LANG_INFO, detectLang } from '../src/i18n.js';
 import { EN } from '../src/i18n/en.js';
 import { CHAPTERS, HERO_LORE, HERO_TALK, HERO_TUTORIAL_TALK } from '../src/data/story.js';
-import { INSCRIPTIONS } from '../src/data/lore.js';
 import { HEROES } from '../src/game/heroes.js';
 import { ZONES } from '../src/data/zones.js';
 
@@ -92,11 +91,9 @@ describe('idioma: el inglés es el idioma por defecto y cubre la historia', () =
     expect(tr('3.250')).toBe('3.250');
     expect(tr('+480')).toBe('+480');
   });
-  it('los capítulos, los héroes, los pueblos y las inscripciones están traducidos', () => {
+  it('los capítulos y los héroes están traducidos', () => {
     expect(
-      missing(
-        strings([CHAPTERS.map(({ inscription, ...c }) => c), HERO_LORE, HERO_TALK, HERO_TUTORIAL_TALK, INSCRIPTIONS]),
-      ),
+      missing(strings([CHAPTERS.map(({ inscription, ...c }) => c), HERO_LORE, HERO_TALK, HERO_TUTORIAL_TALK])),
     ).toEqual([]);
   });
   it('los héroes y las ciudades están traducidos', () => {

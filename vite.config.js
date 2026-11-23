@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { readFileSync } from 'node:fs';
-import { guideEntries, guidePaths, renderGuide } from './guia/render.js';
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
@@ -15,15 +14,11 @@ const seo = () => ({
   name: 'seo',
   transformIndexHtml: {
     order: 'pre',
-    handler(html, { filename }) {
-      const guide = Object.entries(guideEntries).find(([, entry]) => filename?.endsWith('/' + entry));
-      return (guide ? renderGuide(guide[0]) : html).replaceAll('%SITE_URL%', SITE_URL);
+    handler(html) {
+      return html.replaceAll('%SITE_URL%', SITE_URL);
     },
   },
   generateBundle() {
-    const urls = ['', ...Object.values(guidePaths)]
-      .map((path) => `  <url><loc>${SITE_URL}/${path}</loc><changefreq>monthly</changefreq></url>`)
-      .join('\n');
     this.emitFile({
       type: 'asset',
       fileName: 'robots.txt',
@@ -32,7 +27,7 @@ const seo = () => ({
     this.emitFile({
       type: 'asset',
       fileName: 'sitemap.xml',
-      source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+      source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${SITE_URL}/</loc><changefreq>monthly</changefreq></url>\n</urlset>\n`,
     });
   },
 });
@@ -43,7 +38,7 @@ export default defineConfig({
   build: {
     target: 'es2022',
     chunkSizeWarningLimit: 600,
-    rollupOptions: { input: ['index.html', 'melodies.html', ...Object.values(guideEntries)] },
+    rollupOptions: { input: ['index.html', 'melodies.html'] },
   },
   plugins: [
     seo(),
@@ -54,20 +49,9 @@ export default defineConfig({
       registerType: 'prompt',
       injectRegister: false,
       manifestFilename: 'manifest.webmanifest',
-      // La guía (guia/) es un sitio aparte: sus páginas e imágenes no se precachean para el juego (~1 MB menos al instalar).
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,webp,png,gif,webmanifest}'],
-        globIgnores: [
-          'guia/**',
-          'en/**',
-          'zh/**',
-          'melodies.html',
-          // Personalización (portadas, fondos, miniaturas, trajes y portadas de héroes): NADA de esto se baja al instalar la
-          // PWA. Se guarda la primera vez que se ve (src/sw.js, CacheFirst); así la instalación y el despliegue son ligeros.
-          'portada/**',
-          'heroes/outfits/**',
-          'backgrounds/cover-*.webp',
-        ],
+        globIgnores: ['melodies.html', 'imagenes/atuendo-*.webp'],
       },
       manifest: {
         name: 'DAWNSLIDE',
@@ -83,9 +67,9 @@ export default defineConfig({
         theme_color: '#111e29',
         categories: ['games', 'puzzle'],
         icons: [
-          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'imagenes/icono-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'imagenes/icono-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'imagenes/icono-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
     }),

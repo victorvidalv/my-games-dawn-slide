@@ -301,7 +301,7 @@ const BY_ID = new Map(FATE_CARDS.map((c) => [c.id, c]));
 export const fateById = (id) => BY_ID.get(id);
 
 /** ¿Lleva cartas del destino esta partida? (solo Aventura) */
-export const usesFate = (run) => !!run && !run.daily && !run.survival && run.mode !== 'p';
+export const usesFate = (run) => !!run && !run.daily && run.mode !== 'p';
 
 /** Mazo barajado de la partida (orden de las 24 cartas), siempre el mismo para la misma semilla. */
 export function fateDeck(seed) {

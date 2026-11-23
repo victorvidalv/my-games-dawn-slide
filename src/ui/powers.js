@@ -29,7 +29,7 @@ const POWER_CHARGE_MS = 850;
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function activatePower() {
-  if (!S.run || S.run.survival || !S.G || S.G.done || S.busy) return;
+  if (!S.run || !S.G || S.G.done || S.busy) return;
   cancelDrag();
   const action = beginPower(S.run, S.G);
   if (!action) {
