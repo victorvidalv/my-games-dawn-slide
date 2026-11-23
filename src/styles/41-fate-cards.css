@@ -266,11 +266,11 @@ button.fate-card {
   text-shadow: 0 1px 0 #091118;
 }
 #travel .travel-hero {
-  inset: auto 0 clamp(230px, 40dvh, 330px);
+  inset: auto 0 clamp(200px, 34dvh, 300px);
   margin-inline: auto;
   width: auto;
-  max-width: min(88vw, 420px);
-  height: clamp(170px, calc(100dvh - 560px), 560px);
+  max-width: min(96vw, 560px);
+  height: clamp(290px, calc(100dvh - 340px), 660px);
   -webkit-mask-image: none;
   mask-image: none;
 }
@@ -369,11 +369,11 @@ button.fate-card {
 }
 @media (min-aspect-ratio: 11/10) {
   #travel .travel-hero {
-    inset: auto auto 0 2vw;
+    inset: auto auto 0 1.5vw;
     margin: 0;
     width: auto;
-    max-width: min(44vw, 560px);
-    height: min(88dvh, 850px);
+    max-width: min(50vw, 660px);
+    height: min(94dvh, 920px);
   }
   .fate-offer {
     justify-content: flex-start;

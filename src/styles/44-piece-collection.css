@@ -367,64 +367,99 @@
   }
 }
 
-/* ---- Fichas: silk (rare) ---- */
+/* ---- Fichas: silk (epic) — Cristal Aurora: gema prismática facetada con reflejos de aurora y destellos ---- */
 @scope ([data-pieces='silk']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      linear-gradient(105deg, #ffffff00 0 28%, #ffffff5e 42%, #ffffff00 58%),
       linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--a) 80%, #ffffff),
-        color-mix(in oklab, var(--b) 90%, #000) 58%,
-        color-mix(in oklab, var(--d) 90%, var(--b))
+        135deg,
+        rgba(255, 255, 255, 0.34) 0%,
+        transparent 38%,
+        rgba(123, 245, 255, 0.22) 68%,
+        rgba(255, 160, 232, 0.3) 100%
+      ),
+      linear-gradient(35deg, transparent 0 42%, rgba(255, 255, 255, 0.24) 48%, transparent 54% 100%),
+      radial-gradient(ellipse 90% 70% at 24% 18%, color-mix(in oklab, var(--a) 55%, #b8fbff) 0%, transparent 64%),
+      radial-gradient(ellipse 85% 65% at 82% 88%, color-mix(in oklab, var(--d) 52%, #a876ff) 0%, transparent 66%),
+      linear-gradient(
+        165deg,
+        color-mix(in oklab, var(--a) 70%, #d8f8ff) 0%,
+        color-mix(in oklab, var(--b) 78%, #22265a) 52%,
+        color-mix(in oklab, var(--d) 82%, #171238) 100%
       );
     box-shadow:
-      0 3px 0 color-mix(in oklab, var(--d) 90%, #000),
-      0 6px 10px #0005,
-      inset 0 0 0 1.5px #ffffff70,
-      inset 0 0 0 3.5px color-mix(in oklab, var(--d) 40%, #0000);
-    border-color: #120e14;
+      0 3px 0 color-mix(in oklab, var(--d) 86%, #0b0820),
+      0 0 12px color-mix(in oklab, var(--a) 42%, #7bf5ff55),
+      0 6px 12px #0007,
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.85),
+      inset 0 -3px 6px color-mix(in oklab, var(--d) 55%, #2b145a99),
+      inset 0 0 0 1.5px rgba(210, 248, 255, 0.45);
+    border-color: color-mix(in oklab, var(--d) 60%, #1a1236);
     border-radius: 10px;
+    overflow: hidden;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    display: block;
     content: '';
+    position: absolute;
     inset: 0;
     margin: 0;
     padding: 0;
     width: auto;
     height: auto;
-    background: none;
-    background-size: auto;
     border-radius: inherit;
     transform: none;
     animation: none;
-    opacity: 1;
+    opacity: 0.9;
     filter: none;
     mask: none;
     -webkit-mask: none;
     box-shadow: none;
     aspect-ratio: auto;
-    display: none;
+    /* Banda prismática iridiscente que recorre las facetas del cristal */
+    background: linear-gradient(
+      115deg,
+      transparent 0 28%,
+      rgba(123, 245, 255, 0.32) 38%,
+      rgba(255, 255, 255, 0.78) 46%,
+      rgba(210, 162, 255, 0.42) 54%,
+      rgba(255, 168, 226, 0.28) 60%,
+      transparent 70% 100%
+    );
+    background-size: 260% 100%;
+    background-position: 130% 0;
   }
   .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
+    display: block;
     content: '';
+    position: absolute;
     inset: 0;
-    margin: auto;
+    margin: 0;
     width: auto;
     height: auto;
-    background: none;
     mask: none;
     -webkit-mask: none;
-    opacity: 1;
+    opacity: 0.85;
     filter: none;
-    border-radius: 0;
+    border-radius: inherit;
     animation: none;
     box-shadow: none;
     aspect-ratio: auto;
+    /* Destellos cristalinos internos y bisel superior de diamante */
+    background:
+      radial-gradient(circle, #ffffff 0 1.2px, rgba(168, 248, 255, 0.65) 2.2px, transparent 3.8px) 20% 28% / 44px 36px,
+      radial-gradient(circle, #ffffffef 0 1px, rgba(226, 178, 255, 0.6) 2px, transparent 3.4px) 76% 68% / 50px 40px,
+      radial-gradient(circle, #fff8d8 0 0.9px, transparent 2.4px) 52% 44% / 58px 46px,
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.34) 0%,
+        transparent 28%,
+        transparent 78%,
+        rgba(123, 245, 255, 0.24) 100%
+      );
   }
 }
 
@@ -669,28 +704,29 @@
   }
 }
 
-/* ---- Fichas: lava (legendary) — obsidiana agrietada con venas de magma vivo y brasas ---- */
+/* ---- Fichas: lava (legendary) — Núcleo Volcánico: obsidiana forjada con fisuras de magma vivo y brasas ---- */
 @scope ([data-pieces='lava']) {
   .piece:not(.red, .heavy, .ice, .gate) .face {
     background:
-      radial-gradient(ellipse 90% 75% at 50% 92%, color-mix(in oklab, var(--a) 22%, #ff7a18) 0%, transparent 62%),
-      radial-gradient(ellipse 55% 45% at 22% 24%, #401c16 0%, transparent 68%),
-      radial-gradient(ellipse 50% 42% at 78% 72%, #3a1712 0%, transparent 65%),
-      linear-gradient(155deg, #271212 0%, #150809 48%, #210c0b 100%);
+      radial-gradient(ellipse 92% 76% at 50% 94%, color-mix(in oklab, var(--a) 26%, #ff821c) 0%, transparent 64%),
+      radial-gradient(ellipse 60% 48% at 20% 22%, #481d15 0%, transparent 66%),
+      radial-gradient(ellipse 56% 44% at 80% 70%, #3e1611 0%, transparent 64%),
+      linear-gradient(158deg, #2d1313 0%, #140608 46%, #240c0a 100%);
     box-shadow:
-      0 3px 0 #080203,
-      0 0 12px #ff5e1470,
-      0 6px 12px #0009,
-      inset 0 0 0 1.5px #ff963c55,
-      inset 0 -3px 8px #ff450085,
-      inset 0 1.5px 3px #ffe08a55;
-    border-color: #160706;
+      0 3px 0 #070203,
+      0 0 15px #ff621682,
+      0 6px 14px #000a,
+      inset 0 0 0 1.5px #ffaa4c66,
+      inset 0 -4px 10px #ff3e0099,
+      inset 0 1.5px 3px #ffe8a066;
+    border-color: #180605;
     border-radius: 9px;
     overflow: hidden;
     filter: none;
     opacity: 1;
   }
   .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    display: block;
     content: '';
     position: absolute;
     inset: 0;
@@ -701,40 +737,40 @@
     border-radius: inherit;
     transform: none;
     animation: none;
-    opacity: 0.95;
+    opacity: 0.96;
     filter: none;
     mask: none;
     -webkit-mask: none;
     box-shadow: none;
     aspect-ratio: auto;
-    /* Grietas incandescentes de magma que cruzan la obsidiana y brillan desde el núcleo */
+    /* Red de fisuras incandescentes de magma con núcleo blanco-dorado */
     background:
       linear-gradient(
         118deg,
         transparent 0 24%,
-        #ff3c0099 28%,
-        #ffb338ee 30.5%,
-        #fff4b8 31.5%,
-        #ff6a14cc 33%,
+        #ff340099 28%,
+        #ffb83ef2 30.2%,
+        #fff9cc 31.4%,
+        #ff6a14d4 33%,
         transparent 38% 100%
       ),
       linear-gradient(
-        56deg,
+        54deg,
         transparent 0 58%,
-        #ff3b0088 62%,
-        #ff9a2aee 64.5%,
-        #fff0a8 65.5%,
-        #e63200aa 67.5%,
+        #ff34008c 62%,
+        #ffa02ef0 64.4%,
+        #fff5b8 65.4%,
+        #e82c00b2 67.4%,
         transparent 72% 100%
       ),
       radial-gradient(
-        ellipse 62% 38% at 48% 84%,
-        #fff1a8cc 0%,
-        color-mix(in oklab, var(--a) 28%, #ff7b1a) 38%,
-        #d9260066 68%,
+        ellipse 66% 42% at 50% 86%,
+        #fff6c4dd 0%,
+        color-mix(in oklab, var(--a) 26%, #ff7f1a) 38%,
+        #d9220077 70%,
         transparent 100%
       ),
-      radial-gradient(ellipse 46% 32% at 24% 38%, #ff6a1488 0%, transparent 72%);
+      radial-gradient(ellipse 48% 34% at 24% 36%, #ff6a1496 0%, transparent 72%);
     background-size:
       170% 170%,
       160% 160%,
@@ -1262,19 +1298,33 @@
     .face::before {
     animation: skin-sheen 3.4s ease-in-out infinite;
   }
+  :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::before {
+    animation: pc-crystal-sheen 3.6s ease-in-out infinite;
+  }
+  :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::after {
+    animation: pc-crystal-glint 4.4s ease-in-out infinite alternate;
+  }
+  :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) {
+    animation: pc-pulse-crystal 3.2s ease-in-out infinite;
+  }
   :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
     .face::before {
-    animation: pc-lava 4.6s ease-in-out infinite alternate;
+    animation: pc-lava 4.2s ease-in-out infinite alternate;
   }
   :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
     .face::after {
-    animation: pc-lava-embers 5.5s linear infinite;
+    animation: pc-lava-embers 4.8s linear infinite;
   }
   :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) {
-    animation: pc-pulse-lava 2.8s ease-in-out infinite;
+    animation: pc-pulse-lava 2.6s ease-in-out infinite;
   }
   :is([data-pieces='tide'], [data-pieces='tide'] .look-mini, .sw-real[data-pieces='tide'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
@@ -1341,6 +1391,44 @@
       100% 100%,
       0% 0%,
       0 0;
+  }
+}
+@keyframes pc-crystal-sheen {
+  0%,
+  16% {
+    background-position: 145% 0;
+    opacity: 0.72;
+  }
+  52% {
+    background-position: -35% 0;
+    opacity: 1;
+  }
+  100% {
+    background-position: -45% 0;
+    opacity: 0.65;
+  }
+}
+@keyframes pc-crystal-glint {
+  0% {
+    opacity: 0.68;
+    filter: brightness(0.95);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.18);
+  }
+  100% {
+    opacity: 0.8;
+    filter: brightness(1.04);
+  }
+}
+@keyframes pc-pulse-crystal {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(123, 245, 255, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 0 9px rgba(196, 160, 255, 0.7));
   }
 }
 @keyframes pc-lava {
