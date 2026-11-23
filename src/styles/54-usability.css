@@ -553,10 +553,7 @@
   font: 750 11px/1.2 var(--font-ui);
   letter-spacing: 0.14em;
 }
-/* Caminos bloqueados: el candado basta, sin «Estado: Bloqueado»; el requisito se lee entero */
-#menu .path.locked .pscore {
-  display: none;
-}
+/* Caminos bloqueados: el requisito se lee entero */
 #menu .path.locked .path-lock-note {
   white-space: normal;
 }

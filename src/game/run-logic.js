@@ -193,9 +193,6 @@ export function storeBoard(run, G) {
   run.board = snapshotBoard(G);
 }
 
-/** Tramo (0-6) cuyo fondo/música se abre al superar el nivel `level`. */
-export const cityAfter = (level) => Math.min(6, Math.floor(level / FATE_EVERY));
-
 /** Suma un tablero superado a la aventura: puntos, racha, dificultad adaptativa, pistas y avance pendiente. */
 export function applyAdventureWin(run, G, gain) {
   run.score += gain.total;

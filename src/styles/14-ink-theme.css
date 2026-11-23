@@ -98,11 +98,6 @@ button.primary:active {
   font-size: 34px;
   text-shadow: 0 2px 0 #091118;
 }
-.tagline {
-  font-size: 12px !important;
-  line-height: 1.5;
-  color: #c2ccce;
-}
 .path {
   background: #ffffff06;
   border: 2px solid #091118;
@@ -577,33 +572,12 @@ body.perfect .frame {
   height: 100%;
   overflow-y: auto;
 }
-.travel-backdrop,
-.travel-city-tint,
-.travel-elf,
 .travel-vignette {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-}
-.travel-backdrop {
-  object-fit: cover;
-  filter: blur(18px) brightness(0.42) saturate(0.8);
-  transform: scale(1.08);
-}
-.travel-city-tint {
-  object-fit: cover;
-  opacity: 0.22;
-  mix-blend-mode: screen;
-  filter: saturate(0.65);
-  -webkit-mask-image: linear-gradient(110deg, transparent 28%, #000 85%);
-  mask-image: linear-gradient(110deg, transparent 28%, #000 85%);
-}
-.travel-elf {
-  object-fit: cover;
-  object-position: 22% 24%;
-  z-index: 1;
 }
 .travel-vignette {
   z-index: 2;
@@ -622,36 +596,6 @@ body.perfect .frame {
   gap: 12px;
   padding: calc(env(safe-area-inset-top) + 14px) clamp(14px, 3.2vw, 34px) calc(env(safe-area-inset-bottom) + 16px);
 }
-.travel-top {
-  text-align: left;
-  max-width: 560px;
-}
-.travel-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  margin-bottom: 6px;
-}
-.travel-meta .tag {
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  color: #f0cf88;
-  opacity: 1;
-  font-weight: 800;
-  text-shadow: 0 2px 4px #091118;
-}
-.travel-cleared {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: #efe5cc;
-  background: #10202ce6;
-  border: 1.5px solid #091118;
-  box-shadow: 0 2px 0 #091118;
-  border-radius: 999px;
-  padding: 3px 10px;
-  font-variant-numeric: tabular-nums;
-}
 .travel-heading {
   font: 700 clamp(22px, 4vw, 38px)/1.12 var(--font-book);
   color: #f7eed6;
@@ -664,92 +608,9 @@ body.perfect .frame {
 .travel-heading .travel-city {
   color: #f5ce74;
 }
-.travel-side {
-  align-self: center;
-  justify-self: end;
-  width: min(62%, 300px);
-}
-.travel-lore-box {
-  background: linear-gradient(160deg, #132430eb, #0c1922f2);
-  border: 2.5px solid #091118;
-  border-left: 4px solid #e3b964;
-  border-radius: 14px;
-  padding: 13px 14px;
-  box-shadow:
-    0 5px 0 #091118,
-    0 16px 34px #000a,
-    inset 0 0 0 1px #e4c6822b;
-  text-align: left;
-}
-.travel-lore-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-.travel-seal {
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #f1ce82;
-}
-.travel-lines {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 7px;
-}
-.travel-lines li {
-  position: relative;
-  padding-left: 14px;
-  font: 600 13px/1.38 var(--font-book);
-  color: #f2ead5;
-}
-.travel-lines li::before {
-  content: '◆';
-  position: absolute;
-  left: 0;
-  top: 1px;
-  font-size: 8px;
-  color: #eab95d;
-}
-.travel-companion {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-top: 10px;
-  padding-top: 9px;
-  border-top: 1px solid #ffffff1a;
-}
-.travel-hero-thumb {
-  width: 34px;
-  height: 34px;
-  flex: none;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center top;
-  border: 2px solid #091118;
-  box-shadow: 0 0 0 1px #d7b87888;
-  background: #0a151f;
-}
-.travel-hero-line {
-  font: italic 11.5px/1.35 var(--font-book);
-  color: #d9c296;
-  margin: 0;
-}
 .travel-bottom {
   width: 100%;
   align-self: end;
-}
-#travel .route-caption {
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  font-weight: 800;
-  color: #efe0bc;
-  margin: 0 0 8px;
-  text-shadow: 0 2px 3px #091118;
 }
 
 #journey {
@@ -762,196 +623,6 @@ body.perfect .frame {
 }
 #journey.out {
   animation-duration: 0.12s;
-}
-#journey .jskip {
-  display: none;
-}
-#journey .mtag {
-  border: 0;
-  background: none;
-  font-size: 9px;
-  color: #ccb78e;
-}
-#journey .mcap h2 {
-  font-family: var(--font-book);
-  font-size: 24px;
-  text-shadow: none;
-}
-#journey .mcap p {
-  font-size: 11px;
-}
-
-.wheel-shell {
-  width: min(100%, 268px);
-  border: 2px solid #b69b66;
-  background: #142730;
-  box-shadow:
-    0 0 0 6px #12232b,
-    0 0 0 7px #81745877;
-  margin: 21px auto 14px;
-}
-.wheel-shell::before {
-  inset: 5px;
-  border: 1px dashed #c5b38450;
-  border-radius: 50%;
-  z-index: 2;
-}
-.wheel-shell::after {
-  content: '';
-  position: absolute;
-  inset: -12px;
-  border: 1px solid #b5a17433;
-  border-radius: 50%;
-  pointer-events: none;
-}
-.prize-wheel {
-  filter: none;
-}
-.wheel-pointer {
-  font-size: 22px;
-  top: -17px;
-  color: #ce7960;
-  text-shadow: 0 1px 0 #442f2a;
-}
-.wheel-hub {
-  inset: calc(50% - 28px);
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #142832;
-  border: 1px solid #b69b6688;
-  box-shadow: 0 0 0 4px #142832;
-  color: #c7725d;
-}
-.wheel-hub .rune-icon {
-  width: 32px;
-  height: 32px;
-}
-.rune-icon {
-  display: block;
-  width: 38px;
-  height: 38px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.amulet-machine {
-  border: 1px solid #a18a6077;
-  background: #303d40;
-  border-radius: 13px;
-  box-shadow: 0 3px 0 #10212a;
-  padding: 10px 13px 12px;
-}
-.machine-crown {
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  color: #b7a57f;
-  text-shadow: none;
-  padding: 5px 0 10px;
-}
-.reels {
-  padding: 6px;
-  gap: 7px;
-  border: 1px solid #172b34;
-  border-radius: 8px;
-  background: #10242d;
-  box-shadow: none;
-}
-.reel {
-  border-radius: 5px;
-  background: #dbd0b3;
-  box-shadow: inset 0 3px 7px #4f513e33;
-}
-.reel::after {
-  border: 0;
-  background: linear-gradient(#22353e33, transparent 30%, transparent 70%, #22353e33);
-}
-.reel-strip span {
-  color: #4d605b;
-  font-size: 33px;
-}
-.reel-strip .rune-icon {
-  width: 43px;
-  height: 43px;
-}
-.reel.match {
-  background: #e4c78e;
-  box-shadow: inset 0 0 0 2px #ad8157;
-}
-.machine-plaque {
-  font-size: 8px;
-  background: none;
-  color: #a3afa8;
-  letter-spacing: 0.1em;
-  padding: 4px;
-  margin: 9px 0 0;
-}
-.machine-lights {
-  display: none;
-}
-#bonus .bcard {
-  height: 82px;
-  border-radius: 8px;
-}
-#bonus .bb {
-  background: repeating-linear-gradient(35deg, #c2b38807 0 1px, transparent 1px 7px), #233e47;
-  border-radius: 8px;
-  border: 1px solid #b5a06d88;
-  box-shadow:
-    inset 0 0 0 4px #233e47,
-    inset 0 0 0 5px #a18f5e33;
-}
-#bonus .bb::before {
-  border: 1px solid #ad9a6b44;
-  border-radius: 3px;
-  inset: 9px;
-}
-#bonus .bb i {
-  font-size: 27px;
-  color: #bd9d6a;
-  text-shadow: none;
-}
-#bonus .bf {
-  border-radius: 8px;
-  background: #dfd3b5;
-  border: 1px solid #b99b65;
-  box-shadow:
-    0 2px 0 #132830,
-    inset 0 0 0 3px #b8a78633;
-  gap: 5px;
-}
-#bonus .bf b {
-  color: #526461;
-}
-#bonus .bf small {
-  font-size: 10px;
-  color: #5a695e;
-  letter-spacing: 0;
-}
-.bin {
-  transition-duration: 0.28s;
-}
-#bonus .bcard {
-  animation-duration: 0.2s;
-  animation-delay: 0s !important;
-}
-.bcard:not(.on) .bb,
-.bcard.pair .bf,
-.bcard.winc .bf {
-  animation: none !important;
-}
-.bcard.winc .bf {
-  background: #ead09b;
-  box-shadow: inset 0 0 0 2px #ad8753;
-}
-.bcard.pair .bf {
-  border-color: #d1ac62;
-}
-.ui-icon {
-  width: 17px;
-  height: 17px;
-  display: inline-block;
-  vertical-align: -3px;
-  margin-right: 3px;
 }
 .ending-thanks {
   background: #10212c66;
@@ -974,15 +645,6 @@ body.perfect .frame {
   box-shadow: none;
 }
 @media (min-aspect-ratio: 11/10) {
-  .travel-elf {
-    width: min(56vw, 74dvh);
-    left: 0;
-    right: auto;
-    object-fit: cover;
-    object-position: center 20%;
-    -webkit-mask-image: linear-gradient(90deg, #000 72%, transparent 100%);
-    mask-image: linear-gradient(90deg, #000 72%, transparent 100%);
-  }
   .travel-vignette {
     background:
       linear-gradient(180deg, #08121a99 0%, transparent 35%, transparent 65%, #08121ae8 100%),
@@ -994,19 +656,6 @@ body.perfect .frame {
     align-content: end;
     gap: 14px 28px;
   }
-  .travel-top {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: end;
-    max-width: none;
-  }
-  .travel-side {
-    grid-column: 2;
-    grid-row: 2;
-    width: 100%;
-    justify-self: stretch;
-    align-self: start;
-  }
   .travel-bottom {
     grid-column: 1 / -1;
     grid-row: 3;
@@ -1015,9 +664,6 @@ body.perfect .frame {
   }
 }
 @media (min-aspect-ratio: 11/10) and (max-height: 540px) {
-  .travel-elf {
-    width: min(46vw, 68dvh);
-  }
   .travel-shell {
     grid-template-columns: minmax(180px, 1fr) minmax(300px, 520px);
     grid-template-rows: auto auto auto;
@@ -1027,24 +673,6 @@ body.perfect .frame {
   }
   .travel-heading {
     font-size: 21px;
-  }
-  .travel-lore-box {
-    padding: 10px 12px;
-  }
-  .travel-lines {
-    gap: 4px;
-  }
-  .travel-lines li {
-    font-size: 12px;
-    line-height: 1.3;
-  }
-  .travel-companion {
-    margin-top: 7px;
-    padding-top: 7px;
-  }
-  .travel-hero-thumb {
-    width: 28px;
-    height: 28px;
   }
   .travel-bottom {
     grid-column: 2;
@@ -1091,19 +719,6 @@ body.perfect .frame {
     min-height: 45px;
   }
 }
-@media (max-width: 460px) and (max-aspect-ratio: 11/10) {
-  .travel-side {
-    width: min(66%, 252px);
-  }
-  .travel-lines li {
-    font-size: 12px;
-  }
-}
-@media (max-width: 359px) and (max-aspect-ratio: 11/10) {
-  .travel-side {
-    width: 100%;
-  }
-}
 @media (max-height: 670px) and (max-aspect-ratio: 11/10) {
   .travel-shell {
     gap: 8px;
@@ -1113,30 +728,11 @@ body.perfect .frame {
   .travel-heading {
     font-size: 20px;
   }
-  .travel-lore-box {
-    padding: 10px 12px;
-  }
-  .travel-lines {
-    gap: 5px;
-  }
-  .travel-lines li {
-    font-size: 12px;
-  }
-  .travel-companion {
-    margin-top: 7px;
-    padding-top: 7px;
-  }
   .hero-choice {
     height: 138px;
   }
   .hero-selector h2 {
     font-size: 24px;
-  }
-  .wheel-shell {
-    width: 220px;
-  }
-  #bonus .bonuscard {
-    padding: 16px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1215,18 +811,6 @@ body.perfect .frame {
   color: #ccb78c;
   text-shadow: none;
   animation: none;
-}
-.route-place .tag {
-  font-size: 9px;
-}
-
-.brand-key {
-  display: inline-block;
-  width: 23px;
-  height: 29px;
-  vertical-align: -4px;
-  margin-right: 7px;
-  color: #bc715b;
 }
 .pemo {
   font-family: var(--font-book);
@@ -1314,38 +898,12 @@ body.perfect .frame {
   stroke-linejoin: round;
   opacity: 0.8;
 }
-.pause-actions button:focus-visible,
-.map-close:focus-visible {
+.pause-actions button:focus-visible {
   outline: 2px solid #d2bd8a;
   outline-offset: 3px;
 }
-.map-close {
-  position: absolute;
-  bottom: calc(env(safe-area-inset-bottom) + 16px);
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 170px;
-  min-height: 44px;
-  padding: 11px 18px;
-  border: 1px solid #b9a57b66;
-  border-radius: 8px;
-  background: #253b45;
-  color: #e7dbc0;
-  box-shadow: none;
-  font-size: 13px;
-}
-.map-close[hidden] {
-  display: none;
-}
-.map-close:active {
-  transform: translate(-50%, 1px);
-}
 #journey[aria-modal='true'] {
   padding-bottom: calc(env(safe-area-inset-bottom) + 75px);
-}
-#journey[aria-modal='true'] .mcap p {
-  font-size: 13px;
-  color: #d7d6c8;
 }
 
 #journey[aria-modal='true'] {
@@ -1354,8 +912,7 @@ body.perfect .frame {
 
 /* Con el fondo de la ciudad a la vista, los textos sueltos llevan sombra para leerse sobre cualquier paisaje */
 .hint-text,
-.legend,
-.rec-line {
+.legend {
   text-shadow:
     0 1px 3px #000d,
     0 0 10px #000b;
@@ -1962,41 +1519,6 @@ body.perfect .frame {
 
 .hero-power {
   align-items: center;
-}
-
-.travel-lore {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin: 6px 0 8px;
-  padding: 6px;
-  border-radius: 10px;
-  background: #0b141c99;
-  border: 1px solid #f1ce8244;
-}
-.travel-lore[hidden] {
-  display: none;
-}
-.travel-lore img {
-  width: 60px;
-  height: 90px;
-  object-fit: cover;
-  object-position: 50% 14%;
-  border-radius: 6px;
-  border: 2px solid #091118;
-  flex: none;
-}
-.travel-lore figcaption {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 12px;
-  line-height: 1.3;
-  color: #e9dcc0;
-}
-.travel-lore figcaption b {
-  font: 700 13px var(--font-book);
-  color: #f1ce82;
 }
 
 /* minijuegos: el cuarto del tesoro de fondo */

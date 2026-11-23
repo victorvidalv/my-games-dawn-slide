@@ -231,7 +231,6 @@ export const ZH_LORE = {
   'Artefactos y cartas': '神器与卡牌',
   'Libros prohibidos': '禁书',
   '{a} de {b} entradas': '{a}/{b} 条目',
-  'Su historia se escribe a medida que juegas.': '随着你的游戏，他们的故事被一页页写下。',
   'Frase de los sellos: {a} de {b} líneas': '封印之句：{a}/{b} 行',
   'Usa {n} reliquias distintas': '使用 {n} 种不同的遗物',
   'Completa el Desafío de 250 turnos': '完成 250 步挑战',
@@ -239,7 +238,6 @@ export const ZH_LORE = {
   'Sello de {n}': '{n}之印',
   'Quince tomos del universo. Tócalos para leer; los que faltan piden una hazaña.':
     '宇宙的十五卷典籍。点按即可阅读；尚缺的几卷需要一番功绩。',
-  'Resuelve tu primer tablero con Lía': '用 Lía 解开你的第一个棋盘',
   Escenas: '场景',
   'Crónica de Thyes': 'Thyes 编年史',
   'THYES · AÑO 4133': 'THYES · 4133 年',

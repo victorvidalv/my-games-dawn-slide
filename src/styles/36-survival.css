@@ -128,24 +128,6 @@
     background 0.15s;
 }
 
-.challenge-route-card .route-tag {
-  display: inline-block;
-  margin-bottom: 3px;
-  padding: 2px 7px;
-  border-radius: 99px;
-  background: #0d1526aa;
-  border: 1px solid #7dd3fc44;
-  color: #9dd4f5;
-  font: 800 9.5px/1 var(--font-ui);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.challenge-route-card.won .route-tag {
-  border-color: #86efac66;
-  color: #86efac;
-}
-
 .challenge-route-card .route-turns {
   display: flex;
   align-items: baseline;

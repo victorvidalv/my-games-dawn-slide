@@ -12,11 +12,9 @@ export const ZH_STORY = {
   'Castillo Dorado': '黄金城堡',
   Corazón: '心',
   Marea: '潮汐',
-  Agua: '水',
   Memoria: '记忆',
   Chispa: '火花',
   Valor: '勇气',
-  Vida: '生命',
   Fuego: '火焰',
   Cielo: '天空',
   Amanecer: '黎明',
@@ -47,7 +45,6 @@ export const ZH_STORY = {
   'la hora que sabe volver,': '懂得回头的时辰，',
   'la palabra que nombra lo perdido.': '为失落之物命名的话语。',
   'Entonces Tri abrirá los ojos.': '那时，Tri 将睁开双眼。',
-  'THYES · AÑO {y} · CAPÍTULO {c} DE 10 · NIVELES {a}–{b}': 'THYES · {y} 年 · 第 {c} 章 / 共 10 章 · 关卡 {a}–{b}',
   'Thyes, año {y} · Nivel {l} de 100 · Diez reinos, diez sellos':
     'Thyes，{y} 年 · 第 {l} 关 / 共 100 关 · 十个王国，十道封印',
   'La brasa sale del valle': '余烬走出山谷',
@@ -67,14 +64,6 @@ export const ZH_STORY = {
   'Despeja el camino de la llave roja y la marea volverá.': '为红钥匙清出道路，潮汐就会回来。',
   'El sello de la Marea se rompe. El mar respira otra vez y los Kogn cantan en su lengua vieja.':
     '潮汐之印破碎了。大海重新呼吸，Kogn 族用古老的语言唱起了歌。',
-  'El pozo de los Sahrim': 'Sahrim 族的水井',
-  'Los Sahrim cuentan los pozos como otros cuentan los años, y la Noche Larga les arrebató el último. Sin agua la caravana no avanza. Rompe el sello del Agua y haz brotar el pozo.':
-    'Sahrim 族像别人数年岁一样数水井，而漫漫长夜夺走了最后一口。没有水，商队无法前行。打破水之印，让井水重新涌出。',
-  'Las dunas cubrieron el último pozo de los Sahrim.': '沙丘掩埋了 Sahrim 族的最后一口井。',
-  'Aquí cada movimiento de más cuesta agua.': '在这里，每多走一步都要耗费水。',
-  'La estrella caída marca el lugar donde cavar.': '坠落的星星标出了该挖掘的地方。',
-  'El sello del Agua se rompe. El pozo brota y los Sahrim vuelven a contar sus pozos, uno más.':
-    '水之印破碎了。井水涌出，Sahrim 族又数起了水井，多了一口。',
   'Los nombres de la corteza': '树皮上的名字',
   'Los Ennari escribían los nombres de sus muertos en la corteza de los árboles. Vhorn los borró, porque se alimenta de lo que se olvida. Rompe el sello de la Memoria y devuélveselos.':
     'Ennari 族把逝者的名字写在树皮上。Vhorn 抹去了它们，因为它以被遗忘之物为食。打破记忆之印，把名字还给他们。',
@@ -99,15 +88,6 @@ export const ZH_STORY = {
   'Una pieza de hielo, una vez empujada, patina hasta el tope.': '冰块一旦被推动，就会一直滑到底。',
   'El sello del Valor se rompe. La campana suena entre las montañas y el miedo se queda atrás.':
     '勇气之印破碎了。钟声在群山间回荡，恐惧被留在了身后。',
-  'El jardín quieto': '静止的花园',
-  'Los Sahrim trajeron la primera semilla de cerezo cruzando tres desiertos. Hoy los pétalos flotan inmóviles y, por primera vez, Vhorn se deja ver entre ellos. Rompe el sello de la Vida.':
-    'Sahrim 族穿越三片沙漠，带来了第一颗樱桃树的种子。如今花瓣一动不动地浮在空中，而 Vhorn 第一次在花间现身。打破生命之印。',
-  'Los pétalos cuelgan en el aire, como si el tiempo dudara.': '花瓣悬在空中，仿佛时间也在犹豫。',
-  'Los candados de la villa se abren cubriendo la placa correcta.': '村里的锁，只要盖住正确的压板就会打开。',
-  'Esta calma es una trampa: alguien os observa.': '这份平静是个陷阱：有人在看着你们。',
-  'Apagad esa luz. Todo lo que arde termina olvidado.': '熄灭那道光吧。一切燃烧的东西，终将被遗忘。',
-  'El sello de la Vida se rompe. Los cerezos florecen y el viento trae una certeza: ya no hay vuelta atrás.':
-    '生命之印破碎了。樱花盛开，风带来一个确定的消息：已经没有回头路了。',
   'La fragua bajo la ceniza': '灰烬下的锻炉',
   'Aquí la brasa duerme bajo la piedra negra. Vhorn susurra que descansar es más fácil que luchar; romper el sello del Fuego es decirle que no.':
     '在这里，余烬沉睡在黑色的岩石之下。Vhorn 低语说，休息比抗争容易；打破火焰之印，就是对它说不。',
@@ -117,15 +97,6 @@ export const ZH_STORY = {
   'Descansad. Nadie recordará vuestra luz cuando acabe la noche.': '休息吧。等黑夜过去，没有人会记得你们的光。',
   'El sello del Fuego se rompe. La fragua arde limpia y la tentación de rendirse se apaga.':
     '火焰之印破碎了。锻炉燃得纯净，想要放弃的念头熄灭了。',
-  'Los puentes de luz': '光之桥',
-  'Los Aluen tejían puentes de luz entre islas flotantes, y Vhorn los cortó. Aquí los héroes descubren su secreto: Vhorn fue el primer vigía del Faro, hasta que el mundo lo olvidó.':
-    'Aluen 族在浮岛之间编织光之桥，Vhorn 把它们切断了。在这里，英雄们发现了它的秘密：Vhorn 曾是灯塔的第一位守望者，直到世界把它遗忘。',
-  'Las islas flotan sobre un abismo sin fondo.': '岛屿漂浮在无底的深渊之上。',
-  'Cada tablero es un puente que hay que tejer a mano.': '每一块棋盘，都是一座要亲手编织的桥。',
-  'Vhorn no quiere destruirlo todo: quiere que alguien lo recuerde.': 'Vhorn 并不想毁掉一切：它只想有人记得它。',
-  'Yo encendí el Faro mil noches… y nadie dijo mi nombre.': '我点亮灯塔一千个夜晚……却没有人说出我的名字。',
-  'El sello del Cielo se rompe. El último puente de luz llega hasta el Castillo Dorado.':
-    '天空之印破碎了。最后一座光之桥一直通到黄金城堡。',
   'El trono vacío': '空王座',
   'Aquí espera el Faro del Amanecer y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.':
     '黎明灯塔在这里等待，而空王座上是 Vhorn 的阴影。要战胜它，只靠力量是不够的：必须点亮灯塔，并说出它的名字。',
@@ -265,18 +236,11 @@ export const ZH_STORY = {
   '«Calcula el segundo exacto y mueve.»': '「算准那一秒，然后移动。」',
   '«Lee las tres líneas y abre el paso al vuelo.»': '「读完三行，一气呵成地开路。」',
   '«Una sola jugada acorta todo el códice.»': '「只要一步，就能让整部法典变短。」',
-  'Vhorn, la Sombra del Faro': '灯塔之影 Vhorn',
-  '¡Los sellos ceden!': '封印松动了！',
-  'Rompiste los diez sellos y el Faro del Amanecer parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
-    '你打破了十道封印，黎明灯塔在昏暗中闪烁。但 Vhorn 还在那里，被遗忘而愤怒，Tri 也仍在沉睡。',
   'En la senda ': '在',
   Difícil: '困难',
-  ' las sombras de Vhorn pesan más: menos margen, más gloria.': '之路上，Vhorn 的阴影更加沉重：余地更小，荣耀更多。',
   '⚔️ Ir al camino Difícil': '⚔️ 前往困难之路',
   'SENDA DIFÍCIL COMPLETADA': '困难之路已完成',
   '¡Viajero de Thyes!': 'Thyes 的旅人！',
-  'Recorriste otra vez los diez reinos, ya con la hora y la palabra de tu lado. El Faro arde casi entero; falta pronunciar el nombre de Vhorn.':
-    '你再次走遍了十个王国，这一次时辰和话语都站在你这边。灯塔几乎完全燃起；只差说出 Vhorn 的名字。',
   'Solo resta la prueba suprema: la senda ': '只剩最终的考验：',
   Experto: '专家',
   ', hasta el trono vacío.': '之路，直通空王座。',
@@ -284,20 +248,10 @@ export const ZH_STORY = {
   '¡Thyes amanece!': 'Thyes 天亮了！',
   'La brasa, la hora y la palabra encienden el Faro del Amanecer y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.':
     '余烬、时辰和话语点亮了黎明灯塔，叫出了 Vhorn 的名字。它的阴影平静下来，Tri 终于睁开双眼：4134 年，Thyes 醒来了。',
-  'Tu nombre queda grabado en los diez sellos.': '你的名字被刻在了十道封印上。',
   '¡Felicidades!': '恭喜！',
-  'Superaste los 100 umbrales.': '你闯过了 100 道门槛。',
   'LA NOCHE SE CIERRA · ': '夜幕降临 ·',
-  'Te quedaste sin movimientos en el nivel {l}. El Sello de {s} resiste… por ahora. Thyes, año {y}.':
-    '你在第 {l} 关用完了步数。{s}之印还在坚持……至少现在如此。Thyes，{y} 年。',
   '{h}, sin fuerzas tras la derrota': '{h}，落败后筋疲力尽',
   '{h} alcanza el final de su senda': '{h}走到了旅途的终点',
-  'EL ATLAS DE {h} · UN NUEVO HORIZONTE': '{h}的地图册 · 新的地平线',
-  'EL ATLAS DE {h} · CIUDAD {c} DE 10': '{h}的地图册 · 第 {c} 座城 / 共 10 座',
-  'El atlas de {h}. Destino: {z}': '{h}的地图册。目的地：{z}',
-  'Nivel actual {l} de 100 · Umbral {u} de 10 en este reino':
-    '当前第 {l} 关 / 共 100 关 · 本王国第 {u} 道门槛 / 共 10 道',
-  'Hasta pronto, {z}': '再见，{z}',
   'LAS CRÓNICAS DE LA LLAVE ROJA': '红钥匙编年史',
   'El Faro': '黎明',
   'del Amanecer': '灯塔',

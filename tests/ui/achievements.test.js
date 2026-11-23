@@ -42,8 +42,6 @@ it('Personalizar: lo cumplido se desbloquea solo, la badge avisa y se puede prob
     'trail',
     'fx',
   ]);
-  expect(panel.querySelector('[data-claim]')).toBeNull();
-  expect(app.$('achWallet')).toBeNull();
 
   // Ver la categoría marca sus novedades como vistas
   panel.querySelector('[data-custom-type="board"]').click();

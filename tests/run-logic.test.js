@@ -10,7 +10,6 @@ import {
   applyAdventureWin,
   applyDailyWin,
   canSaveBoard,
-  cityAfter,
   clearKind,
   dailyEntry,
   newAdventureRun,
@@ -191,14 +190,6 @@ describe('guardado del tablero', () => {
     expect(restoreDailyAttempt(G(), legacy([0, 1, 3]))).toBe(false); // ...o sobre la roca
     expect(restoreDailyAttempt(G(), legacy([0, 2, 0], [[0, 1, 3]]))).toBe(false); // deshacer llevaría a la roca
     expect(restoreDailyAttempt(G(), legacy([1]))).toBe(false);
-  });
-});
-
-describe('cierre de tramo', () => {
-  it('cityAfter da el tramo que se abre al superar un nivel', () => {
-    expect(cityAfter(6)).toBe(2);
-    expect(cityAfter(2)).toBe(0);
-    expect(cityAfter(21)).toBe(6);
   });
 });
 

@@ -71,16 +71,11 @@
   padding: 14px clamp(14px, 3vw, 32px) calc(env(safe-area-inset-bottom) + 28px);
 }
 
-#panelLore .lore-top-summary,
 #panelLore .lore-tabs,
 #panelLore .lore-body,
 #panelLore .look-note {
   max-width: 980px;
   margin-inline: auto;
-}
-
-#panelLore .lore-top-summary {
-  margin-bottom: 12px;
 }
 
 /* ---------- Personalizar a pantalla completa ---------- */
@@ -619,52 +614,6 @@
   min-height: 34px;
   gap: 8px;
   padding-inline: 20px;
-}
-#menu .others-caret {
-  width: 7px;
-  height: 7px;
-  margin-top: -3px;
-  border: solid currentColor;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-  transition: transform 0.2s;
-}
-#menu .home-others[aria-expanded='true'] .others-caret {
-  margin-top: 3px;
-  transform: rotate(-135deg);
-}
-/* Número muy sutil: sin brillo ni pulso, solo un aviso de que hay algo por estrenar */
-#menu .others-badge {
-  min-width: 17px;
-  height: 17px;
-  padding: 0 5px;
-  border-radius: 99px;
-  background: #ffd24a2e;
-  color: #ffd98a;
-  font: 800 10px/17px var(--font-ui);
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-#menu .home-others-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  width: 100%;
-  animation: others-in 0.18s ease-out;
-}
-#menu .home-others-list[hidden] {
-  display: none;
-}
-@keyframes others-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  #menu .home-others-list {
-    animation: none;
-  }
 }
 /* Los iconos de línea (libro, engranaje) llevan trazo oscuro: sobre las píldoras oscuras se pintan claros */
 #menu .home-pill :is(.ic-book, .ic-gear, .ic-key) g {

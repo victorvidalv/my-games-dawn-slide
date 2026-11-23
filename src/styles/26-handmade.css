@@ -97,12 +97,10 @@
 }
 
 .rules,
-.breakdown,
 .stats div {
   border-radius: var(--wob-d);
 }
 .rules,
-.breakdown,
 .stats div {
   background: var(--paper-grain), #0b151d88;
   box-shadow:
@@ -199,7 +197,6 @@ button.primary:active {
 }
 
 /* Resultados y avisos en el mismo papel */
-.toast,
 .power-toast,
 .tip {
   border-radius: var(--wob-b);
@@ -298,7 +295,6 @@ button {
 .power-toast b,
 .power-sigil > b,
 .hero-choice-name,
-.mcap h2,
 .travel-heading,
 .pemo {
   font-family: var(--font-title) !important;
@@ -308,8 +304,7 @@ button {
 .logo,
 .card h2,
 .hero-selector h2,
-.pause-menu h2,
-.mcap h2 {
+.pause-menu h2 {
   text-transform: uppercase;
   color: #f6e6bd;
   text-shadow:
@@ -339,7 +334,6 @@ button {
 
 /* Pausa, mapa y avisos con la misma placa: papel ciruela, aro de oro, remaches, esquinas irregulares y sombra de tinta */
 #pause .pause-menu,
-.sheet,
 .askcard {
   border-radius: var(--wob-a);
   border: 3px solid #150e0c;
@@ -387,30 +381,8 @@ button {
   color: #f0cdbf;
   border-color: #150e0c;
 }
-.pstat div {
-  border-radius: var(--wob-d);
-  background: var(--hatch), #150e0c66;
-  box-shadow:
-    inset 0 2px 5px #0007,
-    inset 0 0 0 1px #e0b04f26;
-}
-.map-close {
-  border: 2.5px solid #150e0c;
-  border-radius: var(--wob-b);
-  background: var(--hatch), linear-gradient(180deg, #2c7585, #215666);
-  color: #fff5e0;
-  box-shadow:
-    inset 0 2px 0 #ffffff26,
-    inset 0 -4px 0 #0005,
-    3px 5px 0 #150e0c;
-  font-family: var(--font-ui);
-  font-weight: 700;
-}
 #journey[aria-modal='true'] {
   background: radial-gradient(ellipse at 50% 30%, #3a2f58, transparent 70%), #1b1530;
-}
-.mcap h2 {
-  font-family: var(--font-title) !important;
 }
 #upd {
   border: 3px solid #150e0c;
@@ -536,150 +508,6 @@ button {
   }
 }
 
-/* ---------- Tienda de Don Dublón: etiquetas de precio de pergamino cosidas, rótulo de madera con clavos y todo legible ---------- */
-.shop-sign {
-  border: 3px solid #150e0c;
-  border-radius: var(--wob-b);
-  color: #fff0c8;
-  text-shadow: 0 2px 0 #150e0c;
-  font-family: var(--font-title) !important;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  background:
-    radial-gradient(circle at 9px 50%, #f3dfa6 0 1.6px, #a98445 2.6px, #3a2a12 3.8px, #0000 4.4px) no-repeat,
-    radial-gradient(circle at calc(100% - 9px) 50%, #f3dfa6 0 1.6px, #a98445 2.6px, #3a2a12 3.8px, #0000 4.4px)
-      no-repeat,
-    repeating-linear-gradient(91deg, #0000 0 7px, #0000001a 7px 8px),
-    linear-gradient(#8a5a28, #5e3a18);
-  padding-left: calc(2.6 * var(--u)) !important;
-  padding-right: calc(2.6 * var(--u)) !important;
-  box-shadow:
-    inset 0 2px 0 #ffd9a255,
-    inset 0 -3px 0 #0006,
-    0 0 0 2px #e0b04f,
-    0 0 0 4.5px #150e0c,
-    4px 7px 0 4.5px #150e0ccc;
-}
-#shop[data-hero='lia'] .shop-sign,
-#shop[data-hero='van'] .shop-sign {
-  border-color: #150e0c;
-}
-.shop-item {
-  border: 2.5px solid #150e0c;
-  border-radius: var(--wob-b);
-  position: relative;
-  color: #2a1c10;
-  background: repeating-linear-gradient(97deg, #0000 0 9px, #8a6a3a12 9px 10px), linear-gradient(#f7e9c8, #e6d3a2);
-  box-shadow:
-    inset 0 0 0 1.5px #b8975a99,
-    inset 0 -3px 0 #b8975a88,
-    3px 5px 0 #150e0c,
-    0 12px 18px #0007;
-}
-.shop-item:nth-child(2n) {
-  border-radius: var(--wob-d);
-}
-.shop-item::before {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border: 1.5px dashed #8a6a3a77;
-  border-radius: inherit;
-  pointer-events: none;
-}
-.shop-item .ico {
-  border: 2px solid #150e0c;
-  box-shadow:
-    inset 0 0 0 2px #fff3b088,
-    2px 3px 0 #150e0c;
-}
-.shop-item b {
-  font-family: var(--font-book);
-  font-weight: 800;
-  color: #2a1c10;
-}
-.shop-item small {
-  font-size: max(11px, calc(1.35 * var(--u)));
-  font-weight: 700;
-  color: #4a3720;
-}
-.shop-item .price {
-  color: #7a2a12;
-  font-family: var(--font-title);
-  font-weight: 700;
-  letter-spacing: 0.03em;
-}
-.shop-item:hover:not(.off) {
-  transform: translate(-1px, -2px);
-  filter: none;
-  background: repeating-linear-gradient(97deg, #0000 0 9px, #8a6a3a12 9px 10px), linear-gradient(#fff3d2, #f0dfae);
-}
-.shop-item:active:not(.off) {
-  transform: translate(2px, 3px);
-  box-shadow:
-    inset 0 0 0 1.5px #b8975a99,
-    1px 2px 0 #150e0c;
-}
-/* sin saldo: el mismo pergamino, apagado pero con el texto a pleno contraste (nunca translúcido) */
-.shop-item.off {
-  filter: none;
-  opacity: 1;
-  background: repeating-linear-gradient(97deg, #0000 0 9px, #6a5a3a14 9px 10px), linear-gradient(#ddd0b0, #c4b58f);
-}
-.shop-item.off .ico {
-  filter: grayscale(0.85) brightness(0.95);
-}
-.shop-item.off .price {
-  color: #6a2412;
-}
-.shop-item.off .price::before {
-  filter: grayscale(1) brightness(0.9);
-}
-.shop-item.off small {
-  color: #5a1f12;
-}
-.shop-wallet {
-  border: 3px solid #150e0c;
-  border-radius: var(--wob-d);
-  background: var(--hatch), linear-gradient(#8a5a28, #5e3a18);
-  box-shadow:
-    inset 0 0 0 1.5px #e0b04f88,
-    3px 5px 0 #150e0c;
-}
-.shop-wallet small {
-  color: #ffe7a8;
-}
-.shop-wallet b {
-  color: #fff0c0;
-  text-shadow: 0 2px 0 #150e0c;
-  font-family: var(--font-title);
-  letter-spacing: 0.04em;
-}
-.shop-bubble {
-  border: 2.5px solid #150e0c;
-  border-radius: var(--wob-b);
-  background: repeating-linear-gradient(97deg, #0000 0 9px, #8a6a3a12 9px 10px), linear-gradient(#f9edcf, #ead8aa);
-  color: #2a1c10;
-  font-weight: 700;
-  box-shadow:
-    3px 5px 0 #150e0c,
-    0 10px 16px #0007;
-}
-.shop-bubble::after {
-  border-left-color: #150e0c;
-}
-.shop-discount {
-  background: var(--hatch), linear-gradient(175deg, #c2402a, #9e2b15) !important;
-  color: #fff5e0 !important;
-  border: 2.5px solid #150e0c !important;
-  border-radius: var(--wob-d) !important;
-  font-family: var(--font-ui);
-  font-weight: 800;
-  box-shadow:
-    inset 0 0 0 1.5px #f2c45c,
-    3px 4px 0 #150e0c !important;
-}
-
 /* ---------- Elegir camino: dos cartas de misión (calma frente a gloria) sobre la ciudad ---------- */
 
 .travel-heading {
@@ -713,14 +541,8 @@ button {
   }
 }
 
-.shop-item,
-.shop-item * {
-  text-shadow: none;
-}
-
 /* ---------- Legibilidad: nada de etiquetas a media opacidad; texto claro sobre fondo oscuro, y bordes de tinta cuando va sobre ilustración ---------- */
 .pscore small,
-.pstat small,
 .stats small,
 .sc small,
 .card .tag,
@@ -775,8 +597,6 @@ button:disabled {
 /* texto suelto sobre ilustración: contorno de tinta de cuatro lados para que se lea con cualquier fondo */
 .top .sc b,
 .sc.max b,
-.mtag,
-.mcap p,
 .travel-inscription,
 .hint-text,
 #msg,
@@ -937,10 +757,6 @@ button:disabled {
 #menu .pinfo small {
   opacity: 1;
   color: #ecdff0;
-}
-#menu .pgo {
-  font-size: 24px;
-  text-shadow: 0 2px 0 #150e0c;
 }
 #menu .pbar {
   height: 9px;

@@ -713,11 +713,13 @@ body[data-board='prism'] .frame {
       0 0;
   }
 }
+
 @keyframes bf-flow {
   to {
     background-position: 300% 0;
   }
 }
+
 @keyframes bf-lava {
   0%,
   100% {
@@ -727,6 +729,7 @@ body[data-board='prism'] .frame {
     background-position: 0 100%;
   }
 }
+
 @keyframes bf-breathe {
   0%,
   100% {
@@ -736,6 +739,7 @@ body[data-board='prism'] .frame {
     opacity: 1;
   }
 }
+
 @keyframes bf-flicker {
   0%,
   70%,

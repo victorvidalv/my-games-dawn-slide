@@ -1,39 +1,3 @@
-/*
- * Personalizar: filtros en filas de 3 y las muestras de Estelas y Celebración (las de Clima y Tema están en
- * 49-cover-aura.css y 50-ui-themes.css). Las muestras son estáticas: la animación real se ve en la vista previa.
- */
-
-/* ───────────── Filtros: filas de 3 ───────────── */
-.ach-filters.board-filters {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-}
-.ach-filters.board-filters .ach-filter {
-  position: relative;
-  justify-content: center;
-  min-height: 34px;
-  padding-inline: 6px;
-  border-radius: 12px;
-  white-space: nowrap;
-}
-.ach-filters.board-filters .ach-filter > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-/* Cinco filtros (Portada): la segunda fila, de dos, queda centrada */
-.ach-filters.board-filters[data-count='5'] {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-.ach-filters.board-filters[data-count='5'] .ach-filter {
-  grid-column: span 2;
-}
-.ach-filters.board-filters[data-count='5'] .ach-filter:nth-child(4) {
-  grid-column: 2 / span 2;
-}
-.ach-filters.board-filters[data-count='5'] .ach-filter:nth-child(5) {
-  grid-column: 4 / span 2;
-}
 .ach-filter .ach-tab-badge {
   position: absolute;
   top: -6px;

@@ -314,9 +314,6 @@ body[data-ui]:not([data-ui='ink']) #menu :is(.tool-btn, .menu-back) {
   border-color: var(--ui-bd);
   color: var(--ui-hi);
 }
-body[data-ui]:not([data-ui='ink']) #menu .tool-btn.snd-btn {
-  background: linear-gradient(180deg, var(--ui-btn1), var(--ui-btn2));
-}
 body[data-ui]:not([data-ui='ink']) #menu .lang-btn[aria-pressed='true'] {
   background: linear-gradient(180deg, var(--ui-pri1), var(--ui-pri2));
   border-color: var(--ui-bd-hi);

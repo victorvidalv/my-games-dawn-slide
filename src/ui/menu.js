@@ -45,7 +45,8 @@ function renderPaths() {
       prog = lvl ? Math.max(4, Math.round((lvl / MAX_LEVEL) * 100)) : 0;
     const big = mode === 'c' ? (rec && rec.score ? rec.score.toLocaleString(numLocale()) : '—') : lvl ? lvl : '—';
     const lbl = mode === 'c' ? 'RÉCORD' : 'NIVEL MÁX.';
-    const txt = `${lvl >= MAX_LEVEL ? '👑 ' : ''}Nivel máx. ${lvl}/${MAX_LEVEL}`;
+    // La corona va aparte para que el texto se traduzca con la plantilla «Nivel máx. {n}/{total}»
+    const txt = `${lvl >= MAX_LEVEL ? '<span aria-hidden="true">👑 </span>' : ''}<span>Nivel máx. ${lvl}/${MAX_LEVEL}</span>`;
     const d = document.createElement('div');
     d.className = `path${unlocked ? '' : ' locked'}`;
     d.dataset.start = String(p.s);
@@ -58,7 +59,6 @@ function renderPaths() {
       d.tabIndex = -1;
       d.innerHTML = `<div class="pemo pemo-lock" aria-hidden="true">${icon('lock')}</div>
         <div class="pinfo"><b>${p.n}</b><small>${p.d}</small></div>
-        <div class="pscore"><small>ESTADO</small><b class="path-locked-tag">Bloqueado</b></div>
         <div class="pach"><span class="path-lock-note">${icon('lock')}<span>${req}</span></span></div>`;
       box.appendChild(d);
       return;

@@ -57,8 +57,6 @@ const browser = (() => {
   }
 })();
 export let lang = LANGS.includes(stored) ? stored : detectLang(browser);
-/** true cuando el idioma activo es el inglés (se conserva por compatibilidad; para saber si hay que traducir usa `lang !== 'es'`). */
-export let isEnglish = lang === 'en';
 export const numLocale = () => LANG_INFO[lang].locale;
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim();
@@ -198,7 +196,6 @@ function stopTranslating() {
 export function setLang(next) {
   if (!LANGS.includes(next) || next === lang) return;
   lang = next;
-  isEnglish = next === 'en';
   try {
     localStorage.setItem(KEY, next);
   } catch {

@@ -231,12 +231,6 @@
   #heroSelect #heroStartNote {
     display: none;
   }
-  #heroSelect .start-chip {
-    min-height: 38px;
-  }
-  #heroSelect .start-chip small {
-    display: none;
-  }
   #heroSelect .hero-selector-actions {
     margin-top: 9px;
     gap: 8px;
@@ -356,12 +350,8 @@
   .relic-art {
     width: 32px;
   }
-  #heroSelect #heroStartNote,
-  #heroSelect .start-chip small {
+  #heroSelect #heroStartNote {
     display: none;
-  }
-  #heroSelect .start-chip {
-    min-height: 32px;
   }
   #heroSelect .hero-selector-actions {
     margin-top: 6px;

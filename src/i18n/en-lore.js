@@ -232,7 +232,6 @@ export const EN_LORE = {
   'Artefactos y cartas': 'Artifacts and cards',
   'Libros prohibidos': 'Forbidden books',
   '{a} de {b} entradas': '{a} of {b} entries',
-  'Su historia se escribe a medida que juegas.': 'Their story is written as you play.',
   'Frase de los sellos: {a} de {b} líneas': 'Phrase of the seals: {a} of {b} lines',
   'Usa {n} reliquias distintas': 'Use {n} different relics',
   'Completa el Desafío de 250 turnos': 'Complete the 250-turn Challenge',
@@ -240,7 +239,6 @@ export const EN_LORE = {
   'Sello de {n}': 'Seal of {n}',
   'Quince tomos del universo. Tócalos para leer; los que faltan piden una hazaña.':
     'Fifteen volumes of the universe. Tap them to read; the missing ones ask for a feat.',
-  'Resuelve tu primer tablero con Lía': 'Solve your first board with Lía',
   Escenas: 'Scenes',
   'Crónica de Thyes': 'Chronicle of Thyes',
   'THYES · AÑO 4133': 'THYES · YEAR 4133',

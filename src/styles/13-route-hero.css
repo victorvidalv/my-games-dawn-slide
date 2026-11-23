@@ -172,44 +172,6 @@
   width: 100%;
   font-size: 13px !important;
 }
-.page-turn .book-leaf {
-  animation: bookOpen 0.45s ease-out;
-}
-.page-turn .book-portrait {
-  animation: bookPortrait 0.6s ease-out;
-}
-@keyframes bookOpen {
-  from {
-    opacity: 0.3;
-    transform: perspective(900px) rotateY(-8deg);
-    transform-origin: left;
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes bookPortrait {
-  from {
-    opacity: 0.4;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.chapter-afterword {
-  font-family: var(--font-book);
-  font-size: 13px;
-  line-height: 1.5;
-  color: #e8cf98;
-  padding: 12px 14px;
-  border: 1px solid #e8cf9833;
-  background: #f3d69108;
-  border-radius: 12px;
-  margin: 12px 0;
-}
 .ending-panel {
   position: relative;
   margin: -5px 0 15px;
@@ -342,12 +304,6 @@
   }
   .ending-portrait {
     height: 160px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .page-turn .book-leaf,
-  .page-turn .book-portrait {
-    animation: none;
   }
 }
 

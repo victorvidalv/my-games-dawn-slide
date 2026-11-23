@@ -30,7 +30,6 @@ import {
   claimAchievements,
   isDone,
   lookOf,
-  progressOf,
   rewardUnlocked,
   setLook,
   statsOf,
@@ -275,7 +274,7 @@ describe('logros y recompensas', () => {
     const stats = statsOf(store);
     expect(stats).toMatchObject({ maxLevel: 10, perfects: 4, dailySolved: 1, bestStreak: 2 });
     const perf = ACHIEVEMENTS.find((a) => a.id === 'perf10');
-    expect([progressOf(perf, stats), perf.goal, isDone(perf, stats)]).toEqual([4, 75, false]);
+    expect([stats.perfects, perf.goal, isDone(perf, stats)]).toEqual([4, 75, false]);
     expect(claimAchievements(store, 1).map((a) => a.id)).toEqual(['city1', 'lv25', 'day1', 'streak2']);
     expect(claimAchievements(store, 2)).toEqual([]); // ya anotados
     store.paths = {};

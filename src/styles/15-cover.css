@@ -25,7 +25,6 @@
 #menu .path:hover {
   background: #2b3c45;
 }
-#menu .tagline,
 #menu .modeinfo {
   color: #e1e0d5;
 }
@@ -162,7 +161,7 @@
 }
 #menu[data-view='home'] .cover-scene.cover-world-on .cover-world {
   visibility: visible;
-  opacity: 0.8; /* desvanecido: deja pasar el fondo oscuro del menú */
+  opacity: 0.8;
 }
 
 /* Capa de efecto sobre el paisaje: luz que respira, haces que se desplazan y motas flotando (con el color de cada fondo) */

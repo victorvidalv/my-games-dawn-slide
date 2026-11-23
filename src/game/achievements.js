@@ -2039,7 +2039,6 @@ export const ACHIEVEMENTS = [
   },
 ];
 
-export const progressOf = (a, stats) => Math.min(a.goal, stats[a.stat] || 0);
 export const isDone = (a, stats) => (stats[a.stat] || 0) >= a.goal;
 
 /**

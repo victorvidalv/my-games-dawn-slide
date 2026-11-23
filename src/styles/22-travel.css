@@ -1,8 +1,3 @@
-/* Paradas para elegir camino: la imagen de la ciudad de fondo con el héroe encima; arriba el nombre de la ciudad y la frase de la historia,
-   abajo «Elige tu camino» y los dos caminos bien destacados. */
-.travel-legacy {
-  display: none !important;
-}
 #travel {
   background: #08121a;
   overflow-y: auto;
@@ -130,10 +125,5 @@
   .travel-hero {
     bottom: clamp(93px, 19dvh, 125px);
     height: clamp(200px, calc(100dvh - 365px), 275px);
-  }
-
-  #travel .travel-bottom .choice-icon {
-    width: 36px;
-    height: 36px;
   }
 }

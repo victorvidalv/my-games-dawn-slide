@@ -278,13 +278,6 @@ export const sfx = {
     tone(keyHz(j + 3, 1), 0.18, 'triangle', 0.03, 0.03, 0, 4200);
     noise(0.07, 0.03, 5200, 'highpass');
   },
-  /* Trueno grave: el golpe de una aparición */
-  thunder: () => {
-    noise(0.9, 0.16, 180, 'lowpass', 0);
-    tone(48, 1, 'sawtooth', 0.1, 0.02, -18);
-    tone(36, 1.3, 'triangle', 0.12, 0.08, -10);
-    noise(0.4, 0.08, 900, 'bandpass', 0.3);
-  },
   powerEnd: (up) => {
     [0, 1, 2, 3].forEach((k, i) => tone(keyHz(up ? i : 3 - i, 2), 0.5, 'sine', 0.045, i * 0.06, 0, 4200));
     tone(keyHz(0, 1), 0.8, 'triangle', 0.05, 0, 0, 1500);
@@ -300,10 +293,6 @@ export const sfx = {
     [523, 659, 784, 1047, 1319, 1568, 2093].forEach((f, i) => tone(f, 0.35, 'sine', 0.12, i * 0.07));
     [1760, 2349, 2637, 3136].forEach((f, i) => tone(f, 0.18, 'triangle', 0.05, 0.5 + i * 0.09));
     tone(196, 0.5, 'sine', 0.05, 0, 30);
-  },
-  fail: () => {
-    tone(260, 0.7, 'triangle', 0.07, 0, -140);
-    tone(130, 0.8, 'sine', 0.05, 0.1, -50);
   },
   hint: () => {
     tone(880, 0.2, 'sine', 0.1);
@@ -351,46 +340,6 @@ export const sfx = {
     [1318.5, 1568, 2093].forEach((f, i) => tone(f, 0.55, 'triangle', 0.06, 0.38 + i * 0.06));
   },
   warn: () => tone(220, 0.16, 'sine', 0.04),
-  // Don Dublón: su «voz» es un balbuceo de notas graves (más larga la frase, más dura) y tintineos de caja
-  merchantCoin: () => {
-    [1568, 2093, 2637, 3136].forEach((f, i) => tone(f, 0.16, 'sine', 0.06, i * 0.05));
-    tone(880, 0.3, 'triangle', 0.04, 0.05);
-  },
-  merchantNope: () => {
-    tone(196, 0.3, 'sawtooth', 0.055, 0, -70);
-    tone(147, 0.4, 'sawtooth', 0.05, 0.2, -50);
-  },
-  merchantBell: () => {
-    [1319, 1760, 2093].forEach((f, i) => tone(f, 0.5, 'sine', 0.05, i * 0.08));
-    tone(660, 0.6, 'triangle', 0.03, 0.02);
-  },
-  // ruleta del destino: arranque con soplo ascendente, «tac» de madera y oro por sector y campanada de cierre
-  fateSpin: () => {
-    tone(150, 1.1, 'sawtooth', 0.025, 0, 420);
-    tone(300, 1.1, 'triangle', 0.035, 0.05, 800);
-    [392, 523, 659].forEach((f, i) => tone(f, 0.5, 'sine', 0.05, 0.1 + i * 0.07));
-  },
-  fateTick: (k = 0) => {
-    const n = k % 6;
-    tone(1600 + n * 70, 0.03, 'square', 0.03);
-    tone(520 + n * 34, 0.07, 'triangle', 0.075);
-    tone(2400, 0.02, 'sine', 0.03, 0.005);
-  },
-  fateLand: () => {
-    tone(110, 1.6, 'sine', 0.11, 0, -30);
-    [523, 784, 1047, 1568].forEach((f, i) => tone(f, 1, 'sine', 0.075, 0.04 + i * 0.085));
-    tone(2093, 0.7, 'sine', 0.035, 0.32);
-    tone(2637, 0.5, 'triangle', 0.02, 0.4);
-  },
-  fanfare: () => {
-    [523, 659, 784, 1047, 1319, 1568, 2093].forEach((f, i) => tone(f, 0.45, 'sine', 0.12, i * 0.11));
-    [523, 659, 784, 1047].forEach((f) => tone(f, 1.6, 'triangle', 0.07, 0.85));
-  },
-  journey: () => {
-    [392, 494, 587, 784].forEach((f, i) => tone(f, 0.5, 'sine', 0.08, i * 0.35));
-    tone(98, 1.6, 'triangle', 0.06, 0, 40);
-    [1175, 1568].forEach((f, i) => tone(f, 0.4, 'sine', 0.05, 2 + i * 0.12));
-  },
 };
 
 /* Aplausos sintetizados: cientos de palmadas de ruido filtrado con una envolvente que sube y baja */

@@ -261,7 +261,6 @@
   rotate: var(--rot, 0deg);
   --unrot: calc(var(--rot, 0deg) * -1);
 }
-.frame .seal-floor .seal-glyph,
 .frame .plate .plate-lk {
   rotate: var(--unrot, 0deg);
 }

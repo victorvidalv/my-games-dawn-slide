@@ -44,68 +44,6 @@
   }
 }
 
-/* Cabecera con progreso total + saldo acumulado */
-.ach-top-summary {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.ach-top-summary .ach-total {
-  flex: 1;
-  margin: 0 !important;
-}
-
-.ach-wallet {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex: none;
-  padding: 7px 12px;
-  border-radius: var(--wob-d);
-  border: 2px solid #e7b963;
-  background: linear-gradient(155deg, #4b3922, #231b14);
-  box-shadow:
-    0 3px 0 #091118,
-    inset 0 1px 0 #fff1c944;
-  color: #ffe39e;
-}
-
-.ach-wallet .ic {
-  width: 20px;
-  height: 20px;
-  color: #ffd24a;
-}
-
-.ach-wallet b {
-  display: block;
-  font: 900 17px/1 var(--font-ui);
-  font-variant-numeric: tabular-nums;
-  color: #fff3cf;
-}
-
-.ach-wallet small {
-  display: block;
-  font: 750 9.5px/1 var(--font-ui);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #e7c682;
-}
-
-.ach-wallet.pop {
-  animation: ach-wallet-pop 0.42s cubic-bezier(0.2, 1.4, 0.4, 1);
-}
-
-@keyframes ach-wallet-pop {
-  35% {
-    transform: scale(1.12);
-    box-shadow:
-      0 3px 0 #091118,
-      0 0 22px #ffd24aaa;
-  }
-}
-
 /* Dos pestañas: Logros / Canjear */
 .ach-tabs {
   display: grid;
@@ -164,42 +102,6 @@
   font-weight: 900;
 }
 
-/* Banner de logros listos para reclamar */
-.ach-claim-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 10px;
-  padding: 9px 12px;
-  border-radius: var(--wob-d);
-  border: 2px solid #e7b963;
-  background: linear-gradient(155deg, #513b20, #281e15);
-  box-shadow:
-    0 3px 0 #091118,
-    0 0 16px #ffd24a2a;
-  text-align: left;
-}
-
-.ach-claim-banner b {
-  display: block;
-  color: #ffe7a8;
-  font: 800 13px/1.2 var(--font-ui);
-}
-
-.ach-claim-banner small {
-  display: block;
-  color: #d9ccb2;
-  font: 600 11px/1.25 var(--font-ui);
-}
-
-.ach-claim-all {
-  flex: none;
-  padding: 7px 11px;
-  font-size: 12px;
-  white-space: nowrap;
-}
-
 /* Filtros horizontales */
 .ach-filters {
   display: flex;
@@ -246,113 +148,6 @@
   box-shadow:
     0 3px 0 #091118,
     0 0 14px #ffd24a30 !important;
-}
-
-.ach-head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.ach-tier {
-  font-style: normal;
-  font: 800 9.5px/1 var(--font-ui);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 99px;
-  border: 1px solid #091118;
-}
-
-.tier-bronze .ach-tier {
-  background: #5a3a24;
-  color: #f4c69d;
-}
-
-.tier-silver .ach-tier {
-  background: #334354;
-  color: #dbe8f5;
-}
-
-.tier-gold .ach-tier {
-  background: #614919;
-  color: #ffe38a;
-}
-
-.tier-legend .ach-tier {
-  background: linear-gradient(135deg, #62327a, #9e4866);
-  color: #ffe6ff;
-}
-
-.ach-prog em {
-  display: block;
-  margin-bottom: 3px;
-  font-style: normal;
-  font: 800 10.5px/1 var(--font-ui);
-  color: #f0c975;
-  text-align: right;
-}
-
-.ach-claim-btn {
-  flex: none;
-  padding: 7px 11px;
-  border-radius: 10px;
-  border: 2px solid #091118;
-  background: linear-gradient(180deg, #ffdf73, #e09a26);
-  color: #191006;
-  font: 800 12px/1.1 var(--font-ui);
-  box-shadow:
-    0 3px 0 #091118,
-    0 0 12px #ffd24a66;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.ach-claim-btn b {
-  font-weight: 900;
-}
-
-.ach-claimed-tag {
-  flex: none;
-  padding: 5px 9px;
-  border-radius: 99px;
-  background: #1a332b;
-  border: 1px solid #4fae9566;
-  color: #9ae6cc;
-  font: 800 11px/1 var(--font-ui);
-  white-space: nowrap;
-}
-
-/* Animación flotante al reclamar o canjear */
-.ach-reward-pop {
-  position: fixed;
-  z-index: 200;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  padding: 5px 11px;
-  border-radius: 99px;
-  background: #17120c;
-  border: 1.5px solid #ffd24a;
-  color: #ffe48d;
-  font: 900 14px/1 var(--font-ui);
-  box-shadow: 0 4px 16px #000a;
-  animation: ach-reward-float 0.88s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
-}
-
-@keyframes ach-reward-float {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -30%) scale(0.75);
-  }
-  20% {
-    opacity: 1;
-    transform: translate(-50%, -85%) scale(1.08);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -185%) scale(0.95);
-  }
 }
 
 /* ---------- Pestaña Canjear (Tienda de elementos) ---------- */
@@ -408,24 +203,6 @@
   border-radius: 10px;
 }
 
-.shop-preview-btn {
-  position: absolute;
-  right: 2px;
-  top: 2px;
-  width: 26px;
-  height: 26px;
-  min-height: 26px;
-  padding: 0;
-  border-radius: 99px;
-  border: 1.5px solid #091118;
-  background: #273a4c;
-  color: #ffe39e;
-  font-size: 11px;
-  line-height: 1;
-  box-shadow: 0 2px 0 #091118;
-  cursor: pointer;
-}
-
 .ach-shop-name {
   color: #fff2d6;
   font: 750 12px/1.2 var(--font-ui);
@@ -440,11 +217,6 @@
   font: 800 11.5px/1.1 var(--font-ui);
   box-shadow: 0 2px 0 #091118;
   cursor: pointer;
-}
-
-.shop-act.buy.affordable {
-  background: linear-gradient(180deg, #ffdf73, #df9926);
-  color: #191006;
 }
 
 .shop-act.buy:not(.affordable) {
@@ -643,26 +415,6 @@ body[data-board='obsidian'] .frame {
   padding: 4px 4px 0;
 }
 
-/* Personalizar: cuatro categorías, desbloqueo por acciones y atuendos */
-.ach-tabs.ach-tabs-4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.ach-tabs-4 .ach-tab {
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px 4px;
-  font-size: 12px;
-  position: relative;
-}
-
-.ach-tabs-4 .ach-tab-badge {
-  position: absolute;
-  top: -6px;
-  right: -4px;
-}
-
 .ach-shop-card.locked .ach-shop-art {
   opacity: 0.55;
   filter: saturate(0.6);
@@ -672,36 +424,6 @@ body[data-board='obsidian'] .frame {
   display: grid;
   gap: 4px;
   width: 100%;
-}
-
-.unlock-how {
-  display: flex;
-  align-items: flex-start;
-  gap: 5px;
-  margin: 0;
-  color: #cfd9e2;
-  font: 700 11px/1.25 var(--font-ui);
-  text-align: left;
-}
-
-.unlock-how .ic {
-  flex: none;
-  width: 13px;
-  height: 13px;
-  margin-top: 1px;
-}
-
-.unlock-n {
-  color: #9fb0bf;
-  font: 700 10.5px/1 var(--font-ui);
-}
-
-.outfit-list {
-  display: grid;
-  gap: 6px;
-  margin: 0 0 12px;
-  padding: 0;
-  list-style: none;
 }
 
 .outfit {
@@ -722,22 +444,10 @@ body[data-board='obsidian'] .frame {
   background: linear-gradient(160deg, #4b3822, #251d17);
 }
 
-.outfit.soon {
-  opacity: 0.6;
-  justify-content: flex-start;
-}
-
 .outfit small {
   margin-left: auto;
   font-weight: 700;
   opacity: 0.8;
-}
-
-/* Atuendos: tarjetas con el cuerpo entero del héroe */
-.outfit-hero .panel-h {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
 }
 
 .outfit-art {
@@ -880,10 +590,6 @@ html.lite .outfit-card.on .outfit-art::before {
 .ach-shop-grid.cols-3 .ach-shop-name {
   font-size: 11.5px;
   line-height: 1.15;
-}
-
-.ach-shop-grid.cols-3 .unlock-how {
-  font-size: 9.5px;
 }
 
 .ach-shop-grid.cols-3 .shop-act {

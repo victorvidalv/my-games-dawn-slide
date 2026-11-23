@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { tr, isEnglish, lang, LANGS, DICTS, LANG_INFO, detectLang } from '../src/i18n.js';
+import { tr, lang, LANGS, DICTS, LANG_INFO, detectLang } from '../src/i18n.js';
 import { EN } from '../src/i18n/en.js';
 import { CHAPTERS, HERO_LORE, HERO_TALK, HERO_TUTORIAL_TALK } from '../src/data/story.js';
 import { INSCRIPTIONS } from '../src/data/lore.js';
@@ -77,7 +77,6 @@ describe('tres idiomas: inglés, español y chino, con las mismas claves', () =>
 describe('idioma: el inglés es el idioma por defecto y cubre la historia', () => {
   it('sin preferencia guardada ni idioma de navegador conocido el juego está en inglés', () => {
     expect(lang).toBe('en');
-    expect(isEnglish).toBe(true);
   });
   it('traduce frases exactas, plantillas con números y nombres anidados', () => {
     expect(tr('Pista')).toBe('Hint');

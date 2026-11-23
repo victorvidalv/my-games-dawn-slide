@@ -46,7 +46,6 @@
 /* ---------- Superficie base de paneles y modales: limpios, minimalistas, sin remaches ---------- */
 #menu #menuCard,
 .modal .card,
-#pause .sheet,
 #heroSelect .hero-selector,
 #dailyEnd .daily-end,
 #survivalEnd .survival-end,
@@ -77,12 +76,6 @@
 #menu #menuCard:not([data-view='home']) {
   width: min(92vw, 460px);
   max-width: 460px;
-}
-
-#pause .sheet {
-  width: min(92vw, 390px);
-  max-width: 390px;
-  padding: 20px 18px;
 }
 
 #ask .askcard {
@@ -151,7 +144,6 @@ button.primary:hover,
 }
 .pause-actions button,
 .opt,
-.map-close,
 .snd-btn {
   border: 1.5px solid rgba(242, 212, 140, 0.2);
   border-radius: 12px;
@@ -287,22 +279,6 @@ button.primary:hover,
 #menu .home-pill[aria-expanded='true'] {
   background: rgba(42, 50, 88, 0.88);
   border-color: var(--mp-border-strong);
-}
-#menu .tool-btn {
-  width: 44px;
-  height: 44px;
-  border: 1.5px solid var(--mp-border);
-  border-radius: 12px;
-  background: rgba(31, 38, 68, 0.9);
-  color: var(--mp-gold-hi);
-  box-shadow: var(--mp-card-shadow);
-}
-#menu .tool-btn.snd-btn {
-  border-radius: 12px;
-  background: linear-gradient(180deg, var(--mp-teal-1), var(--mp-teal-2));
-}
-#menu .tool-btn.snd-btn[data-state='off'] {
-  background: rgba(46, 44, 62, 0.88);
 }
 #menu .menu-head {
   padding-bottom: 10px;
@@ -448,10 +424,6 @@ button.primary:hover,
   width: 24px;
   height: 24px;
 }
-#menu .path.locked .path-locked-tag {
-  font-size: 13px;
-  color: #f3d291;
-}
 #menu .path-lock-note {
   display: inline-flex;
   align-items: center;
@@ -580,9 +552,6 @@ button.primary:hover,
     min-height: 48px;
     font-size: 15px;
   }
-  #pause .sheet {
-    max-width: 440px;
-  }
   #finale .card {
     width: min(92vw, 560px);
     max-width: 560px;
@@ -603,11 +572,6 @@ button.primary:hover,
 #menu .ach-tab.on {
   border-color: var(--mp-gold);
   background: linear-gradient(160deg, var(--mp-plum-1), var(--mp-plum-2));
-}
-#menu .ach-wallet {
-  border: 1.5px solid var(--mp-border-strong);
-  border-radius: 12px;
-  background: rgba(24, 30, 56, 0.9);
 }
 #menu .ach {
   border: 1.5px solid var(--mp-border);

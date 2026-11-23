@@ -231,35 +231,15 @@
   gap: 10px;
   align-items: start;
 }
-.lore-city-img {
-  position: sticky;
-  top: 6px;
-  display: block;
-  aspect-ratio: 448 / 668;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1.5px solid #091118;
-  background: #0d141b;
-  box-shadow: 0 2px 0 #091118;
-}
-.lore-city-img img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.lore-city.locked .lore-city-img img,
 .lore-people.locked .lore-portrait img {
   filter: grayscale(0.9) brightness(0.45);
 }
-.lore-city-img i,
 .lore-portrait i {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
 }
-.lore-city-img i .ic,
 .lore-portrait i .ic {
   width: 30px;
   height: 30px;
@@ -267,17 +247,6 @@
 .lore-city-body {
   display: grid;
   gap: 8px;
-}
-.lore-city-head small {
-  color: #b9c4cf;
-  font: 700 10.5px/1 var(--font-ui);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-.lore-city-head h3 {
-  margin: 2px 0 0;
-  color: #fff2cf;
-  font: 900 18px/1.15 var(--font-title);
 }
 .lore-peoples {
   display: grid;

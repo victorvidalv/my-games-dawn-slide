@@ -271,20 +271,6 @@
   height: 100%;
   background: linear-gradient(90deg, #d39528, #ffe08a);
 }
-#menu .look-opts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px;
-}
-#menu .look-opt {
-  border-radius: 12px;
-  min-height: 42px;
-  text-align: left;
-}
-#menu .look-opt span {
-  flex: 1;
-  min-width: 0;
-}
 
 /* ---------- móvil en vertical: en una sección se oculta el adorno del título y el idioma para dar sitio a la lista ---------- */
 @media (max-aspect-ratio: 13/10) {
@@ -319,9 +305,6 @@
   #menu .home-btn {
     gap: 10px;
   }
-  #menu .look-opts {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ---------- PC y pantallas apaisadas: título e idioma a la izquierda, placa a la derecha ---------- */
@@ -337,9 +320,6 @@
   }
   #menu .home-btn {
     min-height: 96px;
-  }
-  #menu .look-opts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (min-aspect-ratio: 13/10) and (max-height: 520px) {
@@ -512,59 +492,6 @@
   outline: 3px solid #ffdb8f;
   outline-offset: 2px;
 }
-#menu .home-tools {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  justify-items: center;
-  gap: 10px;
-  width: 100%;
-  margin: 2px 0 0;
-}
-#menu .home-tools[hidden] {
-  display: none;
-}
-#menu .home-tools:not([hidden]) {
-  animation: homeToolsIn 0.18s ease-out;
-}
-@keyframes homeToolsIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  #menu .home-tools:not([hidden]) {
-    animation: none;
-  }
-}
-#menu .tool-btn {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  color: #fff5e0;
-  text-decoration: none;
-  border: 3px solid #150e0c;
-  border-radius: var(--wob-b);
-  background: var(--hatch), linear-gradient(175deg, #4a2c44, #2c1d33);
-  box-shadow:
-    inset 0 0 0 1.5px #e0b04f44,
-    3px 5px 0 #150e0c;
-}
-#menu .tool-btn.snd-btn {
-  border-radius: var(--wob-d);
-  background: var(--hatch), linear-gradient(175deg, #2c7585, #215666);
-  box-shadow:
-    inset 0 0 0 1.5px #ffffff22,
-    3px 5px 0 #150e0c;
-}
-#menu .tool-btn.snd-btn[data-state='off'] {
-  background: var(--hatch), linear-gradient(175deg, #5a3a4f, #40283d);
-}
 #menu #bTransfer svg {
   width: 25px;
   height: 25px;
@@ -574,17 +501,6 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   filter: drop-shadow(0 2px 0 #150e0c);
-}
-#menu .tool-btn:hover {
-  filter: brightness(1.12);
-}
-#menu .tool-btn:active {
-  transform: translate(2px, 3px);
-  box-shadow: 1px 2px 0 #150e0c;
-}
-#menu .tool-btn:focus-visible {
-  outline: 3px solid #ffdb8f;
-  outline-offset: 3px;
 }
 
 /* ---------- Crédito del desarrollador: centrado al pie de la pantalla, en móvil y en PC ---------- */
@@ -649,10 +565,6 @@
   #menu .home-shortcuts {
     margin-top: 10px;
   }
-  #menu .tool-btn {
-    width: 44px;
-    height: 44px;
-  }
 }
 
 @media (max-width: 430px) {
@@ -680,18 +592,10 @@
     font-size: 9px;
     letter-spacing: 0.055em;
   }
-  #menu .tool-btn {
-    width: 44px;
-    height: 44px;
-  }
 }
 @media (min-aspect-ratio: 13/10) and (max-height: 520px) {
   #menu .home-shortcuts {
     margin-top: 8px;
-  }
-  #menu .tool-btn {
-    width: 40px;
-    height: 40px;
   }
 }
 @media (min-aspect-ratio: 13/10) and (max-height: 440px) {
