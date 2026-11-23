@@ -41,12 +41,12 @@ import { isValidState, minMoves } from '../src/engine/index.js';
 const banks = { levels: bank.ratings, special };
 
 describe('retos diarios: calendario y desbloqueo', () => {
-  it('cinco retos: el Clásico siempre abierto y los demás al llegar al nivel 10, 13, 18 y 21 en Aventura', () => {
+  it('cinco retos: el Clásico siempre abierto y los demás al llegar al nivel 6, 12, 14 y 21 en Aventura (tras aprender sus piezas)', () => {
     expect(CHALLENGES.map((c) => [c.id, c.name, c.unlock])).toEqual([
       ['classic', 'Clásico', 0],
-      ['rocks', 'Rocas', 10],
-      ['frost', 'Hielo', 13],
-      ['gears', 'Mecanismos', 18],
+      ['rocks', 'Rocas', 6],
+      ['frost', 'Hielo', 12],
+      ['gears', 'Mecanismos', 14],
       ['all', 'Todo junto', 21],
     ]);
     expect(CHALLENGES.map((c) => isUnlocked(c, 0))).toEqual([true, false, false, false, false]);

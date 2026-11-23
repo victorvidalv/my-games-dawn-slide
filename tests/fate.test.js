@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  fateWouldMute,
   FATE_CARDS,
   FATE_EVERY,
   FATE_OFFER_BY_HERO,
@@ -145,6 +146,17 @@ describe('efectos acumulativos', () => {
     applyAdventureWin(r, { n: 12, moves: 11, opt: 10 }, { total: 100, eff: 0.9 });
     expect(r.streak).toBe(0);
   });
+  it('un Pacto avisa de las cartas tuyas que dejaría sin efecto', () => {
+    const owned = run(['carga', 'bolsillo', 'fortuna'], { hero: 'jean' });
+    expect(fateWouldMute(owned, fateById('juramento')).map((c) => c.id)).toEqual(['carga']);
+    expect(fateWouldMute(owned, fateById('temerario')).map((c) => c.id)).toEqual(['bolsillo']);
+    expect(fateWouldMute(owned, fateById('fortuna'))).toEqual([]);
+    expect(fateById('reencarnacion').fx, 'Reencarnación: revivir a cambio de turnos, sin pistas gratis').toEqual({
+      revives: 1,
+      turns: -2,
+    });
+  });
+
   it('los turnos de las cartas y la reliquia Reloj de arena se suman, con tope', () => {
     const plain = { opt: 10, pieces: [{}, {}] };
     const icy = { opt: 10, pieces: [{}, { kind: 'ice' }] };
@@ -157,8 +169,12 @@ describe('efectos acumulativos', () => {
     expect(fateTurns(run(['carga'], { hero: 'lia' }), plain)).toBe(2);
     expect(fateTurns(run(['carga'], { hero: 'jean' }), plain)).toBe(1);
     expect(fateTurns(run(['carga', 'juramento'], { hero: 'jean' }), plain), 'sin poder, Carga no da nada').toBe(0);
-    expect(fateTurns(run(['power-echo'], { hero: 'lia' }), { ...plain, n: 6 })).toBe(1);
-    expect(fateTurns(run(['power-echo'], { hero: 'lia' }), { ...plain, n: 5 })).toBe(1);
+    expect(fateTurns(run(['power-echo'], { hero: 'lia' }), { ...plain, n: 6 })).toBe(2);
+    expect(fateTurns(run(['power-echo'], { hero: 'jean' }), { ...plain, n: 5 })).toBe(1);
+    expect(fateTurns(run(['power-echo', 'juramento'], { hero: 'jean' }), plain), 'sin poder, el Eco no da nada').toBe(
+      0,
+    );
+    expect(fateTurns(run(['reencarnacion']), plain)).toBe(-2);
     expect(fateTurns(run(['ceniza-tibia']), { ...plain, n: 7 })).toBe(1);
     expect(fateTurns(run(['ceniza-tibia']), { ...plain, n: 8 })).toBe(0);
   });

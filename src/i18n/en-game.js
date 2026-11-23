@@ -734,4 +734,42 @@ export const EN_GAME = {
   'Así lucirá la interfaz de la portada': 'This is how the cover interface will look',
   'Probar celebración': 'Try the celebration',
   'Sin celebración': 'No celebration',
+  'Puntos {p} (tope)': 'Points {p} (cap)',
+  'Turnos {n} por tablero (tope)': 'Turns {n} per board (cap)',
+  'Anula tu carta:': 'Cancels your card:',
+  '+15 % de puntos en cada tablero que superes sin pistas': '+15% points on every board you clear without hints',
+  '+4 % de puntos por cada carta que tengas (esta incluida)': '+4% points for each card you hold (this one included)',
+  'El bono de Perfecto sube de +20 % a +40 %': 'The Perfect bonus rises from +20% to +40%',
+  'La racha puede llegar a ×1,8 (normalmente ×1,5)': 'Your streak can reach ×1.8 (normally ×1.5)',
+  'La racha sigue con hasta un 25 % de movimientos de más (normalmente 10 %); si se rompe, guardas la mitad':
+    'Your streak continues with up to 25% extra moves (normally 10%); if it breaks, you keep half',
+  '+35 % de puntos y +1 turno en los tableros con maleficio': '+35% points and +1 turn on cursed boards',
+  '+2 turnos en cada tablero': '+2 turns on every board',
+  '+3 turnos en los tableros con pieza pesada o de hielo': '+3 turns on boards with a heavy or ice block',
+  'Tu poder está listo en todos los tableros y +1 turno en cada tablero (Lía: +2 turnos)':
+    'Your power is ready on every board, plus +1 turn on every board (Lía: +2 turns)',
+  '+1 uso de tu poder y +1 turno en cada tablero (Lía: +2 turnos)':
+    '+1 use of your power and +1 turn on every board (Lía: +2 turns)',
+  '+3 pistas al elegirla': '+3 hints when you take it',
+  '+1 pista al elegirla y +1 al cerrar cada tramo': '+1 hint when you take it and +1 at the end of each stage',
+  'Revives 1 vez: repites el tablero perdido pagando el 33 % de tus puntos':
+    'Revive once: replay the lost board by paying 33% of your points',
+  'Al cerrar cada tramo (también el último) ganas el 80 % de los puntos base de un tablero':
+    "At the end of each stage (the last one too) you earn 80% of one board's base points",
+  '+20 % de puntos en los tableros que superes sin pistas ni poder (Lía: sin tocar la reserva)':
+    '+20% points on boards you clear without hints or power (Lía: without touching the reserve)',
+  '+1 turno por cada {n} tableros de racha (máx. +{m})': '+1 turn for every {n} boards of streak (max. +{m})',
+  '+1 pista por cada Perfecto en tableros de 15 o más movimientos mínimos':
+    '+1 hint for each Perfect on boards with 15 or more minimum moves',
+  'Sin poder de tu héroe (Lía: sin reserva de turnos)': 'No hero power (Lía: no turn reserve)',
+  'La racha solo sigue si haces Perfecto': 'Your streak only continues with a Perfect',
+  'Pierdes el 15 % de tus puntos al elegirla': 'You lose 15% of your points when you take it',
+  '+60 % de puntos en los niveles 19, 20 y 21': '+60% points on levels 19, 20 and 21',
+  'Pierdes el 10 % de tus puntos al elegirla': 'You lose 10% of your points when you take it',
+  '+5 pistas al empezar': '+5 hints at the start',
+  'Para tu récord': 'For your record',
+  'Margen en cada tablero': 'Breathing room on every board',
+  'Mejor en Difícil y Experto': 'Best on Hard and Expert',
+  '+2 turnos y 2 deshacer por tablero': '+2 turns and 2 undos per board',
+  'Completa el Desafío de 150 turnos': 'Complete the 150-turn Challenge',
 };

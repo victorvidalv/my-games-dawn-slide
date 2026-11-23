@@ -131,7 +131,7 @@ El poder de Jean y Juth «descansa» en algunos tableros según el camino (`POWE
 ### Reliquias
 
 Se elige una al empezar: **Medallón solar** (+15 % de puntos), **Reloj de arena** (+2 turnos en cada tablero) o
-**Farol de pistas** (+3 pistas). [`src/game/relics.js`](src/game/relics.js).
+**Farol de pistas** (+5 pistas; rinde en Difícil y Experto). [`src/game/relics.js`](src/game/relics.js).
 
 ### Cartas del destino
 
@@ -159,7 +159,7 @@ extra al empezar una aventura (3 / 5 / 7 días → +1 / +2 / +3).
 
 **Desafío** ([`src/game/survival.js`](src/game/survival.js)): una senda de 15, 16 o 20 tableros con una reserva exacta
 de turnos (150, 200 o 250: la suma de los mínimos). Reliquias: **Brújula** (1 pista por tablero), **Reloj de Arena**
-(+2 turnos y rehacer 1 tablero) o **Hilo del Retorno** (2 deshacer por tablero).
+(+2 turnos y rehacer 1 tablero) o **Hilo del Retorno** (+2 turnos y 2 deshacer por tablero).
 
 **Personalizar** ([`src/game/achievements.js`](src/game/achievements.js), interfaz en `src/ui/collection/`): tableros,
 fichas, llaves, cartas, estelas, celebraciones, atuendos, portada, música, clima y tema. Todo se desbloquea jugando (cada

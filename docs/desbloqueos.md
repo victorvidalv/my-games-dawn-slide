@@ -29,7 +29,7 @@ El ritmo sale de un jugador **regular** (15-20 minutos al día, casi todos los d
   aparecen tras los primeros días.
 - Llega al nivel 21 de Aventura en ~10 días; Difícil se completa hacia el día 36 y Experto hacia el día 64.
 - Una aventura entera dura ~40 minutos: ~0,16 aventuras completadas al día desde el día 5.
-- Retos diarios: ~1,2 al día, un 35 % con oro; cada tipo de reto se abre al llegar a un nivel (10, 13, 18 y 21).
+- Retos diarios: ~1,2 al día, un 35 % con oro; cada tipo de reto se abre al llegar a un nivel (6, 12, 14 y 21), justo después de que la Aventura enseñe sus piezas.
 - El Desafío está abierto desde el principio; las rutas se completan hacia los días 35, 70 y 120.
 - Los otros dos perfiles (casual ≈ 8 min/día, dedicado ≈ 40 min/día) son el mismo modelo a otro ritmo.
 

@@ -14,6 +14,7 @@ import {
   fateTotals,
   fateTurns,
   fatePerfectHints,
+  fatePowerUses,
   nextStreak,
   pickFate,
 } from './fate.js';
@@ -63,7 +64,7 @@ function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, powers = 
   let moves = 0;
   let h = hints;
   const ready = !noPower && powerReady(level, start, hero, ft?.powerShare || 0); // a veces el poder descansa
-  const echo = ft && level % FATE_EVERY === 0 ? ft.lastPower : 0; // Eco del poder: uso extra en el último tablero del tramo
+  const echo = ft ? fatePowerUses(fate, level) : 0; // Eco del poder: un uso extra en cada tablero (la misma regla que el juego)
   let rewind = hero === 'jean' && ready ? powerUses(hero, d, echo) : 0; // una vez por tablero, dos en los largos
   let destiny = hero === 'van' && ready ? powerUses(hero, d, echo) : 0; // Eco del poder suma un uso
   let safe = 0; // pasos protegidos por «Trazar destino»

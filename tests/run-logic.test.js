@@ -79,8 +79,8 @@ describe('crear partidas', () => {
 
   it('el Farol suma sus pistas a las del camino y la racha diaria (no las reemplaza)', () => {
     // 3 del camino + 15 de una racha de 7 días + 3 del Farol
-    expect(newAdventureRun({ seed: 7, start: 1, hero: 'lia', hints: 18, relic: 'lantern' }).hints).toBe(21);
-    expect(newAdventureRun({ seed: 7, start: 75, hero: 'lia', hints: 2, relic: 'lantern' }).hints).toBe(5);
+    expect(newAdventureRun({ seed: 7, start: 1, hero: 'lia', hints: 18, relic: 'lantern' }).hints).toBe(23);
+    expect(newAdventureRun({ seed: 7, start: 75, hero: 'lia', hints: 2, relic: 'lantern' }).hints).toBe(7);
     expect(newAdventureRun({ seed: 7, start: 1, hero: 'lia', hints: 18, relic: 'sun' }).hints).toBe(18);
   });
 

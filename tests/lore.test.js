@@ -93,3 +93,46 @@ describe('mundo e historia: Thyes, año 4133', () => {
     expect(CHAPTERS.filter((c) => !!c.vhorn).length).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('requisitos alcanzables', () => {
+  it('ninguna entrada de Lore ni objeto de Personalizar pide más de lo que el juego permite conseguir', async () => {
+    const { UNLOCKS } = await import('../src/game/achievements.js');
+    const { FATE_CARDS } = await import('../src/game/fate.js');
+    const { CHALLENGE_ROUTES } = await import('../src/game/survival.js');
+    const { CHALLENGES } = await import('../src/game/daily.js');
+    const L = await import('../src/data/lore-book.js');
+    // Máximo real de cada estadística acotada (3 reliquias, 3 héroes, 5 retos, 3 rutas, 21 niveles…)
+    const MAX = {
+      relicsSeenCount: 3,
+      heroWinsCount: 3,
+      heroes: 3,
+      paths: 3,
+      challengeRelics: 3,
+      challengeRoutesPlayed: 3,
+      challengeWonCount: CHALLENGE_ROUTES.length,
+      challengeBest: Math.max(...CHALLENGE_ROUTES.map((r) => r.levels)),
+      dailyKinds: CHALLENGES.length,
+      fateSeenCount: FATE_CARDS.length,
+      maxLevel: 21,
+      hardLevel: 21,
+      expertLevel: 21,
+    };
+    // Sistemas retirados: sus contadores ya no suben, así que nada puede pedirlos
+    const RETIRED = ['goldSeals', 'legacyAchPoints', 'mini5Kinds', 'mini5'];
+    const reqs = Object.entries(UNLOCKS).flatMap(([k, u]) => u.reqs.map((r) => [k, r.stat, r.goal]));
+    const add = (w, req) => (req || []).forEach(([s, g]) => reqs.push([w, s, g]));
+    L.CHARACTERS.forEach((c) => c.entries.forEach((e) => add(`${c.id}:${e.id}`, e.req)));
+    L.PLACES.forEach((p) => [p.main, p.memory, p.secret].forEach((x) => x && add(p.id, x.req)));
+    L.PEOPLES_LORE.forEach((p) => [p, p.legacy].forEach((x) => x && add(p.id, x.req)));
+    L.BOOKS.forEach((b) => add(`libro ${b.id}`, b.req));
+    L.SCENES.forEach((s) => add(`escena ${s.id}`, s.req));
+    const { STATS } = await import('../src/game/stats.js');
+    const { unlockText } = await import('../src/game/achievements.js');
+    const impossible = reqs.filter(
+      ([, stat, goal]) => !(stat in STATS) || RETIRED.includes(stat) || goal > (MAX[stat] ?? Infinity),
+    );
+    expect(impossible, 'estadística inexistente, retirada o meta por encima del máximo').toEqual([]);
+    // Cada condición se explica al jugador: ninguna se muestra en blanco
+    expect(reqs.filter(([, stat, goal]) => !unlockText(stat, goal))).toEqual([]);
+  });
+});

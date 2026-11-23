@@ -160,6 +160,11 @@ button.fate-card {
   color: #5b4a3a;
   font-style: italic;
 }
+/* Sobre el fondo oscuro de los Pactos, el aviso («Anula tu carta: …») tiene que leerse igual de bien */
+.is-pact .fate-muted-note {
+  color: #ffc9b3;
+  font-weight: 700;
+}
 .fate-card.is-muted .fate-face {
   filter: grayscale(0.75) brightness(0.85);
 }
@@ -308,6 +313,24 @@ button.fate-card {
   gap: clamp(8px, 2.6vw, 20px);
   margin-top: 14px;
   perspective: 1200px;
+}
+/* En la oferta se decide: la carta crece hasta mostrar entero su efecto, su coste y sus avisos (nunca se corta el
+   texto) y las tres quedan a la misma altura. Fuera de la oferta (Personalizar, Guía) conservan su proporción. */
+.fate-offer {
+  align-items: stretch;
+}
+.fate-offer .fate-card {
+  display: flex;
+  aspect-ratio: auto;
+  min-height: calc(var(--w) * 1.56);
+}
+.fate-offer .fate-face {
+  position: relative;
+  inset: auto;
+  flex: 1;
+}
+.fate-offer .fate-body {
+  justify-content: flex-start;
 }
 .fate-offer .fate-card {
   opacity: 0;

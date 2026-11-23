@@ -35,8 +35,8 @@ ninguna (media de héroes, caminos y habilidades 0,6–0,92). «Niv» = niveles 
 | Ceniza tibia | +35 % de puntos y +1 turno en tableros con maleficio | +0,1 | +10 % | — |
 | Respiro | +2 turnos en cada tablero | +0,5 | +3 % | Cuerda floja, Frenesí, Codicia |
 | Holgura | +3 turnos si hay pieza pesada o hielo | +0,6 | +4 % | — |
-| Carga | Tu poder nunca descansa y +1 turno (Lía: +2 turnos) | +0,8 | +8 % | Eco del poder |
-| Eco del poder | +1 uso de poder en cada tablero (Lía: +1 turno) | +0,2 | +1 % | Carga |
+| Carga | Tu poder está listo en todos los tableros y +1 turno (Lía: +2 turnos) | +0,8 | +8 % | Eco del poder |
+| Eco del poder | +1 uso de poder y +1 turno en cada tablero (Lía: +2 turnos) | +0,9 | +7 % | Carga |
 | Bolsillo | +3 pistas al elegirla | +0,5 | +6 % | Lucidez |
 | Brújula | +1 pista ahora y +1 al cerrar cada tramo | +0,6 | +7 % | Lucidez |
 | Fénix | Desbloquea 1 revivir (cuesta 33 % de los puntos) | +1,3 | — | Reencarnación |
@@ -59,12 +59,12 @@ ninguna (media de héroes, caminos y habilidades 0,6–0,92). «Niv» = niveles 
 | Péndulo roto | +3 turnos en cada tablero | −15 % de puntos | +0,8 | −7 % |
 | Abismo | +60 % en los tableros 19–21 | Pierdes 10 % de tus puntos ahora | — | +7 % |
 | Frenesí | +32 % de puntos del nivel 12 al 21 | −1 turno en cada tablero | −0,3 | +14 % |
-| **Reencarnación** (nueva) | 1 revivir y +2 pistas ahora | −2 turnos en cada tablero | +1,1 | — |
+| **Reencarnación** | 1 revivir | −2 turnos en cada tablero | +1,4 | — |
 | **Codicia** (nueva) | +28 % de puntos | Pierdes 1 pista al cerrar cada tramo | −0,4 | +14 % |
 
 ### Choques (la carta se ve gris)
 
-- Juramento deja sin efecto a Carga y Eco del poder.
+- Juramento deja sin efecto a Carga y Eco del poder; Temerario, a las cartas de pistas. Si ya las tienes, el Pacto lo avisa antes de elegirlo («Anula tu carta: …»).
 - Temerario deja sin efecto a Bolsillo, Brújula, Lucidez y Maestría.
 - Brújula + Codicia se anulan entre sí en las pistas por tramo.
 

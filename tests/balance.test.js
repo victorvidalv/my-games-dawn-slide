@@ -75,7 +75,7 @@ describe('equilibrio de los poderes de héroe (simulación)', () => {
   });
 
   it('Jean/Juth descansan en algunos tableros (nunca en el primero ni dos seguidos)', () => {
-    expect(POWER_READY_SHARE).toEqual({ jean: { 1: 0.9, 50: 0.8, 75: 0.7 }, van: { 1: 1, 50: 0.75, 75: 0.75 } });
+    expect(POWER_READY_SHARE).toEqual({ jean: { 1: 0.9, 50: 0.8, 75: 0.7 }, van: { 1: 1, 50: 0.8, 75: 0.75 } });
     for (const hero of ['jean', 'van'])
       for (const s of PATHS) {
         expect(powerReady(1, s, hero)).toBe(true);

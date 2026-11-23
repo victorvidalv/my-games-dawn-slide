@@ -16,6 +16,8 @@ export const streakHintBonus = (days) =>
  * Cinco retos, cada uno con su pieza y una escalera de mínimos: el Clásico pide 5, 9 y 12 movimientos y cada reto
  * siguiente uno más en cada tablero (Rocas 6·10·13, Hielo 7·11·14, Mecanismos 8·12·15, Todo junto 9·13·16).
  * `level` solo decide la ciudad de fondo, su música y el margen de turnos; `ratings` es el tramo de dificultad del banco.
+ * `unlock`: nivel de Aventura que lo abre, justo después de que la Aventura enseñe sus piezas (rocas en el 3 y el 6,
+ * hielo en el 10 y el 12, pesada y candado juntos en el 9 y el 14); Todo junto pide completar la Aventura.
  * Los id se conservan por compatibilidad: «frost» es ahora solo el hielo y «rocks» es nuevo.
  */
 const DAILY_STEP = 1;
@@ -34,7 +36,7 @@ export const CHALLENGES = [
   },
   {
     id: 'rocks',
-    unlock: 10,
+    unlock: 6,
     icon: 'rock',
     name: 'Rocas',
     desc: 'Rocas que bloquean el paso',
@@ -45,7 +47,7 @@ export const CHALLENGES = [
   },
   {
     id: 'frost',
-    unlock: 13,
+    unlock: 12,
     icon: 'ice',
     name: 'Hielo',
     desc: 'Piezas que resbalan hasta chocar',
@@ -56,7 +58,7 @@ export const CHALLENGES = [
   },
   {
     id: 'gears',
-    unlock: 18,
+    unlock: 14,
     icon: 'lock',
     name: 'Mecanismos',
     desc: 'Candados y piezas pesadas',

@@ -13,7 +13,7 @@ export const ZH_LORE = {
   'Su verdad': '他们的真相',
   'Cuando el Faro vuelve a arder, Lía comprende que la promesa nunca fue volver a casa: fue volver con todos. El valle despertó mucho antes de que ella llegara, porque la brasa que llevaba ya ardía en cada persona a la que ayudó por el camino.':
     '灯塔重燃之时， Lía 才明白：她的诺言从来不是回家，而是带着所有人一同归来。早在她抵达之前，山谷就已苏醒——她一路帮助过的每个人心里，都燃着她带去的那粒余烬。',
-  'Secreto de Experto': '专家之秘',
+  Secreto: '秘密',
   'En el último tramo del camino más duro, la ceniza le susurra con voz de Vhorn: «Descansa». Lía se ríe. Ha descubierto que el miedo y la llama comparten el mismo temblor. Una tiembla para retirarse; la otra, para avanzar.':
     '在最艰难之路的最后一程，灰烬用 Vhorn 的声音对她低语：“歇歇吧。” Lía 笑了。她发现恐惧与火焰有着同样的颤抖：一个颤抖着想要后退，另一个颤抖着继续前行。',
   'la Hora': '时辰',

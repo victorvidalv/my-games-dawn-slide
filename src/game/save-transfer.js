@@ -14,7 +14,7 @@ import { FATE_CARDS, FATE_PICKS } from './fate.js';
 import {
   CHALLENGE_RELICS,
   CHALLENGE_ROUTES,
-  RESET_BONUS_TURNS,
+  RELIC_BONUS_TURNS,
   routeById,
   survivalBestFor,
   survivalProgress,
@@ -251,7 +251,7 @@ export function exportSaveLink(store = {}) {
     write(meta);
     const route = routeById(activeSurv.route);
     write(bounded(activeSurv.cleared, route.levels));
-    writeV(activeSurv.boardStartRemaining ?? activeSurv.remaining, route.turns + RESET_BONUS_TURNS);
+    writeV(activeSurv.boardStartRemaining ?? activeSurv.remaining, route.turns + RELIC_BONUS_TURNS);
   }
 
   // 8. Partida de Aventura activa (opcional)
@@ -529,7 +529,7 @@ function readSurvivalRun({ read, readV }, ts) {
   if (routeIdx >= V3_CHALLENGE_ROUTES.length || relicIdx >= V3_CHALLENGE_RELICS.length) invalid();
   const route = routeById(V3_CHALLENGE_ROUTES[routeIdx]);
   const cleared = read(1, route.levels - 1);
-  const remaining = readV(route.turns + RESET_BONUS_TURNS, 1);
+  const remaining = readV(route.turns + RELIC_BONUS_TURNS, 1);
   return {
     routeVersion: 2,
     route: route.id,

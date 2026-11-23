@@ -15,12 +15,12 @@ export const destinyCount = (left, share = DESTINY_SHARE) =>
   left > JUTH_MIN_REMAINING ? Math.min(left - 1, Math.max(1, Math.round(left * share))) : 0;
 /**
  * Parte de los tableros en los que el poder de cada héroe está listo (repartidos de forma pareja; el primer tablero siempre,
- * y nunca dos descansos seguidos). Cada héroe tiene su camino: Juth guía en Normal (nunca descansa), Jean domina Difícil y
+ * y nunca dos descansos seguidos). Cada héroe tiene su camino: Juth guía en Normal (nunca descansa), Jean y Juth comparten Difícil y
  * Lía, con su reserva, Experto. `extra` = parte extra de la carta Carga.
  */
 export const POWER_READY_SHARE = {
   jean: { 1: 0.9, 50: 0.8, 75: 0.7 },
-  van: { 1: 1, 50: 0.75, 75: 0.75 },
+  van: { 1: 1, 50: 0.8, 75: 0.75 },
 };
 export const powerReady = (level = 1, start = 1, hero = 'jean', extra = 0) => {
   const k = Math.min(1, byPath(POWER_READY_SHARE[hero] || POWER_READY_SHARE.jean, start) + extra);

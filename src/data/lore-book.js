@@ -46,7 +46,7 @@ export const CHARACTERS = [
       },
       {
         id: 'secreto',
-        title: 'Secreto de Experto',
+        title: 'Secreto',
         text: 'En el último tramo del camino más duro, la ceniza le susurra con voz de Vhorn: «Descansa». Lía se ríe. Ha descubierto que el miedo y la llama comparten el mismo temblor. Una tiembla para retirarse; la otra, para avanzar.',
         req: [
           ['heroWinLia', 1],
@@ -97,7 +97,7 @@ export const CHARACTERS = [
       },
       {
         id: 'secreto',
-        title: 'Secreto de Experto',
+        title: 'Secreto',
         text: 'Entre los Pactos más duros, Jean descubre que Vhorn jamás tuvo prisa: el olvido es paciente. Por eso decide ser más paciente aún. Quien aprende a esperar sin rendirse puede hacer del tiempo un aliado, no un verdugo.',
         req: [
           ['heroWinJean', 1],
@@ -148,11 +148,11 @@ export const CHARACTERS = [
       },
       {
         id: 'secreto',
-        title: 'Secreto de Experto',
+        title: 'Secreto',
         text: 'En lo más hondo del reino sellado, una runa responde con la letra de Juth: alguien más escribía en su códice. Eran notas de Tri, ansiosa por que alguien las leyera algún día. Nunca estuvo solo en la tarea.',
         req: [
           ['heroWinVan', 1],
-          ['expertDone', 1],
+          ['hardDone', 1],
         ],
       },
     ],
@@ -228,28 +228,25 @@ export const CHARACTERS = [
         id: 'susurro',
         title: 'La voz en las murallas',
         text: 'En cada tablero sellado se escucha su murmullo entre los bloques inmóviles. No amenaza con fuego ni acero: ofrece calma, sueño y renuncia. Cada jugador que vuelve a intentarlo le quita un poco de fuerza.',
-        req: [['pactsPicked', 5]],
+        req: [['pacts', 5]],
       },
       {
         id: 'devora',
         title: 'Lo que devora',
         text: 'No come carne ni oro: come memoria. Un nombre sin quien lo pronuncie, una canción sin quien la cante, un oficio sin quien lo herede. Todo lo que desaparece sin dolor alimenta su hambre. Por eso aborrece los homenajes.',
-        req: [['hardDone', 1]],
+        req: [['completed', 2]],
       },
       {
         id: 'nombre',
         title: 'El nombre',
         text: 'Vhorn no pide piedad: pide ser recordado. Cuando las tres luces pronuncian su nombre, la sombra duda, se encoge y pregunta: «¿Dejaréis de olvidarme?». Nadie vence al olvido con una espada. Se le vence con una frase.',
-        req: [['expertDone', 1]],
+        req: [['hardLevel', 15]],
       },
       {
         id: 'eco',
         title: 'El eco del nombre',
         text: 'Incluso en el amanecer del año 4134, una esquina del Faro conserva una lámpara encendida en su honor. Nadie vuelve a temer la oscuridad cuando recuerda el nombre de quien cuidó la primera llama.',
-        req: [
-          ['expertDone', 1],
-          ['challenge200Won', 1],
-        ],
+        req: [['hardDone', 1]],
       },
     ],
   },
@@ -424,7 +421,7 @@ export const PEOPLES_LORE = [
     legacy: {
       title: 'Legado Kogn: el farol flotante',
       text: 'Sus barcos se volvieron muelles y sus cantos, señales de niebla. Aún hoy, cuando un viajero duda ante un tablero difícil, dicen que una brisa salada le recuerda mirar dos pasos más allá.',
-      req: [['fatePicked', 10]],
+      req: [['fateCards', 10]],
     },
   },
   {
@@ -639,7 +636,7 @@ export const BOOKS = [
       'Quien lleva una reliquia carga con una historia ajena. Por eso las reliquias se eligen, no se encuentran. Y por eso, dicen, el tablero cambia un poco cuando alguien las usa con respeto.',
     ],
     quote: 'Lo que se recuerda, ayuda.',
-    req: [['relicsSeenCount', 4]],
+    req: [['relicsSeenCount', 3]],
   },
   {
     id: 'f1',
@@ -667,7 +664,7 @@ export const BOOKS = [
       'Los cronistas tardan en creerlo: nadie murió en la Noche Larga. Estaban todos guardados. Fue Tri quien cargó con la memoria de todos para que ninguno se perdiera. Y ahora devuelve lo guardado.',
     ],
     quote: 'Nadie se perdió: solo estaban guardados.',
-    req: [['expertDone', 1]],
+    req: [['completed', 3]],
   },
   {
     id: 'f3',
@@ -832,7 +829,7 @@ export const SCENES = [
     place: 'Altar de los Pactos',
     src: 'portada/fondos/santuario-carmesi.webp',
     text: 'Donde se sellan los Pactos más arriesgados. La luz roja no miente: todo poder pide un precio a cambio.',
-    req: [['pactsPicked', 8]],
+    req: [['pacts', 8]],
   },
   {
     id: 's17',
@@ -888,7 +885,7 @@ export const SCENES = [
     place: 'Las Tres Luces',
     src: 'portada/heroes/alba-arcana.webp',
     text: 'Brasa, Hora y Palabra reunidas bajo un mismo cielo: la alianza que Tri esperó desde el apagón.',
-    req: [['fatePicked', 15]],
+    req: [['fateCards', 15]],
   },
   {
     id: 's24',

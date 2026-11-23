@@ -34,7 +34,7 @@ describe('interfaz: aventura', () => {
     app.$('heroConfirm').click();
     await started;
     await untilPlayable(app, 1);
-    expect(saved().run).toMatchObject({ relic: 'lantern', hero: 'jean', hints: 6 });
+    expect(saved().run).toMatchObject({ relic: 'lantern', hero: 'jean', hints: 8 });
   });
 
   it('desbloquea Aventura en orden: Normal → Difícil → Experto, solo al completar cada senda', async () => {

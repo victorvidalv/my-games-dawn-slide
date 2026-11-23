@@ -113,17 +113,17 @@ it('permite usar rehacer tablero (+2 turnos, 1 vez por partida) y deshacer (2 po
   app.$('survivalRelics').querySelector('input[value="undo"]').click();
   app.$('survivalPlay').click();
   app.$('askYes').click();
-  await until(() => app.$('survivalTurns').textContent === '250');
+  await until(() => app.$('survivalTurns').textContent === '252');
   const initPos = app.S.G.pos.slice();
   const m = hintMove(app.S.G.pieces, app.S.G.pos, app.S.G.walls);
   applyMove(app.S.G, m.i, m.to);
   afterMove();
-  expect(app.$('survivalTurns').textContent).toBe('249');
+  expect(app.$('survivalTurns').textContent).toBe('251');
   expect(app.$('bChallengeRelic').disabled).toBe(false);
 
   app.$('bChallengeRelic').click();
   expect(app.S.G.pos).toEqual(initPos);
-  expect(app.$('survivalTurns').textContent).toBe('250');
+  expect(app.$('survivalTurns').textContent).toBe('252');
   expect(app.$('bChallengeRelic').disabled).toBe(true);
 });
 

@@ -692,3 +692,17 @@
   border-color: #e7b963 !important;
   background: rgba(231, 185, 99, 0.18) !important;
 }
+
+/* Selección de héroe: el papel de cada reliquia, en una línea discreta */
+.relic-card .relic-tip {
+  display: block;
+  margin-top: 3px;
+  color: #f3d291;
+  font: italic 650 9.5px/1.2 var(--font-ui);
+  opacity: 0.85;
+}
+@media (min-width: 640px) {
+  #heroSelect .relic-card .relic-tip {
+    font-size: 11px;
+  }
+}

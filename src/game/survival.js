@@ -12,9 +12,12 @@ export const CHALLENGE_ROUTES = [
  * probabilidad parecida, cada una con su estilo:
  *   · Brújula: previene (una pista por tablero). La mejor para jugadores medios.
  *   · Reloj de Arena: segunda oportunidad (+2 turnos de margen y rehacer 1 tablero entero). La de los expertos.
- *   · Hilo del Retorno: corrige (2 deshacer por tablero, que devuelven su turno). La más regular.
+ *   · Hilo del Retorno: corrige (+2 turnos de margen y 2 deshacer por tablero, que devuelven su turno). La más regular.
+ * El Reloj y el Hilo empiezan con el mismo margen (RELIC_BONUS_TURNS): lo que cambia es cómo te salvan del error.
  */
-export const RESET_BONUS_TURNS = 2;
+/** Turnos de margen con los que empiezan el Reloj de Arena y el Hilo del Retorno. */
+export const RELIC_BONUS_TURNS = 2;
+const BONUS_RELICS = ['reset', 'undo'];
 const UNDO_PER_BOARD = 2;
 export const CHALLENGE_RELICS = [
   {
@@ -34,15 +37,15 @@ export const CHALLENGE_RELICS = [
   {
     id: 'undo',
     name: 'Hilo del Retorno',
-    label: '2 deshacer por tablero',
+    label: '+2 turnos y 2 deshacer por tablero',
     action: 'Deshacer',
     rule: '2 por tablero',
   },
 ];
 
-/** Turnos con los que empieza la senda con esa reliquia (el Reloj de Arena suma su margen). */
+/** Turnos con los que empieza la senda con esa reliquia (el Reloj y el Hilo suman su margen). */
 const startTurns = (routeId, relicId) =>
-  routeById(routeId).turns + (challengeRelicById(relicId).id === 'reset' ? RESET_BONUS_TURNS : 0);
+  routeById(routeId).turns + (BONUS_RELICS.includes(challengeRelicById(relicId).id) ? RELIC_BONUS_TURNS : 0);
 /** Posiciones a las que puede volver el Hilo (las más recientes al final); acepta guardados con `lastPos`. */
 const undoStackOf = (p) => (Array.isArray(p.undoStack) ? p.undoStack : Array.isArray(p.lastPos) ? [p.lastPos] : []);
 /** Deshacer gastados en este tablero (los guardados antiguos solo sabían si se había usado). */

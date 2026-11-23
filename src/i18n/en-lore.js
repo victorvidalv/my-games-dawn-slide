@@ -13,7 +13,7 @@ export const EN_LORE = {
   'Su verdad': 'Their truth',
   'Cuando el Faro vuelve a arder, Lía comprende que la promesa nunca fue volver a casa: fue volver con todos. El valle despertó mucho antes de que ella llegara, porque la brasa que llevaba ya ardía en cada persona a la que ayudó por el camino.':
     'When the Beacon burns again, Lía understands that her promise was never to return home: it was to return with everyone. The valley had awakened long before she arrived, because the ember she carried already burned in every soul she helped along the way.',
-  'Secreto de Experto': 'Expert secret',
+  Secreto: 'Secret',
   'En el último tramo del camino más duro, la ceniza le susurra con voz de Vhorn: «Descansa». Lía se ríe. Ha descubierto que el miedo y la llama comparten el mismo temblor. Una tiembla para retirarse; la otra, para avanzar.':
     'On the last stretch of the hardest road, the ash whispers to her in Vhorn’s voice: “Rest.” Lía laughs. She has learned that fear and flame share the same tremor. One trembles to retreat; the other, to advance.',
   'la Hora': 'the Hour',

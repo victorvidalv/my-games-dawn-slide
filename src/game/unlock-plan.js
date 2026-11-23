@@ -72,7 +72,7 @@ export const PLAN = {
       ['dailyGold', 60],
     ],
     eclipse: [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeBest', 12],
       ['masterSolved', 40],
     ],
@@ -150,7 +150,7 @@ export const PLAN = {
       ['dailyGold', 60],
     ],
     prisma: [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeBest', 12],
       ['masterSolved', 40],
     ],
@@ -225,7 +225,7 @@ export const PLAN = {
       ['dailyGold', 60],
     ],
     dragon: [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeBest', 12],
       ['masterSolved', 40],
     ],
@@ -279,7 +279,7 @@ export const PLAN = {
       ['dailyGold', 60],
     ],
     eclipse: [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeBest', 12],
       ['masterSolved', 40],
     ],
@@ -325,7 +325,7 @@ export const PLAN = {
       ['dailyGold', 60],
     ],
     v6: [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeBest', 12],
       ['masterSolved', 40],
     ],
@@ -388,7 +388,7 @@ export const PLAN = {
       ['dailyGold', 60],
     ],
     oro: [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeWonCount', 3],
       ['bestStreak', 21],
     ],
@@ -438,7 +438,7 @@ export const PLAN = {
       ['dailyGold', 60],
     ],
     'santuario-carmesi': [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeBest', 12],
       ['masterSolved', 40],
     ],
@@ -475,7 +475,7 @@ export const PLAN = {
       ['dailyGold', 60],
     ],
     eclipse: [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeBest', 14],
       ['dailyGold', 40],
     ],
@@ -508,7 +508,7 @@ export const PLAN = {
       ['bestStreak', 30],
     ],
     fireworks: [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeWonCount', 3],
       ['dailyGold', 60],
     ],
@@ -538,7 +538,7 @@ export const PLAN = {
       ['bestStreak', 30],
     ],
     aurora: [
-      ['perfects', 450],
+      ['perfects', 280],
       ['challengeWonCount', 3],
       ['dailyGold', 60],
     ],
@@ -588,17 +588,17 @@ export const PLAN = {
       ['bestStreak', 30],
     ],
     'lia:vampira': [
-      ['heroBoardsLia', 425],
+      ['heroBoardsLia', 360],
       ['challengeWonCount', 3],
       ['dailyGold', 40],
     ],
     'lia:lunar': [
-      ['heroBoardsLia', 525],
+      ['heroBoardsLia', 420],
       ['challengeBest', 14],
       ['dailyGold', 60],
     ],
     'lia:guerrera': [
-      ['heroBoardsLia', 600],
+      ['heroBoardsLia', 480],
       ['challengeBest', 12],
       ['masterSolved', 40],
     ],
@@ -631,12 +631,12 @@ export const PLAN = {
       ['bestStreak', 30],
     ],
     'jean:violeta': [
-      ['heroBoardsJean', 525],
+      ['heroBoardsJean', 420],
       ['challengeWonCount', 3],
       ['dailyGold', 60],
     ],
     'jean:shogun': [
-      ['heroBoardsJean', 600],
+      ['heroBoardsJean', 480],
       ['challengeBest', 14],
       ['dailyGold', 40],
     ],
@@ -669,12 +669,12 @@ export const PLAN = {
       ['bestStreak', 30],
     ],
     'van:espinas': [
-      ['heroBoardsVan', 525],
+      ['heroBoardsVan', 420],
       ['challengeWonCount', 3],
       ['dailyGold', 60],
     ],
     'van:cuervos': [
-      ['heroBoardsVan', 600],
+      ['heroBoardsVan', 480],
       ['challengeBest', 14],
       ['dailyGold', 40],
     ],

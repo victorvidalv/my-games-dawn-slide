@@ -101,17 +101,18 @@ describe('modo desafío', () => {
     pReset = spendSurvivalTurn(pReset, [1], false, [0]);
     expect(canUseChallengeRelic(pReset).ok).toBe(false); // solo una vez por partida
 
-    // 3. Deshacer dos veces por tablero (puede volver dos movimientos seguidos)
+    // 3. Deshacer dos veces por tablero (puede volver dos movimientos seguidos); el Hilo empieza con +2 turnos
     let pUndo = newSurvival('250', 'undo');
+    expect(pUndo.remaining).toBe(252);
     expect(canUseChallengeRelic(pUndo).ok).toBe(false);
     pUndo = spendSurvivalTurn(pUndo, [1, 2], false, [0, 2]);
     pUndo = spendSurvivalTurn(pUndo, [1, 3], false, [1, 2]);
-    expect(pUndo.remaining).toBe(248);
+    expect(pUndo.remaining).toBe(250);
     expect(canUseChallengeRelic(pUndo)).toEqual({ ok: true, reason: '2 usos en este tablero' });
     pUndo = useChallengeUndo(pUndo);
-    expect(pUndo).toMatchObject({ remaining: 249, pos: [1, 2], undoCount: 1 });
+    expect(pUndo).toMatchObject({ remaining: 251, pos: [1, 2], undoCount: 1 });
     pUndo = useChallengeUndo(pUndo);
-    expect(pUndo).toMatchObject({ remaining: 250, pos: [0, 2], undoCount: 2, undoUsedBoard: true });
+    expect(pUndo).toMatchObject({ remaining: 252, pos: [0, 2], undoCount: 2, undoUsedBoard: true });
     pUndo = spendSurvivalTurn(pUndo, [1, 2], false, [0, 2]);
     expect(canUseChallengeRelic(pUndo).ok).toBe(false); // ya usada en este tablero
     pUndo = spendSurvivalTurn(pUndo, [4, 2], true, [1, 2]); // supera tablero

@@ -9,7 +9,17 @@ import { sfx } from '../audio/sound.js';
 import { LORE_PORTRAITS, WORLD, lorePortraitSrc } from '../data/lore.js';
 import { ZONES } from '../data/zones.js';
 import { $ } from '../dom.js';
-import { FATE_CARDS, FATE_PICKS, STREAK_TURNS_EVERY, fateMuted, fateSummary, usesFate } from '../game/fate.js';
+import {
+  FATE_CARDS,
+  FATE_PICKS,
+  FATE_POINTS_RANGE,
+  FATE_TURNS_RANGE,
+  STREAK_TURNS_EVERY,
+  fateMuted,
+  fateSummary,
+  fateWouldMute,
+  usesFate,
+} from '../game/fate.js';
 import { numLocale } from '../i18n.js';
 import { S, holdBusy } from '../state.js';
 import { fateArt } from './fate-art.js';
@@ -25,8 +35,20 @@ const KIND_NAME = { blessing: 'Bendición', pact: 'Pacto' };
 /** Número de la carta en el mazo (1..31): se imprime en la esquina, como en una baraja. */
 const numberOf = (card) => FATE_CARDS.indexOf(card) + 1;
 
+/** Texto accesible de una carta de la oferta: nombre, efecto, costo y lo que anularía. */
+const cardLabel = (card, mutes) =>
+  [
+    card.name,
+    card.gain,
+    card.cost && `Costo: ${card.cost}`,
+    mutes.length && `${MUTES_LABEL} ${mutes.map((c) => c.name).join(', ')}`,
+  ]
+    .filter(Boolean)
+    .join('. ') + '.';
+/** Aviso en un Pacto que dejaría sin efecto cartas que ya tienes (va aparte para que cada nombre se traduzca solo). */
+const MUTES_LABEL = 'Anula tu carta:';
 /** Una carta completa (marco, emblema, nombre, efecto y costo). `muted`: un Pacto tuyo la deja sin efecto. */
-export function fateCardHtml(card, { muted = false, tag = 'span', attrs = '', index = 0 } = {}) {
+export function fateCardHtml(card, { muted = false, mutes = [], tag = 'span', attrs = '', index = 0 } = {}) {
   const [a, b] = card.hue;
   return `<${tag} class="fate-card is-${card.kind}${muted ? ' is-muted' : ''}" data-card="${card.id}" style="--fa:${a};--fb:${b};--i:${index}" ${attrs}>
     <span class="fate-face">
@@ -37,7 +59,7 @@ export function fateCardHtml(card, { muted = false, tag = 'span', attrs = '', in
         <b class="fate-name">${card.name}</b>
         <span class="fate-gain">${card.gain}</span>
         ${card.cost ? `<span class="fate-cost">${card.cost}</span>` : ''}
-        ${muted ? '<span class="fate-muted-note">Sin efecto por tu Pacto</span>' : ''}
+        ${muted ? '<span class="fate-muted-note">Sin efecto por tu Pacto</span>' : ''}${mutes.length ? `<span class="fate-muted-note">${MUTES_LABEL} ${mutes.map((c) => `<b>${c.name}</b>`).join(', ')}</span>` : ''}
       </span>
     </span>
   </${tag}>`;
@@ -89,9 +111,19 @@ export function syncFateHud() {
 function totalsHtml(summary) {
   const t = summary.totals;
   const chips = [];
-  if (summary.points) chips.push(['points', `Puntos ${pct(summary.points)}`]);
-  if (summary.turns)
-    chips.push(['turns', `Turnos ${summary.turns > 0 ? '+' : '−'}${Math.abs(summary.turns)} por tablero`]);
+  // Las cartas suman, pero con tope: se dice cuando se alcanza para que nadie elija una carta que ya no suma
+  const atCap = (v, [lo, hi]) => v >= hi || v <= lo;
+  if (summary.points) {
+    const p = pct(summary.points);
+    chips.push(['points', atCap(summary.points, FATE_POINTS_RANGE) ? `Puntos ${p} (tope)` : `Puntos ${p}`]);
+  }
+  if (summary.turns) {
+    const n = `${summary.turns > 0 ? '+' : '−'}${Math.abs(summary.turns)}`;
+    chips.push([
+      'turns',
+      atCap(summary.turns, FATE_TURNS_RANGE) ? `Turnos ${n} por tablero (tope)` : `Turnos ${n} por tablero`,
+    ]);
+  }
   if (t.heavyIce) chips.push(['turns', `+${t.heavyIce} turnos con pesadas o hielo`]);
   if (t.curseTurns) chips.push(['turns', `+${t.curseTurns} turno en maleficios`]);
   if (t.streakTurns) chips.push(['turns', `+1 turno cada ${STREAK_TURNS_EVERY} de racha`]);
@@ -239,8 +271,9 @@ export function showFateDialog({ run, hero, city, cards, canReroll = false, rewa
           fateCardHtml(card, {
             tag: 'button',
             muted: fateMuted(run, card.id),
+            mutes: fateWouldMute(run, card),
             index: i,
-            attrs: `type="button" aria-label="${card.name}. ${card.gain}.${card.cost ? ` Costo: ${card.cost}.` : ''}"`,
+            attrs: `type="button" aria-label="${cardLabel(card, fateWouldMute(run, card))}"`,
           }),
         )
         .join('');

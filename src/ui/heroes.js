@@ -27,7 +27,7 @@ export function chooseHero(start, mode) {
     const selectedRelic = RELICS.find(({ id }) => id === S.run?.relic) ?? RELICS[0];
     relics.innerHTML = RELICS.map(
       (relic, i) =>
-        `<label class="relic-option" style="--relic-x:${i * 50}%"><input type="radio" name="heroRelic" value="${relic.id}" ${relic.id === selectedRelic.id ? 'checked' : ''}><span class="relic-card"><span class="relic-art" aria-hidden="true"></span><span><b>${relic.name}</b><small>${relic.label}</small></span></span></label>`,
+        `<label class="relic-option" style="--relic-x:${i * 50}%"><input type="radio" name="heroRelic" value="${relic.id}" ${relic.id === selectedRelic.id ? 'checked' : ''}><span class="relic-card"><span class="relic-art" aria-hidden="true"></span><span><b>${relic.name}</b><small>${relic.label}</small><em class="relic-tip">${relic.tip}</em></span></span></label>`,
     ).join('');
     $('heroPath').textContent = `${pathOf(start).n.toUpperCase()} · AVENTURA`;
     const render = () => {

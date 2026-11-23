@@ -129,6 +129,64 @@ movimiento».
 El QR llega ahora hasta la versión 12 (287 bytes) para que quepa una partida completa con todo; se comprobó con el
 lector de QR del navegador que las versiones 10, 11 y 12 se leen bien.
 
+## 8. Revisión de equidad y claridad (2.ª ronda)
+
+Medido con el simulador (ahora el Eco del poder se simula igual que en el juego: un uso extra en **cada** tablero) y,
+para las cartas, regalando cada una sola al empezar frente a no tener ninguna (su valor puro).
+
+**Cartas: reglas claras y sin trampas.**
+
+| Carta | Antes | Ahora | Por qué |
+| --- | --- | --- | --- |
+| Reencarnación (Pacto) | 1 revivir, +2 pistas, −2 turnos: +1,6 niv **y** +3 % pts | 1 revivir, −2 turnos | Era el único Pacto sin coste real; ahora cambia supervivencia por turnos, como Péndulo roto |
+| Eco del poder | +1 uso de poder (Lía: +1 turno) | +1 uso de poder y +1 turno (Lía: +2) | La bendición más floja (+0,4 niv); ahora +0,9, aún por debajo de Carga |
+| Todas | — | Textos reescritos | Sin jerga («eficiencia»): «hasta un 25 % más de movimientos que el mínimo (normalmente 10 %)», «Revives 1 vez: … pagando el 33 % de tus puntos», Juramento dice que Lía pierde su reserva |
+
+- Un **Pacto que anularía cartas tuyas lo avisa antes de elegirlo** («Anula tu carta: Carga»), además de marcar como
+  anuladas las cartas que ya no suman.
+- **Ninguna carta corta su texto**: en el móvil, casi todas las cartas de la oferta (incluido el coste de muchos
+  Pactos) quedaban recortadas por su tamaño fijo. En la oferta la carta crece hasta mostrarlo todo.
+- **Los topes ya no son ocultos**: el resumen de tus cartas dice «(tope)» al llegar a +90 % de puntos o al límite de turnos.
+- Los Pactos de puntos siguen una proporción coherente (≈ 12–14 % de puntos por cada nivel de riesgo): Frenesí, Codicia,
+  Cuerda floja, Temerario y Juramento. Juramento no es una trampa: es el más arriesgado y el que más paga.
+
+**Héroes.** Llegan igual de lejos (±0,5 niveles). Lía termina más partidas y puntúa menos con poca habilidad (su reserva
+gasta movimientos); Jean y Juth puntúan más. Juth ganaba el 40 % en Difícil (hab. 0,6) frente al 50 % de los otros:
+su poder pasa a estar listo en el 80 % de los tableros de Difícil (antes 75 %, igual que Jean) → 45 %.
+
+**Reliquias.** El Farol pasa de +3 a **+5 pistas**: antes quedaba siempre por debajo del Reloj en Difícil y Experto.
+En Normal las pistas sobran, así que no aporta: cada reliquia muestra ahora su papel al elegirla («Para tu récord»,
+«Margen en cada tablero», «Mejor en Difícil y Experto»).
+
+**Curva de dificultad.** Sin picos: ningún nivel donde entra una pieza nueva dispara las derrotas; Difícil y Experto
+suben poco a poco hacia el final. Las derrotas tempranas del jugador casual en Normal (3–4 % en los niveles 1–5) vienen
+sobre todo del modelo de errores (un despiste cuesta 5+ movimientos), no del límite: subir el margen casi no las cambia.
+
+**Desafío** (simulador propio con las reglas de cada reliquia; % que completa la senda, hab. 0,8 / 0,9 / 0,95):
+
+| Senda | Brújula | Hilo antes | **Hilo ahora** (+2 turnos) | Reloj |
+| --- | --- | --- | --- | --- |
+| 150 | 28 / 56 / 76 | 19 / 44 / 65 | 23 / 48 / 68 | 29 / 67 / 89 |
+| 200 | 16 / 43 / 68 | 10 / 32 / 56 | 12 / 36 / 59 | 12 / 49 / 80 |
+| 250 | 9 / 34 / 60 | 4 / 23 / 46 | 6 / 26 / 49 | 5 / 35 / 72 |
+
+El Hilo era la peor en todo. Ahora empieza con el mismo margen que el Reloj (+2 turnos): la regla de base es igual y lo
+que cambia es cómo te salvan (la Brújula previene, el Hilo corrige, el Reloj da otra oportunidad). Las sendas escalan bien.
+
+**Retos diarios.** Límites generosos (los de Normal), intentos ilimitados y medallas claras. Cada reto se abre justo
+después de aprender sus piezas: Rocas en el nivel 6 (antes 10), Hielo 12 (13), Mecanismos 14 (18), Todo junto 21.
+
+**Desbloqueos.**
+- *Imposibles*: el libro «Las Reliquias» pedía 4 reliquias (hay 3), y cuatro entradas (Vhorn «La voz en las murallas»,
+  Kogn y dos escenas) usaban estadísticas inexistentes; además, cinco condiciones se mostraban en blanco. Corregidas, y un
+  test (`tests/lore.test.js`) comprueba que todo requisito existe, se explica y no supera el máximo posible.
+- *Desgaste*: «450 tableros en el mínimo» (13 legendarias) → 280; atuendos legendarios con 525/600 tableros de un héroe →
+  420/480. Las legendarias del jugador regular pasan de 70–196 días a 70–143.
+- *Historia*: el desenlace de Vhorn y el Epílogo ya no exigen Experto (completar 2–3 aventuras, nivel 15 o completar
+  Difícil). Los «Secretos» de los tres héroes piden lo mismo (antes Juth pedía Experto y Lía, Difícil). Experto queda
+  para las notas secretas y las escenas de élite.
+- Solo se han **bajado** requisitos: nadie pierde lo que ya tenía.
+
 ## Pendiente
 
 - El modelo infravalora los usos extra de poder (Eco del poder): en el juego real un tercer rebobinado vale más.
