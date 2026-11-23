@@ -11,7 +11,7 @@ import { fateArt } from './fate-art.js';
 import { icon } from './icons.js';
 import { countUp } from './fx.js';
 import { openMenu } from './menu.js';
-import { countStat, markStat, updateStats } from './achievements.js';
+import { countStat, markStat, updateStats } from './collection/progress.js';
 import { victoryStats } from '../game/achievements.js';
 import { endingStory } from './story.js';
 import { WORLD } from '../data/lore.js';

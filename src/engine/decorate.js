@@ -57,6 +57,77 @@ function laneCells(pieces, skip = -1) {
   return cells;
 }
 
+/** Piezas (sin contar la llave roja) que cumplen `ok`. */
+const candidates = (pieces, ok) => pieces.map((p, i) => i).filter((i) => i > 0 && ok(pieces[i], i));
+
+/** Una pieza de largo 2 pasa a ser pesada. Devuelve false si no hay ninguna. */
+function placeHeavy(pieces, used, pick) {
+  const cand = candidates(pieces, (p) => p.len === 2);
+  if (!cand.length) return false;
+  const i = pick(cand);
+  pieces[i].kind = 'heavy';
+  used.add(i);
+  return true;
+}
+
+/** `count` piezas libres pasan a ser de hielo. Devuelve false si no queda ninguna libre. */
+function placeIce(pieces, used, rng, count) {
+  const cand = candidates(pieces, (p, i) => !used.has(i));
+  if (!cand.length) return false;
+  for (let m = 0; m < count && cand.length; m++) {
+    const idx = Math.floor(rng() * cand.length);
+    const i = cand[idx];
+    pieces[i].kind = 'ice';
+    used.add(i);
+    cand.splice(idx, 1);
+  }
+  return true;
+}
+
+/** Casillas donde puede ir la placa del candado `i`: fuera de su carril, sin muro y en el carril de otra pieza. */
+function plateOptions(pieces, i, walls) {
+  const lanes = laneCells(pieces, i); // la placa debe poder ser cubierta por OTRA pieza
+  const wallSet = new Set(walls.map(([r, c]) => r * N + c));
+  const options = [];
+  for (let r = 0; r < N; r++)
+    for (let c = 0; c < N; c++) {
+      const onGateLane = pieces[i].o === 'h' ? r === pieces[i].fix : c === pieces[i].fix; // nunca en el carril del candado
+      if (!onGateLane && lanes.has(r * N + c) && !wallSet.has(r * N + c)) options.push([r, c]);
+    }
+  return options;
+}
+
+/** Una pieza libre pasa a ser candado, con su placa. Devuelve false si no se pudo. */
+function placeGate(pieces, used, pick, walls) {
+  const cand = candidates(pieces, (p, i) => !used.has(i));
+  if (!cand.length) return false;
+  const i = pick(cand);
+  const options = plateOptions(pieces, i, walls);
+  if (!options.length) return false;
+  pieces[i].kind = 'gate';
+  pieces[i].plate = pick(options);
+  return true;
+}
+
+/** Qué mecánicas lleva el intento `t` (la familia «duo» rota entre parejas) y cuántas piezas de hielo. */
+function attemptPlan(spec, seed, t, attempts) {
+  const pair = spec.duo ? DUO_PAIRS[(seed + t) % DUO_PAIRS.length] : null;
+  const has = (m) => !!(spec[m] || pair?.includes(m));
+  // con hielo puro se prueban primero tableros con 1 pieza de hielo, luego con 2 y al final con 3
+  const iceCount = spec.ice ? (t < attempts / 3 ? 1 : t < (attempts * 2) / 3 ? 2 : 3) : 1;
+  return { heavy: has('heavy'), ice: has('ice'), gate: has('gate'), iceCount };
+}
+
+/** Decora una copia del tablero según el plan; null si alguna mecánica no cabe. */
+function decorateOnce(board, plan, rng, pick, walls) {
+  const pieces = board.pieces.map((p) => ({ ...p }));
+  const used = new Set([0]);
+  if (plan.heavy && !placeHeavy(pieces, used, pick)) return null;
+  if (plan.ice && !placeIce(pieces, used, rng, plan.iceCount)) return null;
+  if (plan.gate && !placeGate(pieces, used, pick, walls)) return null;
+  return pieces;
+}
+
 /**
  * Añade mecánicas especiales a `board` ({pieces,pos,walls}) y comprueba con el solver que:
  *  - sigue teniendo solución desde la misma posición inicial,
@@ -73,59 +144,16 @@ export function decorateBoard(board, family, seed, { tries, minOpt = 0 } = {}) {
   const plain = plainAn.dist.get(plainAn.k0);
   const targetOpt = Math.max(plain + spec.minGain, minOpt);
   const cap = Math.min(600000, Math.max(120000, plainAn.list.length * 2));
-  const n = board.pieces.length;
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const attempts = tries ?? (spec.ice || spec.duo ? 90 : 48);
 
   for (let t = 0; t < attempts; t++) {
-    const pieces = board.pieces.map((p) => ({ ...p }));
-    const used = new Set([0]);
-    const pair = spec.duo ? DUO_PAIRS[(seed + t) % DUO_PAIRS.length] : null;
-    const useHeavy = spec.heavy || pair?.includes('heavy');
-    const useIce = spec.ice || pair?.includes('ice');
-    const useGate = spec.gate || pair?.includes('gate');
-    if (useHeavy) {
-      const cand = [];
-      for (let i = 1; i < n; i++) if (pieces[i].len === 2) cand.push(i);
-      if (!cand.length) continue;
-      const i = pick(cand);
-      pieces[i].kind = 'heavy';
-      used.add(i);
-    }
-    if (useIce) {
-      const count = spec.ice ? (t < attempts / 3 ? 1 : t < (attempts * 2) / 3 ? 2 : 3) : 1;
-      const cand = [];
-      for (let i = 1; i < n; i++) if (!used.has(i)) cand.push(i);
-      if (!cand.length) continue;
-      for (let m = 0; m < count && cand.length; m++) {
-        const idx = Math.floor(rng() * cand.length);
-        const i = cand[idx];
-        pieces[i].kind = 'ice';
-        used.add(i);
-        cand.splice(idx, 1);
-      }
-    }
-    if (useGate) {
-      const cand = [];
-      for (let i = 1; i < n; i++) if (!used.has(i)) cand.push(i);
-      if (!cand.length) continue;
-      const i = pick(cand);
-      const lanes = laneCells(pieces, i); // la placa debe poder ser cubierta por OTRA pieza
-      const wallSet = new Set(walls.map(([r, c]) => r * N + c));
-      const options = [];
-      for (let r = 0; r < N; r++) {
-        for (let c = 0; c < N; c++) {
-          const onGateLane = pieces[i].o === 'h' ? r === pieces[i].fix : c === pieces[i].fix; // nunca en el carril del candado
-          if (!onGateLane && lanes.has(r * N + c) && !wallSet.has(r * N + c)) options.push([r, c]);
-        }
-      }
-      if (!options.length) continue;
-      pieces[i].kind = 'gate';
-      pieces[i].plate = pick(options);
-    }
+    const plan = attemptPlan(spec, seed, t, attempts);
+    const pieces = decorateOnce(board, plan, rng, pick, walls);
+    if (!pieces) continue;
     const an = analyze(pieces, board.pos, cap, walls);
     if (!an) continue;
-    if (useIce && an.dist.size < an.list.length) continue; // cero callejones sin salida alcanzables
+    if (plan.ice && an.dist.size < an.list.length) continue; // cero callejones sin salida alcanzables
     const opt = an.dist.get(an.k0);
     if (opt === undefined || opt < targetOpt) continue;
     return { pieces, pos: board.pos.slice(), walls, plain, opt };

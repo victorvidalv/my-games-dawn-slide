@@ -54,7 +54,7 @@ import './styles/53-custom-fullscreen.css';
 import './styles/54-usability.css';
 import './styles/35-lite.css'; // modo ligero automático (src/ui/perf.js): siempre la última
 import './ui/transitions.js';
-import './ui/achievements.js';
+import { initCollection } from './ui/collection/progress.js';
 import { hooks } from './audio/sound.js';
 import './ui/sound-button.js';
 import { warmBanks } from './data/banks.js';
@@ -70,6 +70,7 @@ import { hydrateIcons } from './ui/icons.js';
 import './ui/controls.js';
 import './pwa.js';
 
+initCollection(); // desbloquea en silencio lo ya cumplido y aplica el aspecto equipado
 hydrateIcons(); // iconos propios en el HTML estático (botones, avisos)
 // Evita zoom accidental por pellizco o doble toque en móvil, iPad y trackpad
 for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) {

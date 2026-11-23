@@ -291,25 +291,6 @@
   #panelAch .custom-header {
     gap: 8px;
   }
-  #panelAch .custom-total {
-    flex: 1 1 100%;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-  #panelAch .custom-total p {
-    margin: 0;
-    font-size: 12px;
-    white-space: nowrap;
-  }
-  #panelAch .custom-total p b {
-    font-size: 16px;
-  }
-  #panelAch .custom-total u {
-    flex: 1;
-    margin: 0;
-  }
   #panelAch .custom-bar {
     gap: 8px;
   }
@@ -564,12 +545,6 @@
 }
 
 /* ---------- Personalizar ---------- */
-#panelAch .custom-total {
-  display: none !important;
-}
-#panelAch .custom-chips .ach-filter small {
-  display: none;
-}
 #panelAch .look-note[hidden] {
   display: none;
 }
@@ -601,9 +576,6 @@
 }
 
 /* ---------- Lore ---------- */
-#panelLore .look-note {
-  display: none;
-}
 #panelLore .lore-tabs .ach-filter small,
 #panelLore .lore-char small {
   opacity: 0.6;

@@ -89,7 +89,6 @@ export const EN_GAME = {
   pistas: 'hints',
   /* minijuegos de Lía */
   'Brasa: +1': 'Ember: +1',
-  'Gota: −1': 'Drop: −1',
   Brasas: 'Embers',
   'Sombra: +1': 'Shadow: +1',
   /* minijuegos de Jean */
@@ -120,9 +119,7 @@ export const EN_GAME = {
   'Crónicas de la llave roja': 'Chronicles of the Red Key',
   'Un corazón al sol': 'A Heart in the Sun',
   'Las horas prestadas': 'Borrowed Hours',
-  'Pétalos en el viento': 'Petals on the Wind',
   'Campanas de cristal': 'Crystal Bells',
-  'Un puente entre estrellas': 'A Bridge between Stars',
   'El regreso del amanecer': 'The Return of Dawn',
   'Llave roja': 'Red key',
   'Llave de ámbar': 'Amber key',
@@ -213,7 +210,6 @@ export const EN_GAME = {
   'Resuelve cada tipo de reto diario': 'Solve every kind of daily challenge',
   Maestría: 'Mastery',
   'Vals de las pequeñas velas': 'Waltz of the Little Candles',
-  'Gotas sobre la arena': 'Drops on the Sand',
   'Las hojas recuerdan': 'The Leaves Remember',
   'La fragua de los sueños': 'The Forge of Dreams',
   'Llave de obsidiana': 'Obsidian key',

@@ -2,7 +2,7 @@ import { $ } from '../dom.js';
 import { exportSaveLink, readSaveHash, readSaveLink } from '../game/save-transfer.js';
 import { qrSvg } from '../qr.js';
 import { importProgress, S, store } from '../state.js';
-import { applyLook } from './achievements.js';
+import { applyLook } from './collection/look.js';
 import { openMenu } from './menu.js';
 
 const dialog = $('saveTransfer');

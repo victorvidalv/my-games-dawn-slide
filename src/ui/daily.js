@@ -29,7 +29,7 @@ import { leaveDaily, startDaily } from '../game/session.js';
 import { store } from '../state.js';
 import { resultRating } from '../engine/scoring.js';
 import { numLocale, tr } from '../i18n.js';
-import { checkAchievements } from './achievements.js';
+import { checkAchievements } from './collection/progress.js';
 import { burst } from './fx.js';
 import { icon } from './icons.js';
 import { openMenu } from './menu.js';

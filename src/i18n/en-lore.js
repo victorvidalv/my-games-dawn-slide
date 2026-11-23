@@ -237,14 +237,10 @@ export const EN_LORE = {
   'Completa el Desafío de 250 turnos': 'Complete the 250-turn Challenge',
   '{n} novedades': '{n} new',
   'Sello de {n}': 'Seal of {n}',
-  'Quince tomos del universo. Tócalos para leer; los que faltan piden una hazaña.':
-    'Fifteen volumes of the universe. Tap them to read; the missing ones ask for a feat.',
   Escenas: 'Scenes',
   'Crónica de Thyes': 'Chronicle of Thyes',
   'THYES · AÑO 4133': 'THYES · YEAR 4133',
   'Capítulo {n}': 'Chapter {n}',
-  'Escenas y paisajes de Thyes. Tócalas para abrir cada crónica ilustrada.':
-    'Scenes and landscapes of Thyes. Tap them to open each illustrated chronicle.',
   Anterior: 'Previous',
   Siguiente: 'Next',
   'Los tres en el umbral': 'Three at the threshold',

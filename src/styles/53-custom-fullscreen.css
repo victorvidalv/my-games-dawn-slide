@@ -103,12 +103,6 @@
   margin: 0 !important;
 }
 
-.custom-total {
-  flex: 0 0 auto;
-  min-width: 150px;
-  margin: 0 !important;
-}
-
 .custom-subbar {
   flex: none;
   min-width: 0;

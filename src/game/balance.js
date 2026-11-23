@@ -159,10 +159,151 @@ function scoreValue(card, hero, city) {
   return v;
 }
 
+/** Estado inicial de una partida simulada. */
+function newSim({ hero, start, seed, fate, relic }) {
+  const rel = RELICS.find((r) => r.id === relic) || null;
+  return {
+    rng: mulberry32(seed),
+    pickRng: mulberry32(hash32(seed, 0x5eed)),
+    rel,
+    fateRun: fate ? { mode: 'c', hero, start, seed, score: 0, hints: 0, fate: [], fatePicked: 0 } : null,
+    deck: fate ? fateDeck(seed) : null,
+    hints: startHintsFor(start) + (rel?.hints || 0),
+    score: 0,
+    streak: 0,
+    bestStreak: 0,
+    perfects: 0,
+    adj: 0,
+    charges: 0,
+    bought: 0,
+    spentTotal: 0,
+    turnsBought: 0,
+    hintsBought: 0,
+  };
+}
+
+const simResult = (sim, cleared, completed) => ({
+  cleared,
+  score: sim.score,
+  completed,
+  revivesBought: sim.bought,
+  spent: sim.spentTotal,
+  turnsBought: sim.turnsBought,
+  hintsBought: sim.hintsBought,
+  perfects: sim.perfects,
+  bestStreak: sim.bestStreak,
+  cards: sim.fateRun ? sim.fateRun.fate.slice() : [],
+});
+
+/** Cartas regaladas al llegar a `grant.at` (para medir una carta concreta sin depender de la oferta). */
+function applyGrant(sim, grant, level) {
+  if (!grant || !sim.fateRun || level !== grant.at) return;
+  for (const id of grant.ids) {
+    const fx = fateById(id).fx;
+    sim.fateRun.fate.push(id);
+    if (fx.pickHints && !fateTotals(sim.fateRun).noHints) sim.hints += fx.pickHints;
+    if (fx.pickScore) sim.score = Math.max(0, sim.score + Math.round(sim.score * fx.pickScore));
+  }
+}
+
+/** Revivires que permite la partida (los de serie más los de Fénix). */
+const maxBuys = (sim) => MAX_REVIVES + (sim.fateRun ? fateTotals(sim.fateRun).revives || 0 : 0);
+
+/** Estrategia «city»: compra un revivir por adelantado al empezar cada ciudad (a partir de la segunda). */
+function cityRevive(sim, revive, level) {
+  if (revive !== 'city' || level % CITY_EVERY !== 1 || level <= 6 || sim.bought >= maxBuys(sim) || sim.score <= 0)
+    return;
+  sim.score -= Math.round(sim.score * REVIVE_SHARE);
+  sim.charges++;
+  sim.bought++;
+}
+
+/** Tras perder un tablero: usa un revivir guardado o compra uno con puntos. Devuelve true si se puede repetir. */
+function retryAfterFail(sim, revive) {
+  sim.streak = 0;
+  if (sim.charges > 0) {
+    sim.charges--;
+    return true;
+  }
+  if (!sim.fateRun || revive !== 'none' || sim.bought >= maxBuys(sim) || sim.score <= 0) return false;
+  const cost = Math.round(sim.score * REVIVE_SHARE);
+  sim.score -= cost;
+  sim.spentTotal += cost;
+  sim.bought++;
+  return true;
+}
+
+/** Juega el tablero hasta superarlo (reviviendo si se puede). Devuelve el resultado, o null si la partida termina. */
+function playUntilCleared(sim, opts, level, d) {
+  const { hero, skill, start, powers, revive } = opts;
+  for (;;) {
+    if (sim.fateRun) sim.fateRun.streak = sim.streak;
+    const res = playBoard(sim.rng, {
+      hero,
+      skill,
+      d,
+      start,
+      level,
+      hints: sim.hints,
+      powers,
+      fate: sim.fateRun,
+      extraTurns: sim.rel?.turns || 0,
+    });
+    sim.hints = res.hints;
+    if (res.ok) return res;
+    if (!retryAfterFail(sim, revive)) return null;
+  }
+}
+
+/** Puntos del tablero superado, racha, Perfectos, dificultad adaptativa y pistas que se ganan. */
+function scoreBoard(sim, { hero, start, powers }, level, d, res, usedHint) {
+  const { fateRun } = sim;
+  if (fateRun) fateRun.helpAt = usedHint ? level : 0;
+  const noPow = !!fateRun && fateTotals(fateRun).noPower;
+  const pure = !usedHint && (noPow || (hero === 'lia' ? res.intact : !res.powerUsed));
+  const G = { ...simBoard(level, d), pure };
+  const gain = calcGain(res.moves, d, sim.streak, fateRun ? fateRules(fateRun) : undefined);
+  const ember = res.intact && !noPow && !powers.noEmber ? LIA_INTACT_POINTS : 0;
+  let total =
+    gain.total + Math.round(gain.total * ((fateRun ? fatePoints({ ...fateRun, hints: sim.hints }, G) : 0) + ember));
+  total += Math.round(total * (sim.rel?.points || 0));
+  sim.score += total;
+  if (res.moves <= d) sim.perfects++;
+  if (fateRun) sim.hints += fatePerfectHints(fateRun, res.moves, d);
+  sim.streak = fateRun
+    ? nextStreak({ ...fateRun, streak: sim.streak }, gain.eff)
+    : gain.eff >= 0.9
+      ? sim.streak + 1
+      : 0;
+  sim.bestStreak = Math.max(sim.bestStreak, sim.streak);
+  sim.adj = Math.max(-2, Math.min(level < 10 ? 1 : 2, sim.adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
+  const rate = powers.hintMult?.[hero] ?? 1;
+  if (Math.floor((level * rate) / hintEvery(start)) > Math.floor(((level - 1) * rate) / hintEvery(start))) sim.hints++;
+}
+
+/** Cierre de ciudad: premios de la ciudad y, salvo en la última, elegir una carta de la oferta. */
+function closeCity(sim, { hero, fate, pick, force, grant }, level, d) {
+  const { fateRun } = sim;
+  if (!fateRun || level % FATE_EVERY !== 0) return;
+  const city = level / FATE_EVERY;
+  Object.assign(fateRun, { score: sim.score, hints: sim.hints, streak: sim.streak });
+  fateCityRewards(fateRun, city, d);
+  if (level < MAX_LEVEL && !grant) {
+    const offer = sim.deck.slice((city - 1) * fate, city * fate).map(fateById);
+    const card = offer.find((c) => force.includes(c.id)) || PICKERS[pick](offer, hero, city, sim.pickRng);
+    fateRun.fatePicked = city - 1;
+    fateRun.fateDeck = sim.deck;
+    pickFate(fateRun, card.id, city, baseScore(d));
+  }
+  sim.score = fateRun.score;
+  sim.hints = fateRun.hints;
+}
+
 /**
  * Simula UNA partida de 21 niveles.
  * `fate`: tamaño de la oferta (3) o false. `pick`: 'survival' | 'score' | 'random'. `force`: ids de carta que toma si se ofrecen.
  * `relic`: id de reliquia (sun, purse, lantern). Con cartas, al caer usa los revivir de Fénix (cuesta 33 % de los puntos).
+ * `shop` se conserva por compatibilidad con los análisis antiguos (ya no hay tienda).
  */
 export function simulateRun({
   hero,
@@ -178,116 +319,19 @@ export function simulateRun({
   relic = null,
   grant = null,
 }) {
-  const rng = mulberry32(seed);
-  const pickRng = mulberry32(hash32(seed, 0x5eed));
-  const rel = RELICS.find((r) => r.id === relic) || null;
-  const fateRun = fate ? { mode: 'c', hero, start, seed, score: 0, hints: 0, fate: [], fatePicked: 0 } : null;
-  const deck = fate ? fateDeck(seed) : null;
-  let hints = startHintsFor(start) + (rel?.hints || 0);
-  let score = 0;
-  let streak = 0;
-  let bestStreak = 0;
-  let perfects = 0;
-  let adj = 0;
-  let charges = 0;
-  let bought = 0;
-  let spentTotal = 0;
-  let turnsBought = 0;
-  let hintsBought = 0;
-  const done = (cleared, completed) => ({
-    cleared,
-    score,
-    completed,
-    revivesBought: bought,
-    spent: spentTotal,
-    turnsBought,
-    hintsBought,
-    perfects,
-    bestStreak,
-    cards: fateRun ? fateRun.fate.slice() : [],
-  });
+  const opts = { hero, start, skill, revive, powers, fate, pick, force, grant };
+  const sim = newSim({ hero, start, seed, fate, relic });
   for (let level = 1; level <= MAX_LEVEL; level++) {
-    if (grant && fateRun && level === grant.at) {
-      for (const id of grant.ids) {
-        const fx = fateById(id).fx;
-        fateRun.fate.push(id);
-        if (fx.pickHints && !fateTotals(fateRun).noHints) hints += fx.pickHints;
-        if (fx.pickScore) score = Math.max(0, score + Math.round(score * fx.pickScore));
-      }
-    }
-    const ft = fateRun ? fateTotals(fateRun) : null;
-    const maxBuy = MAX_REVIVES + (ft?.revives || 0);
-    if (revive === 'city' && level % CITY_EVERY === 1 && level > 6 && bought < maxBuy && score > 0) {
-      score -= Math.round(score * REVIVE_SHARE);
-      charges++;
-      bought++;
-    }
-    const rating = rateAt(start, level);
-    const d = Math.max(1, curve(rating).target + adj);
-    let res;
-    const hintsBefore = hints;
-    for (;;) {
-      if (fateRun) fateRun.streak = streak;
-      res = playBoard(rng, {
-        hero,
-        skill,
-        d,
-        start,
-        level,
-        hints,
-        powers,
-        fate: fateRun,
-        extraTurns: rel?.turns || 0,
-      });
-      hints = res.hints;
-      if (res.ok) break;
-      streak = 0;
-      if (charges > 0) {
-        charges--;
-        continue;
-      }
-      if (fateRun && revive === 'none' && bought < maxBuy && score > 0) {
-        const cost = Math.round(score * REVIVE_SHARE);
-        score -= cost;
-        spentTotal += cost;
-        bought++;
-        continue;
-      }
-      return done(level - 1, false);
-    }
-    const usedHint = hints < hintsBefore;
-    if (fateRun) fateRun.helpAt = usedHint ? level : 0;
-    const noPow = !!fateRun && fateTotals(fateRun).noPower;
-    const pure = !usedHint && (noPow || (hero === 'lia' ? res.intact : !res.powerUsed));
-    const G = { ...simBoard(level, d), pure };
-    const gain = calcGain(res.moves, d, streak, fateRun ? fateRules(fateRun) : undefined);
-    const ember = res.intact && !noPow && !powers.noEmber ? LIA_INTACT_POINTS : 0;
-    let total = gain.total + Math.round(gain.total * ((fateRun ? fatePoints({ ...fateRun, hints }, G) : 0) + ember));
-    total += Math.round(total * (rel?.points || 0));
-    score += total;
-    if (res.moves <= d) perfects++;
-    if (fateRun) hints += fatePerfectHints(fateRun, res.moves, d);
-    streak = fateRun ? nextStreak({ ...fateRun, streak }, gain.eff) : gain.eff >= 0.9 ? streak + 1 : 0;
-    bestStreak = Math.max(bestStreak, streak);
-    adj = Math.max(-2, Math.min(level < 10 ? 1 : 2, adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
-    const rate = powers.hintMult?.[hero] ?? 1;
-    if (Math.floor((level * rate) / hintEvery(start)) > Math.floor(((level - 1) * rate) / hintEvery(start))) hints++;
-    if (fateRun && level % FATE_EVERY === 0) {
-      const city = level / FATE_EVERY;
-      Object.assign(fateRun, { score, hints, streak });
-      fateCityRewards(fateRun, city, d);
-      if (level < MAX_LEVEL && !grant) {
-        const offer = deck.slice((city - 1) * fate, city * fate).map(fateById);
-        const forced = offer.find((c) => force.includes(c.id));
-        const card = forced || PICKERS[pick](offer, hero, city, pickRng);
-        fateRun.fatePicked = city - 1;
-        fateRun.fateDeck = deck;
-        pickFate(fateRun, card.id, city, baseScore(d));
-      }
-      ({ score, hints } = fateRun);
-    }
+    applyGrant(sim, grant, level);
+    cityRevive(sim, revive, level);
+    const d = Math.max(1, curve(rateAt(start, level)).target + sim.adj);
+    const hintsBefore = sim.hints;
+    const res = playUntilCleared(sim, opts, level, d);
+    if (!res) return simResult(sim, level - 1, false);
+    scoreBoard(sim, opts, level, d, res, sim.hints < hintsBefore);
+    closeCity(sim, opts, level, d);
   }
-  return done(MAX_LEVEL, true);
+  return simResult(sim, MAX_LEVEL, true);
 }
 
 /** Media de `runs` partidas (semillas deterministas) para una combinación héroe/camino/habilidad. */

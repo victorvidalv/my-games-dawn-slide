@@ -291,35 +291,44 @@ export const Music = (() => {
     drive: { k: [0, 4, 8, 12], s: [4, 12], h: [0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15] },
   };
   const KV = { k: 0.085, s: 0.055, rim: 0.03, h: 0.013, oh: 0.022, sh: 0.01, tm: 0.02, rd: 0.013, cg: 0.05 };
+  /** Percusión ligera de cada groove: qué suena en los pasos marcados por cada instrumento. */
+  const PERCUSSION = [
+    ['rim', (t) => rim(t, KV.rim)],
+    ['h', (t, st) => noise(t, 0.035, st % 4 === 2 ? KV.h * 1.45 : st % 4 === 0 ? KV.h * 1.1 : KV.h * 0.8, 7000)],
+    ['oh', (t) => noise(t, 0.16, KV.oh, 6000)],
+    ['sh', (t, st) => noise(t, 0.05, st % 4 === 2 ? KV.sh * 1.5 : KV.sh, 5200)],
+    [
+      'tm',
+      (t) => {
+        noise(t, 0.09, KV.tm, 8000);
+        noise(t, 0.07, KV.tm * 0.6, 5500, 'bandpass');
+      },
+    ],
+    ['rd', (t) => noise(t, 0.25, KV.rd, 5200)],
+    ['cg', (t, st) => conga(t, KV.cg, st % 4 === 2 ? 260 : 330)],
+  ];
+  /** Bombo, caja, notas fantasma y el redoble al final de cada frase (solo con la batería completa). */
+  function backbeat(g, st, t, bar) {
+    const has = (a) => a && a.includes(st);
+    const fill = bar % 4 === 3 && st >= 13; // redoble al final de cada frase
+    if (has(g.k) && !(fill && st >= 14)) {
+      kick(t, KV.k);
+      noise(t, 0.012, 0.02, 3200, 'bandpass'); // bombo con «clic»: se oye en altavoces pequeños
+    }
+    if (has(g.s) && !fill) {
+      snare(t, KV.s);
+      noise(t + 0.011, 0.05, KV.s * 0.45, 1400, 'bandpass'); // caja + palmada en el contratiempo
+    }
+    if (g.s && !fill && bar % 2 === 1 && (st === 7 || st === 15)) snare(t, 0.013); // notas fantasma: el ritmo «camina»
+    if (fill) snare(t, 0.03 + 0.012 * (st - 13));
+  }
   function drums(th, st, t, bar, E, mode = 'full', tutti = true) {
     if (mode === 'none') return;
-    const g = GROOVES[th.groove] || GROOVES.pop,
-      has = (a) => a && a.includes(st),
-      full = mode === 'full';
-    const fill = full && bar % 4 === 3 && st >= 13; // redoble al final de cada frase
-    if (full && has(g.k) && !(fill && st >= 14)) {
-      kick(t, KV.k);
-      noise(t, 0.012, 0.02, 3200, 'bandpass');
-    } // bombo con «clic»: se oye en altavoces pequeños
-    if (full && has(g.s) && !(fill && st >= 13)) {
-      snare(t, KV.s);
-      noise(t + 0.011, 0.05, KV.s * 0.45, 1400, 'bandpass');
-    } // caja + palmada en el contratiempo
-    if (full && g.s && !fill && bar % 2 === 1 && (st === 7 || st === 15)) snare(t, 0.013); // notas fantasma: el ritmo «camina»
-    if (fill) snare(t, 0.03 + 0.012 * (st - 13));
-    if (has(g.rim)) rim(t, KV.rim);
-    if (has(g.h)) noise(t, 0.035, st % 4 === 2 ? KV.h * 1.45 : st % 4 === 0 ? KV.h * 1.1 : KV.h * 0.8, 7000);
-    if (has(g.oh)) noise(t, 0.16, KV.oh, 6000);
-    if (has(g.sh)) noise(t, 0.05, st % 4 === 2 ? KV.sh * 1.5 : KV.sh, 5200);
-    if (has(g.tm)) {
-      noise(t, 0.09, KV.tm, 8000);
-      noise(t, 0.07, KV.tm * 0.6, 5500, 'bandpass');
-    }
-    if (has(g.rd) || (g.rd && st % 2 === 0 && false)) noise(t, 0.25, KV.rd, 5200);
-    if (has(g.cg)) conga(t, KV.cg, st % 4 === 2 ? 260 : 330);
+    const g = GROOVES[th.groove] || GROOVES.pop;
+    if (mode === 'full') backbeat(g, st, t, bar);
+    for (const [part, hit] of PERCUSSION) if (g[part]?.includes(st)) hit(t, st);
     if (tutti && st === 0 && bar % 8 === 0 && bar > 0) noise(t, 1.2, 0.02 + 0.004 * E, 3800); // platillo al empezar cada sección
   }
-
   /* Riffs de bajo: [paso, intervalo]. r=fundamental, 3, 5, 7, 8=octava. El bajo siempre suena en 40-52 (se oye hasta en el móvil). */
   const RIFFS = {
     pop: [
@@ -483,8 +492,9 @@ export const Music = (() => {
     }
   }
 
-  function play(s, t) {
-    if (s % 16 === 0) layerNow = layerNext; // las capas entran siempre al empezar un compás
+  /* ---------- un paso (semicorchea) de la canción, capa a capa ---------- */
+  /** Todo lo que necesita cada capa en el paso `s` (que suena en el instante `t`). */
+  function stepContext(s, t) {
     const bar = Math.floor(s / 16),
       st = s % 16,
       sd = 60 / bpm() / 4,
@@ -510,126 +520,178 @@ export const Music = (() => {
       building = sec.drums === 'build' || (!!sec.build && last);
     const rise = building ? (sec.drums === 'build' ? (k * 16 + st) / (sec.bars * 16) : st / 16) : 0; // 0→1 a lo largo del redoble
     const hasLead = sec.lead !== false && !(sec.leadBars && k >= sec.leadBars);
+    return { t, st, sd, E, sec, k, th, n, src, sh, chord, firstOfBar, nextRoot, L, building, rise, hasLead };
+  }
 
-    // colchón suave de acordes (cuerdas largas)
+  /** Colchón suave de acordes (cuerdas largas). */
+  function padLayer({ st, t, sd, firstOfBar }) {
     if (st === 0) firstOfBar.slice(0, 3).forEach((m) => voice('strings', m + 12, t, sd * 15, 0.0085));
+  }
 
-    // bajo: caminante (jazz) o riff sincopado según el estilo; en los redobles, pedal de corcheas que crece
-    let bn = null;
-    if (sec.bassFrom > k) {
-      /* aún no entra */
-    } else if (building) {
-      if (st % 2 === 0) bn = firstOfBar[0];
-    } else if (L.bass === 'lite' || sec.drums === 'half') {
-      // bajo mínimo: solo la fundamental en los tiempos 1 y 3
-      if (st === 0 || st === 8) bn = chord[0];
-    } else if (th.bassPat === 'walk') {
-      if (st === 0) bn = firstOfBar[0];
-      else if (st === 4) bn = firstOfBar[2];
-      else if (st === 8) bn = chord[0];
-      else if (st === 12) bn = nextRoot + (nextRoot % 2 ? -1 : 1); // medio tono hacia la siguiente fundamental
-    } else {
-      const hit = (RIFFS[th.bassPat] || RIFFS.pop).find((r) => r[0] === st);
-      if (hit) bn = hit[1] === '8' ? chord[0] + 12 : chord[IV[hit[1]]];
+  /** Nota del bajo en este paso (o null): caminante (jazz) o riff sincopado; en los redobles, pedal de corcheas. */
+  function bassNote({ st, sec, k, th, chord, firstOfBar, nextRoot, L, building }) {
+    if (sec.bassFrom > k) return null; // aún no entra
+    if (building) return st % 2 === 0 ? firstOfBar[0] : null;
+    // bajo mínimo: solo la fundamental en los tiempos 1 y 3
+    if (L.bass === 'lite' || sec.drums === 'half') return st === 0 || st === 8 ? chord[0] : null;
+    if (th.bassPat === 'walk') {
+      if (st === 0) return firstOfBar[0];
+      if (st === 4) return firstOfBar[2];
+      if (st === 8) return chord[0];
+      if (st === 12) return nextRoot + (nextRoot % 2 ? -1 : 1); // medio tono hacia la siguiente fundamental
+      return null;
     }
-    if (bn !== null) voice('upright', bassReg(bn), t, 0.26, th.bassV * (building ? 0.6 + 0.5 * rise : 1));
+    const hit = (RIFFS[th.bassPat] || RIFFS.pop).find((r) => r[0] === st);
+    if (!hit) return null;
+    return hit[1] === '8' ? chord[0] + 12 : chord[IV[hit[1]]];
+  }
+  function bassLayer(c) {
+    const bn = bassNote(c);
+    if (bn !== null) voice('upright', bassReg(bn), c.t, 0.26, c.th.bassV * (c.building ? 0.6 + 0.5 * c.rise : 1));
+  }
 
-    // acompañamiento
-    if (L.comp && !building && (COMP[th.comp] || []).includes(st)) {
-      const notes = th.comp === 'strum' ? chord.slice(0, 4) : chord.slice(1, 4);
-      notes.forEach((m, i) => voice(th.compVoice, m + 12, t + i * 0.01, 0.13, th.compV));
-    }
-    // arpegio suave (también en la intro, el puente y el cierre: da aire cuando no hay batería completa)
-    if (L.arp || sec.id === 'intro' || sec.id === 'bridge' || sec.id === 'outro') {
-      const every = th.arpEvery || 2,
-        pat = th.arpPat || [0, 1, 2, 1];
-      if (st % every === 0)
-        voice(
-          th.arpVoice || 'celesta',
-          chord[pat[(st / every) % pat.length] % chord.length] + 12,
-          t,
-          Math.max(0.2, sd * 2),
-          th.arpV,
-        );
-    }
+  /** Acompañamiento rasgueado o en acordes. */
+  function compLayer({ st, t, th, chord, L, building }) {
+    if (!L.comp || building || !(COMP[th.comp] || []).includes(st)) return;
+    const notes = th.comp === 'strum' ? chord.slice(0, 4) : chord.slice(1, 4);
+    notes.forEach((m, i) => voice(th.compVoice, m + 12, t + i * 0.01, 0.13, th.compV));
+  }
 
-    // gancho rítmico: un ostinato sincopado propio de cada tema sobre las notas del acorde (se repite y se pega)
+  /** Arpegio suave (también en la intro, el puente y el cierre: da aire cuando no hay batería completa). */
+  function arpLayer({ st, t, sd, sec, th, chord, L }) {
+    if (!(L.arp || sec.id === 'intro' || sec.id === 'bridge' || sec.id === 'outro')) return;
+    const every = th.arpEvery || 2,
+      pat = th.arpPat || [0, 1, 2, 1];
+    if (st % every === 0)
+      voice(
+        th.arpVoice || 'celesta',
+        chord[pat[(st / every) % pat.length] % chord.length] + 12,
+        t,
+        Math.max(0.2, sd * 2),
+        th.arpV,
+      );
+  }
+
+  /** Gancho rítmico: un ostinato sincopado propio de cada tema sobre las notas del acorde (se repite y se pega). */
+  function hookLayer({ st, t, sd, sec, th, chord, L, building, hasLead }) {
     const hk = th.hook;
-    if (hk && sec.hook !== false && !building && (L.bass === 'full' || !hasLead)) {
-      const j = hk.s.indexOf(st);
-      if (j >= 0)
-        voice(
-          hk.voice || 'pizz',
-          chord[hk.n[j % hk.n.length] % chord.length] + (hk.oct ?? 12),
-          t,
-          sd * 1.5,
-          (hk.v || 0.017) * (st % 8 === 0 ? 1.3 : 1) * (hasLead ? 1 : 1.25) * (sec.chorus ? 1.35 : 1),
-        );
-    }
-    // base épica: timbal grave en cada compás y trompas largas al empezar cada frase
-    if (!th.march && L.drums === 'full' && !sec.drums) {
-      if (st === 0) timpani(t, bassReg(firstOfBar[0]) - 12, k % 4 === 0 ? 0.06 : 0.038);
-      if (st === 0 && k % 4 === 0) [0, 2].forEach((i) => voice('horn', firstOfBar[i], t, sd * 14, 0.011));
-      if (k % 4 === 3 && st >= 12 && st % 2 === 0) timpani(t, bassReg(chord[2]) - 12, 0.03 + 0.006 * (st - 12));
-    }
-    // entrada del coro: platillo, timbal y bombo a la vez
-    if (sec.crash && k === 0 && st === 0) {
-      noise(t, 1.9, 0.05, 3600);
-      timpani(t, bassReg(firstOfBar[0]) - 12, 0.1);
-      kick(t, 0.1);
-    }
+    if (!hk || sec.hook === false || building || !(L.bass === 'full' || !hasLead)) return;
+    const j = hk.s.indexOf(st);
+    if (j < 0) return;
+    voice(
+      hk.voice || 'pizz',
+      chord[hk.n[j % hk.n.length] % chord.length] + (hk.oct ?? 12),
+      t,
+      sd * 1.5,
+      (hk.v || 0.017) * (st % 8 === 0 ? 1.3 : 1) * (hasLead ? 1 : 1.25) * (sec.chorus ? 1.35 : 1),
+    );
+  }
 
-    // CORO ÉPICO Y PALMAS (estribillos): voces sosteniendo el acorde, un bajo coral, gritos a compás con el ritmo propio del tema
-    // y palmas de grupo; en el coro final todo canta más fuerte. En el puente, un colchón de voces suaves («uuh»).
+  /** Base épica: timbal grave en cada compás y trompas largas al empezar cada frase. */
+  function epicBaseLayer({ st, t, sd, sec, k, th, chord, firstOfBar, L }) {
+    if (th.march || L.drums !== 'full' || sec.drums) return;
+    if (st === 0) timpani(t, bassReg(firstOfBar[0]) - 12, k % 4 === 0 ? 0.06 : 0.038);
+    if (st === 0 && k % 4 === 0) [0, 2].forEach((i) => voice('horn', firstOfBar[i], t, sd * 14, 0.011));
+    if (k % 4 === 3 && st >= 12 && st % 2 === 0) timpani(t, bassReg(chord[2]) - 12, 0.03 + 0.006 * (st - 12));
+  }
+
+  /** Entrada del coro: platillo, timbal y bombo a la vez. */
+  function crashLayer({ st, t, sec, k, firstOfBar }) {
+    if (!sec.crash || k !== 0 || st !== 0) return;
+    noise(t, 1.9, 0.05, 3600);
+    timpani(t, bassReg(firstOfBar[0]) - 12, 0.1);
+    kick(t, 0.1);
+  }
+
+  /**
+   * Coro épico y palmas (estribillos): voces sosteniendo el acorde, un bajo coral, gritos a compás con el ritmo propio del
+   * tema y palmas de grupo; en el coro final todo canta más fuerte. En el puente, un colchón de voces suaves («uuh»).
+   */
+  function choirLayer({ st, t, sd, sec, th, chord, firstOfBar, building }) {
     const cho = th.choir;
-    if (cho && sec.chorus && !building) {
-      const big = sec.id === 'final' ? 1.25 : 1,
-        cv = (th.march ? 0.048 : 0.042) * big;
-      if (st === 0) {
-        firstOfBar.slice(0, 3).forEach((m, i) => choir(choirReg(m), t + i * 0.012, sd * 15, cv, cho.vowel));
-        choir(bassReg(firstOfBar[0]) + 12, t, sd * 15, cv * 0.9, 'oh');
-      }
-      if (st === 8 && chord[0] !== firstOfBar[0])
-        chord.slice(0, 3).forEach((m, i) => choir(choirReg(m), t + i * 0.012, sd * 7, cv, cho.vowel));
-      if (cho.chant.includes(st)) {
-        choir(choirReg(chord[2]) + 12, t, sd * 1.5, cv * 1.5, 'eh');
-        choir(choirReg(chord[0]), t, sd * 1.5, cv * 1.3, 'eh');
-      }
-      if (cho.clap.includes(st)) clap(t, 0.03 * big);
-      if (st % 4 === 2) noise(t, 0.06, 0.011, 6800); // pandereta en los contratiempos: el estribillo «salta»
-    } else if (cho && sec.id === 'bridge' && st === 0) {
+    if (!cho) return;
+    if (sec.chorus && !building) chorusVoices(cho, { st, t, sd, sec, th, chord, firstOfBar });
+    else if (sec.id === 'bridge' && st === 0)
       firstOfBar.slice(0, 3).forEach((m, i) => choir(choirReg(m), t + i * 0.02, sd * 15, 0.028, 'oo'));
-    } else if (cho && th.epic >= 3 && sec.id === 'verse2' && st === 0 && !th.march) {
+    else if (th.epic >= 3 && sec.id === 'verse2' && st === 0 && !th.march)
       [0, 2].forEach((i) => choir(choirReg(firstOfBar[i]), t, sd * 15, 0.024, 'oo')); // menú y héroes: el coro ya asoma en la 2.ª estrofa
+  }
+  function chorusVoices(cho, { st, t, sd, sec, th, chord, firstOfBar }) {
+    const big = sec.id === 'final' ? 1.25 : 1,
+      cv = (th.march ? 0.048 : 0.042) * big;
+    if (st === 0) {
+      firstOfBar.slice(0, 3).forEach((m, i) => choir(choirReg(m), t + i * 0.012, sd * 15, cv, cho.vowel));
+      choir(bassReg(firstOfBar[0]) + 12, t, sd * 15, cv * 0.9, 'oh');
     }
-
-    // batería: normal, a medio tiempo (puente) o redoble que crece con ruido ascendente (pre-coro, corte, subida)
-    if (building) {
-      const every = rise > 0.75 ? 1 : rise > 0.4 ? 2 : 4;
-      if (st % every === 0) snare(t, 0.012 + 0.035 * rise);
-      if (st % 4 === 0) kick(t, 0.05 + 0.04 * rise);
-      if (st % 4 === 0) noise(t, sd * 4, 0.006 + 0.02 * rise, 1200 + 5200 * rise, 'bandpass');
-      if (rise > 0.5 && st % 4 === 0) timpani(t, bassReg(firstOfBar[0]) - 12, 0.03 + 0.05 * rise);
-    } else if (sec.drums === 'half') {
-      if (st === 0) kick(t, KV.k);
-      if (st === 8) {
-        snare(t, KV.s);
-        noise(t + 0.011, 0.05, KV.s * 0.45, 1400, 'bandpass');
-      }
-      if (st % 4 === 0) noise(t, 0.05, KV.sh * 1.5, 5200);
-      if (st === 0 && k % 4 === 0) timpani(t, bassReg(firstOfBar[0]) - 12, 0.06);
-    } else drums(th, st, t, k, E, sec.drums || L.drums, L.tutti);
-
-    if (th.march && L.orchestra && hasLead) marchLayer(th, st, t, k, sd, chord, firstOfBar);
-
-    // capa épica: timbal en las frases y metales que refuerzan la melodía
-    if (E >= 2 && L.orchestra) {
-      if (st === 0 && k % 4 === 0) timpani(t, chord[0] - 24, 0.055);
-      if (k % 4 === 3 && st >= 12 && st % 2 === 0) timpani(t, chord[2] - 24, 0.03 + 0.004 * (st - 12));
+    if (st === 8 && chord[0] !== firstOfBar[0])
+      chord.slice(0, 3).forEach((m, i) => choir(choirReg(m), t + i * 0.012, sd * 7, cv, cho.vowel));
+    if (cho.chant.includes(st)) {
+      choir(choirReg(chord[2]) + 12, t, sd * 1.5, cv * 1.5, 'eh');
+      choir(choirReg(chord[0]), t, sd * 1.5, cv * 1.3, 'eh');
     }
+    if (cho.clap.includes(st)) clap(t, 0.03 * big);
+    if (st % 4 === 2) noise(t, 0.06, 0.011, 6800); // pandereta en los contratiempos: el estribillo «salta»
+  }
 
-    // melodía. En el CORO de los temas de ciudad suena el motivo del primer compás, repetido en secuencia sobre cada acorde
-    // (con el remate original cada 4 compases): la repetición es lo que se queda en la cabeza.
+  /** Redoble que crece con ruido ascendente (pre-coro, corte, subida). */
+  function buildDrums({ st, t, sd, firstOfBar, rise }) {
+    const every = rise > 0.75 ? 1 : rise > 0.4 ? 2 : 4;
+    if (st % every === 0) snare(t, 0.012 + 0.035 * rise);
+    if (st % 4 === 0) kick(t, 0.05 + 0.04 * rise);
+    if (st % 4 === 0) noise(t, sd * 4, 0.006 + 0.02 * rise, 1200 + 5200 * rise, 'bandpass');
+    if (rise > 0.5 && st % 4 === 0) timpani(t, bassReg(firstOfBar[0]) - 12, 0.03 + 0.05 * rise);
+  }
+  /** Batería a medio tiempo (puente). */
+  function halfDrums({ st, t, k, firstOfBar }) {
+    if (st === 0) kick(t, KV.k);
+    if (st === 8) {
+      snare(t, KV.s);
+      noise(t + 0.011, 0.05, KV.s * 0.45, 1400, 'bandpass');
+    }
+    if (st % 4 === 0) noise(t, 0.05, KV.sh * 1.5, 5200);
+    if (st === 0 && k % 4 === 0) timpani(t, bassReg(firstOfBar[0]) - 12, 0.06);
+  }
+  function drumLayer(c) {
+    if (c.building) buildDrums(c);
+    else if (c.sec.drums === 'half') halfDrums(c);
+    else drums(c.th, c.st, c.t, c.k, c.E, c.sec.drums || c.L.drums, c.L.tutti);
+  }
+
+  /** Capa épica: timbal en las frases y metales que refuerzan la melodía. */
+  function epicLayer({ st, t, k, E, chord, L }) {
+    if (E < 2 || !L.orchestra) return;
+    if (st === 0 && k % 4 === 0) timpani(t, chord[0] - 24, 0.055);
+    if (k % 4 === 3 && st >= 12 && st % 2 === 0) timpani(t, chord[2] - 24, 0.03 + 0.004 * (st - 12));
+  }
+
+  /** El solista nunca pasa de ≈ Fa♯6: sin chillidos al subir de tono. */
+  const leadTop = (m) => {
+    while (m > 90) m -= 12;
+    return m;
+  };
+  /** Una nota de la melodía con todo lo que la dobla según las capas (armonía, coro, orquesta, octava, eco). */
+  function leadNote({ t, sd, E, sec, th, L }, lead, lv, deg, dur) {
+    voice(lead, leadTop(noteOf(th, deg) + 12), t, dur * sd, lv);
+    if ((L.counter || sec.harmony) && dur >= 3)
+      voice(th.counterVoice || 'horn', noteOf(th, deg - 2), t + sd * 0.02, dur * sd, lv * 0.4); // armonía una tercera debajo
+    if (sec.chorus && dur >= 2) voice('horn', leadTop(noteOf(th, deg + 2) + 12), t, dur * sd, lv * 0.3); // coro: tercera arriba
+    if (sec.chorus && th.choir && dur >= 2)
+      choir(choirReg(noteOf(th, deg) + 12), t, dur * sd, lv * (dur >= 3 ? 1.3 : 0.95), th.choir.vowel); // las voces cantan el estribillo
+    if (L.orchestra) voice(E >= 2 ? 'brass' : 'strings', noteOf(th, deg), t, dur * sd, lv * (E >= 2 ? 0.5 : 0.35));
+    const up = noteOf(th, deg) + 24 > 98 ? 12 : 24; // la octava de arriba nunca llega a chillar (tope ≈ Re7)
+    if (L.octave) voice('celesta', noteOf(th, deg) + up, t, dur * sd * 0.9, lv * 0.3);
+    if (L.octave && E >= 3) voice('brass', noteOf(th, deg) + up, t, dur * sd * 0.9, lv * 0.22);
+    if (L.tutti && th.echo && dur >= 2) voice('pizz', noteOf(th, deg) + 12, t + sd * 3, 0.1, lv * 0.3); // eco a una corchea con puntillo
+  }
+  /** Volumen del solista según la sección. */
+  const leadLevel = (th, sec) =>
+    th.leadV * (sec.chorus ? 1.12 : sec.id === 'bridge' ? 0.85 : sec.id === 'outro' ? 0.7 : 1);
+  /**
+   * Melodía. En el CORO de los temas de ciudad suena el motivo del primer compás, repetido en secuencia sobre cada acorde
+   * (con el remate original cada 4 compases): la repetición es lo que se queda en la cabeza.
+   */
+  function leadLayer(c) {
+    const { st, sec, k, th, n, src, sh, hasLead, building } = c;
     if (!hasLead || building) return;
     let notes = th.tune[src],
       dshift = sh;
@@ -640,26 +702,26 @@ export const Music = (() => {
       dshift = d;
     }
     const lead = sec.alt ? ALT_VOICE[th.leadVoice] || 'horn' : th.leadVoice;
-    const lv = th.leadV * (sec.chorus ? 1.12 : sec.id === 'bridge' ? 0.85 : sec.id === 'outro' ? 0.7 : 1);
-    for (const [at, deg0, dur] of notes)
-      if (at === st) {
-        const deg = deg0 + dshift;
-        const top = (m) => {
-          while (m > 90) m -= 12;
-          return m;
-        }; // el solista nunca pasa de ≈ Fa♯6: sin chillidos al subir de tono
-        voice(lead, top(noteOf(th, deg) + 12), t, dur * sd, lv);
-        if ((L.counter || sec.harmony) && dur >= 3)
-          voice(th.counterVoice || 'horn', noteOf(th, deg - 2), t + sd * 0.02, dur * sd, lv * 0.4); // armonía una tercera debajo
-        if (sec.chorus && dur >= 2) voice('horn', top(noteOf(th, deg + 2) + 12), t, dur * sd, lv * 0.3); // coro: tercera arriba
-        if (sec.chorus && th.choir && dur >= 2)
-          choir(choirReg(noteOf(th, deg) + 12), t, dur * sd, lv * (dur >= 3 ? 1.3 : 0.95), th.choir.vowel); // las voces cantan el estribillo
-        if (L.orchestra) voice(E >= 2 ? 'brass' : 'strings', noteOf(th, deg), t, dur * sd, lv * (E >= 2 ? 0.5 : 0.35));
-        const up = noteOf(th, deg) + 24 > 98 ? 12 : 24; // la octava de arriba nunca llega a chillar (tope ≈ Re7)
-        if (L.octave) voice('celesta', noteOf(th, deg) + up, t, dur * sd * 0.9, lv * 0.3);
-        if (L.octave && E >= 3) voice('brass', noteOf(th, deg) + up, t, dur * sd * 0.9, lv * 0.22);
-        if (L.tutti && th.echo && dur >= 2) voice('pizz', noteOf(th, deg) + 12, t + sd * 3, 0.1, lv * 0.3); // eco a una corchea con puntillo
-      }
+    const lv = leadLevel(th, sec);
+    for (const [at, deg0, dur] of notes) if (at === st) leadNote(c, lead, lv, deg0 + dshift, dur);
+  }
+
+  /** Toca el paso `s` en el instante `t`: cada capa decide si suena según la sección, la capa activa y el tema. */
+  function play(s, t) {
+    if (s % 16 === 0) layerNow = layerNext; // las capas entran siempre al empezar un compás
+    const c = stepContext(s, t);
+    padLayer(c);
+    bassLayer(c);
+    compLayer(c);
+    arpLayer(c);
+    hookLayer(c);
+    epicBaseLayer(c);
+    crashLayer(c);
+    choirLayer(c);
+    drumLayer(c);
+    if (c.th.march && c.L.orchestra && c.hasLead) marchLayer(c.th, c.st, c.t, c.k, c.sd, c.chord, c.firstOfBar);
+    epicLayer(c);
+    leadLayer(c);
   }
   function loop() {
     if (!playing || !AC || document.hidden || audioPageHidden || AC.state !== 'running') return;

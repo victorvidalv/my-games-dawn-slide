@@ -13,6 +13,9 @@ export default [
       'no-undef': 'error',
       'no-import-assign': 'error',
       'no-unused-vars': ['warn', { args: 'none', caughtErrors: 'none' }],
+      // Tope de complejidad ciclomática: ninguna función puede crecer por encima de lo que ya hay (máx. actual 39).
+      // Si una función se acerca, divídela por responsabilidades en vez de subir el número.
+      complexity: ['error', 40],
     },
   },
   {

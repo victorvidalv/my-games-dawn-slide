@@ -6,7 +6,7 @@ import { S, heroOf, setBusy } from '../state.js';
 import { afterMove, cancelDrag, layout, updateHud } from './board.js';
 import { motes, warmMotes } from './fx.js';
 import { openPowerStage } from './power-stage.js';
-import { countStat } from './achievements.js';
+import { countStat } from './collection/progress.js';
 import { watchFrames } from './perf.js';
 
 /** Chispas del color del hechizo sobre la pieza que el poder mueve, y una onda que cruza el tablero. */

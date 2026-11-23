@@ -236,14 +236,10 @@ export const ZH_LORE = {
   'Completa el Desafío de 250 turnos': '完成 250 步挑战',
   '{n} novedades': '{n} 项新内容',
   'Sello de {n}': '{n}之印',
-  'Quince tomos del universo. Tócalos para leer; los que faltan piden una hazaña.':
-    '宇宙的十五卷典籍。点按即可阅读；尚缺的几卷需要一番功绩。',
   Escenas: '场景',
   'Crónica de Thyes': 'Thyes 编年史',
   'THYES · AÑO 4133': 'THYES · 4133 年',
   'Capítulo {n}': '第 {n} 章',
-  'Escenas y paisajes de Thyes. Tócalas para abrir cada crónica ilustrada.':
-    'Thyes 的场景与风光。点按即可翻开每一段插画纪事。',
   Anterior: '上一张',
   Siguiente: '下一张',
   'Los tres en el umbral': '门槛上的三人',

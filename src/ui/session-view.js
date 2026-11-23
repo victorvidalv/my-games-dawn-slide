@@ -8,7 +8,7 @@ import { $ } from '../dom.js';
 import { challengeById, challengeTargets } from '../game/daily.js';
 import { baseScore } from '../engine/scoring.js';
 import { numLocale } from '../i18n.js';
-import { celebrate } from './achievements.js';
+import { celebrate } from './collection/look.js';
 import { boardEl, place, recLine } from './board.js';
 
 export const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;

@@ -417,16 +417,22 @@ export function readSaveHash(hash, now = new Date()) {
   return { paths, ach, stats, daily, look, tips, run };
 }
 
-function readV3(read, readV, atEnd, now, version = V3_VERSION) {
+/* ---------- lectura de los formatos v3, v4 y v5 (una función por sección, en el orden en que se escribieron) ---------- */
+
+/** Listas que cambian entre versiones del formato. */
+function formatOf(version) {
   const v4 = version >= V4_VERSION,
     v5 = version >= V5_VERSION;
-  const achIds = v5 ? V5_ACH_IDS : v4 ? V4_ACH_IDS : V3_ACH_IDS,
-    counters = v5 ? V5_COUNTERS : v4 ? V4_COUNTERS : V3_COUNTERS,
-    shop = v5 ? V5_SHOP_KEYS : V3_SHOP_KEYS;
-  const ts = now.getTime();
-  const maxSec = Math.floor(ts / 1000) + 86400;
+  return {
+    v4,
+    achIds: v5 ? V5_ACH_IDS : v4 ? V4_ACH_IDS : V3_ACH_IDS,
+    counters: v5 ? V5_COUNTERS : v4 ? V4_COUNTERS : V3_COUNTERS,
+    shop: v5 ? V5_SHOP_KEYS : V3_SHOP_KEYS,
+  };
+}
 
-  // 1. Caminos
+/** 1. Caminos: récord, nivel, fecha del récord y partidas jugadas. */
+function readPaths({ read, readV }, maxSec) {
   const paths = {};
   const pathMask = read(1, 0x3f);
   PATHS.forEach((path, i) => {
@@ -437,8 +443,11 @@ function readV3(read, readV, atEnd, now, version = V3_VERSION) {
     const runs = readV(UINT16);
     paths['c' + path] = { score, level, runs, ...(recordAt ? { recordAt } : {}) };
   });
+  return paths;
+}
 
-  // 2. Los logros (ternarios)
+/** 2. Registro de acciones: cinco estados ternarios por byte (0 no, 1 cumplido, 2 cumplido y anotado). */
+function readAchievements({ read }, achIds, ts) {
   const ach = {};
   const achClaimed = {};
   for (let i = 0; i < achIds.length; i += 5) {
@@ -451,26 +460,34 @@ function readV3(read, readV, atEnd, now, version = V3_VERSION) {
       if (state === 2) achClaimed[id] = ts;
     }
   }
+  return { ach, achClaimed };
+}
 
-  // 3. Tienda Canjear (objetos propios)
+/** 3. Objetos propios de Personalizar: ocho por byte. */
+function readOwned({ read }, shop, ts) {
   const shopOwned = {};
   for (let i = 0; i < shop.length; i += 8) {
     const b = read(1, 255);
-    for (let k = 0; k < 8 && i + k < shop.length; k++) {
-      if ((b & (1 << k)) !== 0) shopOwned[shop[i + k]] = ts;
-    }
+    for (let k = 0; k < 8 && i + k < shop.length; k++) if ((b & (1 << k)) !== 0) shopOwned[shop[i + k]] = ts;
   }
+  return shopOwned;
+}
 
-  // 4. Estadísticas
+/** 4. Estadísticas: contadores y colecciones (un bit por elemento). */
+function readStats({ read, readV }, counters) {
   const stats = Object.fromEntries(counters.map((stat) => [stat, readV(UINT32)]));
   const colBits = read(3, (1 << 21) - 1);
-  stats.heroes = HEROES.filter((_, i) => (colBits & (1 << i)) !== 0);
-  stats.paths = PATHS.filter((_, i) => (colBits & (1 << (i + 3))) !== 0);
-  stats.mini5Kinds = MINI_GAMES.filter((_, i) => (colBits & (1 << (i + 6))) !== 0);
-  stats.challengeRelics = V3_CHALLENGE_RELICS.filter((_, i) => (colBits & (1 << (i + 15))) !== 0);
-  stats.challengeRoutesPlayed = V3_CHALLENGE_ROUTES.filter((_, i) => (colBits & (1 << (i + 18))) !== 0);
+  const bitsFrom = (items, offset) => items.filter((_, i) => (colBits & (1 << (i + offset))) !== 0);
+  stats.heroes = bitsFrom(HEROES, 0);
+  stats.paths = bitsFrom(PATHS, 3);
+  stats.mini5Kinds = bitsFrom(MINI_GAMES, 6);
+  stats.challengeRelics = bitsFrom(V3_CHALLENGE_RELICS, 15);
+  stats.challengeRoutesPlayed = bitsFrom(V3_CHALLENGE_ROUTES, 18);
+  return stats;
+}
 
-  // 5. Retos diarios
+/** 5. Retos diarios: último día, rachas, retos resueltos y medallas. */
+function readDaily({ readV }, now) {
   const daily = emptyDaily();
   daily.last = readV(dayNumber(now) + 2) - 1;
   daily.streak = readV(UINT16);
@@ -482,147 +499,150 @@ function readV3(read, readV, atEnd, now, version = V3_VERSION) {
     if (count) daily.by[id] = count;
   }
   if ((daily.last === -1 && daily.streak) || daily.streak > daily.last + 1) invalid();
+  return daily;
+}
 
-  // 6. Aspecto y lecciones
-  const bp = read();
-  const kf = read();
-  const mc = read();
-  const boardIdx = bp & 0x0f;
-  const piecesIdx = bp >> 4;
-  const keyIdx = kf & 0x0f;
-  const fxIdx = kf >> 4;
-  const musicIdx = mc & 0x0f;
-  const coverIdx = mc >> 4;
-  if (
-    boardIdx >= V3_LOOKS.board.length ||
-    piecesIdx >= V3_LOOKS.pieces.length ||
-    keyIdx >= V3_LOOKS.key.length ||
-    fxIdx >= V3_LOOKS.fx.length ||
-    musicIdx >= V3_LOOKS.music.length ||
-    coverIdx >= V3_LOOKS.cover.length
-  )
-    invalid();
-  const look = {
-    board: V3_LOOKS.board[boardIdx],
-    pieces: V3_LOOKS.pieces[piecesIdx],
-    key: V3_LOOKS.key[keyIdx],
-    fx: V3_LOOKS.fx[fxIdx],
-    music: V3_LOOKS.music[musicIdx],
-    cover: V3_LOOKS.cover[coverIdx],
-  };
+/** 6a. Aspecto equipado: seis índices de 4 bits; lo equipado tiene que estar desbloqueado. */
+function readLook({ read }, shopOwned) {
+  const bp = read(),
+    kf = read(),
+    mc = read();
+  const idx = { board: bp & 0x0f, pieces: bp >> 4, key: kf & 0x0f, fx: kf >> 4, music: mc & 0x0f, cover: mc >> 4 };
+  if (Object.entries(idx).some(([type, i]) => i >= V3_LOOKS[type].length)) invalid();
+  const look = Object.fromEntries(Object.entries(idx).map(([type, i]) => [type, V3_LOOKS[type][i]]));
   if (Object.entries(lookOf({ look, shopOwned })).some(([type, id]) => type in V5_REWARD_COUNTS && id !== look[type]))
     invalid();
-  const lessonBits = read(1, (1 << LESSONS.length) - 1);
-  const tips = Object.fromEntries(LESSONS.filter((_, i) => (lessonBits & (1 << i)) !== 0).map((id) => [id, true]));
+  return look;
+}
 
-  // 7. Modo Desafío
-  const survMask = read(1, 0x0f);
+/** 6b. Lecciones ya vistas. */
+function readTips({ read }) {
+  const lessonBits = read(1, (1 << LESSONS.length) - 1);
+  return Object.fromEntries(LESSONS.filter((_, i) => (lessonBits & (1 << i)) !== 0).map((id) => [id, true]));
+}
+
+/** Partida de Desafío guardada (si la hay). */
+function readSurvivalRun({ read, readV }, ts) {
+  const meta = read(1, 0x7f);
+  const routeIdx = meta & 0x03;
+  const relicIdx = (meta >> 2) & 0x03;
+  if (routeIdx >= V3_CHALLENGE_ROUTES.length || relicIdx >= V3_CHALLENGE_RELICS.length) invalid();
+  const route = routeById(V3_CHALLENGE_ROUTES[routeIdx]);
+  const cleared = read(1, route.levels - 1);
+  const remaining = readV(route.turns + RESET_BONUS_TURNS, 1);
+  return {
+    routeVersion: 2,
+    route: route.id,
+    relic: V3_CHALLENGE_RELICS[relicIdx],
+    cleared,
+    remaining,
+    boardStartRemaining: remaining,
+    pos: null,
+    lastPos: null,
+    hintUsedTurn: (meta & (1 << 6)) !== 0,
+    resetUsed: (meta & (1 << 4)) !== 0,
+    undoUsedBoard: false,
+    undoCount: (meta & (1 << 5)) !== 0 ? 1 : 0, // el código solo guarda si se usó: se cuenta como un uso
+    undoStack: [],
+    status: 'active',
+    updatedAt: ts,
+  };
+}
+
+/** 7. Modo Desafío: rutas ganadas, mejor nivel de cada una y la partida en curso. */
+function readSurvival(io, ts) {
+  const survMask = io.read(1, 0x0f);
   const survivalWon = {};
   const survivalBests = {};
   CHALLENGE_ROUTES.forEach((route, i) => {
     if ((survMask & (1 << i)) !== 0) survivalWon[route.id] = true;
-    const best = read(1, route.levels);
+    const best = io.read(1, route.levels);
     if (best) survivalBests[route.id] = best;
   });
-  let survival = null;
-  if ((survMask & (1 << 3)) !== 0) {
-    const meta = read(1, 0x7f);
-    const routeIdx = meta & 0x03;
-    const relicIdx = (meta >> 2) & 0x03;
-    if (routeIdx >= V3_CHALLENGE_ROUTES.length || relicIdx >= V3_CHALLENGE_RELICS.length) invalid();
-    const route = routeById(V3_CHALLENGE_ROUTES[routeIdx]);
-    const cleared = read(1, route.levels - 1);
-    const remaining = readV(route.turns + RESET_BONUS_TURNS, 1);
-    survival = {
-      routeVersion: 2,
-      route: route.id,
-      relic: V3_CHALLENGE_RELICS[relicIdx],
-      cleared,
-      remaining,
-      boardStartRemaining: remaining,
-      pos: null,
-      lastPos: null,
-      hintUsedTurn: (meta & (1 << 6)) !== 0,
-      resetUsed: (meta & (1 << 4)) !== 0,
-      undoUsedBoard: false,
-      undoCount: (meta & (1 << 5)) !== 0 ? 1 : 0, // el código solo guarda si se usó: se cuenta como un uso
-      undoStack: [],
-      status: 'active',
-      updatedAt: ts,
-    };
-  }
+  const survival = (survMask & (1 << 3)) !== 0 ? readSurvivalRun(io, ts) : null;
   const survivalBest = Math.max(0, ...Object.values(survivalBests));
-
-  // 8. Partida de Aventura activa
-  const level = read(1, MAX_LEVEL);
-  let run = null;
-  if (level) {
-    const meta = read(1, 0x7f);
-    const heroIdx = meta & 0x03;
-    const startIdx = (meta >> 2) & 0x03;
-    const hasRelic = (meta & (1 << 4)) !== 0;
-    const relicIdx = (meta >> 5) & 0x03;
-    if (heroIdx >= HEROES.length || startIdx >= PATHS.length || (hasRelic && relicIdx >= RELICS.length)) invalid();
-    const flagBits = read(1, (1 << RUN_FLAGS.length) - 1);
-    const flags = new Set(RUN_FLAGS.filter((_, i) => (flagBits & (1 << i)) !== 0));
-    const score = readV(UINT32);
-    const seed = readV(0x7fffffff);
-    const hints = readV(UINT16);
-    const adj = read(1, 4) - 2;
-    const firstLevel = read(1, level, 1);
-    const helpAt = read(1, level);
-    const streak = read(1, MAX_LEVEL);
-    let fatePicked, fateCityPaid, revivesBought, fate;
-    if (v4) {
-      fatePicked = read(1, FATE_PICKS);
-      fateCityPaid = read(1, FATE_PICKS);
-    } else {
-      read(1, legacyBossLevel(level) ? LEGACY_BOSS_RETRIES : 0);
-      read(1, LEGACY_HEROIC_HINTS);
-    }
-    const revive = read();
-    if (v4) {
-      revivesBought = read(1, 2);
-      fate = Array.from({ length: read(1, FATE_PICKS) }, () => FATE_IDS[read(1, FATE_IDS.length - 1)]);
-      if (new Set(fate).size !== fate.length || fate.length > fatePicked) invalid();
-    } else if (
-      flags.has('routeChosen') &&
-      (!flags.has('pendingClear') || !legacyBossLevel(level) || level === MAX_LEVEL)
-    )
-      invalid();
-    run = buildRun({
-      hero: HEROES[heroIdx],
-      start: PATHS[startIdx],
-      level,
-      score,
-      seed,
-      hints,
-      adj,
-      firstLevel,
-      helpAt,
-      streak,
-      revive,
-      flags,
-      relic: hasRelic ? RELICS[relicIdx] : undefined,
-      fate: v4 ? { fate, fatePicked, fateCityPaid, revivesBought } : null,
-    });
-  }
-  if (!atEnd()) invalid();
   return {
-    paths,
-    ach,
-    achClaimed,
-    shopOwned,
-    stats,
-    daily,
-    look,
-    tips,
     ...(survival ? { survival } : {}),
     ...(Object.keys(survivalBests).length ? { survivalBests } : {}),
     ...(Object.keys(survivalWon).length ? { survivalWon } : {}),
     ...(survivalBest ? { survivalBest } : {}),
-    run,
   };
+}
+
+/** Cartas del destino (v4+) o los campos antiguos de jefe y pistas heroicas (v3), que se leen y se descartan. */
+function readRunFate({ read }, v4, level) {
+  if (!v4) {
+    read(1, legacyBossLevel(level) ? LEGACY_BOSS_RETRIES : 0);
+    read(1, LEGACY_HEROIC_HINTS);
+    return { revive: read(), fate: null };
+  }
+  const fatePicked = read(1, FATE_PICKS);
+  const fateCityPaid = read(1, FATE_PICKS);
+  const revive = read();
+  const revivesBought = read(1, 2);
+  const fate = Array.from({ length: read(1, FATE_PICKS) }, () => FATE_IDS[read(1, FATE_IDS.length - 1)]);
+  if (new Set(fate).size !== fate.length || fate.length > fatePicked) invalid();
+  return { revive, fate: { fate, fatePicked, fateCityPaid, revivesBought } };
+}
+
+/** 8. Partida de Aventura en curso (o null si no hay). */
+function readAdventureRun(io, v4) {
+  const { read, readV } = io;
+  const level = read(1, MAX_LEVEL);
+  if (!level) return null;
+  const meta = read(1, 0x7f);
+  const heroIdx = meta & 0x03;
+  const startIdx = (meta >> 2) & 0x03;
+  const hasRelic = (meta & (1 << 4)) !== 0;
+  const relicIdx = (meta >> 5) & 0x03;
+  if (heroIdx >= HEROES.length || startIdx >= PATHS.length || (hasRelic && relicIdx >= RELICS.length)) invalid();
+  const flagBits = read(1, (1 << RUN_FLAGS.length) - 1);
+  const flags = new Set(RUN_FLAGS.filter((_, i) => (flagBits & (1 << i)) !== 0));
+  const score = readV(UINT32);
+  const seed = readV(0x7fffffff);
+  const hints = readV(UINT16);
+  const adj = read(1, 4) - 2;
+  const firstLevel = read(1, level, 1);
+  const helpAt = read(1, level);
+  const streak = read(1, MAX_LEVEL);
+  const { revive, fate } = readRunFate(io, v4, level);
+  // v3: elegir ruta solo era posible al cerrar un tramo de jefe pendiente
+  if (!v4 && flags.has('routeChosen') && (!flags.has('pendingClear') || !legacyBossLevel(level) || level === MAX_LEVEL))
+    invalid();
+  return buildRun({
+    hero: HEROES[heroIdx],
+    start: PATHS[startIdx],
+    level,
+    score,
+    seed,
+    hints,
+    adj,
+    firstLevel,
+    helpAt,
+    streak,
+    revive,
+    flags,
+    relic: hasRelic ? RELICS[relicIdx] : undefined,
+    fate,
+  });
+}
+
+function readV3(read, readV, atEnd, now, version = V3_VERSION) {
+  const io = { read, readV };
+  const f = formatOf(version);
+  const ts = now.getTime();
+  const maxSec = Math.floor(ts / 1000) + 86400;
+  const paths = readPaths(io, maxSec);
+  const { ach, achClaimed } = readAchievements(io, f.achIds, ts);
+  const shopOwned = readOwned(io, f.shop, ts);
+  const stats = readStats(io, f.counters);
+  const daily = readDaily(io, now);
+  const look = readLook(io, shopOwned);
+  const tips = readTips(io);
+  const survival = readSurvival(io, ts);
+  const run = readAdventureRun(io, f.v4);
+  if (!atEnd()) invalid();
+  return { paths, ach, achClaimed, shopOwned, stats, daily, look, tips, ...survival, run };
 }
 
 function buildRun({

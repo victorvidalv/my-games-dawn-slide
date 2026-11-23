@@ -63,9 +63,16 @@ src/
   state.js              Estado compartido (S), guardado en localStorage.
   engine/               ★ MOTOR PURO (sin DOM): tablero, solver exacto, dificultad, generador, puntos.
   game/                 ★ REGLAS PURAS (sin DOM): héroes y poderes, cartas del destino, reliquias, partida,
-                        retos diarios, Desafío, logros y Canjear, guardado por enlace/QR, simulador de balance.
-  data/                 Bancos de tableros (levels.json, special.json, survival.json), calendario, historia.
+                        retos diarios, Desafío, Personalizar, guardado por enlace/QR, simulador de balance.
+    achievements.js     Puerta de entrada de Personalizar: desbloqueos, equipar y atuendos (re-exporta el catálogo).
+    stats.js            Estadísticas del jugador (contadores, marcas, colecciones) y su vista `statsOf`.
+    catalog/            Datos de Personalizar: recompensas y rarezas, atuendos y el registro interno de acciones.
+  data/                 Bancos de tableros (levels.json, special.json, survival.json), calendario, historia y Lore.
   ui/                   Pantallas y efectos (usan el DOM).
+    collection/         Personalizar: panel, probador, visor de atuendos, muestras, novedades y avisos de desbloqueo.
+    lore/               Lore: panel con pestañas, personajes, mundo, biblioteca (lector) y escenas (visor).
+    overlay.js          Ventana modal común a los visores (Esc, fondo, foco) y paginador ←/→.
+    keep-scroll.js      Conserva el desplazamiento al repintar un panel.
   audio/                Efectos, secuenciador y melodías.
   i18n/                 Diccionarios de inglés y chino (el español es el idioma del código).
   styles/               CSS en orden de cascada; main.js los importa en ese orden.
@@ -73,6 +80,10 @@ src/
 
 Regla de oro: **`src/engine` y `src/game` no tocan el DOM.** Toda regla que se pueda romper (dificultad, mínimos,
 puntos, poderes, cartas) vive ahí y está cubierta por pruebas; la interfaz solo las llama.
+
+Mantenibilidad: un módulo por responsabilidad y funciones cortas. ESLint corta en **complejidad ciclomática 40**
+(`eslint.config.js`): si una función se acerca, se divide (como el secuenciador de `audio/music.js`, que pinta cada capa
+—bajo, acordes, coro, batería, melodía…— en su propia función).
 
 ---
 
@@ -150,9 +161,11 @@ extra al empezar una aventura (3 / 5 / 7 días → +1 / +2 / +3).
 de turnos (150, 200 o 250: la suma de los mínimos). Reliquias: **Brújula** (1 pista por tablero), **Reloj de Arena**
 (+2 turnos y rehacer 1 tablero) o **Hilo del Retorno** (2 deshacer por tablero).
 
-**Logros y Canjear** ([`src/game/achievements.js`](src/game/achievements.js)): 113 logros en cinco grupos y cofres
-de colección; sus puntos se canjean por tableros, fichas, llaves, celebraciones, melodías y portadas. Los diseños épicos y
-legendarios están animados (en el tablero se paran en modo ligero; en la tienda se ven siempre).
+**Personalizar** ([`src/game/achievements.js`](src/game/achievements.js), interfaz en `src/ui/collection/`): tableros,
+fichas, llaves, cartas, estelas, celebraciones, atuendos, portada, música, clima y tema. Todo se desbloquea jugando (cada
+objeto pide una o varias acciones; ver `unlock-plan.js`) y se puede probar antes de equiparlo. Los diseños épicos y
+legendarios están animados (en el tablero se paran en modo ligero). **Lore** (`src/ui/lore/`) abre personajes, mundo,
+biblioteca y escenas al cumplir sus requisitos.
 
 ---
 

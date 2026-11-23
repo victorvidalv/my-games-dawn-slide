@@ -101,6 +101,38 @@ export function mergeDaily(a, b) {
     days,
   };
 }
+/** Desafío: la partida en curso más reciente, y el mejor nivel y las rutas ganadas de ambos. */
+function mergeSurvival(mine, disk) {
+  const out = {};
+  if (disk?.survival && (!mine.survival || disk.survival.updatedAt > mine.survival.updatedAt))
+    out.survival = disk.survival;
+  const survivalBests = {};
+  const survivalWon = {};
+  for (const route of CHALLENGE_ROUTES) {
+    const b = Math.max(survivalBestFor(mine, route.id), disk ? survivalBestFor(disk, route.id) : 0);
+    if (b) survivalBests[route.id] = b;
+    if (survivalWonFor(mine, route.id) || (disk && survivalWonFor(disk, route.id))) survivalWon[route.id] = true;
+  }
+  if (Object.keys(survivalBests).length) out.survivalBests = survivalBests;
+  if (Object.keys(survivalWon).length) out.survivalWon = survivalWon;
+  const survivalBest = Math.max(survivalBestLevel(mine), disk ? survivalBestLevel(disk) : 0);
+  if (survivalBest) out.survivalBest = survivalBest;
+  return out;
+}
+
+/**
+ * Reto diario a medias: gana el día más reciente; si es el mismo día, cada reto se queda con su intento más nuevo.
+ * Devuelve `undefined` cuando hay que conservar el de esta pestaña.
+ */
+function mergeDailyPlay(a, b) {
+  if (!a || (b && b.day > a.day)) return b || undefined;
+  if (b?.day !== a.day) return undefined;
+  const challenges = { ...obj(b.challenges) };
+  for (const [id, result] of Object.entries(obj(a.challenges)))
+    if (!challenges[id] || result.updatedAt >= challenges[id].updatedAt) challenges[id] = result;
+  return { day: a.day, challenges };
+}
+
 /** Une el guardado en memoria (`mine`) con el que ya está escrito (`disk`). Devuelve un objeto nuevo; no toca ninguno de los dos. */
 export function mergeSaves(mine = {}, disk = {}) {
   const out = {
@@ -118,30 +150,8 @@ export function mergeSaves(mine = {}, disk = {}) {
   if (daily) out.daily = daily;
   const shopEco = Math.max(num(mine.shopEco), num(disk?.shopEco));
   if (shopEco) out.shopEco = shopEco;
-  if (disk?.survival && (!mine.survival || disk.survival.updatedAt > mine.survival.updatedAt)) {
-    out.survival = disk.survival;
-  }
-  const survivalBests = {};
-  const survivalWon = {};
-  for (const route of CHALLENGE_ROUTES) {
-    const b = Math.max(survivalBestFor(mine, route.id), disk ? survivalBestFor(disk, route.id) : 0);
-    if (b) survivalBests[route.id] = b;
-    if (survivalWonFor(mine, route.id) || (disk && survivalWonFor(disk, route.id))) survivalWon[route.id] = true;
-  }
-  if (Object.keys(survivalBests).length) out.survivalBests = survivalBests;
-  if (Object.keys(survivalWon).length) out.survivalWon = survivalWon;
-  const survivalBest = Math.max(survivalBestLevel(mine), disk ? survivalBestLevel(disk) : 0);
-  if (survivalBest) out.survivalBest = survivalBest;
-  const a = mine.dailyPlay,
-    b = disk?.dailyPlay;
-  if (!a || (b && b.day > a.day)) {
-    if (b) out.dailyPlay = b;
-  } else if (b?.day === a.day) {
-    const challenges = { ...obj(b.challenges) };
-    for (const [id, result] of Object.entries(obj(a.challenges))) {
-      if (!challenges[id] || result.updatedAt >= challenges[id].updatedAt) challenges[id] = result;
-    }
-    out.dailyPlay = { day: a.day, challenges };
-  }
+  Object.assign(out, mergeSurvival(mine, disk));
+  const dailyPlay = mergeDailyPlay(mine.dailyPlay, disk?.dailyPlay);
+  if (dailyPlay) out.dailyPlay = dailyPlay;
   return out;
 }

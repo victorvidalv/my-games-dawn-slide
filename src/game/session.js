@@ -55,7 +55,7 @@ import { S, closeRun, gainNow, haltBoard, heroOf, persist, rkey, setBoard, setBu
 import { playReviveEffect } from '../ui/turns.js';
 import { startCoach } from '../ui/coach.js';
 import { showDailyResult } from '../ui/daily.js';
-import { countStat, markStat, pauseAchievementToasts, raiseStat, updateStats } from '../ui/achievements.js';
+import { countStat, markStat, pauseAchievementToasts, raiseStat, updateStats } from '../ui/collection/progress.js';
 import { boardEl, buildPieces, fitBoard, layout, updateHud } from '../ui/board.js';
 import {
   FATE_CARDS,
