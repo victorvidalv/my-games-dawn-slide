@@ -64,7 +64,7 @@ src/
   engine/               ★ MOTOR PURO (sin DOM): tablero, solver exacto, dificultad, generador, puntos.
   game/                 ★ REGLAS PURAS (sin DOM): héroes y poderes, cartas del destino, reliquias, partida,
                         retos diarios, Desafío, logros y Canjear, guardado por enlace/QR, simulador de balance.
-  data/                 Bancos de tableros (levels.json, special.json, survival.json), calendario, historia.
+  data/                 Bancos de tableros (levels.json, special.json), zonas y diálogos.
   ui/                   Pantallas y efectos (usan el DOM).
   audio/                Efectos, secuenciador y melodías.
   i18n/                 Diccionarios de inglés y chino (el español es el idioma del código).
@@ -146,9 +146,9 @@ extra al empezar una aventura (3 / 5 / 7 días → +1 / +2 / +3).
 | Mecanismos | Nivel 18 | 8 · 12 · 15 |
 | Todo junto | Nivel 21 | 9 · 13 · 16 |
 
-**Desafío** ([`src/game/survival.js`](src/game/survival.js)): una senda de 15, 16 o 20 tableros con una reserva exacta
-de turnos (150, 200 o 250: la suma de los mínimos). Reliquias: **Brújula** (1 pista por tablero), **Reloj de Arena**
-(+2 turnos y rehacer 1 tablero) o **Hilo del Retorno** (2 deshacer por tablero).
+**Desafío** ([`src/game/daily.js`](src/game/daily.js)): reto diario de entrada directa en 1 clic con 15 tableros y 150 turnos
+exactos (mínimos del 3 al 17 sin margen), piezas especiales progresivas, sin pistas ni reinicio, y premios al superar los
+tableros 13 (+1 pista), 14 (+3 pistas y estela) y 15 (+5 pistas y estela).
 
 **Logros y Canjear** ([`src/game/achievements.js`](src/game/achievements.js)): 113 logros en cinco grupos y cofres
 de colección; sus puntos se canjean por tableros, fichas, llaves, celebraciones, melodías y portadas. Los diseños épicos y

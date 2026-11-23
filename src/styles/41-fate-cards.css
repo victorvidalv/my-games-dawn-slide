@@ -606,8 +606,7 @@ button.fate-card {
       0 0 0 6px #ffe38a66;
   }
 }
-.daily-run .fate-btn,
-.survival-run .fate-btn {
+.daily-run .fate-btn {
   display: none;
 }
 

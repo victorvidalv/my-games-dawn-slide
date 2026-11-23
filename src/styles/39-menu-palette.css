@@ -49,7 +49,6 @@
 #pause .sheet,
 #heroSelect .hero-selector,
 #dailyEnd .daily-end,
-#survivalEnd .survival-end,
 #finale .card,
 #saveTransfer .transfer-card {
   border: 1.5px solid var(--mp-border);
@@ -120,8 +119,6 @@ button.primary:hover,
   background: var(--btn-crimson-hi);
   border-color: var(--mp-border-strong);
 }
-#survivalContinue,
-#survivalPlay,
 #heroSelect .hero-selector-actions button,
 #finale button,
 #over .over-bottom button {
@@ -132,8 +129,6 @@ button.primary:hover,
     0 4px 12px rgba(8, 9, 18, 0.32);
   text-shadow: none;
 }
-#survivalContinue:hover,
-#survivalPlay:hover,
 #heroSelect .hero-selector-actions button:hover,
 #finale button:hover,
 #over .over-bottom button:hover {
@@ -141,8 +136,6 @@ button.primary:hover,
   border-color: var(--mp-border-strong);
   filter: brightness(1.06);
 }
-#survivalContinue:active,
-#survivalPlay:active,
 #heroSelect .hero-selector-actions button:active,
 #finale button:active,
 #over .over-bottom button:active {
@@ -187,7 +180,6 @@ button.primary:hover,
   --hb1: rgba(170, 60, 44, 0.93);
   --hb2: rgba(114, 34, 26, 0.95);
 }
-#menu .home-btn.hb-survival,
 #menu .home-btn.hb-ach {
   --hb1: rgba(86, 61, 110, 0.93);
   --hb2: rgba(52, 35, 72, 0.95);
@@ -196,7 +188,7 @@ button.primary:hover,
   --hb1: rgba(61, 108, 117, 0.93);
   --hb2: rgba(35, 68, 76, 0.95);
 }
-#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily, .hb-ach) {
+#menu .home-btn:is(.hb-adv, .hb-daily, .hb-ach) {
   min-height: 76px;
   padding: 11px 14px 11px 12px;
   gap: 12px;
@@ -209,12 +201,12 @@ button.primary:hover,
     var(--mp-card-shadow);
   text-shadow: none;
 }
-#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily, .hb-ach):hover {
+#menu .home-btn:is(.hb-adv, .hb-daily, .hb-ach):hover {
   transform: translateY(-1px);
   border-color: var(--mp-border-strong);
   filter: brightness(1.06);
 }
-#menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily, .hb-ach):active {
+#menu .home-btn:is(.hb-adv, .hb-daily, .hb-ach):active {
   transform: translateY(1px);
   box-shadow: 0 2px 6px rgba(8, 9, 18, 0.35);
 }
@@ -509,25 +501,6 @@ button.primary:hover,
   box-shadow: none;
 }
 
-/* ---------- Desafío: glicina apagada de Juth + azul Jean ---------- */
-#panelSurvival .survival-saved {
-  border: 1.5px solid var(--mp-border-strong);
-  border-radius: 14px;
-  background: linear-gradient(155deg, rgba(78, 55, 102, 0.9), rgba(38, 27, 56, 0.95));
-  box-shadow: var(--mp-card-shadow);
-}
-#panelSurvival .challenge-route-card {
-  border: 1.5px solid var(--mp-border);
-  border-radius: 12px;
-  background: linear-gradient(165deg, rgba(35, 43, 77, 0.88), rgba(21, 26, 48, 0.94));
-  box-shadow: none;
-}
-#panelSurvival .challenge-route-option input:checked + .challenge-route-card {
-  border-color: var(--mp-gold);
-  background: linear-gradient(160deg, rgba(84, 60, 110, 0.94), rgba(45, 32, 66, 0.96));
-  box-shadow: 0 0 0 1px rgba(216, 171, 82, 0.45);
-}
-
 /* ---------- Selector de héroes: limpio, directo y teñido por el héroe ---------- */
 #heroSelect {
   background:
@@ -678,7 +651,7 @@ button.primary:hover,
     grid-area: credit;
     margin-top: -6px;
   }
-  #menu .home-btn:is(.hb-adv, .hb-survival, .hb-daily, .hb-ach) {
+  #menu .home-btn:is(.hb-adv, .hb-daily, .hb-ach) {
     min-height: 82px;
   }
 }

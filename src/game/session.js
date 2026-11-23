@@ -400,6 +400,8 @@ function winDaily() {
       ? recordDaily((store.daily ||= emptyDaily()), d.id, d.day, { cleared, used, boards: d.boards.slice() })
       : null;
   writeDailyProgress(store, d, { boards: d.boards.slice(), used, remaining, finished, attempt: null });
+  countStat('challengeBoards');
+  if (finished) raiseStat('challengePure', 1);
   if (out && finished) raiseStat('dailyBestDay', 1);
   persist();
   setTensionFx(0, false);

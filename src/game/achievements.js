@@ -755,11 +755,19 @@ export const STATS = {
       ),
     ),
   challengeBest: (store) =>
-    Math.max(Number(store.survivalBest) || 0, ...Object.values(store.survivalBests || {}).map(Number)),
-  challenge150Won: (store) => (store.survivalWon?.['150'] ? 1 : 0),
-  challenge200Won: (store) => (store.survivalWon?.['200'] ? 1 : 0),
-  challenge250Won: (store) => (store.survivalWon?.['250'] ? 1 : 0),
-  challengeWonCount: (store) => Object.values(store.survivalWon || {}).filter(Boolean).length,
+    Math.max(
+      STATS.dailyBestBoard(store),
+      Number(store.survivalBest) || 0,
+      ...Object.values(store.survivalBests || {}).map(Number),
+    ),
+  challenge150Won: (store) => (STATS.dailyBestBoard(store) >= 13 || store.survivalWon?.['150'] ? 1 : 0),
+  challenge200Won: (store) => (STATS.dailyBestBoard(store) >= 14 || store.survivalWon?.['200'] ? 1 : 0),
+  challenge250Won: (store) => (STATS.dailyBestBoard(store) >= 15 || store.survivalWon?.['250'] ? 1 : 0),
+  challengeWonCount: (store) => {
+    const best = STATS.dailyBestBoard(store);
+    const milestones = best >= 15 ? 3 : best >= 14 ? 2 : best >= 13 ? 1 : 0;
+    return Math.max(milestones, Object.values(store.survivalWon || {}).filter(Boolean).length);
+  },
   cosmeticsOwned: (store) => Object.keys(store.shopOwned || {}).length,
   relicsSeenCount: (store) => bitCount(store.stats?.relicsSeen),
   heroWinsCount: (store) => bitCount(store.stats?.heroWins),
@@ -2142,13 +2150,13 @@ export const UNLOCK_TEXT = {
   dailyBestBoard: (n) => `Completa el tablero ${n} del Desafío`,
   masterSolved: (n) => `Resuelve ${n} retos diarios Todo junto`,
   challengeBoards: (n) => `Supera ${n} tableros en Desafío`,
-  challengeBest: (n) => `Alcanza el nivel ${n} en cualquier ruta de Desafío`,
-  challengeWonCount: (n) => (n >= 3 ? 'Completa las 3 rutas de Desafío' : `Completa ${n} rutas de Desafío`),
+  challengeBest: (n) => `Completa el tablero ${n} del Desafío`,
+  challengeWonCount: (n) => `Completa el tablero ${Math.min(15, 12 + n)} del Desafío`,
   maxPactsWin: (n) => `Completa una aventura llevando ${n} Pactos`,
   cleanRun: () => 'Completa una aventura sin usar ninguna pista',
   oathWin: () => 'Completa una aventura con el Pacto Juramento',
   relicsSeenCount: (n) => `Usa ${n} reliquias distintas`,
-  challenge250Won: () => 'Completa el Desafío de 250 turnos',
+  challenge250Won: () => 'Completa el tablero 15 del Desafío',
 };
 export const unlockText = (stat, goal) => UNLOCK_TEXT[stat]?.(goal) || '';
 
