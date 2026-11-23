@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ACHIEVEMENTS } from '../src/game/achievements.js';
 import { dayNumber } from '../src/game/daily.js';
+import { mergePaths } from '../src/game/save-merge.js';
 import { exportSaveLink, readSaveHash, readSaveLink } from '../src/game/save-transfer.js';
 import { QR_MAX_BYTES, qrMatrix } from '../src/qr.js';
 
@@ -61,6 +62,14 @@ describe('enlaces de transferencia v4 (con las cartas del destino)', () => {
     const link = exportSaveLink({ ...snapshot, run: { ...run, relic, hints: 4 } });
     expect(new TextEncoder().encode(link).length).toBeLessThan(QR_MAX_BYTES);
     expect(readSaveLink(link, now).run).toMatchObject({ relic, hints: 4 });
+  });
+
+  it('transfiere el mejor rango (porcentaje) de cada camino y lo combina con el máximo', () => {
+    const paths = { c1: { score: 9000, level: 21, runs: 3, pct: 72.5 }, c50: { score: 4000, level: 9, runs: 1 } };
+    const imported = readSaveLink(exportSaveLink({ ...snapshot, paths }), now);
+    expect(imported.paths.c1.pct).toBe(72.5);
+    expect(imported.paths.c50.pct).toBeUndefined();
+    expect(mergePaths({ c1: { score: 5, pct: 80 } }, { c1: { score: 9, pct: 72.5 } }).c1.pct).toBe(80);
   });
 
   it('conserva Aventura, los 100 logros, reclamos, tienda Canjear, Desafío y retos dentro del límite del QR', () => {

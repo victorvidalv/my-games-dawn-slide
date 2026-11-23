@@ -176,17 +176,22 @@ describe('interfaz: aventura', () => {
     expect(saved().run.level).toBe(2);
   });
 
-  it('«Abandonar» borra la partida y guarda el récord', async () => {
+  it('«Abandonar» muestra el rango con su escala, borra la partida y guarda el récord', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
     await untilPlayable(app, 2);
     app.$('pQuit').click();
     await until(() => shown(app, 'ask'));
     app.$('askYes').click();
-    await until(() => app.S.run === null);
+    await until(() => shown(app, 'over'));
+    expect(app.$('overTitle').textContent).toBe('Te retiraste');
+    expect(app.$('overGrade').textContent).toBe('C');
+    expect(app.$('overScale').querySelectorAll('.rank-step')).toHaveLength(5);
     expect(app.S.run).toBeNull();
     expect(saved().run ?? null).toBeNull();
     expect(saved().paths.c1).toMatchObject({ level: 2, runs: 1 });
+    app.$('bToMenu').click();
+    expect(shown(app, 'menu')).toBe(true);
   });
 
   it('al perder muestra «Es el final», estadísticas y solo la opción de volver al menú', async () => {
@@ -217,7 +222,9 @@ describe('interfaz: aventura', () => {
     await until(() => shown(app, 'over'));
     expect(app.$('overTitle').textContent).toBe('Es el final');
     expect(app.$('bRetryOver')).toBeNull();
-    expect(app.$('overGrade').textContent).toBe('B');
+    expect(app.$('overGrade').textContent).toBe('C');
+    expect(app.$('overScale').hidden).toBe(false);
+    expect(app.$('overScale').querySelectorAll('.rank-step')).toHaveLength(5);
     expect(app.$('overNear').textContent).toContain('1.500');
     expect(app.$('overStats').textContent).toContain('5/9');
     app.$('bToMenu').click();

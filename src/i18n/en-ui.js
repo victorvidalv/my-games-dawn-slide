@@ -857,6 +857,15 @@ export const EN_UI = {
   '+5 % de puntos por cada pista guardada (máx. +30 %)': '+5% points per saved hint (max +30%)',
   '↻ Cambiar cartas (1 por partida)': '↻ Reroll cards (1 per run)',
   'PUNTAJE OBTENIDO': 'FINAL SCORE',
+  'Estás en {g}: te faltan {n} pts para {u}': "You're at {g}: {n} pts to go for {u}",
+  'Rango S+: ¡puntaje casi perfecto!': 'Rank S+: a near-perfect score!',
+  'Máximo de este camino: {n} pts (mejor héroe, reliquia y cartas, con todo perfecto).':
+    "This path's maximum: {n} pts (best hero, relic and cards, everything perfect).",
+  'DEL MÁXIMO POSIBLE': 'OF THE MAXIMUM',
+  '{p} % del máximo': '{p} % of the maximum',
+  'Te retiraste': 'You retired',
+  'Terminarás esta partida: verás tu puntaje y rango, y se guardará tu récord. Si quieres seguir más tarde, usa «Guardar y salir».':
+    "You'll end this run: you'll see your score and rank, and your record will be saved. To continue later, use “Save and exit”.",
   'Tu combinación': 'Your build',
   '¡El amanecer responde!': 'The dawn answers!',
   'Cruzaste las siete ciudades y el Faro del Amanecer vuelve a encenderse. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':

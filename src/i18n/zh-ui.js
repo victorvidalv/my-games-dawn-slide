@@ -818,6 +818,15 @@ export const ZH_UI = {
   '+5 % de puntos por cada pista guardada (máx. +30 %)': '每留存 1 次提示，得分 +5%（上限 +30%）',
   '↻ Cambiar cartas (1 por partida)': '↻ 更换卡牌（每局 1 次）',
   'PUNTAJE OBTENIDO': '本局得分',
+  'Estás en {g}: te faltan {n} pts para {u}': '当前 {g}：距离 {u} 还差 {n} 分',
+  'Rango S+: ¡puntaje casi perfecto!': 'S+ 评级：近乎完美的得分！',
+  'Máximo de este camino: {n} pts (mejor héroe, reliquia y cartas, con todo perfecto).':
+    '本路线最高分：{n} 分（最佳英雄、遗物和卡牌，且全部完美）。',
+  'DEL MÁXIMO POSIBLE': '占最高分',
+  '{p} % del máximo': '占最高分的 {p} %',
+  'Te retiraste': '你已撤退',
+  'Terminarás esta partida: verás tu puntaje y rango, y se guardará tu récord. Si quieres seguir más tarde, usa «Guardar y salir».':
+    '你将结束本局：可查看得分与评级，并保存纪录。如果想稍后继续，请使用“保存并退出”。',
   'Tu combinación': '你的构筑',
   '¡El amanecer responde!': '黎明回应了你！',
   'Cruzaste las siete ciudades y el Faro del Amanecer vuelve a encenderse. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':

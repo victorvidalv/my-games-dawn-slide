@@ -471,6 +471,17 @@ export function fail(why) {
       triggerGameOver(why);
   }
 }
+/** Retirarse de la aventura: termina la partida y muestra el resultado con su rango (como al morir). */
+export function retireRun() {
+  if (!S.run || S.run.daily || !S.G) return;
+  haltBoard();
+  lockBoard();
+  Music.stop(0.25);
+  setTensionFx(0, false);
+  S.G.done = true;
+  endRun(false, 'retire');
+  setBusy(false);
+}
 function triggerGameOver(why) {
   haltBoard();
   lockBoard();

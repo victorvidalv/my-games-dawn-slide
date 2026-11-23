@@ -45,6 +45,8 @@ export function mergePaths(a = {}, b = {}) {
       level: Math.max(num(x.level), num(yy.level)),
       runs: Math.max(num(x.runs), num(yy.runs)),
     };
+    const pct = Math.max(num(x.pct), num(yy.pct));
+    if (pct > 0) merged.pct = pct;
     if (recordTime(best) === Infinity) delete merged.recordAt;
     else merged.recordAt = best.recordAt;
     out[k] = merged;

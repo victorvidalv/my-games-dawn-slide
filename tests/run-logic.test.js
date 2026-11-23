@@ -1,3 +1,5 @@
+import { RANK_MINS, maxScoreFor, perfectRunScore, runRank } from '../src/game/rank.js';
+import { MAX_SCORE } from '../src/game/rank-max.js';
 import { describe, expect, it } from 'vitest';
 import { decodeBoard } from '../src/engine/board.js';
 import { FATE_CARDS } from '../src/game/fate.js';
@@ -18,7 +20,6 @@ import {
   resetBoardForRevive,
   resolveFail,
   restoreDailyAttempt,
-  runGrade,
   boardKey,
   snapshotBoard,
   storeBoard,
@@ -323,15 +324,54 @@ describe('rescates, movimientos y partidas guardadas', () => {
     expect(G).toMatchObject({ pos: [0, 0], moves: 0, done: false, limit: 12 });
   });
 
-  it('el rango de partida (S+, S, A, B, C) refleja victoria, puntaje y perfectos', () => {
-    expect(runGrade({ victory: true, score: 45000, perfects: 16, start: 1 })).toEqual({ grade: 'S+', cls: 'splus' });
-    expect(runGrade({ victory: true, score: 33000, perfects: 10, start: 1 })).toEqual({ grade: 'S', cls: 's' });
-    expect(runGrade({ victory: true, score: 21000, perfects: 6, start: 1 })).toEqual({ grade: 'A', cls: 'a' });
-    expect(runGrade({ victory: true, score: 10000, perfects: 2, start: 1 })).toEqual({ grade: 'B', cls: 'b' });
-    expect(runGrade({ victory: false, level: 17, score: 12000, start: 50 })).toEqual({ grade: 'A', cls: 'a' });
-    expect(runGrade({ victory: false, level: 11, score: 6000, start: 50 })).toEqual({ grade: 'B', cls: 'b' });
-    expect(runGrade({ victory: false, level: 4, score: 1000, start: 75 })).toEqual({ grade: 'C', cls: 'c' });
+  it('el rango de partida (S+, S, A, B, C) es el porcentaje del máximo de su dificultad', () => {
+    const grade = (start, pct) => runRank({ start, score: Math.ceil((maxScoreFor(start) * pct) / 100) }).grade;
+    for (const start of [1, 50, 75]) {
+      const m = RANK_MINS[start];
+      expect(grade(start, 100)).toBe('S+');
+      expect(grade(start, m['S+'])).toBe('S+');
+      expect(grade(start, m['S+'] - 1)).toBe('S');
+      expect(grade(start, m.S)).toBe('S');
+      expect(grade(start, m.S - 1)).toBe('A');
+      expect(grade(start, m.A)).toBe('A');
+      expect(grade(start, m.A - 1)).toBe('B');
+      expect(grade(start, m.B)).toBe('B');
+      expect(grade(start, m.B - 1)).toBe('C');
+      expect(m.B).toBeLessThan(m.A);
+    }
+    // el mismo porcentaje cuesta más en Experto: sus tramos no son más altos que los de Normal
+    for (const g of ['S', 'A', 'B']) expect(RANK_MINS[75][g]).toBeLessThanOrEqual(RANK_MINS[1][g]);
+    expect(runRank({ start: 1, score: 0 })).toMatchObject({ pct: 0, grade: 'C' });
+    expect(runRank({ start: 1, score: maxScoreFor(1) * 2 }).pct).toBe(100);
+  });
 
+  it('el récord guarda el mejor rango del camino al terminar la partida, no a mitad', () => {
+    const paths = {},
+      run = adventure({ score: Math.round(maxScoreFor(1) * 0.6), level: 21 });
+    updateBest(paths, 'c1', run);
+    expect(paths.c1.pct).toBeUndefined();
+    updateBest(paths, 'c1', run, { final: true });
+    expect(paths.c1.pct).toBeGreaterThanOrEqual(59.5);
+    updateBest(paths, 'c1', adventure({ score: 1000, level: 3 }), { final: true });
+    expect(paths.c1.pct).toBeGreaterThanOrEqual(59.5); // una partida peor no baja el mejor rango
+  });
+
+  it('el máximo guardado coincide con jugar perfecto su mejor combinación', () => {
+    for (const start of [1, 50, 75]) {
+      const { score, hero, relic, cards } = MAX_SCORE[start];
+      expect(perfectRunScore({ hero, start, relic, cards })).toBe(score);
+    }
+    expect(maxScoreFor(1)).toBeLessThan(maxScoreFor(50));
+    expect(maxScoreFor(50)).toBeLessThan(maxScoreFor(75));
+  });
+
+  it('las ayudas y las cartas al azar no superan el máximo de la dificultad', () => {
+    for (const hero of ['lia', 'jean', 'van'])
+      for (const relic of ['sun', 'purse', 'lantern'])
+        expect(perfectRunScore({ hero, start: 50, relic, cards: [] })).toBeLessThan(maxScoreFor(50));
+  });
+
+  it('cuenta los perfectos y la mejor racha al ganar tableros', () => {
     const r = adventure({ score: 0, perfects: 0, bestStreak: 0, streak: 0 });
     applyAdventureWin(r, board({ moves: 6, opt: 6 }), { total: 500, eff: 1 });
     applyAdventureWin(r, board({ moves: 8, opt: 6 }), { total: 350, eff: 0.75 });

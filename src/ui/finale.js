@@ -4,7 +4,7 @@ import { $ } from '../dom.js';
 import { MAX_LEVEL } from '../engine/difficulty.js';
 import { fateCards } from '../game/fate.js';
 import { relicFor } from '../game/relics.js';
-import { runGrade } from '../game/run-logic.js';
+import { maxScoreFor, nextRank, rankScale, runRank } from '../game/rank.js';
 import { recordBest, startRun } from '../game/session.js';
 import { S, discardRun, heroOf, pathOf, persist, rememberConfig, rkey, store } from '../state.js';
 import { fateArt } from './fate-art.js';
@@ -43,27 +43,64 @@ function renderBuildSummary(el, snapshot) {
   el.innerHTML = `<span class="build-title">Tu combinación</span><div class="build-meta">${chips}</div>${cardsHtml}`;
   el.hidden = false;
 }
-function renderGradeAndStats({ gradeEl, statsEl, nearEl, victory, snapshot, bestScore }) {
+/**
+ * Escala de rango: un bloque por letra (C, B, A, S, S+) con los puntos que pide; un marcador sube hasta tu puntaje
+ * y se queda en su bloque. Debajo: cuánto te falta para la siguiente letra.
+ */
+function renderRankScale(el, snapshot) {
+  if (!el) return;
+  const nf = new Intl.NumberFormat(numLocale());
+  const score = snapshot.score || 0;
+  const g = runRank(snapshot);
+  const blocks = rankScale(snapshot.start);
+  const at = blocks.findIndex((b) => b.grade === g.grade);
+  const b = blocks[at];
+  const within = b.to > b.from ? Math.min(1, Math.max(0, (score - b.from) / (b.to - b.from))) : 1;
+  const pos = ((at + (g.grade === 'S+' ? 0.5 : within)) / blocks.length) * 100;
+  const up = nextRank(g.pct, snapshot.start);
+  const need = up ? Math.max(0, blocks[at + 1].from - score) : 0;
+  el.innerHTML =
+    `<div class="rank-scale-track">${blocks
+      .map(
+        (x, i) =>
+          `<div class="rank-step${i === at ? ' is-here' : ''}${i < at ? ' is-passed' : ''}" data-grade="${x.cls}">` +
+          `<b>${x.grade}</b><small>${nf.format(x.from)}${i + 1 < blocks.length ? '' : '+'}</small></div>`,
+      )
+      .join(
+        '',
+      )}<span class="rank-marker" style="--to:${pos.toFixed(2)}%"><i></i><em>${nf.format(score)}</em></span></div>` +
+    `<p class="rank-scale-note">${
+      up
+        ? `Estás en ${g.grade}: te faltan ${nf.format(need)} pts para ${up.grade}`
+        : 'Rango S+: ¡puntaje casi perfecto!'
+    }</p>` +
+    `<p class="rank-scale-max">${`Máximo de este camino: ${nf.format(maxScoreFor(snapshot.start))} pts (mejor héroe, reliquia y cartas, con todo perfecto).`}</p>`;
+  el.hidden = false;
+  el.classList.remove('is-run');
+  void el.offsetWidth; // reinicia la animación
+  el.classList.add('is-run');
+}
+function renderGradeAndStats({ gradeEl, statsEl, nearEl, scaleEl, victory, snapshot, bestScore }) {
   const boards = victory ? MAX_LEVEL : Math.max(0, (snapshot.level || 1) - 1);
   const perfects = snapshot.perfects || 0;
   const bestStreak = Math.max(snapshot.bestStreak || 0, snapshot.streak || 0);
   const pacts = fateCards(snapshot).filter((c) => c.kind === 'pact').length;
-  const g = runGrade({
-    victory,
-    level: snapshot.level,
-    score: snapshot.score || 0,
-    perfects,
-    start: snapshot.start,
-  });
+  const g = runRank(snapshot);
+  renderRankScale(scaleEl, snapshot);
   if (gradeEl) {
     gradeEl.textContent = g.grade;
     gradeEl.dataset.grade = g.cls;
+    gradeEl.title = `${g.pct.toLocaleString(numLocale())} % del máximo`;
+    gradeEl.classList.remove('rank-pop');
+    void gradeEl.offsetWidth; // reinicia la animación de entrada
+    gradeEl.classList.add('rank-pop');
   }
   if (statsEl) {
     statsEl.innerHTML =
       `<div><small>PERFECTOS</small><b>${perfects}/${boards || MAX_LEVEL}</b></div>` +
       `<div><small>MEJOR RACHA</small><b>${bestStreak}</b></div>` +
-      `<div><small>PACTOS</small><b>${pacts}</b></div>`;
+      `<div><small>PACTOS</small><b>${pacts}</b></div>` +
+      `<div class="run-stats-wide"><small>DEL MÁXIMO POSIBLE</small><b>${g.pct.toLocaleString(numLocale())} %</b></div>`;
     statsEl.hidden = false;
   }
   if (nearEl) {
@@ -131,6 +168,7 @@ function showFinale(prac, p, score, broken, snapshot, bestScore) {
     gradeEl: $('fGrade'),
     statsEl: $('fStats'),
     nearEl: $('fNear'),
+    scaleEl: $('fScale'),
     victory: true,
     snapshot,
     bestScore,
@@ -169,7 +207,7 @@ function showFinale(prac, p, score, broken, snapshot, bestScore) {
   tone(523, 0.45, 'sine', 0.035, 0.15);
 }
 
-export function endRun(victory) {
+export function endRun(victory, why) {
   const prac = S.run.mode === 'p',
     p = pathOf(S.run.start),
     endingHero = heroOf().id,
@@ -181,13 +219,7 @@ export function endRun(victory) {
     markStat('paths', S.run.start);
     countStat('completed');
     const pacts = fateCards(snapshot).filter((c) => c.kind === 'pact');
-    const { grade } = runGrade({
-      victory: true,
-      level: snapshot.level,
-      score: snapshot.score || 0,
-      perfects: snapshot.perfects || 0,
-      start: snapshot.start,
-    });
+    const { grade } = runRank(snapshot);
     updateStats((st) =>
       victoryStats(st, {
         hero: endingHero,
@@ -205,7 +237,7 @@ export function endRun(victory) {
     return;
   }
   endingStory(false, endingHero, S.run.level);
-  $('overTitle').textContent = 'Es el final';
+  $('overTitle').textContent = why === 'retire' ? 'Te retiraste' : 'Es el final';
   $('overRec').innerHTML = !prac && S.run.recBroken ? '<span class="rec">★ NUEVO RÉCORD ★</span>' : '';
   $('overLvl').textContent = S.run.level;
   $('overBest').textContent = rec.score.toLocaleString(numLocale());
@@ -213,6 +245,7 @@ export function endRun(victory) {
     gradeEl: $('overGrade'),
     statsEl: $('overStats'),
     nearEl: $('overNear'),
+    scaleEl: $('overScale'),
     victory: false,
     snapshot,
     bestScore: rec.score,

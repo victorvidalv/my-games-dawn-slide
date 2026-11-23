@@ -11,6 +11,7 @@ import { clearRewards } from './heroes.js';
 import { relicFor } from './relics.js';
 import { canPaidRevive, hasRevive, useFreeRetry, useRevive } from './shop.js';
 import { FATE_EVERY, FATE_PICKS, fateById, fateDeck, fatePerfectHints, nextStreak } from './fate.js';
+import { runRank } from './rank.js';
 
 const copyRows = (rows) => rows.map((p) => p.slice());
 
@@ -222,29 +223,6 @@ export function applyAdventureWin(run, G, gain) {
   run.pendingClear = { level: G.n, gain: gain.total, moves: G.moves, opt: G.opt };
 }
 
-const GRADE_THRESHOLDS = {
-  1: { sPlus: 48000, s: 32000, a: 20000 },
-  50: { sPlus: 62000, s: 43000, a: 27000 },
-  75: { sPlus: 80000, s: 55000, a: 36000 },
-};
-
-/** Rango visual de la partida (S+, S, A, B, C) según victoria, puntaje y perfectos. */
-export function runGrade({ victory = false, level = 1, score = 0, perfects = 0, start = 1 } = {}) {
-  const key = start >= 75 ? 75 : start >= 50 ? 50 : 1;
-  const th = GRADE_THRESHOLDS[key];
-  const boards = victory ? MAX_LEVEL : Math.max(0, level - 1);
-  const perfRatio = boards ? perfects / boards : 0;
-  if (victory) {
-    if (score >= th.sPlus || (perfRatio >= 0.75 && score >= th.s)) return { grade: 'S+', cls: 'splus' };
-    if (score >= th.s || perfRatio >= 0.55) return { grade: 'S', cls: 's' };
-    if (score >= th.a || perfRatio >= 0.35) return { grade: 'A', cls: 'a' };
-    return { grade: 'B', cls: 'b' };
-  }
-  if (boards >= 15) return { grade: 'A', cls: 'a' };
-  if (boards >= 9) return { grade: 'B', cls: 'b' };
-  return { grade: 'C', cls: 'c' };
-}
-
 /**
  * Registra un tablero superado del reto diario y descuenta sus turnos de la reserva de 150.
  * Devuelve el siguiente tablero (−1 si se completaron los 15 o se agotaron los 150 turnos).
@@ -338,6 +316,11 @@ export function updateBest(paths, key, run, { final = false, now = Date.now() } 
     run.recBroken = true;
   }
   if (run.level > r.level) r.level = run.level;
-  if (final) r.runs++;
+  if (final) {
+    r.runs++;
+    // mejor rango del camino: solo cuenta al terminar la partida (a mitad de camino el porcentaje aún puede bajar)
+    const rank = run.mode === 'c' ? runRank(run) : null;
+    if (rank.pct > (r.pct || 0)) r.pct = rank.pct;
+  }
   return r;
 }

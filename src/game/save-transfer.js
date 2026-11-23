@@ -193,6 +193,7 @@ export function exportSaveLink(store = {}) {
     if (rec && (rec.score || rec.level || rec.runs)) {
       pathMask |= 1 << i;
       if (rec.recordAt) pathMask |= 1 << (i + 3);
+      if (rec.pct > 0) pathMask |= 0x40; // lleva mejor rango (1 byte por camino con avance, en pasos de 0,5 %)
     }
   });
   write(pathMask);
@@ -202,6 +203,7 @@ export function exportSaveLink(store = {}) {
     write(bounded(rec.level, MAX_LEVEL));
     if (pathMask & (1 << (i + 3))) write(Math.floor(rec.recordAt / 1000), 4);
     writeV(rec.runs, UINT16);
+    if (pathMask & 0x40) write(Math.round(Math.min(100, rec.pct || 0) * 2));
   });
 
   // 2. Los logros (estado ternario: 0 = no, 1 = ganado, 2 = reclamado), 5 por byte
@@ -411,14 +413,15 @@ function readV3(read, readV, atEnd, now, version = V3_VERSION) {
 
   // 1. Caminos
   const paths = {};
-  const pathMask = read(1, 0x3f);
+  const pathMask = read(1, 0x7f);
   PATHS.forEach((path, i) => {
     if ((pathMask & (1 << i)) === 0) return;
     const score = readV(UINT32);
     const level = read(1, MAX_LEVEL);
     const recordAt = pathMask & (1 << (i + 3)) ? read(4, maxSec) * 1000 : 0;
     const runs = readV(UINT16);
-    paths['c' + path] = { score, level, runs, ...(recordAt ? { recordAt } : {}) };
+    const pct = pathMask & 0x40 ? read(1, 200) / 2 : 0;
+    paths['c' + path] = { score, level, runs, ...(recordAt ? { recordAt } : {}), ...(pct ? { pct } : {}) };
   });
 
   // 2. Los logros (ternarios)
