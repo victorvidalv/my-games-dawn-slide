@@ -36,7 +36,7 @@ export const setSfxKey = (th) => {
 };
 const TRIAD = [0, 2, 4]; // fundamental, tercera y quinta de la escala
 /** Frecuencia de la nota `i` del arpegio de la tónica (0,1,2 = fundamental, 3ª, 5ª; 3,4,5 = la octava de arriba…) `oct` octavas por encima de la tónica. */
-export function keyHz(i = 0, oct = 1) {
+function keyHz(i = 0, oct = 1) {
   const n = key.scale.length,
     deg = TRIAD[((i % 3) + 3) % 3] + n * Math.floor(i / 3);
   return 440 * Math.pow(2, (key.root + 12 * oct + key.scale[deg % n] + 12 * Math.floor(deg / n) - 69) / 12);
@@ -260,16 +260,6 @@ export const sfx = {
   /** Marca de casilla al arrastrar: pizzicato suave en la escala del tema (cada casilla una nota distinta). */
   tick: (c = 0) => {
     tone(keyHz(c, 1), 0.07, 'triangle', 0.045, 0, 0, 2600);
-  },
-  // Poder de Jean (rebobinar): barrido de ruido hacia abajo y arpegio que desciende; poder de Juth (destino): hacia arriba, con brillo de runas
-  power: (up) => {
-    noise(0.9, 0.05, up ? 500 : 3200, 'bandpass', 0, up ? 3200 : -2600);
-    [0, 1, 2, 3, 4, 5].forEach((k, i) => {
-      const j = up ? i : 5 - i;
-      tone(keyHz(j, 1), 0.5, 'sine', 0.06, i * 0.07, 0, 3200);
-      tone(keyHz(j, 2), 0.35, 'triangle', 0.025, i * 0.07 + 0.03, 0, 4200);
-    });
-    tone(keyHz(0, 0), 0.9, 'triangle', 0.09, 0, up ? 30 : -20, 500);
   },
   /** Cada paso del poder: nota del arpegio de la tónica (sube con Destino, baja con Rebobinar) y un tintineo. */
   powerStep: (n, up) => {

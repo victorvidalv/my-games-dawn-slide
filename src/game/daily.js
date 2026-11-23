@@ -18,7 +18,7 @@ export const streakHintBonus = (days) =>
  * `level` solo decide la ciudad de fondo, su música y el margen de turnos; `ratings` es el tramo de dificultad del banco.
  * Los id se conservan por compatibilidad: «frost» es ahora solo el hielo y «rocks» es nuevo.
  */
-export const DAILY_STEP = 1;
+const DAILY_STEP = 1;
 const ladder = (k) => DAILY_TARGETS.map((t) => t + k * DAILY_STEP);
 export const CHALLENGES = [
   {
@@ -146,7 +146,7 @@ export function buildDaily(challenge, day, { levels, special }, index = 0) {
 
 /* ───────────── medallas, racha y registro ───────────── */
 
-export const MEDALS = ['bronze', 'silver', 'gold'];
+const MEDALS = ['bronze', 'silver', 'gold'];
 /** Oro: en el mínimo exacto · Plata: hasta un 15 % más (al menos 2 movimientos) · Bronce: resuelto. */
 export function medalFor(moves, opt) {
   if (moves <= opt) return 'gold';

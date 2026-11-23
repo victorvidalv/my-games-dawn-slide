@@ -20,7 +20,7 @@ const keyOf = (l) => (l.length === 1 ? Object.keys(LETTERS).find((k) => LETTERS[
  * Si una familia no tiene tableros a esa dificultad se prueba con la más parecida: primero la misma, luego las combinaciones que contienen
  * la mayoría de sus mecánicas (de más a menos letras) y al final las piezas sueltas.
  */
-export function fallbackChain(family, special = null) {
+function fallbackChain(family, special = null) {
   if (family === 'plain') return ['plain'];
   const want = lettersOf(family);
   if (!want) return [family, 'plain'];

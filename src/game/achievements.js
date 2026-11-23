@@ -65,7 +65,7 @@ export const CUSTOM_TYPES = [
  * Texto de la acción que pide cada estadística («Resuelve 30 tableros en Aventura»). Los textos llevan el número dentro:
  * las traducciones son plantillas con {n} (src/i18n/*-game.js), no una entrada por cada número.
  */
-export const UNLOCK_TEXT = {
+const UNLOCK_TEXT = {
   boardsSolved: (n) => (n === 1 ? 'Resuelve tu primer tablero en Aventura' : `Resuelve ${n} tableros en Aventura`),
   maxLevel: (n) => `Llega al nivel ${n} en Aventura`,
   hardLevel: (n) => `Llega al nivel ${n} en el camino Difícil`,

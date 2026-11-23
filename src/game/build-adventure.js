@@ -9,7 +9,7 @@ import { fateBlocks, fateTurns } from './fate.js';
 import { relicTurns } from './relics.js';
 
 /** Límite de un tablero de esta aventura: héroe, camino, nivel, reliquia y cartas del destino. */
-export const runLimit = (run, opt, level, pieces = []) =>
+const runLimit = (run, opt, level, pieces = []) =>
   heroLimit(run.hero, opt, run.start, level, {
     fate: fateTurns(run, { opt, pieces, n: level }) + relicTurns(run),
     noPower: fateBlocks(run, 'power'),

@@ -40,7 +40,7 @@ const dataWords = (v) => {
 };
 const countBits = (v) => (v < 10 ? 8 : 16);
 const byteCapacity = (v) => dataWords(v) - Math.ceil((4 + countBits(v)) / 8);
-export const QR_MAX_VERSION = 12;
+const QR_MAX_VERSION = 12;
 export const QR_MAX_BYTES = byteCapacity(QR_MAX_VERSION);
 
 /* Cuerpo de Galois GF(256) con el polinomio 0x11D */

@@ -3,7 +3,7 @@ import { ZONES, zoneIdx } from '../data/zones.js';
 import { $, cssUrl } from '../dom.js';
 import { DEFAULT_OUTFIT, outfitArt, outfitOf } from '../game/achievements.js';
 import { heroOf, store } from '../state.js';
-export function heroArt(id, pose) {
+function heroArt(id, pose) {
   return `heroes/${id}-${pose}.webp`;
 }
 /** Imagen del atuendo puesto (`adv` aventura, `sel` busto y `act` pose de selección); la normal si lleva el de serie. */

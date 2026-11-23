@@ -15,7 +15,7 @@ export const CHALLENGE_ROUTES = [
  *   · Hilo del Retorno: corrige (2 deshacer por tablero, que devuelven su turno). La más regular.
  */
 export const RESET_BONUS_TURNS = 2;
-export const UNDO_PER_BOARD = 2;
+const UNDO_PER_BOARD = 2;
 export const CHALLENGE_RELICS = [
   {
     id: 'hint',
@@ -41,7 +41,7 @@ export const CHALLENGE_RELICS = [
 ];
 
 /** Turnos con los que empieza la senda con esa reliquia (el Reloj de Arena suma su margen). */
-export const startTurns = (routeId, relicId) =>
+const startTurns = (routeId, relicId) =>
   routeById(routeId).turns + (challengeRelicById(relicId).id === 'reset' ? RESET_BONUS_TURNS : 0);
 /** Posiciones a las que puede volver el Hilo (las más recientes al final); acepta guardados con `lastPos`. */
 const undoStackOf = (p) => (Array.isArray(p.undoStack) ? p.undoStack : Array.isArray(p.lastPos) ? [p.lastPos] : []);

@@ -42,7 +42,7 @@ export const PATHS = [
 ];
 export const pathOf = (s) => PATHS.find((p) => p.s === s) || PATHS[0];
 /** Devuelve true si la senda `s` (1, 50 o 75) ya fue completada (victoria en el nivel 21). */
-export const pathCompleted = (st, s) => Array.isArray(st?.stats?.paths) && st.stats.paths.includes(s);
+const pathCompleted = (st, s) => Array.isArray(st?.stats?.paths) && st.stats.paths.includes(s);
 /** Ya jugó esa senda: tiene récord en ella o una partida guardada en curso. */
 const pathPlayed = (st, s) => (Number(st?.paths?.[`c${s}`]?.level) || 0) > 0 || st?.run?.start === s;
 /**

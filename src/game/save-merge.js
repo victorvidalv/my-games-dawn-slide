@@ -52,13 +52,13 @@ export function mergePaths(a = {}, b = {}) {
   }
   return out;
 }
-export function mergeAch(a = {}, b = {}) {
+function mergeAch(a = {}, b = {}) {
   const out = { ...obj(a) };
   for (const [id, t] of Object.entries(obj(b)))
     out[id] = id in out && num(out[id]) && num(t) ? Math.min(num(out[id]), num(t)) : out[id] || t;
   return out;
 }
-export function mergeStats(a = {}, b = {}) {
+function mergeStats(a = {}, b = {}) {
   const out = { ...obj(a) };
   for (const [k, y] of Object.entries(obj(b))) {
     const x = out[k];
@@ -77,7 +77,7 @@ const better = (x, y) => {
     ry = MEDAL_RANK[y.medal] || 0;
   return ry > rx || (ry === rx && num(y.moves) < num(x.moves)) ? y : x;
 };
-export function mergeDaily(a, b) {
+function mergeDaily(a, b) {
   if (!a || typeof a !== 'object') return b && typeof b === 'object' ? b : a;
   if (!b || typeof b !== 'object') return a;
   const by = { ...obj(a.by) };

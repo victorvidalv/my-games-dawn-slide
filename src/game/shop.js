@@ -7,7 +7,7 @@ export const REVIVE_SHARE = 0.33;
 export const reviveShare = () => REVIVE_SHARE;
 export const MAX_REVIVES = 0;
 /** Revivir pagados que permite la partida (0 por defecto; Fénix suma uno). */
-export const maxRevives = (run) => MAX_REVIVES + fateRevives(run);
+const maxRevives = (run) => MAX_REVIVES + fateRevives(run);
 
 /** Costo en puntos (33 %) de revivir tras perder con `score` puntos actuales. */
 export const reviveCost = (score = 0) => Math.round(Math.max(0, score || 0) * reviveShare());

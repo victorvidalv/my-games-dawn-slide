@@ -45,7 +45,7 @@ const bitCount = (n) => {
   return c;
 };
 
-export const COLLECTIONS = ['heroes', 'paths', 'mini5Kinds', 'challengeRelics', 'challengeRoutesPlayed'];
+const COLLECTIONS = ['heroes', 'paths', 'mini5Kinds', 'challengeRelics', 'challengeRoutesPlayed'];
 
 const listOf = (store, name) => (Array.isArray(store.stats?.[name]) ? store.stats[name] : []);
 const maxAdventureScore = (paths) =>
@@ -98,7 +98,7 @@ export const statsOf = (store = {}) =>
  *     para canjear en la Tienda de logros.
  */
 const ACH_RENAMED = { boss1: 'fate1', bosses3: 'fate9', bosses: 'fate27', bosses15: 'fate81' };
-export const ACH_RETIRED = { lv5: 10, lv20: 15, lv35: 30, lv65: 40, perf1: 10, fate1: 15, boards10: 15 };
+const ACH_RETIRED = { lv5: 10, lv20: 15, lv35: 30, lv65: 40, perf1: 10, fate1: 15, boards10: 15 };
 export function migrateAchievements(store) {
   if (!store) return false;
   let changed = false;

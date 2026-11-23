@@ -19,7 +19,7 @@ export function loreProgress(req, store = {}) {
 export const loreOpen = (req, store) => loreProgress(req, store).done;
 
 /** Todas las entradas con su clave estable (`lore:<tipo>:…`), que es la que usa «Nuevo» (store.customSeen). */
-export function loreItems() {
+function loreItems() {
   const items = [];
   for (const c of CHARACTERS) for (const e of c.entries) items.push({ key: `lore:char:${c.id}:${e.id}`, req: e.req });
   for (const p of PLACES) {

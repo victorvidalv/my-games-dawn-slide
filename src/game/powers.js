@@ -4,8 +4,8 @@ import { fateBlocks, fatePowerShare, fatePowerUses } from './fate.js';
 import { analyze, expand } from '../engine/solver.js';
 
 /** Jean rebobina ~33 % de los movimientos hechos, mínimo 3 (o todos si lleva menos). */
-export const REWIND_SHARE = 1 / 3;
-export const REWIND_MIN = 3;
+const REWIND_SHARE = 1 / 3;
+const REWIND_MIN = 3;
 export const rewindCount = (moves, power = 1) =>
   Math.min(moves, Math.max(Math.round(REWIND_MIN * power), Math.round(moves * REWIND_SHARE * power)));
 /** Destino de Juth: ejecuta ~25 % de los pasos que faltan, con un mínimo de 1; nunca el último (siempre deja uno al jugador). */
@@ -27,7 +27,7 @@ export const powerReady = (level = 1, start = 1, hero = 'jean', extra = 0) => {
   return level <= 1 || Math.floor(level * k + 1e-9) > Math.floor((level - 1) * k + 1e-9);
 };
 /** En tableros largos (mínimo ≥ JEAN_LONG_BOARD) Jean puede rebobinar dos veces. */
-export const JEAN_LONG_BOARD = 16;
+const JEAN_LONG_BOARD = 16;
 /** `extra`: usos extra (carta Eco del poder en el último tablero de cada ciudad). */
 export const powerUses = (hero, opt = 0, extra = 0) => (hero === 'jean' && opt >= JEAN_LONG_BOARD ? 2 : 1) + extra;
 const runUses = (run, G) => powerUses(run?.hero, G?.opt, G?.tutorial ? 0 : fatePowerUses(run, G?.n));

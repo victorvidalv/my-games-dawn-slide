@@ -5,7 +5,7 @@ import { minFor } from './calibration.js';
 
 /** Los tres caminos: 1 = Normal, 50 = Difícil, 75 = Experto (los identificadores no cambian: los usan los récords guardados). */
 /** Camino al que pertenece un valor de inicio: 1 (Normal), 50 (Difícil) o 75 (Experto). */
-export const pathKey = (start = 1) => (start >= 75 ? 75 : start >= 50 ? 50 : 1);
+const pathKey = (start = 1) => (start >= 75 ? 75 : start >= 50 ? 50 : 1);
 /** Valor de una tabla indexada por camino. */
 export const byPath = (table, start) => table[pathKey(start)];
 

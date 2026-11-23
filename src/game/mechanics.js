@@ -49,10 +49,10 @@ export const MECHANICS = {
 const LETTER_MECH = { w: 'wall', h: 'heavy', g: 'gate', i: 'ice' };
 const LETTER_FAMILY = { w: 'walls', h: 'heavy', g: 'gates', i: 'ice' };
 /** Nombre de la familia de tableros para unas letras de mecánicas ('' = plain; una sola = su familia clásica; varias = `combo_<letras>`). */
-export const familyOfLetters = (letters) =>
+const familyOfLetters = (letters) =>
   !letters ? 'plain' : letters.length === 1 ? LETTER_FAMILY[letters] : comboKey(letters);
 /** Letras (w h g i) de una familia; null si no es una combinación conocida. */
-export const lettersOfFamily = (family) => {
+const lettersOfFamily = (family) => {
   if (family === 'plain') return '';
   const single = Object.entries(LETTER_FAMILY).find(([, f]) => f === family);
   if (single) return single[0];

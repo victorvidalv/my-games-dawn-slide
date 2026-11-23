@@ -46,10 +46,7 @@ const MODEL = {
  * Jugador que usa la tienda (`shop = {score}`), con UNA compra por tablero: cerca del límite compra el paquete más barato que le permita seguir,
  * y si no le quedan pistas en un tablero duro compra una, pero solo si le sobran puntos (MODEL.shopReserve veces el precio).
  */
-export function playBoard(
-  rng,
-  { hero, skill, d, start = 1, level = 1, hints, powers = {}, fate = null, extraTurns = 0 },
-) {
+function playBoard(rng, { hero, skill, d, start = 1, level = 1, hints, powers = {}, fate = null, extraTurns = 0 }) {
   const destinyShare = DESTINY_SHARE;
   const ft = fate ? fateTotals(fate) : null;
   const noPower = !!ft?.noPower;
@@ -108,7 +105,7 @@ export function playBoard(
  * Cómo elige carta el jugador simulado: la que más le ayuda a llegar lejos (turnos, revivir, poder, pistas) y, a igualdad,
  * la que da más puntos. Los Pactos que le quitan ayudas los evita salvo que no tenga otra opción.
  */
-export function cardValue(card, hero, city = 1) {
+function cardValue(card, hero, city = 1) {
   const fx = card.fx;
   const left = FATE_PICKS - city; // tramos que quedan para cobrar Brújula, Cosecha y Constelación
   let v = 4 * (fx.turns || 0) + 1.5 * (fx.heavyIce || 0) + 0.8 * (fx.curseTurns || 0) + 2.5 * (fx.streakTurns || 0);
@@ -132,7 +129,7 @@ export function cardValue(card, hero, city = 1) {
   v -= fx.pickScore ? 1 : 0;
   return v;
 }
-export const pickForSurvival = (offer, hero, city) =>
+const pickForSurvival = (offer, hero, city) =>
   offer.reduce((best, card) => (cardValue(card, hero, city) > cardValue(best, hero, city) ? card : best));
 
 /** Estrategias de elección de carta del jugador simulado. */

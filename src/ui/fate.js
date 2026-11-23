@@ -44,7 +44,7 @@ export function fateCardHtml(card, { muted = false, tag = 'span', attrs = '', in
 }
 
 /** Versión compacta de una carta ya elegida: emblema, nombre y efecto (y costo si es Pacto). */
-export function fateMiniHtml(card, muted = false) {
+function fateMiniHtml(card, muted = false) {
   return `<li class="fate-mini is-${card.kind}${muted ? ' is-muted' : ''}" style="--fa:${card.hue[0]};--fb:${card.hue[1]}">
     <span class="fate-mini-art">${fateArt(card)}</span>
     <span class="fate-mini-copy"><b>${card.name}</b><small>${card.gain}</small>${card.cost ? `<em>${card.cost}</em>` : ''}${muted ? '<i class="fate-mini-muted">Sin efecto por tu Pacto</i>' : ''}</span>
@@ -110,7 +110,7 @@ function totalsHtml(summary) {
 }
 
 /** Panel de cartas activas (botón del HUD). Pausa el tablero mientras está abierto. */
-export function openFatePanel() {
+function openFatePanel() {
   const run = S.run;
   if (!usesFate(run) || S.busy) return;
   const release = holdBusy();

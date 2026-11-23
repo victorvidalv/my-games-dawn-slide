@@ -7,7 +7,7 @@ import { icon } from '../icons.js';
 
 /* ---------- muestras ---------- */
 /** Miniatura de una portada o un fondo recortados (public/portada/thumbs, ~5-12 KB); las demás imágenes se usan tal cual. */
-export const thumbOf = (src) => (src.startsWith('portada/') ? `portada/thumbs/${src.split('/').pop()}` : src);
+const thumbOf = (src) => (src.startsWith('portada/') ? `portada/thumbs/${src.split('/').pop()}` : src);
 /** Forma de la partícula en la muestra de cada estela (el CSS dibuja una fila de cinco, de más grande a más pequeña). */
 const TRAIL_SHAPE = {
   dust: 'dot',

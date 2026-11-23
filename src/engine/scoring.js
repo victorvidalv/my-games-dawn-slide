@@ -11,12 +11,12 @@ export function resultRating(moves, opt) {
  * Puntos base de un tablero: dependen SOLO de sus movimientos mínimos (`opt`). Cada movimiento de la solución vale
  * 55 puntos, más 50 fijos: 2 mín. → 160 · 11 → 655 · 19 → 1.095 · 37 → 2.085.
  */
-export const BASE_FIXED = 50;
-export const BASE_PER_MOVE = 55;
+const BASE_FIXED = 50;
+const BASE_PER_MOVE = 55;
 export const baseScore = (opt) => BASE_FIXED + BASE_PER_MOVE * Math.max(1, Math.round(opt || 1));
 
 /** Reglas del puntaje que pueden cambiar las cartas del destino (ver `fate.js`). */
-export const SCORE_RULES = { perfect: 0.2, streakCap: 5, streakEff: 0.9 };
+const SCORE_RULES = { perfect: 0.2, streakCap: 5, streakEff: 0.9 };
 
 /**
  * Puntos: base × eficiencia (100 % en el mínimo, 0 % al doble de movimientos).

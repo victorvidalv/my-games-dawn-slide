@@ -12,20 +12,20 @@ import { hasCurse } from '../engine/calibration.js';
 
 export const FATE_EVERY = 3;
 export const FATE_PICKS = 6;
-export const FATE_OFFER = 3;
+const FATE_OFFER = 3;
 export const FATE_OFFER_BY_HERO = { lia: 3, jean: 3, van: 3 };
-export const offerSize = (run) => FATE_OFFER_BY_HERO[run?.hero] ?? FATE_OFFER;
+const offerSize = (run) => FATE_OFFER_BY_HERO[run?.hero] ?? FATE_OFFER;
 /** Desde este nivel cuentan Gran tablero y Frenesí (los tableros grandes del final, igual en los tres caminos). */
-export const LATE_LEVEL = 12;
-export const FINAL_LEG_START = 19;
+const LATE_LEVEL = 12;
+const FINAL_LEG_START = 19;
 /** Límites de la suma de todas las cartas. */
 export const FATE_POINTS_RANGE = [-0.3, 0.9];
 export const FATE_TURNS_RANGE = [-2, 4];
 /** Impulso: +1 turno por cada `STREAK_TURNS_EVERY` de racha, hasta +2. */
 export const STREAK_TURNS_EVERY = 2;
-export const STREAK_TURNS_MAX = 3;
+const STREAK_TURNS_MAX = 3;
 /** Maestría: un Perfecto en un tablero de al menos este mínimo da una pista. */
-export const MASTERY_MIN = 15;
+const MASTERY_MIN = 15;
 
 /**
  * Las 31 cartas (21 bendiciones, 10 pactos). Las nuevas van al final: el código de guardado usa su posición. `hue` son sus dos colores; el arte vive en `ui/fate-art.js`.
@@ -315,7 +315,7 @@ export function fateDeck(seed) {
 }
 
 /** Mazo de la partida (lo crea si falta: partidas guardadas de otra versión del mazo). */
-export function deckOf(run) {
+function deckOf(run) {
   const valid =
     Array.isArray(run.fateDeck) && run.fateDeck.length === FATE_CARDS.length && run.fateDeck.every(fateById);
   if (!valid) run.fateDeck = fateDeck(run.seed);
@@ -441,7 +441,7 @@ export function fateTurns(run, G) {
 }
 
 /** Tableros con el uso extra de Eco del poder: todos (se deja la regla aparte por si se quiere acotar). */
-export const echoBoard = (level) => level >= 1;
+const echoBoard = (level) => level >= 1;
 
 /** Reglas del puntaje que cambian las cartas (bono de Perfecto, tope y umbral de la racha). */
 export function fateRules(run) {

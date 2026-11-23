@@ -16,7 +16,7 @@ ZONES.forEach((z) => {
     z.cc = `hsl(${z.h[0]} 80% 64%)`;
   }
 });
-export const ZONE_COUNT = ZONES.length;
+const ZONE_COUNT = ZONES.length;
 export const ZONE_LEVELS = 3;
 export const zoneIdx = (l) => Math.min(ZONE_COUNT - 1, Math.max(0, Math.floor((l - 1) / ZONE_LEVELS)));
 export const zoneStep = (l) => ((Math.max(1, l) - 1) % ZONE_LEVELS) + 1;

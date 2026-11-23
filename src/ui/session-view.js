@@ -38,7 +38,7 @@ export const lockBoard = () => boardEl.classList.add('board-lock');
 export const unlockBoard = () => boardEl.classList.remove('board-lock');
 
 /** Puntaje de la partida en el HUD ('—' en práctica). */
-export function showScore(run) {
+function showScore(run) {
   $('score').textContent = run.mode === 'p' ? '—' : run.score.toLocaleString(numLocale());
   recLine();
 }
