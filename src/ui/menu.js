@@ -91,6 +91,7 @@ function renderPaths() {
 /* ---------- Ventana de confirmación con diseño propio ---------- */
 import { ICON_NAMES, icon } from './icons.js';
 import { lang, numLocale, setLang } from '../i18n.js';
+import { weatherForHome } from './weather.js';
 export function ask({ ico = '❓', title, text, yes = 'Aceptar', no = 'Cancelar', danger = false }) {
   return new Promise((res) => {
     $('askIco').innerHTML = ICON_NAMES.includes(ico) ? icon(ico) : ico;
@@ -339,6 +340,7 @@ export function openMenu(view = 'home') {
   if (canCont) b.innerHTML = continueLabel(store.run);
   $('bResume').style.display = active ? '' : 'none';
   showView(view);
+  if (!active && !$('menu').classList.contains('show')) weatherForHome(); // el inicio sortea un clima tranquilo
   $('menu').classList.add('show');
   if (active)
     Music.muffle(true); // hay un nivel en pausa debajo: su música suena apagada

@@ -85,12 +85,12 @@ export const REWARDS = {
     { id: 'marble', name: 'Mármol pulido', price: 70, rarity: 'rare' },
     { id: 'jelly', name: 'Gelatina', price: 70, rarity: 'rare' },
     { id: 'copper', name: 'Cobre patinado', price: 75, rarity: 'rare' },
-    { id: 'silk', name: 'Cristal Aurora', price: 80, rarity: 'epic', anim: true },
+    { id: 'silk', name: 'Marquetería', price: 80, rarity: 'epic', anim: true },
     { id: 'pearl', name: 'Nácar', price: 85, rarity: 'rare' },
     { id: 'aurora', name: 'Aurora boreal', price: 160, rarity: 'epic', anim: true },
     { id: 'plasma', name: 'Plasma', price: 170, rarity: 'epic', anim: true },
     { id: 'holo', name: 'Holograma', price: 180, rarity: 'epic', anim: true },
-    { id: 'lava', name: 'Núcleo Volcánico', price: 190, rarity: 'legendary', anim: true },
+    { id: 'lava', name: 'Esmalte y oro', price: 190, rarity: 'legendary', anim: true },
     { id: 'tide', name: 'Marea', price: 200, rarity: 'rare' },
     { id: 'volt', name: 'Voltaje', price: 210, rarity: 'rare' },
     { id: 'galaxia', name: 'Galaxia', price: 300, rarity: 'legendary', anim: true },
@@ -125,8 +125,8 @@ export const REWARDS = {
     { id: 'toxic', name: 'Llave tóxica', price: 170, rarity: 'epic', anim: true },
     { id: 'aurora', name: 'Llave de aurora', price: 180, rarity: 'epic', anim: true },
     { id: 'magma', name: 'Llave de magma', price: 190, rarity: 'epic', anim: true },
-    { id: 'neon', name: 'Llave neón', price: 200, rarity: 'epic', anim: true },
-    { id: 'galaxy', name: 'Llave galáctica', price: 300, rarity: 'legendary', anim: true },
+    { id: 'neon', name: 'Llave de esmalte', price: 200, rarity: 'epic', anim: true },
+    { id: 'galaxy', name: 'Llave del alba', price: 300, rarity: 'legendary', anim: true },
     { id: 'dragon', name: 'Llave del dragón', price: 320, rarity: 'legendary', anim: true },
     { id: 'chrono', name: 'Llave del tiempo', price: 340, rarity: 'legendary', anim: true },
   ],
@@ -2328,7 +2328,20 @@ export function setOutfit(store, hero, id) {
 }
 
 /** Imagen de un atuendo: `adv` cuerpo entero (aventura), `sel` busto y `act` pose (selección). */
-export const outfitArt = (hero, id, pose) => `imagenes/atuendo-${hero}-${id}-${pose}.webp?v=3`;
+/** Versión de cada traje en la URL (la caché del service worker es por URL): se sube al cambiar sus imágenes. */
+const OUTFIT_ART_REV = {
+  'lia:capitana': 4,
+  'lia:ingeniera': 4,
+  'lia:brasas': 5,
+  'jean:vigia': 4,
+  'jean:sakura': 4,
+  'jean:oni': 4,
+  'van:escriba': 4,
+  'van:carmesi': 4,
+  'van:cuervos': 4,
+};
+export const outfitArt = (hero, id, pose) =>
+  `imagenes/atuendo-${hero}-${id}-${pose}.webp?v=${OUTFIT_ART_REV[`${hero}:${id}`] || 3}`;
 
 export function rewardUnlocked(type, id, storeOrOwned = {}) {
   if (DEFAULT_LOOK[type] === id) return true;

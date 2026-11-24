@@ -45,6 +45,13 @@ import './styles/47-defeat.css';
 import './styles/48-outfit-showcase.css';
 import './styles/51-trail-fx-swatches.css';
 import './styles/53-custom-fullscreen.css';
+import './styles/54-world.css'; // fondo animado compartido: inicio, elección de héroe y juego
+import './styles/55-customize.css'; // Personalizar: pulido final y efectos de rareza
+import './styles/56-premium-skins.css'; // llaves y fichas de Personalizar con materiales nobles
+import './styles/57-legendary-storm.css'; // trajes legendarios: tormenta de poder al fondo
+import './styles/58-epic-arcane.css'; // trajes épicos: santuario arcano al fondo
+import './styles/59-outfit-fx.css'; // escena de poder del traje en selección, cartas, derrota y final
+import './styles/60-weather.css'; // clima aleatorio del fondo: lluvia, nieve, luciérnagas…
 import './styles/35-lite.css'; // modo ligero automático (src/ui/perf.js): siempre la última
 import './ui/transitions.js';
 import './ui/achievements.js';

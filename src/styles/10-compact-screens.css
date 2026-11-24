@@ -172,28 +172,6 @@
   #win .card > *:not(.tag):not(.ring) {
     grid-column: 2;
   }
-  /* fin de partida */
-  #over .card {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 20px;
-    align-items: center;
-  }
-  #over .card > .tag:first-child,
-  #over h2,
-  #over p {
-    grid-column: 1;
-  }
-  #over .big,
-  #over .tag:nth-of-type(2),
-  #over #overRec,
-  #over .stats,
-  #over .stack {
-    grid-column: 2;
-  }
-  #over .stack {
-    margin-top: 4px;
-  }
   /* final del camino */
   #finale .card {
     display: grid;

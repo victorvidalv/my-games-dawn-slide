@@ -23,7 +23,7 @@ import { leaveDaily, startDaily } from '../game/session.js';
 import { store } from '../state.js';
 import { tr } from '../i18n.js';
 import { checkAchievements } from './achievements.js';
-import { burst } from './fx.js';
+import { burst, countUp } from './fx.js';
 import { icon } from './icons.js';
 import { openMenu } from './menu.js';
 
@@ -74,37 +74,49 @@ export function showDailyResult(daily, result = {}) {
   const medal = medalFor(cleared);
   const hintsEarned = dailyHintReward(bestCleared);
 
-  const modal = $('dailyEnd');
   const boardsBox = $('dailyBoards');
-  $('dailyEndTag').textContent = 'Desafío · 150 turnos';
-  $('dailyEndMedal').innerHTML = icon(MEDAL_ICON[medal]);
+  const modal = $('dailyEnd');
+  const won = cleared >= DAILY_HINT_MILESTONES[0].board;
+  $('dailyEndMedal').innerHTML = won ? icon(MEDAL_ICON[medal]) : '';
+  $('dailyEndMedal').hidden = !won;
   $('dailyEndMedal').setAttribute('title', MEDAL_TITLE[medal]);
-  modal.dataset.medal = medal;
+  modal.dataset.medal = won ? medal : 'none';
   $('dailyEndTitle').textContent =
     cleared >= DAILY_TOTAL_BOARDS
       ? '¡Desafío completado!'
-      : cleared >= 13
+      : won
         ? '¡Premio conseguido!'
         : result.surrendered
           ? 'Te has rendido'
           : 'Sin turnos';
-  $('dailyEndDelta').textContent = `${cleared}/${DAILY_TOTAL_BOARDS}`;
-  $('dailyEndPoints').textContent = `${used}/${DAILY_TURN_BUDGET}`;
-  $('dailyEndReward').hidden = false;
-  $('dailyEndReward').textContent = hintsEarned
+  $('dailyEndDelta').textContent = String(cleared);
+  /* Una sola línea: el premio ganado o lo cerca que quedó el primero (motiva a repetir) */
+  const toPrize = DAILY_HINT_MILESTONES[0].board - cleared;
+  const line = $('dailyEndReward');
+  line.textContent = hintsEarned
     ? hintsEarned === 1
       ? '+1 pista para el modo Aventura'
       : `+${hintsEarned} pistas para el modo Aventura`
-    : 'Pistas para el modo Aventura';
+    : toPrize === 1
+      ? 'A 1 tablero del premio'
+      : `A ${toPrize} tableros del premio`;
+  line.classList.toggle('is-prize', !!hintsEarned);
+  line.hidden = false;
+  line.style.setProperty('--n', String(cleared));
 
+  /* 15 marcas que se encienden una a una; las de premio (13, 14, 15) llevan sus pistas debajo */
+  const prizes = new Map(DAILY_HINT_MILESTONES.map(({ board, hints }) => [board, hints]));
   boardsBox.replaceChildren(
-    ...DAILY_HINT_MILESTONES.map(({ board, hints }) => {
-      const hit = bestCleared >= board;
-      const row = document.createElement('div');
-      row.className = `daily-board-row ${hit ? 'gold' : 'bronze'}`;
-      const hintLabel = hints === 1 ? '+1 pista' : `+${hints} pistas`;
-      row.innerHTML = `<span class="daily-board-label"><i class="daily-board-ico" aria-hidden="true">${icon(hit ? 'unlock' : 'lock')}</i><span>Tablero ${board}</span></span><b>${hintLabel}</b>`;
-      return row;
+    ...Array.from({ length: DAILY_TOTAL_BOARDS }, (_, i) => {
+      const n = i + 1;
+      const li = document.createElement('li');
+      li.style.setProperty('--i', String(i));
+      if (n <= cleared) li.classList.add('on');
+      if (prizes.has(n)) {
+        li.classList.add('prize');
+        li.innerHTML = `<small>+${prizes.get(n)}${icon('hint')}</small>`;
+      }
+      return li;
     }),
   );
 
@@ -113,7 +125,9 @@ export function showDailyResult(daily, result = {}) {
     Music.duck(1);
   };
   modal.classList.add('show');
-  if (cleared >= 13) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) $('dailyEndDelta').textContent = String(cleared);
+  else countUp($('dailyEndDelta'), 0, cleared, 400 + cleared * 70, (v) => String(Math.round(v)));
+  if (won) {
     if (cleared >= DAILY_TOTAL_BOARDS) sfx.perfect();
     else sfx.win();
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -131,7 +145,7 @@ export function showDailyResult(daily, result = {}) {
     };
   }
   if ($('dailyShare')) $('dailyShare').hidden = surrendered;
-  $('dailyBack').textContent = surrendered ? 'Entendido' : 'Volver al menú';
+  $('dailyBack').textContent = surrendered ? 'Entendido' : 'Menú';
   $('dailyBack').classList.toggle('primary', surrendered);
   $('dailyBack').onclick = () => {
     close();
@@ -146,13 +160,15 @@ export function showDailyResult(daily, result = {}) {
       if (typeof navigator.share === 'function') await navigator.share({ text, url: location.href });
       else {
         await navigator.clipboard.writeText(`${text} ${location.href}`);
-        $('dailyShare').lastElementChild.textContent = '¡Copiado!';
+        $('dailyShare').title = '¡Copiado!';
+        $('dailyShare').classList.add('copied');
       }
     } catch {
       /* cancelado o sin permiso */
     }
   };
-  $('dailyShare').lastElementChild.textContent = 'Compartir';
+  $('dailyShare').title = 'Compartir';
+  $('dailyShare').classList.remove('copied');
   (surrendered ? $('dailyBack') : $('dailyRetry') || $('dailyBack')).focus();
   checkAchievements();
 }

@@ -35,6 +35,7 @@ import { numLocale } from '../i18n.js';
 import { S, persist, store } from '../state.js';
 import { trailPath } from './fx.js';
 import { icon } from './icons.js';
+import { rarityBackdrop } from './outfit-fx.js';
 
 const TYPE_NAME = {
   outfit: 'Atuendos',
@@ -297,7 +298,7 @@ function renderOutfits() {
             : `<button type="button" class="shop-act equip" data-outfit-hero="${h.id}" data-outfit-id="${o.id}">Equipar</button>`
           : `<div class="unlock-foot">${unlockHtml('outfit', `${h.id}:${o.id}`)}</div>`;
         return `<article class="ach-shop-card outfit-card r-${rarityOf(o).id}${on ? ' on' : ''}${owned ? ' owned' : ' locked'}">
-          <span class="ach-shop-open">${o.id === DEFAULT_OUTFIT[h.id] ? '<span class="rar-chip default-chip">Por defecto</span>' : `<span class="rar-chip">${rarityOf(o).name}</span>`}<span class="outfit-art"><img src="${art}" alt="" loading="lazy" decoding="async"><button type="button" class="custom-preview-btn outfit-show" data-outfit-show="${h.id}:${o.id}" aria-label="Mostrar atuendo" title="Mostrar">${PREVIEW_EYE_SVG}</button></span><b class="ach-shop-name">${o.name}</b></span>${foot}</article>`;
+          <span class="ach-shop-open">${o.id === DEFAULT_OUTFIT[h.id] ? '<span class="rar-chip default-chip">Por defecto</span>' : `<span class="rar-chip">${rarityOf(o).name}</span>`}<span class="outfit-art">${rarityBackdrop(rarityOf(o).id)}<img src="${art}" alt="" loading="lazy" decoding="async"><button type="button" class="custom-preview-btn outfit-show" data-outfit-show="${h.id}:${o.id}" aria-label="Mostrar atuendo" title="Mostrar">${PREVIEW_EYE_SVG}</button></span><b class="ach-shop-name">${o.name}</b></span>${foot}</article>`;
       })
       .join('');
     return `<section class="outfit-hero" style="--accent:${h.color}"><h3 class="panel-h">${h.name}<small>${gotH}/${list.length}</small></h3><div class="ach-shop-grid">${cards}</div></section>`;
@@ -423,7 +424,8 @@ export function openPreview(type, id) {
   pv = { type, id, el, opener: { type, id } };
   if (type === 'pieces' || type === 'key') tryOn(type, id);
   paintPreview();
-  if (type === 'trail') pv.stopDemo = startDemo(el, id);
+  // Ejemplo vivo: la llave se desliza hasta la salida (dejando la estela, si es una) para ver el objeto en acción
+  if (type === 'trail' || type === 'key') pv.stopDemo = startDemo(el, id);
   el.addEventListener('click', (e) => {
     if (e.target === el || e.target.closest('[data-pv-close]')) {
       sfx.ui();
@@ -459,12 +461,12 @@ function openShowcase(hero, id, pose = 'adv') {
   if (!h || !o || !isVisibleOutfit(hero, id)) return;
   closeShowcase();
   const el = document.createElement('div');
-  el.className = 'outfit-show-ov';
+  el.className = `outfit-show-ov r-${rarityOf(o).id}`;
   el.setAttribute('role', 'dialog');
   el.setAttribute('aria-modal', 'true');
   el.setAttribute('aria-labelledby', 'osName');
   el.style.setProperty('--accent', h.color);
-  el.innerHTML = `<div class="os-bg" aria-hidden="true"><i class="os-fog"></i><i class="os-fog os-fog-2"></i><i class="os-beam"></i><i class="os-dust"></i></div>
+  el.innerHTML = `<div class="os-bg" aria-hidden="true"><i class="os-fog"></i><i class="os-fog os-fog-2"></i><i class="os-beam"></i><i class="os-dust"></i>${rarityBackdrop(rarityOf(o).id)}</div>
     <button type="button" class="os-close" data-os-close aria-label="Cerrar">✕</button>
     <figure class="os-stage"><img class="os-art" alt="" decoding="async"></figure>
     <div class="os-info">

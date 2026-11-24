@@ -207,6 +207,88 @@ function showFinale(prac, p, score, broken, snapshot, bestScore) {
   tone(523, 0.45, 'sine', 0.035, 0.15);
 }
 
+/**
+ * Derrota: los puntos cuentan desde 0 y, a la vez, una barra recorre las letras C → S+ de la dificultad del camino
+ * (cada letra con los puntos que pide en esa dificultad). La letra grande cambia cuando la cuenta cruza cada tramo,
+ * así se ve cómo llegaste a tu rango; al terminar aparece lo que falta para la siguiente.
+ */
+let rankAnim = 0;
+function animateDefeatRank(snapshot) {
+  const el = $('overRank'),
+    scoreEl = $('overScore'),
+    gradeEl = $('overGrade');
+  const nf = new Intl.NumberFormat(numLocale());
+  const score = Math.max(0, snapshot.score || 0);
+  const blocks = rankScale(snapshot.start);
+  const final = runRank(snapshot);
+  const at = Math.max(
+    0,
+    blocks.findIndex((b) => b.grade === final.grade),
+  );
+  el.innerHTML = `<ol class="ovr-track">${blocks
+    .map(
+      (b) =>
+        `<li data-grade="${b.cls}"><b>${b.grade}</b><span class="ovr-seg"><i></i></span><small>${nf.format(b.from)}</small></li>`,
+    )
+    .join('')}</ol><p class="ovr-next" hidden></p>`;
+  const items = [...el.querySelectorAll('li')];
+  const up = nextRank(final.pct, snapshot.start);
+  const next = el.querySelector('.ovr-next');
+  if (up) next.innerHTML = `+${nf.format(Math.max(1, blocks[at + 1].from - score))} pts → <b>${up.grade}</b>`;
+  else next.textContent = '★ S+ ★';
+  let shown = -1;
+  const paint = (v, done) => {
+    const idx = done
+      ? at
+      : Math.min(
+          at,
+          Math.max(
+            0,
+            blocks.findLastIndex((b) => v >= b.from),
+          ),
+        );
+    items.forEach((li, i) => {
+      const b = blocks[i];
+      const fill =
+        i < idx ? 1 : i > idx ? 0 : b.to > b.from ? Math.min(1, Math.max(0, (v - b.from) / (b.to - b.from))) : 1;
+      li.querySelector('i').style.width = `${(fill * 100).toFixed(1)}%`;
+      li.classList.toggle('is-on', i <= idx);
+      li.classList.toggle('is-here', i === idx);
+    });
+    if (idx !== shown) {
+      shown = idx;
+      gradeEl.textContent = blocks[idx].grade;
+      gradeEl.dataset.grade = blocks[idx].cls;
+      gradeEl.classList.remove('rank-pop');
+      void gradeEl.offsetWidth; // reinicia el salto de la letra
+      gradeEl.classList.add('rank-pop');
+      if (idx > 0) tone(392 * Math.pow(2, idx / 4), 0.18, 'sine', 0.03);
+    }
+    scoreEl.textContent = nf.format(Math.round(v));
+  };
+  gradeEl.title = `${final.pct.toLocaleString(numLocale())} % del máximo`;
+  cancelAnimationFrame(rankAnim);
+  const finish = () => {
+    paint(score, true);
+    next.hidden = false;
+  };
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !score) return finish();
+  const ms = 1300 + 450 * at,
+    t0 = performance.now();
+  const step = (t) => {
+    const k = Math.min(1, (t - t0) / ms);
+    paint(score * (1 - Math.pow(1 - k, 3)), false);
+    if (k < 1) rankAnim = requestAnimationFrame(step);
+    else finish();
+  };
+  rankAnim = requestAnimationFrame(step);
+}
+/* Derrota: «Jugar de nuevo» vuelve a abrir el mismo camino (elige héroe y empieza) */
+let retryStart = 1;
+$('bRetry').onclick = () => {
+  $('over').classList.remove('show');
+  startRun(retryStart, 'c');
+};
 export function endRun(victory, why) {
   const prac = S.run.mode === 'p',
     p = pathOf(S.run.start),
@@ -238,21 +320,18 @@ export function endRun(victory, why) {
   }
   endingStory(false, endingHero, S.run.level);
   $('overTitle').textContent = why === 'retire' ? 'Te retiraste' : 'Es el final';
-  $('overRec').innerHTML = !prac && S.run.recBroken ? '<span class="rec">★ NUEVO RÉCORD ★</span>' : '';
-  $('overLvl').textContent = S.run.level;
-  $('overBest').textContent = rec.score.toLocaleString(numLocale());
-  renderGradeAndStats({
-    gradeEl: $('overGrade'),
-    statsEl: $('overStats'),
-    nearEl: $('overNear'),
-    scaleEl: $('overScale'),
-    victory: false,
-    snapshot,
-    bestScore: rec.score,
-  });
-  renderBuildSummary($('overBuild'), snapshot);
+  const reached = Math.min(MAX_LEVEL, Math.max(1, S.run.level || 1));
+  $('overLvl').textContent = `${reached}/${MAX_LEVEL}`;
+  $('overBar').style.width = `${(reached / MAX_LEVEL) * 100}%`;
+  const near = $('overNear'),
+    gap = (rec.score || 0) - (S.run.score || 0);
+  near.classList.toggle('is-rec', !prac && !!S.run.recBroken);
+  if (!prac && S.run.recBroken) near.textContent = '★ NUEVO RÉCORD ★';
+  else if (gap > 0) near.textContent = `A ${gap.toLocaleString(numLocale())} pts de tu récord`;
+  near.hidden = !near.classList.contains('is-rec') && !(gap > 0);
+  retryStart = snapshot.start;
   $('over').classList.add('show');
-  countUp($('overScore'), 0, S.run.score, 1200);
-  $('bToMenu').focus();
+  animateDefeatRank(snapshot);
+  $('bRetry').focus();
   discardRun();
 }

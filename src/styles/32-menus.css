@@ -47,15 +47,10 @@
   row-gap: 10px;
 }
 
-/* ---------- elección de héroe: la ilustración del héroe elegido es el telón de fondo ---------- */
+/* ---------- elección de héroe (su fondo es el mundo animado compartido, 54-world.css) ---------- */
 #heroSelect {
-  background:
-    radial-gradient(120% 80% at 50% 0, #0000 20%, #120c20e6 85%),
-    linear-gradient(#1b1430b8, #120c20e0),
-    var(--hero-scene) center 18% / cover;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  transition: background-image 0.3s;
 }
 #heroSelect .hero-choice {
   transition:

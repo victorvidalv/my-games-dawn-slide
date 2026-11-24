@@ -130,11 +130,6 @@
   font-size: 11px;
   color: #e6dcf2;
 }
-#dailyEnd .daily-reward-earned {
-  color: #ffe29a;
-  margin: 0;
-  font: 700 12.5px/1.3 var(--font-ui);
-}
 .daily-list {
   display: grid;
   gap: 8px;
@@ -264,65 +259,6 @@
   }
 }
 
-/* ---------- resultado del reto ---------- */
-#dailyEnd .daily-end {
-  display: grid;
-  justify-items: center;
-  gap: 7px;
-  max-width: 380px;
-  padding: 24px 20px 20px;
-}
-#dailyEnd .daily-medal {
-  display: block;
-  width: 92px;
-  height: 92px;
-  animation: medal-in 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both;
-  filter: drop-shadow(0 5px 0 #150e0c);
-}
-#dailyEnd .daily-medal .ic {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-#dailyEnd[data-medal='gold'] .daily-medal {
-  filter: drop-shadow(0 5px 0 #150e0c) drop-shadow(0 0 16px #ffd24a);
-}
-@keyframes medal-in {
-  from {
-    transform: scale(0) rotate(-140deg);
-  }
-}
-#dailyEnd h2 {
-  margin: 2px 0 0;
-  font-size: 24px;
-}
-.daily-moves {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-.daily-moves b {
-  font: 900 24px/1 var(--font-title);
-  color: #ffe29a;
-  text-shadow: 0 2px 0 #150e0c;
-  font-variant-numeric: tabular-nums;
-}
-.daily-moves span {
-  font: 700 11px/1 var(--font-ui);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #cdbfdb;
-}
-#dailyEnd .daily-next {
-  margin: 0;
-  font: 700 12.5px/1.3 var(--font-ui);
-  color: #f3e5c8;
-  opacity: 1;
-}
-#dailyEnd .daily-next b {
-  color: #8ff0d9;
-  font-variant-numeric: tabular-nums;
-}
 .daily-streak-box {
   display: flex;
   align-items: center;
@@ -356,70 +292,6 @@
   color: #2a1808;
   text-shadow: none;
 }
-.daily-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 9px;
-  width: 100%;
-  margin-top: 8px;
-}
-.daily-actions button {
-  min-height: 46px;
-  margin: 0;
-  padding: 9px 10px;
-  font-size: 13.5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.daily-actions .bi .ic {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-.daily-actions .primary {
-  grid-column: 1/3;
-}
-.daily-actions [hidden] {
-  display: none;
-}
-.daily-actions #dailyShare {
-  grid-column: 1/3;
-}
-.daily-boards {
-  display: grid;
-  gap: 5px;
-  width: 100%;
-  font: 700 13px var(--font-ui);
-  font-variant-numeric: tabular-nums;
-}
-.daily-boards > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 30px;
-  gap: 8px;
-}
-.daily-board-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.daily-board-ico .ic {
-  display: block;
-  width: 20px;
-  height: 20px;
-}
-.daily-board-row.gold .daily-board-label {
-  color: #ffe29a;
-}
-.daily-boards button {
-  padding: 4px 10px;
-  margin: 0;
-  font-size: 12px;
-}
-
 /* ---------- tablero en reto diario: sin tienda, sin pistas, sin puntos; con reinicio rápido ---------- */
 body.daily-run #bShop,
 body.daily-run #bHint,
@@ -711,4 +583,256 @@ body.daily-run .top {
 #pause .pause-actions button[hidden],
 #rescue [hidden] {
   display: none !important;
+}
+
+/* ============ Resultado del Desafío: minimalista, sobre el mundo animado, invita a repetir ============
+ * Medalla (solo con premio), título, tableros superados en grande, 15 marcas que se encienden una a una (las de premio
+ * llevan sus pistas) y una sola línea: el premio ganado o lo cerca que quedó. «Jugar de nuevo» es el botón principal. */
+#dailyEnd {
+  padding: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, transparent 30%, #03050b99 100%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  z-index: 64;
+}
+body:has(#dailyEnd.show) #app {
+  visibility: hidden;
+}
+/* El mundo toma el color del resultado */
+body:has(#dailyEnd.show) {
+  --wa: #3ca6b830;
+  --wb: #e0573f30;
+  --wblocks: 0.4;
+  --wkeyshow: 1;
+}
+body:has(#dailyEnd.show[data-medal='bronze']) {
+  --wa: #d08a4a3a;
+  --wb: #d08a4a44;
+}
+body:has(#dailyEnd.show[data-medal='silver']) {
+  --wa: #cfd8e638;
+  --wb: #9fb6d844;
+}
+body:has(#dailyEnd.show[data-medal='gold']) {
+  --wa: #ffd24a3c;
+  --wb: #ffb34a55;
+  --wmote: #fff1b0;
+}
+#dailyEnd .de-shell {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 4dvh, 34px);
+  padding: calc(env(safe-area-inset-top) + 16px) 18px calc(env(safe-area-inset-bottom) + 18px);
+  overflow-y: auto;
+}
+#dailyEnd .de-card,
+#dailyEnd .de-actions {
+  width: min(100%, 400px);
+}
+#dailyEnd .de-card {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+}
+#dailyEnd .daily-medal {
+  width: clamp(72px, 14dvh, 104px);
+  height: clamp(72px, 14dvh, 104px);
+  margin-bottom: 4px;
+}
+#dailyEnd .daily-medal .ic {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#dailyEnd .daily-medal {
+  display: block;
+  animation: medal-in 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+  filter: drop-shadow(0 5px 0 #150e0c) drop-shadow(0 0 18px #ffd24a66);
+}
+#dailyEnd[data-medal='gold'] .daily-medal {
+  filter: drop-shadow(0 5px 0 #150e0c) drop-shadow(0 0 22px #ffd24a);
+}
+@keyframes medal-in {
+  from {
+    transform: scale(0) rotate(-140deg);
+  }
+}
+#dailyEnd .daily-medal[hidden] {
+  display: none;
+}
+#dailyEnd h2 {
+  margin: 0;
+  font: 700 clamp(26px, 6.5vw, 38px)/1.05 var(--font-book);
+  color: #f7eed6;
+  text-shadow: 0 3px 18px #000;
+}
+#dailyEnd .de-count {
+  display: flex;
+  align-items: baseline;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+#dailyEnd .de-count b {
+  font: 900 clamp(64px, 18vw, 96px)/0.9 var(--font-book);
+  color: #ffd98a;
+  text-shadow: 0 4px 0 #120610;
+}
+#dailyEnd .de-count span {
+  font: 800 clamp(22px, 6vw, 30px)/1 var(--font-book);
+  color: #c9b8a0;
+}
+#dailyEnd .de-label {
+  font: 800 11px/1 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #c9b8a0;
+}
+/* 15 marcas; las de premio son más altas y llevan «+1», «+3», «+5» debajo */
+#dailyEnd .de-track {
+  display: grid;
+  grid-template-columns: repeat(15, minmax(0, 1fr));
+  align-items: end;
+  gap: 4px;
+  width: 100%;
+  margin: 14px 0 0;
+  padding: 0 0 16px;
+  list-style: none;
+}
+#dailyEnd .de-track li {
+  position: relative;
+  height: 10px;
+  border-radius: 4px;
+  background: #ffffff1c;
+}
+#dailyEnd .de-track li.prize {
+  height: 18px;
+  background: #ffd98a26;
+  box-shadow: inset 0 0 0 1.5px #ffd98a66;
+}
+#dailyEnd .de-track li.on {
+  background: #8ff0d9;
+  box-shadow: 0 0 8px #8ff0d988;
+}
+#dailyEnd .de-track li.prize.on {
+  background: #ffd24a;
+  box-shadow: 0 0 12px #ffd24acc;
+}
+#dailyEnd .de-track small {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  font: 800 10px/1 var(--font-ui, system-ui, sans-serif);
+  color: #ffd98a;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+#dailyEnd .de-track small .ic {
+  width: 10px;
+  height: 10px;
+}
+#dailyEnd .de-line {
+  margin: 4px 0 0;
+  font: 800 14px/1.3 var(--font-ui, system-ui, sans-serif);
+  color: #f5ebd2;
+}
+#dailyEnd .de-line.is-prize {
+  color: #ffd98a;
+}
+#dailyEnd .de-line[hidden] {
+  display: none;
+}
+/* Acciones: «Jugar de nuevo» grande, compartir con icono y «Menú» discreto */
+#dailyEnd .de-actions {
+  display: flex;
+  gap: 10px;
+}
+#dailyEnd .de-actions button {
+  min-height: 54px;
+  margin: 0;
+  border-radius: 14px;
+  font: 800 16px/1.1 var(--font-book);
+  transition:
+    transform 0.12s,
+    filter 0.12s;
+}
+#dailyEnd .de-actions button[hidden] {
+  display: none;
+}
+#dailyEnd .de-retry,
+#dailyEnd .de-menu.primary {
+  flex: 1;
+  border: 1.5px solid #ffd98a88;
+  background: linear-gradient(160deg, #2fa58e, #176a5c);
+  color: #f4fff9;
+  box-shadow:
+    0 6px 22px #2fa58e55,
+    inset 0 1px 0 #ffffff40;
+}
+#dailyEnd .de-share,
+#dailyEnd .de-menu:not(.primary) {
+  padding: 0 18px;
+  border: 1.5px solid #ffffff2a;
+  background: #ffffff10;
+  color: #e9dfc8;
+  box-shadow: none;
+}
+#dailyEnd .de-share.copied {
+  border-color: #8ff0d9;
+  color: #8ff0d9;
+}
+#dailyEnd .de-share .ic {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+#dailyEnd .de-actions button:hover,
+#dailyEnd .de-actions button:focus-visible {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+#dailyEnd .de-actions button:active {
+  transform: translateY(1px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  #dailyEnd.show .de-track li.on {
+    animation: de-pip 0.35s cubic-bezier(0.2, 1.6, 0.4, 1) calc(var(--i) * 70ms + 0.2s) both;
+  }
+  #dailyEnd.show .de-line {
+    animation: de-line-in 0.4s ease-out calc(var(--n, 15) * 70ms + 0.4s) both;
+  }
+}
+@keyframes de-pip {
+  from {
+    background: #ffffff1c;
+    box-shadow: none;
+    transform: scaleY(0.4);
+  }
+}
+@keyframes de-line-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (max-height: 520px) {
+  #dailyEnd .de-shell {
+    gap: 12px;
+  }
+  #dailyEnd .daily-medal {
+    display: none;
+  }
+  #dailyEnd .de-count b {
+    font-size: 54px;
+  }
+  #dailyEnd .de-actions button {
+    min-height: 46px;
+  }
 }

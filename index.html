@@ -54,6 +54,14 @@
 </script>
 </head>
 <body>
+<div class="world" aria-hidden="true">
+  <div class="w-sky"></div>
+  <div class="w-aurora"></div>
+  <div class="w-blocks"><i class="wb wb-1"></i><i class="wb wb-2"></i><i class="wb wb-3"></i><i class="wb wb-4"></i><i class="wb wb-5"></i><i class="wb wb-key"></i></div>
+  <div class="w-motes"></div>
+  <div class="w-weather"><i></i><i></i><i></i></div>
+  <div class="w-vignette"></div>
+</div>
 <noscript><main style="font:16px/1.5 Georgia,serif;max-width:640px;margin:10vh auto;padding:0 20px;color:#f6e6bd;background:#1a1528"><h1>DAWNSLIDE</h1><p>A free sliding-block puzzle adventure with roguelite elements. Choose one of three heroes, free the red key and explore seven realms across 21 levels. Available in English, Spanish and Chinese.</p><p>Please enable JavaScript to play.</p></main></noscript>
 <div id="app">
   <div class="top">
@@ -193,19 +201,6 @@
 
 <!-- Menú -->
 <div class="modal show" id="menu" data-view="home">
-  <div class="cover-scene cover-ready" aria-hidden="true">
-    <div class="cover-sky"></div>
-    <div class="cover-blocks">
-      <span class="cb cb-1"></span>
-      <span class="cb cb-2"></span>
-      <span class="cb cb-3"></span>
-      <span class="cb cb-4"></span>
-      <span class="cb cb-5"></span>
-      <span class="cb cb-6 cb-key"></span>
-    </div>
-    <div class="cover-fog"></div>
-    <div class="cover-lights"></div>
-  </div>
   <div class="title-lockup">
     <svg class="title-crest" viewBox="0 0 64 72" aria-hidden="true"><path class="crest-shield" d="M32 3 59 12v23c0 17-12 28-27 34C17 63 5 52 5 35V12Z"/><path class="crest-inner" d="M32 9 53 16v19c0 13-9 22-21 27C20 57 11 48 11 35V16Z"/><circle class="crest-key" cx="32" cy="27" r="7"/><path class="crest-key" d="M32 34v20m0-7h7m-7-7h5"/></svg>
     <h1 class="logo">DAWN<i>SLIDE</i></h1>
@@ -399,17 +394,19 @@
 
 <!-- Resultado del Desafío diario -->
 <div class="modal" id="dailyEnd" role="dialog" aria-modal="true" aria-labelledby="dailyEndTitle">
- <div class="card daily-end">
-  <div class="tag" id="dailyEndTag"></div>
-  <i class="daily-medal" id="dailyEndMedal" aria-hidden="true"></i>
-  <h2 id="dailyEndTitle"></h2>
-  <div class="daily-moves"><span><b id="dailyEndDelta"></b> tableros</span><span aria-hidden="true">·</span><span><b id="dailyEndPoints"></b> turnos</span></div>
-  <div class="daily-boards" id="dailyBoards"></div>
-  <p class="daily-reward-earned" id="dailyEndReward" hidden></p>
-  <div class="daily-actions">
-   <button type="button" class="primary" id="dailyRetry">↻ Reintentar</button>
-   <button type="button" id="dailyShare"><i class="bi" data-icon="medal" aria-hidden="true"></i><span>Compartir</span></button>
-   <button type="button" id="dailyBack">Volver al menú</button>
+ <div class="de-shell">
+  <section class="de-card">
+   <i class="daily-medal" id="dailyEndMedal" aria-hidden="true"></i>
+   <h2 id="dailyEndTitle"></h2>
+   <div class="de-count"><b id="dailyEndDelta">0</b><span>/15</span></div>
+   <small class="de-label">tableros</small>
+   <ol class="de-track" id="dailyBoards" aria-hidden="true"></ol>
+   <p class="de-line" id="dailyEndReward" hidden></p>
+  </section>
+  <div class="de-actions">
+   <button type="button" class="primary de-retry" id="dailyRetry">Jugar de nuevo</button>
+   <button type="button" class="de-share" id="dailyShare" aria-label="Compartir" title="Compartir"><i class="bi" data-icon="medal" aria-hidden="true"></i></button>
+   <button type="button" class="de-menu" id="dailyBack">Menú</button>
   </div>
  </div>
 </div>
@@ -450,31 +447,22 @@
   <img class="over-hero" id="overPortrait" alt="">
   <div class="over-vignette" aria-hidden="true"></div>
   <div class="over-shell">
-   <header class="over-top">
+   <section class="over-card">
     <h2 id="overTitle">Es el final</h2>
-   </header>
-   <section class="over-summary">
-    <div class="over-score-box">
-     <div class="score-grade-row">
-      <div>
-       <small>PUNTOS</small>
-       <div class="big" id="overScore">0</div>
-      </div>
-      <span class="run-grade" id="overGrade" aria-label="Rango de partida"></span>
-     </div>
-     <div id="overRec"></div>
-     <p class="run-near" id="overNear" hidden></p>
+    <div class="over-trip">
+     <small>NIVEL</small><b id="overLvl">1/21</b>
+     <div class="over-bar" aria-hidden="true"><i id="overBar"></i></div>
     </div>
-    <div class="over-stats">
-     <div><small>NIVEL</small><b id="overLvl">1</b></div>
-     <div><small>RÉCORD</small><b id="overBest">0</b></div>
+    <div class="over-score">
+     <div><small>PUNTOS</small><b id="overScore">0</b></div>
+     <span class="run-grade" id="overGrade" aria-label="Rango de partida"></span>
     </div>
+    <div class="over-rank" id="overRank"></div>
+    <p class="over-near" id="overNear" hidden></p>
    </section>
-   <div class="rank-scale" id="overScale" hidden></div>
-   <div class="run-stats" id="overStats" hidden></div>
-   <div class="run-build" id="overBuild" hidden></div>
-   <div class="over-bottom">
-    <button class="primary over-home-btn" id="bToMenu">← Volver al menú</button>
+   <div class="over-actions">
+    <button class="primary over-retry" id="bRetry">Jugar de nuevo</button>
+    <button class="over-menu" id="bToMenu">Menú</button>
    </div>
   </div>
  </div>

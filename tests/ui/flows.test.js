@@ -176,7 +176,7 @@ describe('interfaz: aventura', () => {
     expect(saved().run.level).toBe(2);
   });
 
-  it('«Abandonar» muestra el rango con su escala, borra la partida y guarda el récord', async () => {
+  it('«Abandonar» muestra el rango, borra la partida y guarda el récord', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('bContinue').click();
     await untilPlayable(app, 2);
@@ -186,7 +186,7 @@ describe('interfaz: aventura', () => {
     await until(() => shown(app, 'over'));
     expect(app.$('overTitle').textContent).toBe('Te retiraste');
     expect(app.$('overGrade').textContent).toBe('C');
-    expect(app.$('overScale').querySelectorAll('.rank-step')).toHaveLength(5);
+    expect(app.$('overLvl').textContent).toBe('2/21');
     expect(app.S.run).toBeNull();
     expect(saved().run ?? null).toBeNull();
     expect(saved().paths.c1).toMatchObject({ level: 2, runs: 1 });
@@ -194,7 +194,7 @@ describe('interfaz: aventura', () => {
     expect(shown(app, 'menu')).toBe(true);
   });
 
-  it('al perder muestra «Es el final», estadísticas y solo la opción de volver al menú', async () => {
+  it('al perder muestra «Es el final», nivel, puntos con rango, distancia al récord y «Jugar de nuevo» o «Menú»', async () => {
     const app = await bootApp({
       save: {
         paths: { c50: { score: 8000, level: 12, runs: 2 } },
@@ -221,15 +221,40 @@ describe('interfaz: aventura', () => {
     app.session.fail('limit');
     await until(() => shown(app, 'over'));
     expect(app.$('overTitle').textContent).toBe('Es el final');
-    expect(app.$('bRetryOver')).toBeNull();
     expect(app.$('overGrade').textContent).toBe('C');
-    expect(app.$('overScale').hidden).toBe(false);
-    expect(app.$('overScale').querySelectorAll('.rank-step')).toHaveLength(5);
+    expect(app.$('overLvl').textContent).toBe('10/21');
     expect(app.$('overNear').textContent).toContain('1.500');
-    expect(app.$('overStats').textContent).toContain('5/9');
     app.$('bToMenu').click();
     expect(shown(app, 'over')).toBe(false);
     expect(shown(app, 'menu')).toBe(true);
+  });
+
+  it('«Jugar de nuevo» tras perder abre la elección de héroe del mismo camino', async () => {
+    const app = await bootApp({
+      save: {
+        run: {
+          level: 10,
+          seed: 77,
+          start: 50,
+          mode: 'c',
+          hero: 'jean',
+          relic: 'lantern',
+          score: 6500,
+          hints: 2,
+          adj: 0,
+          streak: 0,
+          fate: [],
+        },
+        tips: { tut_wall: true, tut_heavy: true, tut_gate: true, tut_ice: true },
+      },
+    });
+    app.$('bContinue').click();
+    await untilPlayable(app, 10);
+    app.session.fail('limit');
+    await until(() => shown(app, 'over'));
+    app.$('bRetry').click();
+    expect(shown(app, 'over')).toBe(false);
+    await until(() => shown(app, 'heroSelect'));
   });
 });
 

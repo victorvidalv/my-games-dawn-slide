@@ -48,7 +48,6 @@
 .modal .card,
 #pause .sheet,
 #heroSelect .hero-selector,
-#dailyEnd .daily-end,
 #finale .card,
 #saveTransfer .transfer-card {
   border: 1.5px solid var(--mp-border);
@@ -120,8 +119,7 @@ button.primary:hover,
   border-color: var(--mp-border-strong);
 }
 #heroSelect .hero-selector-actions button,
-#finale button,
-#over .over-bottom button {
+#finale button {
   border: 1.5px solid rgba(242, 212, 140, 0.32);
   border-radius: 12px;
   box-shadow:
@@ -130,15 +128,13 @@ button.primary:hover,
   text-shadow: none;
 }
 #heroSelect .hero-selector-actions button:hover,
-#finale button:hover,
-#over .over-bottom button:hover {
+#finale button:hover {
   transform: translateY(-1px);
   border-color: var(--mp-border-strong);
   filter: brightness(1.06);
 }
 #heroSelect .hero-selector-actions button:active,
-#finale button:active,
-#over .over-bottom button:active {
+#finale button:active {
   transform: translateY(1px);
   box-shadow: 0 2px 6px rgba(8, 9, 18, 0.32);
 }
@@ -502,12 +498,6 @@ button.primary:hover,
 }
 
 /* ---------- Selector de héroes: limpio, directo y teñido por el héroe ---------- */
-#heroSelect {
-  background:
-    radial-gradient(120% 80% at 50% 0, transparent 20%, rgba(14, 16, 30, 0.88) 85%),
-    linear-gradient(rgba(24, 30, 56, 0.72), rgba(14, 16, 30, 0.88)),
-    var(--hero-scene) center 18% / cover;
-}
 #heroSelect .hero-selector {
   width: min(94vw, 680px);
   max-width: 680px;

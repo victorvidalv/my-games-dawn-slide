@@ -249,12 +249,8 @@
   margin: 13px 0 16px;
   font-style: italic;
 }
-#over .card,
 #finale .card {
   max-width: 450px;
-}
-#over .card {
-  background: linear-gradient(#29304bef, #131c32f5);
 }
 @media (max-width: 620px) {
   .storybook {
@@ -359,7 +355,6 @@
 }
 
 @media (min-width: 900px) {
-  #over > .card,
   #finale > .card {
     max-width: 850px;
     display: grid;
@@ -367,36 +362,28 @@
     column-gap: 24px;
     text-align: left;
   }
-  #over > .card > *,
   #finale > .card > * {
     grid-column: 2;
     min-width: 0;
   }
-  #over > .card > .ending-panel,
   #finale > .card > .ending-panel {
     grid-column: 1;
     grid-row: 1 / span 20;
     margin: 0;
     align-self: stretch;
   }
-  #over .ending-portrait,
   #finale .ending-portrait {
     height: 100%;
     min-height: 470px;
     max-height: 660px;
   }
-  #over .ending-thanks,
   #finale .ending-thanks {
     font-size: 12px;
     line-height: 1.6;
     margin: 10px 0 12px;
   }
-  #over .ending-lore,
   #finale .ending-lore {
     font-size: 14px !important;
-  }
-  #over .stats {
-    text-align: center;
   }
   #finale .fchal {
     text-align: left;

@@ -14,6 +14,7 @@ import { fateArt } from './fate-art.js';
 import { burst } from './fx.js';
 import { outfitImg } from './story.js';
 import { wipeIn, wipeOut } from './transitions.js';
+import { mountOutfitFx } from './outfit-fx.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmt = (n) => n.toLocaleString(numLocale());
@@ -139,6 +140,7 @@ $('bFate')?.addEventListener('click', openFatePanel);
 function fillStage(hero) {
   $('travelHero').src = outfitImg(hero.id, 'adv');
   $('travelHero').alt = hero.name;
+  mountOutfitFx($('travelHero'), hero.id);
   $('travelTitle').textContent = 'Carta del destino';
 }
 

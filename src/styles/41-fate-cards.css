@@ -936,16 +936,6 @@ button.fate-card {
   color: #f9eccf;
   font-variant-numeric: tabular-nums;
 }
-#over .over-bottom {
-  display: grid;
-  gap: 8px;
-}
-#over .over-retry-btn {
-  width: 100%;
-  min-height: 48px;
-  font-size: 15px;
-  font-weight: 800;
-}
 
 .run-stats > .run-stats-wide {
   grid-column: 1 / -1;

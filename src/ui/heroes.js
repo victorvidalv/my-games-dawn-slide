@@ -1,5 +1,5 @@
 import { Music, setTensionFx } from '../audio/music.js';
-import { $, cssUrl } from '../dom.js';
+import { $ } from '../dom.js';
 import { saveRun } from '../game/session.js';
 import { HEROES, canHint, bonusTurns } from '../game/heroes.js';
 import { reviveCost, reviveShare } from '../game/shop.js';
@@ -7,6 +7,7 @@ import { S, haltBoard, heroOf, pathOf, persist, setBusy, store } from '../state.
 import { acceptRescue } from '../game/run-logic.js';
 import { boardEl, layout, updateHud } from './board.js';
 import { outfitImg } from './story.js';
+import { mountOutfitFx } from './outfit-fx.js';
 import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
 import { powerState } from '../game/powers.js';
@@ -43,11 +44,13 @@ export function chooseHero(start, mode) {
     const render = () => {
       const h = heroOf(selected);
       modal.style.setProperty('--chosen', h.color);
-      modal.style.setProperty('--hero-scene', cssUrl(outfitImg(h.id, 'adv')));
+      document.body.style.setProperty('--chosen', h.color); // tiñe el fondo animado compartido (54-world.css)
       cards.innerHTML = HEROES.map((v) => {
         const powerTag = HERO_POWER_TAG[v.id] || v.power;
         return `<button class="hero-choice ${v.id === selected ? 'selected' : ''}" role="radio" aria-checked="${v.id === selected}" tabindex="${v.id === selected ? 0 : -1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${powerTag}"><img src="${v.id === selected ? outfitImg(v.id, 'act') : outfitImg(v.id, 'sel')}" alt="${v.name}, ${v.role}" width="640" height="853"><span class="hero-choice-name"><b>${v.name}</b><small class="hero-choice-power">${powerTag}</small></span><span class="hero-check" aria-hidden="true">✓</span></button>`;
       }).join('');
+      // Traje épico o legendario puesto: su escena de poder detrás del retrato
+      cards.querySelectorAll('.hero-choice').forEach((b) => mountOutfitFx(b.querySelector('img'), b.dataset.hero));
       $('heroConfirm').textContent = 'Comenzar aventura ➜';
       const guideEl = $('heroPowerGuide');
       if (guideEl) {

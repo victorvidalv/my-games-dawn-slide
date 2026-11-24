@@ -80,6 +80,7 @@ import {
   winMessage,
 } from '../ui/session-view.js';
 import { boardSwapDone, boardSwapOut, levelBanner, playLevelScenery, wipeOut } from '../ui/transitions.js';
+import { weatherForBoard } from '../ui/weather.js';
 
 /* ---------- Guardado ---------- */
 export function saveRun() {
@@ -242,6 +243,7 @@ async function startLevel() {
   wipeOut();
   sfx.levelIn();
   if (!G.moves) levelBanner(...levelBannerText(run, G));
+  weatherForBoard(); // cada tablero trae su clima (lluvia, nieve, luciérnagas…)
   playLevelScenery();
   setBusy(false);
   unlockBoard();
