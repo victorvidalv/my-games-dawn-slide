@@ -822,6 +822,7 @@ export const ZH_UI = {
   'Rango S+: ¡puntaje casi perfecto!': 'S+ 评级：近乎完美的得分！',
   'Máximo de este camino: {n} pts (mejor héroe, reliquia y cartas, con todo perfecto).':
     '本路线最高分：{n} 分（最佳英雄、遗物和卡牌，且全部完美）。',
+  'Máximo posible: {n} pts': '最高可得：{n} 分',
   'DEL MÁXIMO POSIBLE': '占最高分',
   '{p} % del máximo': '占最高分的 {p} %',
   'Te retiraste': '你已撤退',

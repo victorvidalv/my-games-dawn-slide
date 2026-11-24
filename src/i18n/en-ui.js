@@ -861,6 +861,7 @@ export const EN_UI = {
   'Rango S+: ¡puntaje casi perfecto!': 'Rank S+: a near-perfect score!',
   'Máximo de este camino: {n} pts (mejor héroe, reliquia y cartas, con todo perfecto).':
     "This path's maximum: {n} pts (best hero, relic and cards, everything perfect).",
+  'Máximo posible: {n} pts': 'Max possible: {n} pts',
   'DEL MÁXIMO POSIBLE': 'OF THE MAXIMUM',
   '{p} % del máximo': '{p} % of the maximum',
   'Te retiraste': 'You retired',

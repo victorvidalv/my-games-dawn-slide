@@ -27,7 +27,7 @@ import {
 } from '../state.js';
 import { restoreRun } from '../game/run-logic.js';
 import { bestAdventureRecord } from '../game/save-merge.js';
-import { gradeIndex, rankFor } from '../game/rank.js';
+import { maxScoreFor, percentOf, rankFor, rankScale } from '../game/rank.js';
 import { MAX_LEVEL } from '../engine/difficulty.js';
 import { syncHero } from './heroes.js';
 import { outfitImg } from './story.js';
@@ -68,15 +68,27 @@ function renderPaths() {
       return;
     }
     d.tabIndex = 0;
-    const pct = rec?.pct > 0 ? rec.pct : 0;
+    const nf = new Intl.NumberFormat(numLocale());
+    const pct =
+      rec?.score > 0 && (rec.pct > 0 || rec.runs > 0) ? percentOf(rec.score, p.s) : rec?.pct > 0 ? rec.pct : 0;
     const rank = pct ? rankFor(pct, p.s) : null;
     const badge = rank
       ? `<span class="rank-badge" data-grade="${rank.cls}" title="${pct} % del máximo">${rank.grade}</span><span class="rank-badge-pct">${pct} %</span>`
       : '';
+    const scale = rankScale(p.s);
+    const at = rank ? scale.findIndex((x) => x.grade === rank.grade) : -1;
+    const tiers = scale
+      .map(
+        (x, i) =>
+          `<span class="path-rank-step${i === at ? ' is-here' : ''}${at >= 0 && i < at ? ' is-passed' : ''}" data-grade="${x.cls}"><b>${x.grade}</b><small>${nf.format(x.from)}${i + 1 < scale.length ? '' : '+'}</small></span>`,
+      )
+      .join('');
+    const maxPts = nf.format(maxScoreFor(p.s));
     d.innerHTML = `<div class="pemo">${p.e}</div>
       <div class="pinfo"><b>${p.n}</b><small>${p.d}</small></div>
       <div class="pscore"><small>${lbl}</small><b>${big}</b></div>
-      <div class="pach"><div class="pbar"><i style="width:${prog}%"></i></div><span class="prow"><em>${txt}</em>${badge}</span></div>`;
+      <div class="pach"><div class="pbar"><i style="width:${prog}%"></i></div><span class="prow"><em>${txt}</em>${badge}</span></div>
+      <div class="path-ranks"><div class="path-ranks-head"><span>Máximo posible: ${maxPts} pts</span></div><div class="path-ranks-track">${tiers}</div></div>`;
     d.onkeydown = (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -241,21 +253,6 @@ function paintHomeRecord() {
   $('homeRecord').hidden = !record;
   if (!record) return;
   $('homeRecordScore').textContent = record.score.toLocaleString(numLocale());
-  const badge = $('homeRank');
-  // mejor rango entre los caminos (cada uno con sus tramos); a igual letra gana el mayor porcentaje
-  const top = Object.entries(store.paths || {})
-    .filter(([k, e]) => /^c\d+$/.test(k) && Number(e?.pct) > 0)
-    .map(([k, e]) => ({ pct: Number(e.pct), ...rankFor(Number(e.pct), Number(k.slice(1))) }))
-    .sort((x, y) => gradeIndex(y.grade) - gradeIndex(x.grade) || y.pct - x.pct)[0];
-  badge.hidden = !top;
-  if (top) {
-    badge.dataset.grade = top.cls;
-    badge.textContent = top.grade;
-    badge.title = `${top.pct} % del máximo`;
-    badge.classList.remove('rank-pop');
-    void badge.offsetWidth;
-    badge.classList.add('rank-pop');
-  }
   const age = $('homeRecordAge');
   age.hidden = record.recordAt === null;
   if (record.recordAt !== null) {
