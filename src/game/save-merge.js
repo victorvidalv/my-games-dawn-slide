@@ -59,12 +59,14 @@ export function mergeAch(a = {}, b = {}) {
     out[id] = id in out && num(out[id]) && num(t) ? Math.min(num(out[id]), num(t)) : out[id] || t;
   return out;
 }
+const FLAG_KEYS = new Set(['relicsSeen', 'heroWins', 'heroHardWins', 'fateSeen']);
 export function mergeStats(a = {}, b = {}) {
   const out = { ...obj(a) };
   for (const [k, y] of Object.entries(obj(b))) {
     const x = out[k];
     if (Array.isArray(x) || Array.isArray(y))
       out[k] = [...new Set([...(Array.isArray(x) ? x : []), ...(Array.isArray(y) ? y : [])])];
+    else if (FLAG_KEYS.has(k)) out[k] = num(x) | num(y);
     else out[k] = Math.max(num(x), num(y));
   }
   return out;

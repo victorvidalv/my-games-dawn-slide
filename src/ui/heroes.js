@@ -14,6 +14,16 @@ import { RELICS } from '../game/relics.js';
 import { fateBlocks } from '../game/fate.js';
 import { numLocale } from '../i18n.js';
 const HERO_POWER_TAG = { lia: '+ turnos', jean: 'Rebobinar', van: 'Ver destino' };
+const ACTIVE_POWER_GUIDE = {
+  jean: {
+    title: 'Poder activo · Rebobinar',
+    text: 'Usa el botón Poder durante la partida para retroceder varios movimientos de golpe y recuperar esos turnos (1 vez por tablero).',
+  },
+  van: {
+    title: 'Poder activo · Trazar destino',
+    text: 'Usa el botón Poder durante la partida para ejecutar varios pasos óptimos hacia la salida si faltan 3 o más (1 vez por tablero).',
+  },
+};
 export function syncHero(id = S.run?.hero) {
   const h = heroOf(id);
   document.documentElement.style.setProperty('--hero-color', h.color);
@@ -39,6 +49,13 @@ export function chooseHero(start, mode) {
         return `<button class="hero-choice ${v.id === selected ? 'selected' : ''}" role="radio" aria-checked="${v.id === selected}" tabindex="${v.id === selected ? 0 : -1}" data-hero="${v.id}" style="--accent:${v.color}" aria-label="${v.name}: ${powerTag}"><img src="${v.id === selected ? outfitImg(v.id, 'act') : outfitImg(v.id, 'sel')}" alt="${v.name}, ${v.role}" width="640" height="853"><span class="hero-choice-name"><b>${v.name}</b><small class="hero-choice-power">${powerTag}</small></span><span class="hero-check" aria-hidden="true">✓</span></button>`;
       }).join('');
       $('heroConfirm').textContent = 'Comenzar aventura ➜';
+      const guideEl = $('heroPowerGuide');
+      if (guideEl) {
+        const info = ACTIVE_POWER_GUIDE[selected];
+        const unseen = info && !store.stats?.heroes?.includes(selected);
+        guideEl.hidden = !unseen;
+        if (unseen) guideEl.innerHTML = `<span class="hpg-badge">⚡ ${info.title}</span><p>${info.text}</p>`;
+      }
       cards.querySelectorAll('button').forEach(
         (b) =>
           (b.onclick = () => {

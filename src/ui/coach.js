@@ -106,6 +106,20 @@ function tipFor(id) {
       demo: 'hero',
       glow: '#heroHudName',
     },
+    hero_power_jean: {
+      tag: 'PODER ACTIVO',
+      title: `${icon(h.icon)} ${h.name}: ${h.power}`,
+      text: 'Pulsa el botón <b>Poder</b> (abajo) para retroceder varios movimientos de golpe y recuperar esos turnos sin gastar pistas. Puedes usarlo <b>una vez por tablero</b> cuando ya hayas movido.',
+      demo: 'hero',
+      glow: '#bPower',
+    },
+    hero_power_van: {
+      tag: 'PODER ACTIVO',
+      title: `${icon(h.icon)} ${h.name}: ${h.power}`,
+      text: 'Pulsa el botón <b>Poder</b> (abajo) para que Juth ejecute automáticamente varios pasos óptimos hacia la salida (si faltan 3 o más). Puedes usarlo <b>una vez por tablero</b>.',
+      demo: 'hero',
+      glow: '#bPower',
+    },
   }[id];
 }
 
@@ -180,9 +194,10 @@ export function startCoach() {
   if (G.n === 1) queue.push('drag');
   if (!run.daily) {
     // en Desafío no se enseñan puntos/ayudas/héroe de Aventura: solo sacar la llave la primera vez y piezas especiales
+    if (run.hero === 'jean' || run.hero === 'van') queue.push(`hero_power_${run.hero}`);
     if (G.n >= 2) queue.push('score');
     if (G.n >= 3) queue.push('tools');
-    if (G.n >= 4) queue.push('hero');
+    if (G.n >= 4 && run.hero === 'lia') queue.push('hero');
   }
   if (run.fate?.length) queue.push('fate');
   if (G.seal) queue.push('seal');

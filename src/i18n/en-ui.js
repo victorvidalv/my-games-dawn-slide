@@ -1065,4 +1065,15 @@ export const EN_UI = {
   'Sí, borrar todo': 'Yes, delete all',
   'Puzle de bloques roguelite con tres héroes y 21 niveles.':
     'Roguelite sliding-block puzzle with three heroes and 21 levels.',
+  'PODER ACTIVO': 'ACTIVE POWER',
+  'Poder activo · Rebobinar': 'Active power · Rewind',
+  'Poder activo · Trazar destino': 'Active power · Trace destiny',
+  'Usa el botón Poder durante la partida para retroceder varios movimientos de golpe y recuperar esos turnos (1 vez por tablero).':
+    'Press the Power button during play to rewind several moves at once and recover those turns (once per board).',
+  'Usa el botón Poder durante la partida para ejecutar varios pasos óptimos hacia la salida si faltan 3 o más (1 vez por tablero).':
+    'Press the Power button during play to automatically execute several optimal steps toward the exit when 3 or more remain (once per board).',
+  'Pulsa el botón <b>Poder</b> (abajo) para retroceder varios movimientos de golpe y recuperar esos turnos sin gastar pistas. Puedes usarlo <b>una vez por tablero</b> cuando ya hayas movido.':
+    'Tap the <b>Power</b> button (below) to rewind several moves at once and recover those turns without spending hints. Usable <b>once per board</b> after making a move.',
+  'Pulsa el botón <b>Poder</b> (abajo) para que Juth ejecute automáticamente varios pasos óptimos hacia la salida (si faltan 3 o más). Puedes usarlo <b>una vez por tablero</b>.':
+    'Tap the <b>Power</b> button (below) so Juth automatically plays several optimal steps toward the exit (when 3 or more remain). Usable <b>once per board</b>.',
 };

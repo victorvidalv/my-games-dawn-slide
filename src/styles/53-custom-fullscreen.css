@@ -1035,3 +1035,37 @@
 #result .res-ring {
   border-color: var(--res-accent);
 }
+
+/* ---------- Guía de poder activo en el selector de héroes (Jean y Juth si no han sido jugados) ---------- */
+.hero-power-guide {
+  width: 100%;
+  margin: 8px 0 4px;
+  padding: 10px 13px;
+  border-radius: 13px;
+  border: 1.5px solid color-mix(in srgb, var(--chosen, #ffd25a) 55%, rgba(255, 255, 255, 0.14));
+  background:
+    radial-gradient(
+      ellipse 80% 80% at 15% 0%,
+      color-mix(in srgb, var(--chosen, #ffd25a) 18%, transparent),
+      transparent 72%
+    ),
+    rgba(14, 17, 32, 0.88);
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.34);
+}
+.hero-power-guide[hidden] {
+  display: none;
+}
+.hero-power-guide .hpg-badge {
+  display: inline-block;
+  margin-bottom: 4px;
+  font: 800 11.5px / 1.2 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--chosen, #ffd25a) 75%, #fff);
+  text-transform: uppercase;
+}
+.hero-power-guide p {
+  margin: 0;
+  font: 500 12.5px / 1.4 var(--font-ui, system-ui, sans-serif);
+  color: #e6deef;
+}

@@ -710,6 +710,7 @@ export const COUNTERS = [
   'dailyBestDay', // más retos diarios distintos completados en un mismo día, marca máxima
   'relicsSeen', // máscara de bits: reliquias de Aventura usadas
   'heroWins', // máscara de bits: héroes con los que se completó una aventura
+  'heroHardWins', // máscara de bits: héroes con los que se completó Difícil o Experto
   'fateSeen', // máscara de bits: cartas del destino elegidas alguna vez
 ];
 

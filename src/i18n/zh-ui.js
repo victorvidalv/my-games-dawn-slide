@@ -1020,4 +1020,15 @@ export const ZH_UI = {
     '已保存的进度、纪录、成就、自定义内容和教程都将被永久删除，此操作无法撤销。',
   'Sí, borrar todo': '确认全部清除',
   'Puzle de bloques roguelite con tres héroes y 21 niveles.': '包含三位英雄与 21 关的肉鸽滑块解谜游戏。',
+  'PODER ACTIVO': '主动技能',
+  'Poder activo · Rebobinar': '主动技能 · 回溯',
+  'Poder activo · Trazar destino': '主动技能 · 命运轨迹',
+  'Usa el botón Poder durante la partida para retroceder varios movimientos de golpe y recuperar esos turnos (1 vez por tablero).':
+    '对局中点击“技能”按钮即可一次回溯多步并返还步数（每关限用 1 次）。',
+  'Usa el botón Poder durante la partida para ejecutar varios pasos óptimos hacia la salida si faltan 3 o más (1 vez por tablero).':
+    '对局中点击“技能”按钮即可自动走出多步最优解（剩余 3 步及以上时可用，每关限用 1 次）。',
+  'Pulsa el botón <b>Poder</b> (abajo) para retroceder varios movimientos de golpe y recuperar esos turnos sin gastar pistas. Puedes usarlo <b>una vez por tablero</b> cuando ya hayas movido.':
+    '点击下方的 <b>技能</b> 按钮，可一次回溯多步并返还这些步数，无需消耗提示。走出至少一步后<b>每关可用一次</b>。',
+  'Pulsa el botón <b>Poder</b> (abajo) para que Juth ejecute automáticamente varios pasos óptimos hacia la salida (si faltan 3 o más). Puedes usarlo <b>una vez por tablero</b>.':
+    '点击下方的 <b>技能</b> 按钮，Juth 将自动走出多步通往出口的最优解（剩余 3 步及以上时生效）。<b>每关可用一次</b>。',
 };
