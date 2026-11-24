@@ -305,6 +305,24 @@ if ($('tabDaily'))
     Music.muffle(false);
     startDaily();
   };
+if ($('bResetData'))
+  $('bResetData').onclick = async () => {
+    const ok = await ask({
+      ico: '⚠️',
+      danger: true,
+      yes: 'Sí, borrar todo',
+      no: 'Cancelar',
+      title: '¿Borrar todos tus datos?',
+      text: 'Se eliminarán tus partidas guardadas, récords, logros, personalización y tutoriales. Esta acción no se puede deshacer.',
+    });
+    if (!ok) return;
+    try {
+      localStorage.clear();
+    } catch {
+      /* sin almacenamiento */
+    }
+    location.reload();
+  };
 $('menuBack').onclick = () => {
   const from = viewNow;
   showView('home');

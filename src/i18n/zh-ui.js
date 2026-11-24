@@ -1012,4 +1012,12 @@ export const ZH_UI = {
   'Pistas para el modo Aventura': '冒险模式提示奖励',
   '+1 pista para el modo Aventura': '冒险模式 +1 提示',
   '+{n} pistas para el modo Aventura': '冒险模式 +{n} 提示',
+  'Borrar mis datos': '清除我的数据',
+  'Elimina tus partidas, récords, personalización y tutoriales para empezar completamente de cero.':
+    '删除所有存档、纪录、自定义内容和教程，完全重新开始。',
+  '¿Borrar todos tus datos?': '确定要清除所有数据吗？',
+  'Se eliminarán tus partidas guardadas, récords, logros, personalización y tutoriales. Esta acción no se puede deshacer.':
+    '已保存的进度、纪录、成就、自定义内容和教程都将被永久删除，此操作无法撤销。',
+  'Sí, borrar todo': '确认全部清除',
+  'Puzle de bloques roguelite con tres héroes y 21 niveles.': '包含三位英雄与 21 关的肉鸽滑块解谜游戏。',
 };

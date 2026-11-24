@@ -1056,4 +1056,13 @@ export const EN_UI = {
   'Pistas para el modo Aventura': 'Hints for Adventure mode',
   '+1 pista para el modo Aventura': '+1 hint for Adventure mode',
   '+{n} pistas para el modo Aventura': '+{n} hints for Adventure mode',
+  'Borrar mis datos': 'Delete my data',
+  'Elimina tus partidas, récords, personalización y tutoriales para empezar completamente de cero.':
+    'Deletes your runs, records, customization and tutorials to start completely fresh.',
+  '¿Borrar todos tus datos?': 'Delete all your data?',
+  'Se eliminarán tus partidas guardadas, récords, logros, personalización y tutoriales. Esta acción no se puede deshacer.':
+    'Your saved runs, records, achievements, customization and tutorials will be permanently deleted. This cannot be undone.',
+  'Sí, borrar todo': 'Yes, delete all',
+  'Puzle de bloques roguelite con tres héroes y 21 niveles.':
+    'Roguelite sliding-block puzzle with three heroes and 21 levels.',
 };
