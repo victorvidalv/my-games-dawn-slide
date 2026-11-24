@@ -12,7 +12,19 @@ import {
 import { DAILY_TOTAL_BOARDS } from '../game/daily.js';
 import { closeCustomView, paintAchBadge, renderAchievements } from './achievements.js';
 import { paintDailyHome } from './daily.js';
-import { PATHS, S, closeRun, heroOf, pathOf, pathUnlockReq, pathUnlocked, persist, setRun, store } from '../state.js';
+import {
+  PATHS,
+  S,
+  closeRun,
+  heroOf,
+  pathOf,
+  pathUnlockReq,
+  pathUnlocked,
+  persist,
+  setRun,
+  store,
+  wipeAllData,
+} from '../state.js';
 import { restoreRun } from '../game/run-logic.js';
 import { bestAdventureRecord } from '../game/save-merge.js';
 import { gradeIndex, rankFor } from '../game/rank.js';
@@ -316,11 +328,8 @@ if ($('bResetData'))
       text: 'Se eliminarán tus partidas guardadas, récords, logros, personalización y tutoriales. Esta acción no se puede deshacer.',
     });
     if (!ok) return;
-    try {
-      localStorage.clear();
-    } catch {
-      /* sin almacenamiento */
-    }
+    wipeAllData();
+    if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
     location.reload();
   };
 $('menuBack').onclick = () => {

@@ -103,7 +103,9 @@ export function holdBusy() {
 export const heroOf = (id = S.run?.hero) => heroById(id);
 /** Puntos que dan `moves` movimientos en el tablero actual (incluye racha, cartas del destino y reliquia). */
 export const gainNow = (moves = S.G.moves) => runGain(S.run, moves, S.G.opt, S.run.streak || 0, S.G);
+let wiping = false;
 export function persist(next = store) {
+  if (wiping) return false;
   try {
     const merged = mergeSaves(next, readStore()); // recoge avances de otras pestañas
     const text = JSON.stringify(merged);
@@ -117,6 +119,21 @@ export function persist(next = store) {
     return true;
   } catch {
     return false;
+  }
+}
+
+/** Borra por completo todo el progreso (memoria y almacenamiento) e impide que `pagehide` lo vuelva a guardar. */
+export function wipeAllData() {
+  wiping = true;
+  closeRun();
+  for (const k of Object.keys(store)) delete store[k];
+  Object.assign(store, { best: { score: 0, level: 0 }, run: null, paths: {}, mode: 'c' });
+  try {
+    localStorage.removeItem(SAVE);
+    localStorage.removeItem(BAK);
+    localStorage.clear();
+  } catch {
+    /* sin almacenamiento */
   }
 }
 
