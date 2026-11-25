@@ -310,6 +310,40 @@ describe('Personalizar: objetos que se desbloquean por acciones', () => {
     expect(revalidateUnlocks(store)).toBe(false);
   });
 
+  it('las máscaras de héroes ignoran bits fuera de los 3 héroes y revalidateUnlocks limpia heroHardWins contaminado', () => {
+    // Bits >= 3 (p. ej. por el antiguo bug de cartas del destino) no cuentan como victorias de héroe
+    expect(statsOf({ stats: { heroWins: 0b1111000, heroHardWins: 0b1111000 } })).toMatchObject({
+      heroWinsCount: 0,
+      heroHardWinsCount: 0,
+    });
+    expect(statsOf({ stats: { heroWins: 0b10101, heroHardWins: 0b11010 } })).toMatchObject({
+      heroWinsCount: 2,
+      heroHardWinsCount: 1,
+    });
+
+    // Sin victorias en Difícil/Experto: heroHardWins se limpia, los bits se preservan en fateSeen y se revocan los premios
+    const polluted = {
+      stats: { paths: [1], heroHardWins: 0b111 },
+      shopOwned: { 'pieces:lava': 1 },
+      outfitsOwned: { 'lia:brasas': 1, 'jean:sakura': 1, 'van:cuervos': 1 },
+    };
+    expect(revalidateUnlocks(polluted)).toBe(true);
+    expect(polluted.stats.heroHardWins).toBe(0);
+    expect(polluted.stats.fateSeen).toBe(0b111);
+    expect(polluted.shopOwned['pieces:lava']).toBeUndefined();
+    expect(polluted.outfitsOwned).toEqual({});
+
+    // Con victoria en Difícil: solo se conservan los bits de los 3 héroes (0..2)
+    const partial = {
+      stats: { paths: [1, 50], heroHardWins: 0b11001, fateSeen: 0b10 },
+      outfitsOwned: { 'lia:brasas': 1, 'jean:sakura': 1 },
+    };
+    expect(revalidateUnlocks(partial)).toBe(true);
+    expect(partial.stats.heroHardWins).toBe(0b001);
+    expect(partial.stats.fateSeen).toBe(0b11011);
+    expect(partial.outfitsOwned).toEqual({ 'lia:brasas': 1 });
+  });
+
   it('con todas las acciones cumplidas se desbloquea todo lo de Personalizar', () => {
     const saved = { ...STATS };
     try {

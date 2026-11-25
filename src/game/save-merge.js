@@ -98,6 +98,7 @@ export function mergeDaily(a, b) {
     solved: Math.max(num(a.solved), num(b.solved)),
     gold: Math.max(num(a.gold), num(b.gold)),
     best: Math.max(num(a.best), num(b.best)),
+    bestCleared: Math.max(num(a.bestCleared), num(b.bestCleared)),
     streak: num(latest.streak),
     last: latest.last ?? -1,
     by,

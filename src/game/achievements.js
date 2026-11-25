@@ -710,8 +710,8 @@ export const COUNTERS = [
   'dailyBestDay', // más retos diarios distintos completados en un mismo día, marca máxima
   'relicsSeen', // máscara de bits: reliquias de Aventura usadas
   'heroWins', // máscara de bits: héroes con los que se completó una aventura
-  'heroHardWins', // máscara de bits: héroes con los que se completó Difícil o Experto
   'fateSeen', // máscara de bits: cartas del destino elegidas alguna vez
+  'heroHardWins', // máscara de bits: héroes con los que se completó Difícil o Experto (al final para compatibilidad v5)
 ];
 
 /** Contadores que son máscaras de bits (se marcan con `flagStat` y se leen contando bits). */
@@ -772,8 +772,8 @@ export const STATS = {
   },
   cosmeticsOwned: (store) => Object.keys(store.shopOwned || {}).length,
   relicsSeenCount: (store) => bitCount(store.stats?.relicsSeen),
-  heroWinsCount: (store) => bitCount(store.stats?.heroWins),
-  heroHardWinsCount: (store) => bitCount(store.stats?.heroHardWins),
+  heroWinsCount: (store) => bitCount((Number(store.stats?.heroWins) || 0) & 7),
+  heroHardWinsCount: (store) => bitCount((Number(store.stats?.heroHardWins) || 0) & 7),
   heroBoardsLia: (store) => Number(store.stats?.heroBoards_lia) || 0,
   heroBoardsJean: (store) => Number(store.stats?.heroBoards_jean) || 0,
   heroBoardsVan: (store) => Number(store.stats?.heroBoards_van) || 0,
@@ -2201,6 +2201,19 @@ export function unlockProgress(type, id, store = {}) {
  */
 export function revalidateUnlocks(store) {
   let changed = false;
+  const hardWins = Number(store.stats?.heroHardWins) || 0;
+  if (hardWins > 0) {
+    const hasHardWin = listOf(store, 'paths').some((p) => p >= 50);
+    if (!hasHardWin) {
+      store.stats.fateSeen = (Number(store.stats.fateSeen) || 0) | hardWins;
+      store.stats.heroHardWins = 0;
+      changed = true;
+    } else if (hardWins > 7) {
+      store.stats.fateSeen = (Number(store.stats.fateSeen) || 0) | hardWins;
+      store.stats.heroHardWins = hardWins & 7;
+      changed = true;
+    }
+  }
   for (const key of Object.keys(store.shopOwned || {})) {
     const [type, id] = key.split(':');
     if (!CUSTOM_TYPES.includes(type) || LEGACY_REWARDS[type]?.includes(id) || !UNLOCKS[key]) continue;
@@ -2308,7 +2321,7 @@ export function unlockOutfits(store, now = Date.now()) {
   for (const [hero, list] of Object.entries(OUTFITS))
     for (const o of list.slice(1)) {
       const key = outfitKey(hero, o.id);
-      if (owned[key] || !unlockProgress('outfit', key, store).done) continue;
+      if (owned[key] || !UNLOCKS[rewardKey('outfit', key)] || !unlockProgress('outfit', key, store).done) continue;
       owned[key] = now;
       fresh.push({ type: 'outfit', hero, item: o });
     }

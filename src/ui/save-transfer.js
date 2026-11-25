@@ -2,7 +2,7 @@ import { $ } from '../dom.js';
 import { exportSaveLink, readSaveHash, readSaveLink } from '../game/save-transfer.js';
 import { qrSvg } from '../qr.js';
 import { importProgress, S, store } from '../state.js';
-import { applyLook } from './achievements.js';
+import { applyLook, paintAchBadge } from './achievements.js';
 import { openMenu } from './menu.js';
 
 const dialog = $('saveTransfer');
@@ -73,6 +73,7 @@ function attemptImport(save, hash, replaceRun = false) {
   clearHash(hash);
   pasteField.value = '';
   applyLook();
+  paintAchBadge();
   openMenu();
   status.textContent = 'Progreso importado.';
   $('transferClose').focus();

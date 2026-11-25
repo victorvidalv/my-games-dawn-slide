@@ -26,6 +26,8 @@ const V3_VERSION = 3;
 const V4_VERSION = 4;
 /** v5 = v4 con las listas vigentes de logros, contadores y Canjear (las de v3/v4 quedan fijas más abajo). */
 const V5_VERSION = 5;
+/** v6 = v5 + heroHardWins al final de los contadores. */
+const V6_VERSION = 6;
 /* Lo que guardaban v1-v3 de los jefes y del camino heroico (ya no existen): se lee para validar y se descarta. */
 const LEGACY_BOSS_RETRIES = 2;
 const LEGACY_HEROIC_HINTS = 1;
@@ -112,7 +114,8 @@ const V5_SHOP_KEYS = shopKeys(V5_REWARD_COUNTS);
 // prettier-ignore
 const V3_COUNTERS = ['completed','perfects','mini5','iceRock','locks','fateCards','cleanCity','boardsSolved','heavyBoards','shopBuys','powersUsed','challengeBoards','challengeRelicsUsed'];
 const V4_COUNTERS = ALL_COUNTERS.slice(0, 17);
-const V5_COUNTERS = ALL_COUNTERS;
+const V5_COUNTERS = ALL_COUNTERS.slice(0, -1);
+const V6_COUNTERS = ALL_COUNTERS;
 const V3_CHALLENGE_ROUTES = LEGACY_CHALLENGE_ROUTES.map((r) => r.id);
 const V3_CHALLENGE_RELICS = ['hint', 'reset', 'undo'];
 const V3_LOOKS = QR_LISTS;
@@ -184,7 +187,7 @@ export function exportSaveLink(store = {}) {
   };
   const writeV = (value, max = UINT32) => writeVarint(bytes, value, max);
 
-  write(V5_VERSION);
+  write(V6_VERSION);
 
   // 1. Caminos de Aventura (solo los que tienen avance)
   const pathRecords = PATHS.map((path) => store.paths?.['c' + path] || null);
@@ -213,7 +216,7 @@ export function exportSaveLink(store = {}) {
   writeBitset(bytes, V5_SHOP_KEYS, (key) => Boolean(store.shopOwned?.[key]));
 
   // 4. Estadísticas: contadores (varint) + 5 colecciones (21 bits en 3 bytes)
-  for (const stat of V5_COUNTERS) writeV(store.stats?.[stat], UINT32);
+  for (const stat of V6_COUNTERS) writeV(store.stats?.[stat], UINT32);
   const colBits =
     maskOf(HEROES, (id) => store.stats?.heroes?.includes(id)) |
     (maskOf(PATHS, (id) => store.stats?.paths?.includes(id)) << 3) |
@@ -325,7 +328,7 @@ export function readSaveHash(hash, now = new Date()) {
   };
 
   const version = read();
-  if (version === V3_VERSION || version === V4_VERSION || version === V5_VERSION)
+  if (version === V3_VERSION || version === V4_VERSION || version === V5_VERSION || version === V6_VERSION)
     return readV3(read, readV, () => offset === end, now, version);
   if (version !== BASE_VERSION && version !== RELIC_VERSION) invalid();
 
@@ -404,9 +407,10 @@ export function readSaveHash(hash, now = new Date()) {
 
 function readV3(read, readV, atEnd, now, version = V3_VERSION) {
   const v4 = version >= V4_VERSION,
-    v5 = version >= V5_VERSION;
+    v5 = version >= V5_VERSION,
+    v6 = version >= V6_VERSION;
   const achIds = v5 ? V5_ACH_IDS : v4 ? V4_ACH_IDS : V3_ACH_IDS,
-    counters = v5 ? V5_COUNTERS : v4 ? V4_COUNTERS : V3_COUNTERS,
+    counters = v6 ? V6_COUNTERS : v5 ? V5_COUNTERS : v4 ? V4_COUNTERS : V3_COUNTERS,
     shop = v5 ? V5_SHOP_KEYS : V3_SHOP_KEYS;
   const ts = now.getTime();
   const maxSec = Math.floor(ts / 1000) + 86400;

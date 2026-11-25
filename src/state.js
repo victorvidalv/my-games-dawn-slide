@@ -2,7 +2,7 @@ import { MAX_LEVEL } from './engine/difficulty.js';
 import { heroById } from './game/heroes.js';
 import { runGain } from './game/run-points.js';
 import { mergeSaves } from './game/save-merge.js';
-import { migrateAchievements } from './game/achievements.js';
+import { migrateAchievements, revalidateUnlocks, unlockRewards } from './game/achievements.js';
 /* ============================ Estado y guardado ============================ */
 /* Los puntajes viven SIEMPRE en localStorage (clave estable entre versiones, con copia de respaldo) */
 const SAVE = 'desbloquea.rogue.v2',
@@ -104,10 +104,10 @@ export const heroOf = (id = S.run?.hero) => heroById(id);
 /** Puntos que dan `moves` movimientos en el tablero actual (incluye racha, cartas del destino y reliquia). */
 export const gainNow = (moves = S.G.moves) => runGain(S.run, moves, S.G.opt, S.run.streak || 0, S.G);
 let wiping = false;
-export function persist(next = store) {
+export function persist(next = store, { merge = true } = {}) {
   if (wiping) return false;
   try {
-    const merged = mergeSaves(next, readStore()); // recoge avances de otras pestañas
+    const merged = merge ? mergeSaves(next, readStore()) : next; // recoge avances de otras pestañas
     const text = JSON.stringify(merged);
     localStorage.setItem(SAVE, text);
     Object.assign(store, merged);
@@ -148,5 +148,7 @@ export function importProgress(incoming, { replaceRun = false } = {}) {
   if (incoming.outfit) updated.outfit = { ...updated.outfit, ...incoming.outfit };
   updated.tips = { ...disk.tips, ...store.tips, ...incoming.tips };
   migrateAchievements(updated);
-  return persist(updated) ? 'done' : 'error';
+  revalidateUnlocks(updated);
+  unlockRewards(updated);
+  return persist(updated, { merge: false }) ? 'done' : 'error';
 }

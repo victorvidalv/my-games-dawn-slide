@@ -20,7 +20,7 @@ import {
   streakHintBonus,
   writeDailyProgress,
 } from './daily.js';
-import { FLAG_STATS, adventureStartStats, boardStats, boardWinStats, flagStat } from './achievements.js';
+import { adventureStartStats, boardStats, boardWinStats, flagStat } from './achievements.js';
 import { boardPure } from './run-points.js';
 import { canPaidRevive, payRevive } from './shop.js';
 import {
@@ -284,7 +284,7 @@ function fateDialog() {
         updateStats((st) =>
           flagStat(
             st,
-            FLAG_STATS[2],
+            'fateSeen',
             FATE_CARDS.findIndex((c) => c.id === id),
           ),
         );

@@ -85,13 +85,13 @@ describe('enlaces de transferencia v4 (con las cartas del destino)', () => {
   it('soporta todos los logros y objetos de Canjear (pendientes, reclamados y nuevos) sin superar el tamaño máximo del QR', () => {
     const ach = Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, recordAt]));
     const achClaimed = Object.fromEntries(ACHIEVEMENTS.slice(0, 50).map((a) => [a.id, recordAt]));
-    const stats = { ...snapshot.stats, emberBoards: 30, bestGrade: 5, heroWins: 7, fateSeen: 2 ** 31 - 1 };
+    const stats = { ...snapshot.stats, emberBoards: 30, bestGrade: 5, heroWins: 7, heroHardWins: 5, fateSeen: 2 ** 31 - 1 };
     const link = exportSaveLink({ ...snapshot, ach, achClaimed, stats });
     expect(new TextEncoder().encode(link).length).toBeLessThan(QR_MAX_BYTES);
     const imported = readSaveLink(link, now);
     expect(Object.keys(imported.ach)).toHaveLength(ACHIEVEMENTS.length);
     expect(Object.keys(imported.achClaimed)).toHaveLength(50);
-    expect(imported.stats).toMatchObject({ emberBoards: 30, bestGrade: 5, heroWins: 7, fateSeen: 2 ** 31 - 1 });
+    expect(imported.stats).toMatchObject({ emberBoards: 30, bestGrade: 5, heroWins: 7, heroHardWins: 5, fateSeen: 2 ** 31 - 1 });
     // con todo reclamado alcanza para los objetos nuevos de Canjear, que también viajan en el enlace
     const shopOwned = { ...snapshot.shopOwned, 'board:dawnfire': recordAt, 'key:eclipse': recordAt };
     const rich = readSaveLink(exportSaveLink({ ...snapshot, ach, achClaimed: ach, stats, shopOwned }), now);
@@ -191,5 +191,23 @@ describe('importar al guardado local', () => {
     expect(target.importProgress(incoming, { replaceRun: true })).toBe('error');
     expect(target.store.run.level).toBe(27);
     expect(JSON.parse(target.disk.get(key))).toEqual(local);
+  });
+
+  it('persist con merge=false guarda la revocación de revalidateUnlocks sin resucitar claves del disco', async () => {
+    const local = {
+      stats: { paths: [1], heroHardWins: 0b111 },
+      shopOwned: { 'pieces:lava': recordAt, 'board:slate': recordAt },
+      outfitsOwned: { 'lia:brasas': recordAt },
+    };
+    const { persist, store, disk } = await withLocal(local);
+    const { revalidateUnlocks } = await import('../src/game/achievements.js');
+    expect(revalidateUnlocks(store)).toBe(true);
+    expect(persist(store, { merge: false })).toBe(true);
+    const saved = JSON.parse(disk.get(key));
+    expect(saved.shopOwned['pieces:lava']).toBeUndefined();
+    expect(saved.shopOwned['board:slate']).toBe(recordAt);
+    expect(saved.outfitsOwned).toEqual({});
+    expect(saved.stats.heroHardWins).toBe(0);
+    expect(saved.stats.fateSeen).toBe(0b111);
   });
 });

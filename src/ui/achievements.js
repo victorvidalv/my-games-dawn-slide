@@ -636,6 +636,6 @@ export function renderAchievements() {
 }
 
 // Al arrancar: desbloquear en silencio lo ya cumplido (también en guardados antiguos) y aplicar el aspecto
-if (revalidateUnlocks(store)) persist();
+if (revalidateUnlocks(store)) persist(store, { merge: false });
 checkAchievements({ silent: true });
 applyLook();
