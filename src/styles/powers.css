@@ -260,8 +260,8 @@
     --pw: #a5c8ed;
     --pw2: #d8eaff;
     z-index: 12;
-    filter: drop-shadow(0 0 8px var(--pw));
-    animation: power-piece-pop 0.3s ease-out;
+    filter: drop-shadow(0 0 12px var(--pw)) drop-shadow(0 0 26px var(--pw));
+    animation: power-piece-pop 0.45s ease-out;
   }
   .hero-power.destiny .piece.power-piece {
     --pw: #d1b2ec;
@@ -274,11 +274,11 @@
     z-index: 5;
     pointer-events: none;
     border-radius: 9px;
-    border: 2px solid var(--pw2);
+    border: 4px solid var(--pw2);
     box-shadow:
-      0 0 0 1.5px var(--brass-lo),
-      0 0 14px var(--pw),
-      inset 0 0 12px color-mix(in srgb, var(--pw) 55%, transparent);
+      0 0 0 2px var(--brass-lo),
+      0 0 22px 3px var(--pw),
+      inset 0 0 18px color-mix(in srgb, var(--pw) 75%, transparent);
   }
   /* Jean (tiempo): marco discontinuo, como las marcas de un reloj, que gira hacia atrás. */
   .hero-power.rewind .piece.power-piece::after {
@@ -288,12 +288,12 @@
   /* Juth (destino): doble marco dorado con esquinas de runa, fijo y nítido. */
   .hero-power.destiny .piece.power-piece::after {
     border-style: double;
-    border-width: 4px;
+    border-width: 6px;
     border-color: var(--brass-hi);
     box-shadow:
-      0 0 0 1.5px var(--pw),
-      0 0 16px var(--pw),
-      inset 0 0 12px color-mix(in srgb, var(--pw) 55%, transparent);
+      0 0 0 2px var(--pw),
+      0 0 26px 4px var(--pw),
+      inset 0 0 18px color-mix(in srgb, var(--pw) 75%, transparent);
   }
   @media (prefers-reduced-motion: reduce) {
     .hero-power .piece.power-piece,
@@ -415,8 +415,11 @@
     filter: sepia(0.35) saturate(0.8) brightness(0.92);
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero-power::before,
-    .power-toast,
+    .hero-power::before {
+      animation: none;
+    }
+  }
+  .power-toast,
   .tip {
     border-radius: var(--wob-b);
   }
@@ -564,7 +567,7 @@
       transform: scale(1);
     }
     35% {
-      transform: scale(1.07);
+      transform: scale(1.12);
     }
     100% {
       transform: scale(1);
