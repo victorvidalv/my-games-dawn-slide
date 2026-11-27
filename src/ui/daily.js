@@ -1,7 +1,7 @@
 /**
- * Desafío diario único: 15 tableros (mínimos 3→17) con 150 turnos exactos.
+ * Desafío diario único: 15 tableros (mínimos 3→17) con 152 turnos (150 son los mínimos: el sello «150 exactos»).
  * Desde el menú principal entra directo a jugar en 1 clic; aquí se pinta el avance en el botón del inicio
- * y la pantalla final con los premios por hitos (13 → +1 pista, 14 → +3 pistas, 15 → +5 pistas).
+ * y la pantalla final con los premios por hitos (10 → +1 pista, 13 → +2 pistas, 15 → +4 pistas).
  */
 import { reducedMotion } from './dom-utils.js';
 import { Music } from '../audio/music.js';
@@ -12,6 +12,7 @@ import {
   DAILY_HINT_MILESTONES,
   DAILY_TOTAL_BOARDS,
   DAILY_TURN_BUDGET,
+  DAILY_WIN_BOARD,
   dailyHintReward,
   dailyProgress,
   dayNumber,
@@ -36,7 +37,7 @@ const state = () => (store.daily ||= emptyDaily());
 export function paintDailyHome(day = dayNumber()) {
   const progress = dailyProgress(store, DAILY_CHALLENGE.id, day);
   const best = todayResult(store.daily, DAILY_CHALLENGE.id, day);
-  const done = (best?.cleared || 0) >= 13;
+  const done = (best?.cleared || 0) >= DAILY_WIN_BOARD;
   const active = progress && !progress.finished && (progress.used > 0 || progress.attempt?.moves > 0);
   const currentBoard = active
     ? Math.min(DAILY_TOTAL_BOARDS, (progress.attempt?.index ?? progress.boards?.filter(Boolean).length ?? 0) + 1)
@@ -61,12 +62,12 @@ export function paintDailyHome(day = dayNumber()) {
     $('homeDailySub').textContent =
       `Tablero ${currentBoard}/${DAILY_TOTAL_BOARDS} · ${activeUsed}/${DAILY_TURN_BUDGET} turnos`;
   } else {
-    $('homeDailySub').textContent = '15 tableros · 150 turnos';
+    $('homeDailySub').textContent = '15 tableros · 152 turnos';
   }
   $('tabDaily').classList.toggle('has-news', !done);
 }
 
-/** Pantalla de resultado del Desafío diario: tableros superados, turnos usados y premios por hitos (13 / 14 / 15). */
+/** Pantalla de resultado del Desafío diario: tableros superados, turnos usados y premios por hitos (10 / 13 / 15). */
 export function showDailyResult(daily, result = {}) {
   const d = state();
   const best = todayResult(d, DAILY_CHALLENGE.id, daily.day);
@@ -78,7 +79,8 @@ export function showDailyResult(daily, result = {}) {
 
   const boardsBox = $('dailyBoards');
   const modal = $('dailyEnd');
-  const won = cleared >= DAILY_HINT_MILESTONES[0].board;
+  const won = cleared >= DAILY_WIN_BOARD; // medalla
+  const prized = dailyHintReward(cleared) > 0;
   $('dailyEndMedal').innerHTML = won ? icon(MEDAL_ICON[medal]) : '';
   $('dailyEndMedal').hidden = !won;
   $('dailyEndMedal').setAttribute('title', MEDAL_TITLE[medal]);
@@ -86,7 +88,7 @@ export function showDailyResult(daily, result = {}) {
   $('dailyEndTitle').textContent =
     cleared >= DAILY_TOTAL_BOARDS
       ? '¡Desafío completado!'
-      : won
+      : prized
         ? '¡Premio conseguido!'
         : result.surrendered
           ? 'Te has rendido'
@@ -106,7 +108,7 @@ export function showDailyResult(daily, result = {}) {
   line.hidden = false;
   line.style.setProperty('--n', String(cleared));
 
-  /* 15 marcas que se encienden una a una; las de premio (13, 14, 15) llevan sus pistas debajo */
+  /* 15 marcas que se encienden una a una; las de premio (10, 13, 15) llevan sus pistas debajo */
   const prizes = new Map(DAILY_HINT_MILESTONES.map(({ board, hints }) => [board, hints]));
   boardsBox.replaceChildren(
     ...Array.from({ length: DAILY_TOTAL_BOARDS }, (_, i) => {
@@ -122,6 +124,8 @@ export function showDailyResult(daily, result = {}) {
     }),
   );
 
+  const seal = $('dailyEndSeal');
+  seal.hidden = !result.exact;
   const close = openModal(modal, { onEscape: false, onClose: () => Music.duck(1) });
   if (reducedMotion()) $('dailyEndDelta').textContent = String(cleared);
   else countUp($('dailyEndDelta'), 0, cleared, 400 + cleared * 70, (v) => String(Math.round(v)));

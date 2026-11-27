@@ -776,6 +776,44 @@
   .meter .mrow .left-chip[hidden] {
     display: none;
   }
+  /* Desafío: margen de turnos sobre los mínimos de lo que falta (+2 sobra, +0 justo, −1 ya no llegas al 15) */
+  .meter .mrow .margin-chip {
+    align-self: center;
+    padding: 2px 9px;
+    border: 2px solid #150e0c;
+    border-radius: 99px;
+    background: #2b2118;
+    color: #f2c45c;
+    font: 800 11px/1.2 var(--font-ui);
+    letter-spacing: 0.06em;
+    opacity: 1;
+    box-shadow: 2px 3px 0 #150e0c;
+    white-space: nowrap;
+  }
+  .meter .mrow .margin-chip.zero {
+    background: #4a3413;
+    color: #ffe7a3;
+  }
+  .meter .mrow .margin-chip.neg {
+    background: #6a2018;
+    color: #ffd0c4;
+  }
+  .meter .mrow .margin-chip[hidden],
+  .meter.low .mrow .margin-chip {
+    display: none;
+  }
+  #bRedo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  #bRedo[hidden] {
+    display: none;
+  }
+  #bRedo:disabled {
+    opacity: 0.55;
+  }
   @media (prefers-reduced-motion: reduce) {
     #lowBanner.show {
       animation: low-banner-fade 3s linear forwards;

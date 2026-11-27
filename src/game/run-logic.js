@@ -6,7 +6,7 @@
 import { MAX_LEVEL } from '../engine/difficulty.js';
 import { encodeBoard, isValidState } from '../engine/board.js';
 import { analyze } from '../engine/solver.js';
-import { DAILY_TURN_BUDGET } from './daily.js';
+import { DAILY_REDO_REFUND, DAILY_TURN_BUDGET } from './daily.js';
 import { clearRewards } from './heroes.js';
 import { relicFor } from './relics.js';
 import { canPaidRevive, hasRevive, useFreeRetry, useRevive } from './shop.js';
@@ -103,12 +103,12 @@ export function restoreRun(saved) {
   return run;
 }
 
-/** Partida de Desafío: 15 tableros progresivos con semilla aleatoria y reserva compartida de 150 turnos exactos. */
-export function newDailyRun({ challenge, day, seed, index, boards, used = 0, attempt = null }) {
+/** Partida de Desafío: 15 tableros progresivos con semilla aleatoria y reserva compartida de turnos (DAILY_TURN_BUDGET). */
+export function newDailyRun({ challenge, day, seed, index, boards, used = 0, attempt = null, redo = false }) {
   const remaining = Math.max(0, DAILY_TURN_BUDGET - used);
   const runSeed = Number.isFinite(seed) ? seed : day;
   return {
-    daily: { id: challenge.id, day, seed: runSeed, index, used, remaining, boards, attempt },
+    daily: { id: challenge.id, day, seed: runSeed, index, used, remaining, boards, attempt, redo: !!redo },
     seed: runSeed,
     level: challenge.level,
     start: 1,
@@ -136,7 +136,14 @@ export function dailyEntry(
   targets,
   { restart = false, randomSeed = () => Math.floor(Math.random() * 0x7fffffff) + 1 } = {},
 ) {
-  const fresh = () => ({ seed: randomSeed(), boards: targets.map(() => null), used: 0, attempt: null, index: 0 });
+  const fresh = () => ({
+    seed: randomSeed(),
+    boards: targets.map(() => null),
+    used: 0,
+    attempt: null,
+    index: 0,
+    redo: false,
+  });
   if (restart || !progress || progress.finished) return fresh();
   const boards = targets.map((_, i) => progress.boards?.[i] || null);
   const used = Number.isFinite(progress.used) ? progress.used : 0;
@@ -144,7 +151,7 @@ export function dailyEntry(
   const index = attempt?.index ?? boards.findIndex((board) => !board);
   if (index < 0 || used >= DAILY_TURN_BUDGET) return fresh();
   const seed = Number.isFinite(progress.seed) ? progress.seed : randomSeed();
-  return { seed, boards, used, attempt, index };
+  return { seed, boards, used, attempt, index, redo: !!progress.redo };
 }
 
 /** Huella del tablero (piezas, inicio y rocas): distingue un tablero de otro aunque tengan las mismas piezas. */
@@ -225,8 +232,8 @@ export function applyAdventureWin(run, G, gain) {
 }
 
 /**
- * Registra un tablero superado del reto diario y descuenta sus turnos de la reserva de 150.
- * Devuelve el siguiente tablero (−1 si se completaron los 15 o se agotaron los 150 turnos).
+ * Registra un tablero superado del reto diario y descuenta sus turnos de la reserva (DAILY_TURN_BUDGET).
+ * Devuelve el siguiente tablero (−1 si se completaron los 15 o se agotó la reserva).
  */
 export function applyDailyWin(daily, G, points) {
   daily.boards[daily.index] = { moves: G.moves, opt: G.opt, points };
@@ -242,6 +249,29 @@ export function applyDailyWin(daily, G, points) {
     used: daily.used,
     remaining: daily.remaining,
   };
+}
+
+/** ¿Se puede usar «Rehacer tablero»? Una sola vez por Desafío, con el tablero empezado y sin terminar. */
+export const canRedoDaily = (daily, G) => !!(daily && !daily.redo && G && !G.done && G.moves > 0);
+
+/** Turnos que devolvería ahora «Rehacer»: los gastados en este tablero, con tope DAILY_REDO_REFUND. */
+export const redoRefund = (G) => Math.min(G?.moves || 0, DAILY_REDO_REFUND);
+
+/**
+ * «Rehacer tablero»: el tablero vuelve a su inicio y se devuelven los turnos gastados en él (hasta DAILY_REDO_REFUND); el resto
+ * se descuenta de la reserva. No revela nada de la solución, es determinista y solo se puede usar una vez por Desafío.
+ * Devuelve `{ refund, charged }` o null si no se puede.
+ */
+export function redoDailyBoard(daily, G) {
+  if (!canRedoDaily(daily, G)) return null;
+  const refund = redoRefund(G);
+  const charged = G.moves - refund;
+  daily.used = Math.min(DAILY_TURN_BUDGET, (daily.used || 0) + charged);
+  daily.remaining = Math.max(0, DAILY_TURN_BUDGET - daily.used);
+  daily.redo = true;
+  daily.attempt = null;
+  Object.assign(G, { pos: G.start.slice(), moves: 0, hist: [], limit: Math.max(1, daily.remaining) });
+  return { refund, charged };
 }
 
 /**

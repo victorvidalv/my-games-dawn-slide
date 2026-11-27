@@ -28,6 +28,7 @@ export function tipFor(G, heroId) {
 export const setDailyMode = (on) => {
   document.body.classList.toggle('daily-run', on);
   if ($('bHint')) $('bHint').hidden = on;
+  $('bRedo').hidden = !on;
 };
 export const setMessage = (text) => {
   $('msg').textContent = text;

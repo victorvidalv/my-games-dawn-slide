@@ -966,6 +966,21 @@
   #dailyEnd .de-line[hidden] {
     display: none;
   }
+  #dailyEnd .de-seal {
+    margin: 6px 0 0;
+    padding: 3px 12px;
+    border: 2px solid #150e0c;
+    border-radius: 99px;
+    background: #f2c45c;
+    color: #2a1808;
+    font: 800 11px/1.2 var(--font-ui, system-ui, sans-serif);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 2px 3px 0 #150e0c;
+  }
+  #dailyEnd .de-seal[hidden] {
+    display: none;
+  }
   #dailyEnd .de-actions {
     display: flex;
     gap: 10px;

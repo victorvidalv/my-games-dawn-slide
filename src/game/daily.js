@@ -1,11 +1,19 @@
-/** Reto diario único: 15 tableros progresivos (mínimos de 3 a 17) con una reserva compartida de 150 turnos exactos. */
+/** Reto diario único: 15 tableros progresivos (mínimos de 3 a 17) con una reserva compartida de 152 turnos (150 es el mínimo exacto). */
 import { byPath, minReach } from '../engine/difficulty.js';
 import { buildLevel, pickBoard } from '../engine/levels.js';
 import { hash32, mulberry32 } from '../engine/rng.js';
 import { levelPlan } from './mechanics.js';
 
-export const DAILY_TURN_BUDGET = 150;
 export const DAILY_TARGETS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+/** Suma de los mínimos de los 15 tableros: terminar con ≤ 150 turnos usados es el sello «150 exactos». */
+export const DAILY_EXACT_BUDGET = DAILY_TARGETS.reduce((a, b) => a + b, 0);
+/** Colchón de 2 turnos sobre el mínimo: un paso de más en un tablero temprano ya no hunde la partida (calibrado con simulate-challenge). */
+export const DAILY_CUSHION = 2;
+export const DAILY_TURN_BUDGET = DAILY_EXACT_BUDGET + DAILY_CUSHION;
+/** «Rehacer tablero» (una vez por Desafío) devuelve como mucho 4 de los turnos gastados en el tablero: protege del dedazo, no sirve para explorar. */
+export const DAILY_REDO_REFUND = 4;
+/** Tablero a partir del cual el intento cuenta como victoria del día: medalla, racha y logros. */
+export const DAILY_WIN_BOARD = 13;
 export const DAILY_TOTAL_BOARDS = DAILY_TARGETS.length;
 /** Familias de piezas que van apareciendo progresivamente del tablero 1 al 15. */
 export const DAILY_FAMILIES = [
@@ -25,14 +33,14 @@ export const DAILY_FAMILIES = [
   'combo_whgi',
   'combo_whgi',
 ];
-/** Hitos de premio del reto diario: llegar al tablero 13, 14 o 15 suma pistas extra para Aventura. */
+/** Hitos de premio del reto diario: llegar al tablero 10, 13 o 15 suma pistas extra para Aventura. */
 export const DAILY_HINT_MILESTONES = [
-  { board: 13, hints: 1 },
-  { board: 14, hints: 3 },
-  { board: 15, hints: 5 },
+  { board: 10, hints: 1 },
+  { board: 13, hints: 2 },
+  { board: 15, hints: 4 },
 ];
 
-/** Pistas de premio según los tableros superados hoy (13 → +1, 14 → +3, 15 → +5). */
+/** Pistas de premio según los tableros superados hoy (10 → +1, 13 → +2, 15 → +4). */
 export const dailyHintReward = (cleared = 0) =>
   DAILY_HINT_MILESTONES.reduce((bonus, m) => (cleared >= m.board ? m.hints : bonus), 0);
 
@@ -55,7 +63,7 @@ export const DAILY_CHALLENGE = {
   unlock: 0,
   icon: 'flame',
   name: 'Desafío',
-  desc: '15 tableros · 150 turnos exactos',
+  desc: '15 tableros · 152 turnos',
   families: DAILY_FAMILIES,
   targets: DAILY_TARGETS,
   ratings: [1, 100],
@@ -144,6 +152,18 @@ export function buildDaily(challenge, day, { levels, special }, index = 0, remai
   };
 }
 
+/**
+ * Margen del Desafío: turnos que sobran sobre los mínimos de lo que falta. `used` = turnos de tableros ya superados,
+ * `moves` = movimientos del tablero en curso (`index`, 0..14). Mientras no te pases del mínimo del tablero en curso el margen
+ * no baja (supone que lo terminas en su mínimo); al pasarte, baja un punto por cada turno de más.
+ */
+export function dailyMargin({ used = 0, moves = 0, index = 0, opt = DAILY_TARGETS[index] }) {
+  const later = DAILY_TARGETS.slice(index + 1).reduce((a, b) => a + b, 0);
+  return DAILY_TURN_BUDGET - used - Math.max(moves, opt) - later;
+}
+/** «+2» / «+0» / «−3» (con el signo menos tipográfico). */
+export const marginText = (m) => (m < 0 ? `−${-m}` : `+${m}`);
+
 /* ───────────── medallas, racha y registro ───────────── */
 
 /** Oro: 15 tableros · Plata: 14 tableros · Bronce: 13 tableros (o menos si no llegó). */
@@ -173,25 +193,29 @@ export const todayResult = (state, id = DAILY_CHALLENGE.id, day = dayNumber()) =
 
 /**
  * Anota el resultado de un intento del reto diario (al llegar a 15 o al quedarse sin turnos).
- * Llegar a 13+ asegura la racha del día y otorga las pistas de premio (13 → +1, 14 → +3, 15 → +5).
+ * Llegar a 13+ asegura la racha del día; las pistas de premio (10 → +1, 13 → +2, 15 → +4) salen de `dailyHintReward`.
  */
 export function recordDaily(state, id, day, { cleared, used, opt = DAILY_TURN_BUDGET, boards = [] }) {
   const key = id || DAILY_CHALLENGE.id;
+  const exact = cleared >= DAILY_TOTAL_BOARDS && used <= DAILY_EXACT_BUDGET; // sello «150 exactos»
   const medal = medalFor(cleared);
   const today = (state.days[day] ||= {});
   const prev = today[key] || null;
   const first = !prev;
   const improved =
     first || cleared > (prev.cleared || 0) || (cleared === (prev.cleared || 0) && used < (prev.used ?? Infinity));
-  if (cleared >= 13 && (!prev || (prev.cleared || 0) < 13)) {
+  if (cleared >= DAILY_WIN_BOARD && (!prev || (prev.cleared || 0) < DAILY_WIN_BOARD)) {
     state.solved++;
     state.by[key] = (state.by[key] || 0) + 1;
   }
   state.bestCleared = Math.max(state.bestCleared || 0, cleared);
   if (cleared >= DAILY_TOTAL_BOARDS && (!prev || (prev.cleared || 0) < DAILY_TOTAL_BOARDS)) state.gold++;
-  if (improved) today[key] = { cleared, used, moves: used, opt, medal, boards };
+  if (exact && !prev?.exact) state.exact = (state.exact || 0) + 1;
+  if (improved)
+    today[key] = { cleared, used, moves: used, opt, medal, boards, ...(exact || prev?.exact ? { exact: true } : {}) };
+  else if (exact) prev.exact = true;
   let streakUp = false;
-  if (cleared >= 13 && day > state.last) {
+  if (cleared >= DAILY_WIN_BOARD && day > state.last) {
     state.streak = state.last === day - 1 ? state.streak + 1 : 1;
     state.last = day;
     state.best = Math.max(state.best, state.streak);
@@ -204,6 +228,7 @@ export function recordDaily(state, id, day, { cleared, used, opt = DAILY_TURN_BU
     cleared,
     bestCleared: best.cleared,
     hints: dailyHintReward(best.cleared),
+    exact: !!best.exact,
     first,
     improved,
     streak: currentStreak(state, day),

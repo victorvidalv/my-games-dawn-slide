@@ -3,11 +3,12 @@ import { $ } from '../dom.js';
 import { hintMove } from '../engine/solver.js';
 import { canHint, spendHint } from '../game/heroes.js';
 import { updateHeroHud } from './heroes.js';
-import { saveRun } from '../game/session.js';
+import { redoDaily, saveRun } from '../game/session.js';
 import { S } from '../state.js';
 import { markHelped } from '../game/run-logic.js';
 import { burst } from './fx.js';
-import { openMenu } from './menu.js';
+import { ask, openMenu } from './menu.js';
+import { canRedoDaily, redoRefund } from '../game/run-logic.js';
 import { activatePower } from './powers.js';
 $('bPower').onclick = activatePower;
 $('bToMenu').onclick = () => {
@@ -16,6 +17,22 @@ $('bToMenu').onclick = () => {
 };
 
 /* ---------- Botones del juego ---------- */
+$('bRedo').onclick = async () => {
+  if (!S.run?.daily || !S.G || S.busy || !canRedoDaily(S.run.daily, S.G)) return;
+  const refund = redoRefund(S.G),
+    lost = S.G.moves - refund;
+  const ok = await ask({
+    ico: 'undo',
+    yes: 'Sí, rehacer',
+    no: 'Seguir jugando',
+    title: '¿Rehacer el tablero?',
+    text: lost
+      ? `Vuelves al inicio. Turnos que recuperas: ${refund}; turnos que pierdes: ${lost}. Solo puedes hacerlo una vez en cada Desafío.`
+      : `Vuelves al inicio. Turnos que recuperas: ${refund}. Solo puedes hacerlo una vez en cada Desafío.`,
+  });
+  if (!ok || !S.run?.daily || !S.G || S.busy || !canRedoDaily(S.run.daily, S.G)) return; // pudo ganarse/perderse mientras se decidía
+  redoDaily();
+};
 $('bHint').onclick = () => {
   if (!S.run || !S.G || S.G.done || S.busy || !canHint(S.run, S.run.mode, S.G.n)) return;
   const h = hintMove(S.G.pieces, S.G.pos, S.G.walls);

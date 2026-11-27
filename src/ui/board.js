@@ -3,11 +3,11 @@ import { setTensionFx } from '../audio/music.js';
 import { sfx, vib } from '../audio/sound.js';
 import { isLocked, slideRange, snapDrag } from '../engine/board.js';
 import { isLow, isWon, moveStatus, movesLeft } from '../engine/rules.js';
-import { DAILY_TOTAL_BOARDS, DAILY_TURN_BUDGET } from '../game/daily.js';
+import { DAILY_TOTAL_BOARDS, DAILY_TURN_BUDGET, dailyMargin, marginText } from '../game/daily.js';
 import { $ } from '../dom.js';
 import { fail, saveRun, win } from '../game/session.js';
 import { S } from '../state.js';
-import { applyMove } from '../game/run-logic.js';
+import { applyMove, canRedoDaily } from '../game/run-logic.js';
 import { zoneIdx } from '../data/zones.js';
 import { coachOnMove } from './coach.js';
 import { updateHeroHud } from './heroes.js';
@@ -442,6 +442,20 @@ function fitScore() {
   score.style.setProperty('--score-size', Math.max(10, size) + 'px');
 }
 new MutationObserver(fitScore).observe($('score'), { childList: true, characterData: true, subtree: true });
+/** Margen (turnos que sobran sobre los mínimos) y botón «Rehacer tablero»: solo existen en el Desafío. */
+function paintDailyExtras(d) {
+  const chip = $('marginChip');
+  chip.hidden = !d;
+  if (!d) return;
+  const m = dailyMargin({ used: d.used || 0, moves: S.G.moves, index: d.index, opt: S.G.opt });
+  const text = `Margen ${marginText(m)}`;
+  if (chip.textContent !== text) chip.textContent = text;
+  chip.classList.toggle('neg', m < 0);
+  chip.classList.toggle('zero', m === 0);
+  chip.setAttribute('aria-label', `Margen: ${marginText(m)} turnos sobre el mínimo de lo que falta`);
+  $('redoN').textContent = d.redo ? '0' : '1';
+  $('bRedo').disabled = S.busy || !canRedoDaily(d, S.G);
+}
 export function updateHud() {
   updateHeroHud();
   const d = S.run.daily;
@@ -454,6 +468,7 @@ export function updateHud() {
     $('msg').textContent =
       `Tablero ${d.index + 1}/${DAILY_TOTAL_BOARDS} · Mínimo ${S.G.opt} mov. · Quedan ${rem} turnos`;
   }
+  paintDailyExtras(d);
   const f = $('fill'),
     pct = Math.min(100, (shownMoves / shownLimit) * 100);
   f.style.width = pct + '%';
