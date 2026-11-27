@@ -3,6 +3,9 @@
   #menu .look-note {
     min-height: 16px;
     opacity: 1;
+    color: #b9b1a2;
+    font: 600 12.5px/1.4 var(--font-ui, system-ui, sans-serif);
+    text-align: center;
   }
   .sw {
     flex: none;
@@ -220,6 +223,8 @@
     background: linear-gradient(160deg, #213241, #14202b);
     box-shadow: 0 3px 0 #091118;
     text-align: center;
+    --rar: var(--rar-common);
+    grid-template-rows: 1fr auto auto;
   }
 
   .ach-shop-card.owned {
@@ -314,22 +319,6 @@
     gap: 8px;
   }
 
-  .outfit-art {
-    display: block;
-    width: 100%;
-    aspect-ratio: 3 / 4;
-    overflow: hidden;
-    border-radius: 10px;
-  }
-
-  .outfit-art img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 0;
-  }
-
   .outfit-card.locked .outfit-art img {
     filter: brightness(0.38) saturate(0.5);
   }
@@ -345,6 +334,11 @@
     cursor: default;
   }
   .outfit-art {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: 10px;
     position: relative;
     isolation: isolate;
     background:
@@ -356,6 +350,11 @@
   }
 
   .outfit-art img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 0;
     position: relative;
     z-index: 1;
     transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -415,6 +414,7 @@
   .ach-shop-grid.cols-3 .ach-shop-name {
     font-size: 11.5px;
     line-height: 1.15;
+    overflow-wrap: anywhere;
   }
 
   .ach-shop-grid.cols-3 .shop-act {
@@ -434,10 +434,6 @@
 
   .ach-shop-grid.cols-3 .ach-shop-open {
     width: 100%;
-  }
-
-  .ach-shop-grid.cols-3 .ach-shop-name {
-    overflow-wrap: anywhere;
   }
   .unlock-reqs {
     display: grid;
@@ -496,9 +492,7 @@
   }
   .ach-shop-card {
     position: relative;
-    --rar: var(--rar-common);
     border-color: color-mix(in srgb, var(--rar) 55%, #091118);
-    grid-template-rows: 1fr auto auto;
     gap: 6px;
     padding: 8px 8px 9px;
     overflow: hidden;
@@ -560,7 +554,8 @@
     box-shadow: none;
   }
 
-  .ach-shop-open:focus-visible {
+  .ach-shop-open:focus-visible,
+  #menu .home-pill:focus-visible {
     outline: 3px solid #ffdb8f;
     outline-offset: 2px;
   }
@@ -675,10 +670,6 @@
     background: linear-gradient(165deg, #2f2550, #141325);
   }
 
-  .look-pv.r-legendary {
-    --rar: var(--rar-legendary);
-  }
-
   .look-pv-head {
     position: relative;
     display: grid;
@@ -745,6 +736,7 @@
     background:
       radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--rar) 22%, transparent), #0000 70%), #0b1219;
     box-shadow: inset 0 2px 10px #000a;
+    isolation: isolate;
   }
 
   .look-pv-note {
@@ -1611,15 +1603,8 @@
     margin: 0;
     white-space: nowrap;
   }
-  #menu .custom-total u {
-    width: 100%;
-    height: 6px;
-  }
   #menu .look-note {
     margin: 2px 0 12px;
-    color: #b9b1a2;
-    font: 600 12.5px/1.4 var(--font-ui, system-ui, sans-serif);
-    text-align: center;
   }
   #menu .custom-catalog .ach-shop-grid,
   #menu .custom-catalog .ach-shop-grid.cols-3 {
@@ -1702,10 +1687,6 @@
   }
   #menu .custom-catalog .rar-chip {
     left: 6px;
-  }
-  #menu .custom-catalog .anim-chip {
-    left: auto;
-    right: 6px;
   }
   #menu .custom-catalog .r-epic .rar-chip {
     background: linear-gradient(135deg, #c9a2ff, #7b4fd6);
@@ -1826,7 +1807,6 @@
   }
   .look-pv-stage {
     position: relative;
-    isolation: isolate;
   }
   .look-pv.r-epic .look-pv-stage::before,
   .look-pv.r-legendary .look-pv-stage::before {
@@ -1846,6 +1826,7 @@
     mask-image: radial-gradient(circle, #000 30%, transparent 70%);
   }
   .look-pv.r-legendary {
+    --rar: var(--rar-legendary);
     border-color: transparent;
     background:
       radial-gradient(ellipse at 50% 0%, #ffd24a2e, #0000 60%) padding-box,
@@ -1870,6 +1851,8 @@
     }
   }
   #menu .custom-catalog .anim-chip {
+    left: auto;
+    right: 6px;
     display: grid;
     place-items: center;
     width: 20px;
@@ -1885,6 +1868,8 @@
     line-height: 1;
   }
   #menu .custom-total u {
+    width: 100%;
+    height: 6px;
     display: block;
     overflow: hidden;
     border-radius: 99px;
@@ -1910,11 +1895,6 @@
     z-index: 0;
     overflow: hidden;
     border-radius: inherit;
-    pointer-events: none;
-  }
-  .lg-storm > i {
-    position: absolute;
-    display: block;
     pointer-events: none;
   }
   .lg-clouds {
@@ -2016,10 +1996,6 @@
     -webkit-mask-image: linear-gradient(0deg, transparent, #000 30% 70%, transparent);
     mask-image: linear-gradient(0deg, transparent, #000 30% 70%, transparent);
   }
-  .outfit-art > .lg-storm ~ img {
-    position: relative;
-    z-index: 1;
-  }
   .outfit-card.r-legendary .outfit-art {
     background:
       radial-gradient(ellipse at 50% 45%, color-mix(in srgb, #ffb347 30%, #2a1840), transparent 70%),
@@ -2103,12 +2079,14 @@
     border-radius: inherit;
     pointer-events: none;
   }
-  .ep-arcane > i {
+  .ep-arcane > i,
+  .lg-storm > i {
     position: absolute;
     display: block;
     pointer-events: none;
   }
-  .outfit-art > .ep-arcane ~ img {
+  .outfit-art > .ep-arcane ~ img,
+  .outfit-art > .lg-storm ~ img {
     position: relative;
     z-index: 1;
   }
@@ -2253,17 +2231,13 @@
     box-shadow:
       0 7px 18px #0006,
       0 0 18px -2px #ffb34777;
+    --ofx-glow: #ffb347;
+    border-color: #ffd36a;
   }
   .hero-choice:has(> .ep-arcane.ofx) {
     box-shadow:
       0 7px 18px #0006,
       0 0 18px -2px #b585ff77;
-  }
-  .hero-choice:has(> .lg-storm.ofx) {
-    --ofx-glow: #ffb347;
-    border-color: #ffd36a;
-  }
-  .hero-choice:has(> .ep-arcane.ofx) {
     --ofx-glow: #b585ff;
     border-color: #c9a2ff;
   }

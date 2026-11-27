@@ -17,8 +17,8 @@
       linear-gradient(180deg, var(--a) 0 42%, var(--b) 42.5% 88%, color-mix(in oklab, var(--b) 65%, var(--d)) 100%);
     border-color: #120e14;
     border-radius: 10px;
-    filter: none;
     opacity: 1;
+    filter: none;
   }
   :where([data-pieces='paint']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
     content: '';
@@ -168,27 +168,25 @@
       animation: kc-pulse-neon 1.6s ease-in-out infinite alternate;
     }
   }
-  :where([data-pieces='silk']) .piece:not(.red, .heavy, .ice, .gate) .face {
-    overflow: hidden;
-  }
   :where([data-pieces='silk']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
-    display: block;
-    content: '';
-    position: absolute;
-    inset: 0;
-    margin: 0;
     padding: 0;
-    width: auto;
-    height: auto;
-    border-radius: inherit;
-    transform: none;
-    animation: none;
-    filter: none;
     mask: none;
     -webkit-mask: none;
-    box-shadow: none;
-    aspect-ratio: auto;
     /* Banda prismática iridiscente que recorre las facetas del cristal */
+    aspect-ratio: auto;
+    box-shadow: none;
+    filter: none;
+    animation: none;
+    transform: none;
+    border-radius: inherit;
+    width: auto;
+    height: auto;
+    margin: 0;
+    inset: 0;
+    position: absolute;
+    content: '';
+    display: block;
+    opacity: 1;
   }
   :where([data-pieces='silk']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   :where([data-pieces='silk']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
@@ -218,36 +216,44 @@
         transparent 78%,
         rgba(123, 245, 255, 0.24) 100%
       );
-  }
-  :where([data-pieces='lava']) .piece:not(.red, .heavy, .ice, .gate) .face {
-    overflow: hidden;
+    display: none;
   }
   :where([data-pieces='lava']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
-    display: block;
-    content: '';
-    position: absolute;
-    inset: 0;
-    margin: 0;
     padding: 0;
-    width: auto;
-    height: auto;
-    border-radius: inherit;
-    transform: none;
-    animation: none;
-    filter: none;
     mask: none;
     -webkit-mask: none;
-    box-shadow: none;
-    aspect-ratio: auto;
     /* Red de fisuras incandescentes de magma con núcleo blanco-dorado */
+    aspect-ratio: auto;
+    box-shadow: none;
+    filter: none;
+    animation: none;
+    transform: none;
+    border-radius: inherit;
+    width: auto;
+    height: auto;
+    margin: 0;
+    inset: 0;
+    position: absolute;
+    content: '';
+    display: block;
+    opacity: 0.9;
   }
   :where([data-pieces='lava']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   :where([data-pieces='lava']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
     filter: none;
-    animation: none;
-    box-shadow: none;
-    aspect-ratio: auto;
     /* Chispas de brasas flotantes y reflejo vítreo sutil de la piedra volcánica */
+    aspect-ratio: auto;
+    box-shadow: none;
+    animation: none;
+    display: block;
+    content: '';
+    position: absolute;
+    inset: auto auto 4px 5px;
+    margin: 0;
+    border-radius: 50%;
+    opacity: 0;
+    mask: none;
+    -webkit-mask: none;
   }
   :where([data-pieces='paint']) .piece:not(.red, .heavy, .ice, .gate) .face {
     box-shadow:
@@ -336,6 +342,7 @@
     padding: 3px;
   }
   :where([data-pieces='silk']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    overflow: hidden;
     background:
       radial-gradient(ellipse 90% 60% at 30% 10%, #ffffff3a, #0000 60%),
       repeating-radial-gradient(ellipse 160% 46% at 30% 140%, #0000 0 4px, #2a140828 4px 5.5px, #0000 5.5px 9px),
@@ -374,13 +381,9 @@
     background: linear-gradient(110deg, #0000 38%, #fff6dc55 50%, #0000 62%);
     background-size: 300% 100%;
     background-position: 120% 0;
-    opacity: 1;
-  }
-  :where([data-pieces='silk']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
-  :where([data-pieces='silk']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: none;
   }
   :where([data-pieces='lava']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    overflow: hidden;
     background:
       radial-gradient(ellipse 70% 55% at 30% 18%, #ffffffaa 0%, #ffffff22 30%, #0000 55%),
       radial-gradient(ellipse 90% 70% at 70% 100%, color-mix(in oklab, var(--d) 70%, #000) 0%, #0000 70%),
@@ -403,17 +406,11 @@
     background: linear-gradient(115deg, #0000 40%, #fffbe8aa 49%, #ffffff 50%, #fffbe8aa 51%, #0000 60%);
     background-size: 320% 100%;
     background-position: 130% 0;
-    opacity: 0.9;
   }
   :where([data-pieces='lava']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
   :where([data-pieces='lava']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
-    display: block;
-    content: '';
-    position: absolute;
-    inset: auto auto 4px 5px;
     width: 9px;
     height: 9px;
-    margin: 0;
     background:
       radial-gradient(circle, #fff 0 1px, #ffe7a0 1.5px, #0000 3px),
       conic-gradient(
@@ -428,10 +425,6 @@
         #fff6 87%,
         #0000 89%
       );
-    border-radius: 50%;
-    opacity: 0;
-    mask: none;
-    -webkit-mask: none;
   }
   :is([data-key='neon'], [data-key='neon'] .look-mini, .sw-real[data-key='neon']) .piece.red,
   :is([data-key='neon'], [data-key='neon'] .look-mini, .sw-real[data-key='neon']) .piece.red .face::before,

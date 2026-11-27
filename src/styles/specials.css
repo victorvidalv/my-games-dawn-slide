@@ -95,31 +95,26 @@
     stroke-linejoin: round;
     stroke-linecap: round;
   }
-  .plate .lk path {
+  .plate .lk path,
+  .piece.gate .lk path {
     fill: none;
     stroke-width: 2.4;
-  }
-  .plate .lk .hole {
-    fill: #13212b;
-    stroke: none;
   }
   .plate:not(.on) .lk.free,
   .plate.on .lk.shut {
     display: none;
   }
-  .plate.on .plate-lk {
+  .plate.on .plate-lk,
+  .piece.gate.open .mk {
     background: #123428eb;
     box-shadow:
       0 0 0 1.5px #7ce8ad,
       0 0 12px #7ce8ad88;
   }
-  .plate.on .lk {
+  .plate.on .lk,
+  .piece.gate.open .lk {
     fill: #7ce8ad;
     stroke: #7ce8ad;
-  }
-  .plate.on i {
-    border-style: solid;
-    border-color: #f4cf75;
   }
   .plate.hint i {
     animation: plate-hint 0.5s ease-in-out 3;
@@ -133,6 +128,7 @@
     justify-content: center;
     width: calc(var(--cell) * 6 + 28px);
     max-width: 100%;
+    gap: 5px;
   }
   .legend[hidden] {
     display: none;
@@ -340,6 +336,8 @@
     z-index: 4;
   }
   .plate.on i {
+    border-style: solid;
+    border-color: #f4cf75;
     background: none;
     box-shadow:
       0 0 14px #ffd24acc,
@@ -434,7 +432,6 @@
   }
   .legend {
     margin-top: 0;
-    gap: 5px;
   }
   .legend[hidden],
   .legend:empty {
