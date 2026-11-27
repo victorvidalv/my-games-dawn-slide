@@ -20,7 +20,7 @@ import { mountOutfitFx } from './outfit-fx.js';
 const pct = (x) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${fmtNum(Math.round(Math.abs(x) * 100))} %`;
 const KIND_NAME = { blessing: 'Bendición', pact: 'Pacto' };
 
-/** Número de la carta en el mazo (1..31): se imprime en la esquina, como en una baraja. */
+/** Número de la carta en el mazo (1..35): se imprime en la esquina, como en una baraja. */
 const numberOf = (card) => FATE_CARDS.indexOf(card) + 1;
 
 /** Una carta completa (marco, emblema, nombre, efecto y costo). `muted`: un Pacto tuyo la deja sin efecto. */

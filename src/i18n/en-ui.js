@@ -588,6 +588,17 @@ export const EN_UI = {
   Ascetismo: 'Asceticism',
   Reencarnación: 'Rebirth',
   Codicia: 'Greed',
+  Calma: 'Calm',
+  Ahorro: 'Savings',
+  Mesura: 'Balance',
+  Trueque: 'Barter',
+  'No puedes usar pistas': 'You can’t use hints',
+  '+4 turnos extra en cada tablero': '+4 extra turns on every board',
+  '+1 turno extra en cada tablero y +2 pistas inmediatas al elegirla':
+    '+1 extra turn on every board and +2 hints right away',
+  '+4 % de puntos en cada tablero y +1 pista al cerrar cada tramo':
+    '+4% points on every board and +1 hint at each leg end',
+  '+10 % de puntos y +1 turno extra en cada tablero': '+10% points and +1 extra turn on every board',
   '+4 % de puntos por cada carta que tengas': '+4% points per fate card you hold',
   'Racha con 75 % de eficiencia; si se rompe, conservas la mitad':
     'Streak holds at 75% efficiency; if it breaks, you keep half',

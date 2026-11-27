@@ -11,6 +11,9 @@ import {
   fateBlocks,
   fateCityRewards,
   fateDeck,
+  fairOffer,
+  LATE_FROM,
+  BASE_UNTIL,
   fateMuted,
   fateOffer,
   fatePoints,
@@ -48,14 +51,14 @@ const run = (fate = [], extra = {}) => ({
   ...extra,
 });
 
-describe('el mazo de 31 cartas del destino (6 elecciones cada 3 niveles)', () => {
-  it('son 31 cartas distintas, 21 bendiciones y 10 pactos con costo', () => {
+describe('el mazo de 35 cartas del destino (6 elecciones cada 3 niveles)', () => {
+  it('son 35 cartas distintas, 24 bendiciones y 11 pactos con costo', () => {
     expect(FATE_EVERY).toBe(3);
     expect(FATE_PICKS).toBe(6);
-    expect(FATE_CARDS).toHaveLength(31);
-    expect(new Set(FATE_CARDS.map((c) => c.id)).size).toBe(31);
-    expect(new Set(FATE_CARDS.map((c) => c.name)).size).toBe(31);
-    expect(FATE_CARDS.filter((c) => c.kind === 'pact')).toHaveLength(10);
+    expect(FATE_CARDS).toHaveLength(35);
+    expect(new Set(FATE_CARDS.map((c) => c.id)).size).toBe(35);
+    expect(new Set(FATE_CARDS.map((c) => c.name)).size).toBe(35);
+    expect(FATE_CARDS.filter((c) => c.kind === 'pact')).toHaveLength(11);
     for (const c of FATE_CARDS) {
       expect(c.gain, c.id).toBeTruthy();
       expect(!!c.cost, `${c.id}: solo los pactos tienen costo`).toBe(c.kind === 'pact');
@@ -66,16 +69,16 @@ describe('el mazo de 31 cartas del destino (6 elecciones cada 3 niveles)', () =>
   it('cada carta tiene su propia ilustración y sus propios colores', () => {
     expect(FATE_ART_IDS.sort()).toEqual(FATE_CARDS.map((c) => c.id).sort());
     const arts = FATE_CARDS.map((c) => fateArt(c));
-    expect(new Set(arts).size).toBe(31);
+    expect(new Set(arts).size).toBe(35);
     for (const a of arts) expect(a).toMatch(/^<svg[^>]*viewBox="0 0 64 64".*<\/svg>$/s);
-    expect(new Set(FATE_CARDS.map((c) => c.hue.join())).size).toBe(31);
+    expect(new Set(FATE_CARDS.map((c) => c.hue.join())).size).toBe(35);
   });
   it('el mazo se baraja con la semilla: siempre igual para la misma partida y distinto entre partidas', () => {
     expect(fateDeck(7)).toEqual(fateDeck(7));
     expect(fateDeck(7)).not.toEqual(fateDeck(8));
     expect([...fateDeck(7)].sort()).toEqual(FATE_CARDS.map((c) => c.id).sort());
   });
-  it('cada tramo ofrece 3 cartas nuevas para todos los héroes (18 vistas de 31 sin repetirse)', () => {
+  it('cada tramo ofrece 3 cartas nuevas para todos los héroes (18 vistas de 35 sin repetirse)', () => {
     expect(FATE_OFFER_BY_HERO).toEqual({ lia: 3, jean: 3, van: 3 });
     for (const hero of ['lia', 'jean', 'van']) {
       const r = run([], { hero });
@@ -104,6 +107,67 @@ describe('el mazo de 31 cartas del destino (6 elecciones cada 3 niveles)', () =>
     expect(pickFate(r, fateOffer(r, 1)[1].id, 1), 'no se elige dos veces en el mismo tramo').toBeNull();
     expect(pickFate(r, fateOffer(r, 3)[0].id, 2), 'solo vale una carta de la oferta de ese tramo').toBeNull();
     expect(r.fate).toEqual([id]);
+  });
+});
+
+describe('barajado justo del mazo (tríos equilibrados y cartas de cierre tarde)', () => {
+  const kindOf = (id) => fateById(id).kind;
+  const trioOf = (deck, city) => deck.slice((city - 1) * 3, city * 3);
+  it('en 400 semillas, todos los tríos de los 6 tramos cumplen las reglas', () => {
+    for (let seed = 1; seed <= 400; seed++) {
+      const deck = fateDeck(seed);
+      expect(deck).toHaveLength(FATE_CARDS.length);
+      expect(new Set(deck).size).toBe(FATE_CARDS.length);
+      for (let city = 1; city <= FATE_PICKS; city++) {
+        const trio = trioOf(deck, city);
+        expect(fairOffer(trio, city), `semilla ${seed} tramo ${city}: ${trio}`).toBe(true);
+        expect(trio.filter((id) => kindOf(id) === 'pact').length).toBeLessThan(3);
+        for (const id of trio) expect(LATE_FROM[id] || 0).toBeLessThanOrEqual(city);
+      }
+    }
+  });
+  it('las cartas de cierre no salen en los primeros tramos (Abismo desde el 4)', () => {
+    expect(LATE_FROM.abismo).toBe(4);
+    for (let seed = 1; seed <= 200; seed++) {
+      const deck = fateDeck(seed);
+      for (const id of ['abismo', 'frenesi', 'long-board', 'maestria']) {
+        const at = deck.indexOf(id);
+        if (at < FATE_PICKS * 3) expect(Math.floor(at / 3) + 1).toBeGreaterThanOrEqual(LATE_FROM[id]);
+      }
+    }
+  });
+  it('los tramos 1–2 siempre traen una carta base y todos mezclan puntaje con margen', () => {
+    expect(BASE_UNTIL).toBe(2);
+    expect(fairOffer(['abismo', 'frenesi', 'vidrio'], 6)).toBe(false); // 3 pactos
+    expect(fairOffer(['brillo', 'fortuna', 'destello'], 2)).toBe(false); // solo puntaje
+    expect(fairOffer(['respiro', 'holgura', 'fenix'], 3)).toBe(false); // solo margen
+    expect(fairOffer(['vidrio', 'cuerda-floja', 'respiro'], 1)).toBe(true);
+    expect(fairOffer(['vidrio', 'cuerda-floja', 'holgura'], 1)).toBe(false); // sin carta base en el tramo 1
+    expect(fairOffer(['frenesi', 'respiro', 'brillo'], 2)).toBe(false); // cierre demasiado pronto
+    expect(fairOffer(['frenesi', 'respiro', 'brillo'], 3)).toBe(true);
+  });
+  it('el cambio de cartas también cumple las reglas de su tramo y sigue siendo determinista', () => {
+    for (let seed = 1; seed <= 120; seed++) {
+      for (let city = 1; city <= FATE_PICKS; city++) {
+        const r = { seed, hero: 'lia', mode: 'c', fateDeck: fateDeck(seed), fateRerollCity: city };
+        const ids = fateOffer(r, city).map((c) => c.id);
+        expect(ids).toHaveLength(3);
+        expect(fairOffer(ids, city), `semilla ${seed} tramo ${city}: ${ids}`).toBe(true);
+        expect(fateOffer(r, city).map((c) => c.id)).toEqual(ids);
+        expect(ids.some((id) => trioOf(r.fateDeck, city).includes(id))).toBe(false);
+      }
+    }
+  });
+  it('sigue habiendo variedad: miles de ofertas distintas y todas las cartas salen', () => {
+    const firsts = new Set();
+    const seen = new Set();
+    for (let seed = 1; seed <= 600; seed++) {
+      const deck = fateDeck(seed);
+      firsts.add([...trioOf(deck, 1)].sort().join());
+      for (const id of deck.slice(0, 18)) seen.add(id);
+    }
+    expect(firsts.size).toBeGreaterThan(300);
+    expect(seen.size).toBe(FATE_CARDS.length);
   });
 });
 
