@@ -1,16 +1,28 @@
 /**
- * Valida las propuestas de Jean, genera los archivos .mid en output/midi/ y construye
- * output/jean-canciones.html (un solo archivo autónomo para abrir con doble clic).
+ * Valida las propuestas de un héroe (jean, juth o lia), genera los archivos .mid en output/midi/ y construye
+ * output/<héroe>-canciones.html (un solo archivo autónomo para abrir con doble clic).
+ * Uso: node scripts/build-song-preview.mjs <jean|juth|lia>
+ * Los datos de cada héroe están en tools/song-preview/config.js y sus propuestas en tools/song-preview/themes-<héroe>-preview.js.
  */
 import { build } from 'vite';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { CITY_REPERTOIRES, SCALES, parseBar, shiftBar, shiftEntry } from '../src/audio/themes.js';
-import { JEAN_HAPPY_DATA, JEAN_IMPROVED_DATA } from '../src/audio/themes-jean-preview.js';
 import { themeToMidiBytes } from '../src/tools/midi-export.js';
+import { PREVIEWS } from '../tools/song-preview/config.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const hero = process.argv[2];
+const CFG = PREVIEWS[hero];
+if (!CFG) {
+  console.error(`Uso: node scripts/build-song-preview.mjs <${Object.keys(PREVIEWS).join('|')}>`);
+  process.exit(1);
+}
+const dataFile = resolve(ROOT, `tools/song-preview/themes-${hero}-preview.js`);
+const SONGS = await import(pathToFileURL(dataFile).href);
+const IMPROVED_DATA = SONGS[`${CFG.prefix}_IMPROVED_DATA`];
+const HAPPY_DATA = SONGS[`${CFG.prefix}_HAPPY_DATA`];
 
 function compile(base, song) {
   const raw = { ...base, ...song };
@@ -30,9 +42,9 @@ function compile(base, song) {
     bassV: 0.07,
     compV: 0.02,
     arpV: 0.02,
-    leadV: 0.042,
+    leadV: CFG.leadV,
     epic: 1,
-    groove: 'pop',
+    groove: CFG.groove,
     echo: true,
     ...d,
     tune: d.tuneText.map((b) => parseBar(b).notes),
@@ -42,7 +54,7 @@ function compile(base, song) {
 function validateAndWriteMidi(label, list, dirName) {
   const outDir = resolve(ROOT, 'output/midi', dirName);
   mkdirSync(outDir, { recursive: true });
-  const bases = CITY_REPERTOIRES.jean;
+  const bases = CITY_REPERTOIRES[CFG.repertoire];
   list.forEach((song, idx) => {
     const th = compile(bases[idx], song);
     th.tuneText.forEach((barText, bIdx) => {
@@ -63,18 +75,19 @@ function validateAndWriteMidi(label, list, dirName) {
   console.log(`MIDI (${label}): 10 archivos en ${outDir}`);
 }
 
-validateAndWriteMidi('Mejorada', JEAN_IMPROVED_DATA, 'jean-mejorada');
-validateAndWriteMidi('Más alegre', JEAN_HAPPY_DATA, 'jean-alegre');
+validateAndWriteMidi('Mejorada', IMPROVED_DATA, `${hero}-mejorada`);
+validateAndWriteMidi('Más alegre', HAPPY_DATA, `${hero}-alegre`);
 
 const out = await build({
   root: ROOT,
   configFile: false,
   logLevel: 'silent',
-  define: { __APP_VERSION__: '"jean-preview"' },
+  define: { __APP_VERSION__: JSON.stringify(`${hero}-preview`), __PREVIEW__: JSON.stringify(CFG) },
+  resolve: { alias: { '@song-data': dataFile } },
   build: {
     write: false,
     minify: true,
-    lib: { entry: resolve(ROOT, 'src/tools/jean-preview.js'), formats: ['iife'], name: 'JeanPreview' },
+    lib: { entry: resolve(ROOT, 'tools/song-preview/viewer.js'), formats: ['iife'], name: CFG.global },
   },
 });
 
@@ -85,7 +98,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jean · Pruebas de canciones y MIDI</title>
+<title>${CFG.title}</title>
 <style>
   :root{color-scheme:dark;--bg:#101c24;--card:#172b38;--ink:#efe4cb;--mut:#9cb0b8;--line:#ffffff1a;--acc:#e0907a;--gold:#ffd98a}
   *{box-sizing:border-box}
@@ -123,8 +136,8 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
 <main>
-  <h1>Repertorio de Jean · Banco de pruebas</h1>
-  <p class="lead">Comparativa previa sin reemplazar <code>JEAN_THEME_DATA</code> en <code>src/audio/themes.js</code>. Elige en cada ciudad entre <b>Original</b>, <b>Mejorada (estilo Corazón al sol)</b> y <b>Más alegre (MIDI)</b>. Puedes oírlas con el motor del juego, con el reproductor MIDI multipista o descargar el <code>.mid</code>.</p>
+  <h1>${CFG.h1}</h1>
+  <p class="lead">${CFG.lead}</p>
   <div class="bar"><button id="stop">■ Parar todo</button><span id="now" class="tag">Nada sonando</span></div>
   <div id="list"></div>
   <button id="audioRecover" hidden></button>
@@ -133,6 +146,6 @@ const html = `<!DOCTYPE html>
 </body>
 </html>`;
 
-const target = resolve(ROOT, 'output/jean-canciones.html');
+const target = resolve(ROOT, `output/${hero}-canciones.html`);
 writeFileSync(target, html);
 console.log(`HTML listo: ${target} (${Math.round(html.length / 1024)} KB)`);

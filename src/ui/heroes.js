@@ -1,16 +1,16 @@
 import { Music, setTensionFx } from '../audio/music.js';
 import { $ } from '../dom.js';
 import { saveRun } from '../game/session.js';
-import { HEROES, canHint, bonusTurns } from '../game/heroes.js';
+import { HEROES, canHint } from '../game/heroes.js';
 import { reviveCost, reviveShare } from '../game/shop.js';
 import { S, haltBoard, heroOf, pathOf, persist, setBusy, store } from '../state.js';
 import { acceptRescue } from '../game/run-logic.js';
 import { boardEl, layout, updateHud } from './board.js';
+import { powerState } from '../game/powers.js';
 import { outfitImg } from './story.js';
 import { mountOutfitFx } from './outfit-fx.js';
 import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
-import { powerState } from '../game/powers.js';
 import { RELICS } from '../game/relics.js';
 import { fateBlocks } from '../game/fate.js';
 import { numLocale } from '../i18n.js';
@@ -112,14 +112,7 @@ export function updateHeroHud() {
   if (!S.run || !S.G) return;
   const h = heroOf(),
     prac = S.run.mode === 'p';
-  $('heroHudImg').src = outfitImg(h.id, 'sel');
-  $('heroHudImg').alt = h.name;
-  $('heroHudName').textContent = h.name;
   const status = powerState(S.run, S.G);
-  $('heroHudPower').textContent =
-    h.id === 'lia'
-      ? `+${bonusTurns('lia', S.G.opt, S.run.start, fateBlocks(S.run, 'power'))} turnos de reserva`
-      : status.reason;
   const hintsBlocked = fateBlocks(S.run, 'hints');
   $('hintN').textContent = prac ? '∞' : hintsBlocked ? '✕' : S.run.hints;
   $('bHint').setAttribute(

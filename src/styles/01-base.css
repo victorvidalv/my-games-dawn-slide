@@ -34,9 +34,6 @@ body {
     radial-gradient(700px 500px at 10% -10%, var(--t1), transparent 60%),
     radial-gradient(700px 600px at 100% 105%, var(--t2), transparent 60%), linear-gradient(165deg, #1b2347, #080b1c);
 }
-body.shake #app {
-  animation: shake 0.6s;
-}
 @keyframes shake {
   10%,
   50%,

@@ -86,7 +86,6 @@ export function renderTurns() {
     }
     if (G.moves < r.start) G.reserveLit = false;
   }
-  $('left').textContent = movesLeft(G.moves, G.limit);
   const { low, last } = lowState();
   $('meter').classList.toggle('low', low);
   const chip = $('leftChip'),

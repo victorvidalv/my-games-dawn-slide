@@ -3,7 +3,6 @@ export const EN_STORY = {
   /* ciudades */
   'Valle Esmeralda': 'Emerald Valley',
   'Puerto de las Velas': 'Harbor of Sails',
-  'Oasis Dorado': 'Golden Oasis',
   'Aldea de Otoño': 'Autumn Village',
   'Ciudad del Reloj': 'Clock City',
   'Refugio Glacial': 'Glacier Refuge',
@@ -28,34 +27,10 @@ export const EN_STORY = {
   /* mundo */
   'el Faro del Amanecer': 'the Dawn Beacon',
   'la llave roja': 'the red key',
-  'navegantes de las mareas antiguas': 'sailors of the ancient tides',
-  'caravaneros que cuentan pozos como quien cuenta años': 'caravaneers who count wells the way others count years',
-  'escribas de la corteza que escriben los nombres de los muertos en los árboles':
-    'bark scribes who write the names of the dead on the trees',
-  'tejedores de puentes bajo las estrellas': 'weavers of bridges beneath the stars',
   'Los Kogn': 'The Kogn',
   'Los Sahrim': 'The Sahrim',
   'Los Ennari': 'The Ennari',
   'Los Aluen': 'The Aluen',
-  'Vhorn, el Apagador': 'Vhorn, the Snuffer',
-  'Navegantes de las mareas antiguas': 'Sailors of the ancient tides',
-  'Caravaneros que cuentan pozos como años': 'Caravaneers who count wells like years',
-  'Escribas que escriben a sus muertos en la corteza': 'Scribes who write their dead on the bark',
-  'Tejedores de puentes bajo las estrellas': 'Weavers of bridges beneath the stars',
-  'La sombra que apagó el Faro del Amanecer': 'The shadow that put out the Dawn Beacon',
-  'Tri cerró las puertas.': 'Tri closed the doors.',
-  'No por miedo a lo que entra,': 'Not for fear of what comes in,',
-  'sino por lo que aún respiraba dentro.': 'but for what still breathed within.',
-  'Cada reino guardó un nombre,': 'Each kingdom kept a name,',
-  'y cada nombre, una hora.': 'and each name, an hour.',
-  'Tres luces pueden despertarlos:': 'Three lights can wake them:',
-  'la brasa que no se rinde,': 'the ember that does not yield,',
-  'la hora que sabe volver,': 'the hour that knows how to return,',
-  'la palabra que nombra lo perdido.': 'the word that names the lost.',
-  'Entonces Tri abrirá los ojos.': 'Then Tri will open her eyes.',
-  'THYES · AÑO {y} · CAPÍTULO {c} DE 10 · NIVELES {a}–{b}': 'THYES · YEAR {y} · CHAPTER {c} OF 10 · LEVELS {a}–{b}',
-  'Thyes, año {y} · Nivel {l} de 100 · Diez reinos, diez sellos':
-    'Thyes, year {y} · Level {l} of 100 · Ten kingdoms, ten seals',
 
   /* capítulos */
   'La brasa sale del valle': 'The ember leaves the valley',
@@ -79,15 +54,6 @@ export const EN_STORY = {
   'Despeja el camino de la llave roja y la marea volverá.': "Clear the red key's path and the tide will return.",
   'El sello de la Marea se rompe. El mar respira otra vez y los Kogn cantan en su lengua vieja.':
     'The Tide seal breaks. The sea breathes again and the Kogn sing in their old tongue.',
-
-  'El pozo de los Sahrim': 'The Sahrim well',
-  'Los Sahrim cuentan los pozos como otros cuentan los años, y la Noche Larga les arrebató el último. Sin agua la caravana no avanza. Rompe el sello del Agua y haz brotar el pozo.':
-    'The Sahrim count wells the way others count years, and the Long Night took their last one. Without water the caravan cannot move. Break the Water seal and make the well flow.',
-  'Las dunas cubrieron el último pozo de los Sahrim.': "The dunes buried the Sahrim's last well.",
-  'Aquí cada movimiento de más cuesta agua.': 'Here every extra move costs water.',
-  'La estrella caída marca el lugar donde cavar.': 'The fallen star marks the place to dig.',
-  'El sello del Agua se rompe. El pozo brota y los Sahrim vuelven a contar sus pozos, uno más.':
-    'The Water seal breaks. The well flows and the Sahrim count their wells again, one more.',
 
   'Los nombres de la corteza': 'The names on the bark',
   'Los Ennari escribían los nombres de sus muertos en la corteza de los árboles. Vhorn los borró, porque se alimenta de lo que se olvida. Rompe el sello de la Memoria y devuélveselos.':
@@ -118,17 +84,6 @@ export const EN_STORY = {
   'El sello del Valor se rompe. La campana suena entre las montañas y el miedo se queda atrás.':
     'The Courage seal breaks. The bell rings across the mountains and fear is left behind.',
 
-  'El jardín quieto': 'The still garden',
-  'Los Sahrim trajeron la primera semilla de cerezo cruzando tres desiertos. Hoy los pétalos flotan inmóviles y, por primera vez, Vhorn se deja ver entre ellos. Rompe el sello de la Vida.':
-    'The Sahrim carried the first cherry seed across three deserts. Today the petals float motionless and, for the first time, Vhorn lets himself be seen among them. Break the Life seal.',
-  'Los pétalos cuelgan en el aire, como si el tiempo dudara.': 'Petals hang in the air, as if time were hesitating.',
-  'Los candados de la villa se abren cubriendo la placa correcta.':
-    'The village padlocks open when you cover the right plate.',
-  'Esta calma es una trampa: alguien os observa.': 'This calm is a trap: someone is watching you.',
-  'Apagad esa luz. Todo lo que arde termina olvidado.': 'Put out that light. Everything that burns ends up forgotten.',
-  'El sello de la Vida se rompe. Los cerezos florecen y el viento trae una certeza: ya no hay vuelta atrás.':
-    'The Life seal breaks. The cherry trees bloom and the wind brings a certainty: there is no turning back.',
-
   'La fragua bajo la ceniza': 'The forge beneath the ash',
   'Aquí la brasa duerme bajo la piedra negra. Vhorn susurra que descansar es más fácil que luchar; romper el sello del Fuego es decirle que no.':
     'Here the ember sleeps beneath the black stone. Vhorn whispers that resting is easier than fighting; breaking the Fire seal is telling him no.',
@@ -139,18 +94,6 @@ export const EN_STORY = {
     'Rest. No one will remember your light when the night is over.',
   'El sello del Fuego se rompe. La fragua arde limpia y la tentación de rendirse se apaga.':
     'The Fire seal breaks. The forge burns clean and the temptation to give up fades.',
-
-  'Los puentes de luz': 'The bridges of light',
-  'Los Aluen tejían puentes de luz entre islas flotantes, y Vhorn los cortó. Aquí los héroes descubren su secreto: Vhorn fue el primer vigía del Faro, hasta que el mundo lo olvidó.':
-    "The Aluen wove bridges of light between floating islands, and Vhorn cut them. Here the heroes discover his secret: Vhorn was the Beacon's first watcher, until the world forgot him.",
-  'Las islas flotan sobre un abismo sin fondo.': 'The islands float above a bottomless abyss.',
-  'Cada tablero es un puente que hay que tejer a mano.': 'Every board is a bridge you must weave by hand.',
-  'Vhorn no quiere destruirlo todo: quiere que alguien lo recuerde.':
-    'Vhorn does not want to destroy everything: he wants someone to remember him.',
-  'Yo encendí el Faro mil noches… y nadie dijo mi nombre.':
-    'I lit the Beacon a thousand nights… and no one said my name.',
-  'El sello del Cielo se rompe. El último puente de luz llega hasta el Castillo Dorado.':
-    'The Sky seal breaks. The last bridge of light reaches the Golden Castle.',
 
   'El trono vacío': 'The empty throne',
   'Aquí espera el Faro del Amanecer y, en el trono vacío, la sombra de Vhorn. Para vencerlo no basta la fuerza: hay que encender el Faro y pronunciar su nombre.':
@@ -315,21 +258,13 @@ export const EN_STORY = {
   '«Una sola jugada acorta todo el códice.»': '“One single move shortens the whole codex.”',
 
   /* jefes de ciudad (10..100) */
-  'Vhorn, la Sombra del Faro': 'Vhorn, Shadow of the Beacon',
 
   /* finales y derrota */
-  '¡Los sellos ceden!': 'The seals give way!',
-  'Rompiste los diez sellos y el Faro del Amanecer parpadea en la penumbra. Pero Vhorn sigue ahí, olvidado y furioso, y Tri aún duerme.':
-    'You broke the ten seals and the Dawn Beacon flickers in the gloom. But Vhorn is still there, forgotten and furious, and Tri still sleeps.',
   'En la senda ': 'On the ',
   Difícil: 'Hard',
-  ' las sombras de Vhorn pesan más: menos margen, más gloria.':
-    " path Vhorn's shadows weigh more: less margin, more glory.",
   '⚔️ Ir al camino Difícil': '⚔️ Go to the Hard path',
   'SENDA DIFÍCIL COMPLETADA': 'HARD PATH COMPLETED',
   '¡Viajero de Thyes!': 'Traveler of Thyes!',
-  'Recorriste otra vez los diez reinos, ya con la hora y la palabra de tu lado. El Faro arde casi entero; falta pronunciar el nombre de Vhorn.':
-    "You crossed the ten kingdoms again, now with the hour and the word at your side. The Beacon burns almost whole; Vhorn's name is yet to be spoken.",
   'Solo resta la prueba suprema: la senda ': 'Only the supreme trial remains: the ',
   Experto: 'Expert',
   ', hasta el trono vacío.': ' path, up to the empty throne.',
@@ -337,24 +272,10 @@ export const EN_STORY = {
   '¡Thyes amanece!': 'Thyes awakens!',
   'La brasa, la hora y la palabra encienden el Faro del Amanecer y nombran a Vhorn. Su sombra se calma y Tri, al fin, abre los ojos: año 4134, Thyes despierta.':
     'The ember, the hour and the word kindle the Dawn Beacon and name Vhorn. His shadow calms and Tri, at last, opens her eyes: year 4134, Thyes awakens.',
-  'Tu nombre queda grabado en los diez sellos.': 'Your name is carved on the ten seals.',
   '¡Felicidades!': 'Congratulations!',
-  'Superaste los 100 umbrales.': 'You passed all 100 thresholds.',
-  'LA NOCHE SE CIERRA · ': 'THE NIGHT CLOSES IN · ',
-  'Te quedaste sin movimientos en el nivel {l}. El Sello de {s} resiste… por ahora. Thyes, año {y}.':
-    'You ran out of moves on level {l}. The {s} Seal holds… for now. Thyes, year {y}.',
   '{h}, sin fuerzas tras la derrota': '{h}, spent after the defeat',
   '{h} alcanza el final de su senda': '{h} reaches the end of the path',
-  'EL ATLAS DE {h} · UN NUEVO HORIZONTE': "{h}'S ATLAS · A NEW HORIZON",
-  'EL ATLAS DE {h} · CIUDAD {c} DE 10': "{h}'S ATLAS · CITY {c} OF 10",
-  'El atlas de {h}. Destino: {z}': "{h}'s atlas. Destination: {z}",
-  'Nivel actual {l} de 100 · Umbral {u} de 10 en este reino':
-    'Current level {l} of 100 · Threshold {u} of 10 in this kingdom',
-  'Hasta pronto, {z}': 'Farewell, {z}',
-  'LAS CRÓNICAS DE LA LLAVE ROJA': 'THE CHRONICLES OF THE RED KEY',
   'El Faro': 'The Beacon',
   'del Amanecer': 'of Dawn',
-  'LA SOMBRA DE VHORN · THYES, AÑO 4133': 'THE SHADOW OF VHORN · THYES, YEAR 4133',
-  'Abrir el camino ➜': 'Open the path ➜',
   '{h}: «{q}»': '{h}: “{q}”',
 };

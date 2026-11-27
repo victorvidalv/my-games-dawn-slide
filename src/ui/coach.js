@@ -96,7 +96,6 @@ function tipFor(id) {
       title: `${icon(h.icon)} ${h.name}: ${h.power}`,
       text: `${h.detail} <b>${h.short}.</b>`,
       demo: 'hero',
-      glow: '#heroHudName',
     },
     hero_power_jean: {
       tag: 'PODER ACTIVO',

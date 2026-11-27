@@ -6,10 +6,9 @@ import { HERO_TALK } from '../data/story.js';
 import { ZONES, zoneIdx } from '../data/zones.js';
 import { $ } from '../dom.js';
 import { DAILY_TOTAL_BOARDS, DAILY_TURN_BUDGET, challengeById } from '../game/daily.js';
-import { baseScore } from '../engine/scoring.js';
 import { numLocale } from '../i18n.js';
 import { celebrate } from './achievements.js';
-import { boardEl, place, recLine } from './board.js';
+import { boardEl, place } from './board.js';
 
 export const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -40,7 +39,6 @@ export const unlockBoard = () => boardEl.classList.remove('board-lock');
 /** Puntaje de la partida en el HUD ('—' en práctica). */
 export function showScore(run) {
   $('score').textContent = run.mode === 'p' ? '—' : run.score.toLocaleString(numLocale());
-  recLine();
 }
 
 /** HUD inicial de un tablero: nivel, mínimo, puntos base, puntaje, límite, deshacer y consejo. */
@@ -53,8 +51,6 @@ export function renderLevelHud(run, G, heroId) {
     : G.tutorial
       ? `${G.n} · TUTORIAL`
       : G.n;
-  $('mn').textContent = G.opt;
-  $('base').textContent = prac ? '—' : baseScore(G.opt);
   showScore(run);
   $('lim').textContent = run.daily ? DAILY_TURN_BUDGET : prac ? '∞' : G.limit;
   $('bUndo').disabled = !G.hist.length;

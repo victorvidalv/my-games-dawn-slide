@@ -115,9 +115,6 @@
   border: 3px solid var(--spell);
   animation: power-ring 1.5s ease-out infinite;
 }
-#heroPowerFx.launch {
-  animation: power-launch 0.3s ease-in forwards;
-}
 .power-sigil::before {
   content: '';
   position: absolute;
@@ -226,13 +223,6 @@
     transform: translateX(-50%) scale(1);
   }
 }
-@keyframes power-launch {
-  to {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-90px) scale(1.55);
-    filter: brightness(2.2) blur(2px);
-  }
-}
 @keyframes power-aura {
   0% {
     opacity: 0;
@@ -318,21 +308,6 @@
 @media (prefers-reduced-motion: reduce) {
   .power-toast {
     animation: none;
-  }
-}
-@keyframes spell-arrive {
-  from {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes spell-orbit {
-  to {
-    transform: rotate(-360deg);
   }
 }
 @keyframes spell-border {

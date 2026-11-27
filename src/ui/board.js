@@ -5,14 +5,13 @@ import { isLow, isWon, moveStatus, movesLeft } from '../engine/rules.js';
 import { DAILY_TOTAL_BOARDS, DAILY_TURN_BUDGET } from '../game/daily.js';
 import { $ } from '../dom.js';
 import { fail, saveRun, win } from '../game/session.js';
-import { S, gainNow, pathOf, rkey, store } from '../state.js';
+import { S } from '../state.js';
 import { applyMove } from '../game/run-logic.js';
 import { zoneIdx } from '../data/zones.js';
 import { coachOnMove } from './coach.js';
 import { updateHeroHud } from './heroes.js';
 import { freeRetry } from '../game/shop.js';
 import { lowState, renderTurns } from './turns.js';
-import { numLocale } from '../i18n.js';
 import { boardRotation, localDelta } from '../game/orientation.js';
 import { rewardById } from '../game/achievements.js';
 import { motes, trailPath } from './fx.js';
@@ -442,26 +441,6 @@ function fitScore() {
   score.style.setProperty('--score-size', Math.max(10, size) + 'px');
 }
 new MutationObserver(fitScore).observe($('score'), { childList: true, characterData: true, subtree: true });
-export function recLine() {
-  // refresca camino, puntaje actual y máximo del camino en juego
-  const prac = S.run.mode === 'p',
-    rec = store.paths[rkey()] || { score: 0, level: 0 },
-    p = pathOf(S.run.start);
-  $('pchip').textContent = p.n.toUpperCase();
-  $('pchip').style.color = p.c;
-  if (prac) {
-    $('scoreLbl').textContent = 'MODO';
-    $('score').textContent = 'Práctica';
-    $('maxLbl').textContent = 'NIVEL MÁX.';
-    $('scoreMax').textContent = Math.max(rec.level, S.run.level);
-    $('scMax').classList.remove('broken');
-    return;
-  }
-  $('scoreLbl').textContent = 'PUNTOS';
-  $('maxLbl').textContent = S.run.recBroken ? 'NUEVO RÉCORD' : 'RÉCORD';
-  $('scoreMax').textContent = Math.max(rec.score, S.run.score).toLocaleString(numLocale());
-  $('scMax').classList.toggle('broken', !!S.run.recBroken);
-}
 export function updateHud() {
   updateHeroHud();
   const d = S.run.daily;
@@ -485,9 +464,7 @@ export function updateHud() {
     hue = 140 * (1 - Math.min(1, over));
   f.style.background = `hsl(${hue} 85% 52%)`;
   f.style.color = `hsl(${hue} 85% 52%)`;
-  const prac = S.run.mode === 'p',
-    cg = gainNow();
-  $('pot').textContent = prac ? 'sin puntaje' : '+' + cg.total.toLocaleString(numLocale());
+  const prac = S.run.mode === 'p';
   $('meter').classList.toggle('danger', !prac && isLow(S.G.moves, S.G.limit));
   const { low, last } = lowState(); // pocos turnos: solo aviso visual, la música no cambia
   setTensionFx(low, last);

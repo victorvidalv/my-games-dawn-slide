@@ -1,7 +1,4 @@
 /* HUD minimalista: nivel (solo el número), puntos, menú, y una barra con «hecho», «límite» y la zona perfecta con corona. */
-.hud-legacy {
-  display: none !important;
-}
 .top {
   align-items: center;
   justify-content: space-between;

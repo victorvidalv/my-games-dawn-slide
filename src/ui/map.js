@@ -1,6 +1,4 @@
-import { ZONES, ZONE_LEVELS, zoneOf, zoneStep } from '../data/zones.js';
-import { $ } from '../dom.js';
-import { S } from '../state.js';
+import { ZONES } from '../data/zones.js';
 let curZone = -1;
 
 /** Fichas en tonos suaves: la saturación de la zona se atenúa (≈ 37–46 %) para que no resulten chillonas. */
@@ -33,17 +31,4 @@ export function applyZone(i) {
   document.body.style.setProperty('--t1', z.t1);
   document.body.style.setProperty('--t2', z.t2);
   document.body.style.setProperty('--cc', z.cc);
-}
-export function renderStage() {
-  // barra de 3 tramos de la zona actual
-  const z = zoneOf(S.G.n),
-    step = zoneStep(S.G.n);
-  $('sname').textContent = z.n;
-  const sg = $('segs');
-  sg.innerHTML = '';
-  for (let k = 1; k <= ZONE_LEVELS; k++) {
-    const s = document.createElement('span');
-    s.className = 'sg' + (k < step ? ' done' : k === step ? ' cur adv' : '');
-    sg.appendChild(s);
-  }
 }

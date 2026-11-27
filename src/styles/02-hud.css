@@ -42,21 +42,6 @@
   background-clip: text;
   color: transparent;
 }
-.rec-line {
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  opacity: 0.65;
-  margin-top: 3px;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-.rec-line.gold {
-  color: var(--gold);
-  opacity: 1;
-}
 .score b.bump {
   animation: bump 0.5s;
 }
@@ -161,15 +146,4 @@
       inset 0 2px 5px #000a,
       0 0 18px #ff2d4a;
   }
-}
-.pot {
-  font-size: 12px;
-  opacity: 0.8;
-  display: flex;
-  justify-content: space-between;
-}
-.pot b {
-  color: var(--gold);
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
 }
