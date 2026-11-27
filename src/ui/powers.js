@@ -12,7 +12,7 @@ import { countStat } from './achievements.js';
 function pulse(piece, colors) {
   if (reducedMotion() || !piece) return;
   const r = piece.getBoundingClientRect();
-  motes(0, 0, 22, colors, 3.4, r);
+  motes(0, 0, 30, colors, 3.8, r);
   const board = $('board');
   board.classList.remove('wave');
   void board.offsetWidth;
@@ -45,13 +45,14 @@ export async function activatePower() {
   updateHud();
   $('powerFxName').textContent = `${h.name} · ${name}`;
   $('powerStep').textContent = 'Poder activado';
-  board.classList.add('hero-power', action.kind);
+  board.classList.add('power-on', 'jolt', action.kind);
+  if (!reduced) motes(0, 0, 60, SPELL[h.id === 'van' ? 'van' : 'jean'], 5, board.getBoundingClientRect());
   board.dataset.hero = h.id;
   board.setAttribute('aria-busy', 'true');
   // Sin introducción: el poder actúa de inmediato. Cada pieza movida lleva su borde de poder y un golpe seco.
   const up = action.kind !== 'rewind';
   const spellColors = SPELL[h.id === 'van' ? 'van' : 'jean'];
-  vib([25, 20, 40]);
+  vib([30, 25, 60]);
   try {
     for (let n = 0; n < action.steps.length; n++) {
       if (S.G !== G || S.run !== run || G.done) break;
@@ -93,7 +94,7 @@ export async function activatePower() {
       await wait(reduced ? 40 : 200);
     }
   } finally {
-    board.classList.remove('hero-power', 'rewind', 'destiny');
+    board.classList.remove('power-on', 'jolt', 'wave', 'rewind', 'destiny');
     delete board.dataset.hero;
     board.removeAttribute('aria-busy');
     G.els.forEach((el) => el.classList.remove('power-piece'));

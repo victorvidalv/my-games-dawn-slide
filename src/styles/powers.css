@@ -1,80 +1,5 @@
 /* powers — capa «components» */
 @layer components {
-  .hero-power {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 17px;
-    margin-top: 17px;
-    border: 1px solid color-mix(in srgb, var(--chosen) 35%, transparent);
-    border-radius: 17px;
-    background: linear-gradient(120deg, #ffffff08, #ffffff02);
-  }
-  .hero-power h3 {
-    font-size: 18px;
-    margin: 0 0 3px;
-    color: #fff0d6;
-  }
-  .hero-power strong {
-    font-size: 12px;
-    color: var(--chosen);
-  }
-  .hero-power p {
-    font-size: 12px !important;
-    color: #d3dfef;
-    margin: 7px 0 0 !important;
-    line-height: 1.55 !important;
-    opacity: 1 !important;
-  }
-  @media (max-width: 600px) {
-    .hero-power {
-      padding: 13px;
-      gap: 10px;
-    }
-    .hero-power h3 {
-      font-size: 17px;
-    }
-  }
-  @media (max-height: 660px) {
-    .hero-power {
-      margin-top: 10px;
-      padding: 10px;
-    }
-  }
-  .hero-power {
-    padding: 13px;
-    border-radius: 10px;
-    border: 1.5px solid #091118;
-    background: #0f1d2799;
-    margin-top: 14px;
-  }
-  .hero-power h3 {
-    font: 19px var(--font-book);
-    color: #e7d9bd;
-  }
-  .hero-power strong {
-    font-size: 12px;
-  }
-  .hero-power p {
-    font-size: 12px !important;
-    color: #bac7ca;
-  }
-  @media (max-width: 600px) {
-    .hero-power {
-      padding: 11px;
-      gap: 9px;
-    }
-    .hero-power p {
-      font-size: 11px !important;
-    }
-    .hero-power h3 {
-      font-size: 18px;
-    }
-  }
-
-  .hero-power {
-    align-items: center;
-  }
   #bUndo,
   [hidden]#bPower,
   [hidden]#liaReserve,
@@ -252,69 +177,79 @@
   .power-sigil > i {
     display: none;
   }
-  .hero-power .piece {
+  .power-on .piece {
     transition: translate 0.29s ease-in-out;
   }
   /* Borde de poder: la pieza movida por el poder, sin intro, lleva un marco propio de cada héroe. */
-  .hero-power .piece.power-piece {
+  .power-on .piece.power-piece {
     --pw: #a5c8ed;
     --pw2: #d8eaff;
     z-index: 12;
-    filter: drop-shadow(0 0 8px var(--pw));
-    animation: power-piece-pop 0.3s ease-out;
+    filter: drop-shadow(0 0 10px var(--pw)) drop-shadow(0 0 20px var(--pw));
+    animation: power-piece-pop 0.42s ease-out;
   }
-  .hero-power.destiny .piece.power-piece {
+  .power-on.destiny .piece.power-piece {
     --pw: #d1b2ec;
     --pw2: #fff0c4;
   }
-  .hero-power .piece.power-piece::after {
+  .power-on .piece.power-piece::after {
     content: '';
     position: absolute;
     inset: var(--gap, 2px);
     z-index: 5;
     pointer-events: none;
     border-radius: 9px;
-    border: 2px solid var(--pw2);
+    border: 4px solid var(--pw2);
     box-shadow:
-      0 0 0 1.5px var(--brass-lo),
-      0 0 14px var(--pw),
-      inset 0 0 12px color-mix(in srgb, var(--pw) 55%, transparent);
+      0 0 0 2px var(--brass-lo),
+      0 0 22px 2px var(--pw),
+      inset 0 0 18px color-mix(in srgb, var(--pw) 75%, transparent);
   }
   /* Jean (tiempo): marco discontinuo, como las marcas de un reloj, que gira hacia atrás. */
-  .hero-power.rewind .piece.power-piece::after {
+  .power-on.rewind .piece.power-piece::after {
     border-style: dashed;
     animation: power-dash 0.5s linear;
   }
   /* Juth (destino): doble marco dorado con esquinas de runa, fijo y nítido. */
-  .hero-power.destiny .piece.power-piece::after {
+  .power-on.destiny .piece.power-piece::after {
     border-style: double;
-    border-width: 4px;
+    border-width: 6px;
     border-color: var(--brass-hi);
     box-shadow:
-      0 0 0 1.5px var(--pw),
-      0 0 16px var(--pw),
-      inset 0 0 12px color-mix(in srgb, var(--pw) 55%, transparent);
+      0 0 0 2px var(--pw),
+      0 0 26px 3px var(--pw),
+      inset 0 0 18px color-mix(in srgb, var(--pw) 75%, transparent);
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero-power .piece.power-piece,
-    .hero-power.rewind .piece.power-piece::after {
+    .power-on .piece.power-piece,
+    .power-on.rewind .piece.power-piece::after {
       animation: none;
     }
   }
-  .hero-power::after {
+  .power-on::after {
     content: '';
     position: absolute;
-    inset: -4px;
+    inset: -5px;
     z-index: 15;
-    border: 2px solid #a5c8ed88;
-    border-radius: 12px;
-    box-shadow: 0 0 22px #a5c8ed44;
+    border: 3px solid #cfe4fa;
+    border-radius: 13px;
+    box-shadow:
+      0 0 30px 2px #a5c8edcc,
+      inset 0 0 26px #a5c8ed88;
     pointer-events: none;
-    animation: spell-border 1.2s ease-in-out infinite alternate;
+    animation:
+      power-ignite 0.6s ease-out,
+      spell-border 0.7s 0.6s ease-in-out infinite alternate;
   }
-  .hero-power.destiny::after {
-    border-color: #d1b2ecaa;
-    box-shadow: 0 0 22px #d1b2ec55;
+  .power-on.destiny::after {
+    border-color: #f0dcff;
+    box-shadow:
+      0 0 30px 2px #d1b2ecdd,
+      inset 0 0 26px #d1b2ec99;
+  }
+  /* Sacudida breve al activar: el tablero «recibe» el poder. */
+  .power-on.jolt {
+    animation: power-jolt 0.36s ease-out;
   }
   .power-toast {
     position: fixed;
@@ -377,15 +312,15 @@
     #heroPowerFx.show,
     #heroPowerFx::before,
     #heroPowerFx::after,
-    .hero-power::after,
+    .power-on::after,
     .reserve-awaken {
       animation: none;
     }
-    .hero-power .piece {
+    .power-on .piece {
       transition: none;
     }
   }
-  .hero-power::before {
+  .power-on::before {
     content: '';
     position: absolute;
     left: 50%;
@@ -396,37 +331,34 @@
     border-radius: 50%;
     pointer-events: none;
     opacity: 0;
-    border: 2px solid #d8eaff;
+    border: 4px solid #d8eaff;
     box-shadow:
-      0 0 18px #a5c8ed,
-      inset 0 0 18px #a5c8ed66;
+      0 0 26px #a5c8ed,
+      inset 0 0 26px #a5c8edaa;
     transform: translate(-50%, -50%) scale(0.2);
   }
-  .hero-power.destiny::before {
+  .power-on.destiny::before {
     border-color: #ecd7ff;
     box-shadow:
-      0 0 18px #d1b2ec,
-      inset 0 0 18px #d1b2ec66;
+      0 0 26px #d1b2ec,
+      inset 0 0 26px #d1b2ecaa;
   }
-  .hero-power.wave::before {
-    animation: power-wave 0.55s ease-out;
+  .power-on.wave::before {
+    animation: power-wave 0.6s ease-out;
   }
-  .hero-power.rewind .piece:not(.power-piece) {
+  .power-on.rewind .piece:not(.power-piece) {
     filter: sepia(0.35) saturate(0.8) brightness(0.92);
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero-power::before,
-    .power-toast,
+    .power-on::before,
+    .power-on.jolt,
+    .power-on .piece.power-piece {
+      animation: none;
+    }
+  }
+  .power-toast,
   .tip {
     border-radius: var(--wob-b);
-  }
-  .hero-selector .hero-power {
-    background: var(--hatch), linear-gradient(153deg, var(--portrait-tone) 0 68%, #202434 68.5%) !important;
-    border: 2.5px solid #150e0c !important;
-    border-radius: var(--wob-d) !important;
-    box-shadow:
-      inset 0 0 0 1.5px #e0b04f40,
-      3px 5px 0 #150e0c;
   }
   #bPower:disabled {
     opacity: 1;
@@ -536,7 +468,34 @@
   }
   @keyframes spell-border {
     to {
-      opacity: 0.4;
+      opacity: 0.55;
+    }
+  }
+  @keyframes power-ignite {
+    0% {
+      opacity: 1;
+      border-width: 14px;
+      box-shadow:
+        0 0 60px 14px #fff,
+        inset 0 0 60px #fff;
+    }
+    100% {
+      border-width: 3px;
+    }
+  }
+  @keyframes power-jolt {
+    0%,
+    100% {
+      transform: none;
+    }
+    20% {
+      transform: translate(-3px, 2px) scale(1.02);
+    }
+    45% {
+      transform: translate(3px, -2px) scale(1.015);
+    }
+    70% {
+      transform: translate(-1.5px, 1px);
     }
   }
   @keyframes power-wave {
@@ -546,7 +505,7 @@
     }
     100% {
       opacity: 0;
-      transform: translate(-50%, -50%) scale(5.2);
+      transform: translate(-50%, -50%) scale(6.5);
     }
   }
   @keyframes power-dash {
@@ -564,7 +523,7 @@
       transform: scale(1);
     }
     35% {
-      transform: scale(1.07);
+      transform: scale(1.13);
     }
     100% {
       transform: scale(1);
