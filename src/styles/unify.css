@@ -1,0 +1,198 @@
+/* unify — capa «unify»: un único lenguaje (superficie tinta + latón + Cinzel) aplicado a HUD, tablero, botones, rangos y cartas */
+@layer unify {
+  /* tipografía de rótulos en todo el juego (el chino conserva su serif propio) */
+  :root:not(:lang(zh-Hans)) {
+    --font-title: var(--font-display);
+  }
+
+  /* ---- botones: misma familia que los menús ---- */
+  button {
+    border: 1.5px solid #091118;
+    background: linear-gradient(180deg, var(--surf-3), var(--surf-2));
+    box-shadow:
+      var(--sh-btn),
+      0 0 0 1px #f1ce8222;
+    color: var(--surf-ink);
+  }
+  button.primary,
+  .menubtn {
+    background: linear-gradient(180deg, var(--cta-a), var(--cta-b));
+    border-color: var(--cta-edge);
+    color: #fff3dc;
+    box-shadow:
+      0 4px 0 var(--cta-edge),
+      0 8px 14px #0007,
+      inset 0 1px 0 #ffd9b055,
+      0 0 0 1px var(--brass-line);
+  }
+  button.primary:active,
+  .menubtn:active {
+    box-shadow:
+      0 1px 0 var(--cta-edge),
+      inset 0 1px 0 #ffd9b033,
+      0 0 0 1px var(--brass-line);
+  }
+
+  /* ---- HUD: paneles de tinta con filo de latón ---- */
+  .meter,
+  .sc {
+    background:
+      radial-gradient(ellipse at 50% 0%, var(--brass-glow), #0000 60%),
+      linear-gradient(160deg, var(--surf-2), var(--surf-1));
+    border: 1px solid var(--brass-line);
+    border-radius: var(--r-panel);
+    box-shadow:
+      var(--sh-panel),
+      0 0 0 3px var(--surf-0),
+      0 0 0 4px var(--brass-glow);
+  }
+  .sc {
+    border-radius: 14px;
+    box-shadow: var(--sh-panel);
+  }
+  .sc b {
+    background: linear-gradient(180deg, #fff7dd, #d8ab52);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .sc.max b {
+    background: linear-gradient(180deg, #fff3b0, #ffb300);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .mrow {
+    color: var(--surf-dim);
+  }
+  .mrow b {
+    font-family: var(--font-title);
+    color: var(--brass-hi);
+  }
+  .bar {
+    background: #070a10cc;
+    box-shadow:
+      inset 0 2px 5px #000b,
+      0 0 0 1px #f1ce8230;
+  }
+  .lv b {
+    font-family: var(--font-title);
+    color: var(--brass-hi);
+    text-shadow: 0 2px 0 #120e14;
+  }
+
+  /* ---- rangos: una sola escala de colores, letra Cinzel clara y con marco ---- */
+  :is(.run-grade, .rank-badge, .rank-step) {
+    --a: var(--rk-c-a);
+    --b: var(--rk-c-b);
+    --e: var(--rk-c);
+    border-color: var(--e);
+    background: linear-gradient(150deg, var(--a), var(--b));
+    font-family: var(--font-title);
+    text-shadow: 0 2px 0 #120e14;
+  }
+  :is(.run-grade, .rank-badge, .rank-step)[data-grade='b'] {
+    --a: var(--rk-b-a);
+    --b: var(--rk-b-b);
+    --e: var(--rk-b);
+  }
+  :is(.run-grade, .rank-badge, .rank-step)[data-grade='a'] {
+    --a: var(--rk-a-a);
+    --b: var(--rk-a-b);
+    --e: var(--rk-a);
+  }
+  :is(.run-grade, .rank-badge, .rank-step)[data-grade='s'] {
+    --a: var(--rk-s-a);
+    --b: var(--rk-s-b);
+    --e: var(--rk-s);
+  }
+  :is(.run-grade, .rank-badge, .rank-step)[data-grade='splus'] {
+    --a: var(--rk-sp-a);
+    --b: var(--rk-sp-b);
+    --e: var(--rk-sp);
+  }
+  .run-grade {
+    min-width: 62px;
+    height: 62px;
+    font-size: 32px;
+    border-radius: 16px;
+    border-width: 2.5px;
+    box-shadow:
+      inset 0 1px 0 #ffffff55,
+      inset 0 -8px 14px #0004,
+      0 0 0 3px var(--surf-0),
+      0 0 0 4px var(--e),
+      0 6px 16px #000a;
+  }
+  .rank-step b {
+    font-size: 20px;
+  }
+  /* lo que falta para la siguiente letra: se lee como un objetivo, no como un aviso */
+  :is(.run-near, .over-near, .ovr-next, .rank-scale-note) {
+    color: var(--brass-hi);
+    font-weight: 800;
+  }
+  .ovr-next,
+  .run-near {
+    justify-self: center;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #f1ce8224, #f1ce8210);
+    border: 1px solid var(--brass-line);
+    text-shadow: 0 1px 0 #120e14;
+  }
+  .ovr-next[hidden],
+  .run-near[hidden] {
+    display: none;
+  }
+  #over .ovr-track b {
+    font-family: var(--font-title);
+  }
+
+  #over .over-card h2,
+  .travel-heading,
+  .card h2 {
+    font-family: var(--font-title);
+    letter-spacing: 0.04em;
+  }
+  #over .over-card h2 {
+    color: var(--brass-hi);
+    text-shadow: 0 2px 0 #120e14;
+  }
+
+  /* ---- cartas del destino: marco y sombras del mismo juego que el resto ---- */
+  .fate-face {
+    border-color: #091118;
+    box-shadow:
+      inset 0 0 0 calc(var(--w) * 0.022) #fff6dc,
+      inset 0 0 0 calc(var(--w) * 0.036) color-mix(in srgb, var(--fa) 70%, #1c1208),
+      0 5px 0 #091118,
+      0 10px 20px #0009,
+      0 0 0 1px var(--brass-line);
+  }
+}
+
+/* ---- móvil: menos efectos caros (sin desenfoques de fondo, niebla estática) ---- */
+@layer lite {
+  @media (pointer: coarse), (max-width: 600px) {
+    .modal,
+    .modal * {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    .modal {
+      background: #050714ec;
+    }
+    .ob-fog,
+    .ob-fog-2 {
+      filter: none;
+      animation: none;
+    }
+    .ob-pulse {
+      mix-blend-mode: normal;
+      opacity: 0.25;
+    }
+    .meter,
+    .sc {
+      box-shadow: var(--sh-panel);
+    }
+  }
+}
