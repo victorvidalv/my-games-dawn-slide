@@ -255,16 +255,51 @@
   .hero-power .piece {
     transition: translate 0.29s ease-in-out;
   }
+  /* Borde de poder: la pieza movida por el poder, sin intro, lleva un marco propio de cada héroe. */
   .hero-power .piece.power-piece {
+    --pw: #a5c8ed;
+    --pw2: #d8eaff;
     z-index: 12;
-    filter: drop-shadow(0 0 9px #a5c8ed);
-    outline: 2px solid #d8eaff;
-    outline-offset: -3px;
-    border-radius: 9px;
+    filter: drop-shadow(0 0 8px var(--pw));
+    animation: power-piece-pop 0.3s ease-out;
   }
   .hero-power.destiny .piece.power-piece {
-    filter: drop-shadow(0 0 10px #d1b2ec);
-    outline-color: #ecd7ff;
+    --pw: #d1b2ec;
+    --pw2: #fff0c4;
+  }
+  .hero-power .piece.power-piece::after {
+    content: '';
+    position: absolute;
+    inset: var(--gap, 2px);
+    z-index: 5;
+    pointer-events: none;
+    border-radius: 9px;
+    border: 2px solid var(--pw2);
+    box-shadow:
+      0 0 0 1.5px var(--brass-lo),
+      0 0 14px var(--pw),
+      inset 0 0 12px color-mix(in srgb, var(--pw) 55%, transparent);
+  }
+  /* Jean (tiempo): marco discontinuo, como las marcas de un reloj, que gira hacia atrás. */
+  .hero-power.rewind .piece.power-piece::after {
+    border-style: dashed;
+    animation: power-dash 0.5s linear;
+  }
+  /* Juth (destino): doble marco dorado con esquinas de runa, fijo y nítido. */
+  .hero-power.destiny .piece.power-piece::after {
+    border-style: double;
+    border-width: 4px;
+    border-color: var(--brass-hi);
+    box-shadow:
+      0 0 0 1.5px var(--pw),
+      0 0 16px var(--pw),
+      inset 0 0 12px color-mix(in srgb, var(--pw) 55%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-power .piece.power-piece,
+    .hero-power.rewind .piece.power-piece::after {
+      animation: none;
+    }
   }
   .hero-power::after {
     content: '';
@@ -379,16 +414,9 @@
   .hero-power.rewind .piece:not(.power-piece) {
     filter: sepia(0.35) saturate(0.8) brightness(0.92);
   }
-  .hero-power .piece.power-piece {
-    animation: power-piece-pop 0.36s ease-out;
-  }
   @media (prefers-reduced-motion: reduce) {
     .hero-power::before,
-    .hero-power .piece.power-piece {
-      animation: none;
-    }
-  }
-  .power-toast,
+    .power-toast,
   .tip {
     border-radius: var(--wob-b);
   }
@@ -419,201 +447,6 @@
   #bPower[data-hero='van'] small {
     color: #eadcf7;
   }
-  #powerStage {
-    position: fixed;
-    inset: 0;
-    z-index: var(--z-power-stage);
-    display: none;
-    pointer-events: none;
-    overflow: hidden;
-    --spell: #a5c8ed;
-    --spell2: #f6dc9a;
-    background: radial-gradient(
-      circle at var(--cx, 50%) var(--cy, 50%),
-      #0000 0,
-      #0000 22%,
-      #060a1466 46%,
-      #04070ed9 100%
-    );
-  }
-  #powerStage[data-hero='van'] {
-    --spell: #d1b2ec;
-    --spell2: #fff0c4;
-  }
-  #powerStage.show {
-    display: block;
-    animation: ps-in 0.25s ease-out both;
-  }
-  .ps-sigil {
-    position: absolute;
-    transform: translate(-50%, -50%);
-  }
-  .ps-sigil svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    mix-blend-mode: screen;
-    filter: drop-shadow(0 0 3px var(--spell)) drop-shadow(0 0 12px var(--spell));
-    animation: sigil-in 0.7s cubic-bezier(0.2, 1.1, 0.3, 1) both;
-  }
-  .ps-glow {
-    position: absolute;
-    inset: -12%;
-    border-radius: 50%;
-    mix-blend-mode: screen;
-    background: radial-gradient(
-      circle,
-      color-mix(in srgb, var(--spell) 50%, transparent) 0,
-      color-mix(in srgb, var(--spell) 16%, transparent) 42%,
-      #0000 68%
-    );
-    animation: sigil-breathe 1s ease-in-out infinite alternate;
-  }
-  .ps-sigil .ring {
-    fill: none;
-    stroke: var(--spell2);
-    stroke-width: 0.9;
-    vector-effect: non-scaling-stroke;
-    stroke-width: 1.6px;
-  }
-  .ps-sigil .ring.thick {
-    stroke-width: 3px;
-  }
-  .ps-sigil .ring.thin {
-    stroke-width: 1.1px;
-    opacity: 0.75;
-  }
-  .ps-sigil .ring.dash {
-    stroke-dasharray: 3 5;
-    opacity: 0.85;
-  }
-  .ps-sigil .ring.draw {
-    stroke-dasharray: 640;
-    stroke-dashoffset: 640;
-    animation: sigil-draw 0.75s ease-out 0.05s forwards;
-  }
-  .ps-sigil .tick {
-    stroke: var(--spell2);
-    stroke-width: 1px;
-    vector-effect: non-scaling-stroke;
-    opacity: 0.8;
-  }
-  .ps-sigil .tick.big {
-    stroke-width: 2.2px;
-    opacity: 1;
-  }
-  .ps-sigil .glyphs text {
-    fill: var(--spell2);
-    font-family: var(--font-title, Georgia, serif);
-    font-weight: 700;
-  }
-  .ps-sigil .hub,
-  .ps-sigil .hand path {
-    fill: #fff;
-  }
-  .ps-sigil g {
-    transform-box: view-box;
-    transform-origin: 0 0;
-  }
-  .ps-sigil .spin {
-    animation: sigil-spin 6s linear infinite;
-  }
-  .ps-sigil .spin.slow {
-    animation-duration: 14s;
-  }
-  .ps-sigil .spin-back {
-    animation: sigil-spin 7s linear infinite reverse;
-  }
-  .ps-sigil .spin-back.slow {
-    animation-duration: 12s;
-  }
-  .ps-sigil .spin-back.fast {
-    animation-duration: 1.6s;
-  }
-  .ps-sigil .hand.hour {
-    animation: sigil-spin 1.5s cubic-bezier(0.5, 0, 0.9, 0.6) infinite reverse;
-  }
-  .ps-sigil .hand.minute {
-    animation: sigil-spin 0.5s linear infinite reverse;
-  }
-  .ps-wave {
-    position: absolute;
-    inset: 8%;
-    border-radius: 50%;
-    opacity: 0;
-    border: 2px solid var(--spell2);
-    box-shadow:
-      0 0 26px var(--spell),
-      inset 0 0 40px color-mix(in srgb, var(--spell) 60%, transparent);
-  }
-  #powerStage[data-kind='rewind'].unleash .ps-sigil svg {
-    animation: sigil-collapse 0.55s cubic-bezier(0.6, 0, 0.8, 0.3) forwards;
-  }
-  #powerStage[data-kind='rewind'].unleash .ps-wave {
-    animation: time-ripple 0.7s cubic-bezier(0.1, 0.6, 0.3, 1) both;
-  }
-  #powerStage[data-kind='rewind'].unleash .ps-wave.two {
-    animation-delay: 0.14s;
-  }
-  #powerStage[data-kind='destiny'].unleash .ps-sigil svg {
-    animation: sigil-bloom 0.6s ease-out forwards;
-  }
-  #powerStage[data-kind='destiny'].unleash .ps-wave {
-    background: radial-gradient(circle, #fff0 40%, color-mix(in srgb, var(--spell2) 70%, transparent) 62%, #fff0 72%);
-    border: 0;
-    animation: purify-wave 0.7s ease-out both;
-  }
-  #powerStage[data-kind='destiny'].unleash .ps-wave.two {
-    animation-delay: 0.16s;
-  }
-  #powerStage.unleash .ps-glow {
-    animation: sigil-flash 0.6s ease-out forwards;
-  }
-  #powerStage.unleash {
-    animation: ps-out 0.45s ease-in 0.3s both;
-  }
-  .ps-title {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(var(--cy, 50%) + var(--sz, 300px) * 0.15);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    text-align: center;
-    padding: 0 12px;
-    font-size: clamp(22px, 6.4vw, 46px);
-  }
-  .ps-title b {
-    font: 700 1em/1 var(--font-title, Georgia, serif);
-    letter-spacing: 0.2em;
-    padding-left: 0.2em;
-    text-transform: uppercase;
-    color: #fffaf0;
-    text-shadow:
-      0 2px 0 #091118,
-      0 0 14px var(--spell),
-      0 0 34px var(--spell);
-    animation: ps-title-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.1s both;
-  }
-  .ps-title span {
-    font:
-      700 clamp(10px, 2.5vw, 14px)/1 system-ui,
-      sans-serif;
-    letter-spacing: 0.5em;
-    text-transform: uppercase;
-    color: var(--spell2);
-    padding: 6px 16px 6px calc(16px + 0.5em);
-    border-block: 1px solid color-mix(in srgb, var(--spell2) 70%, transparent);
-    background: linear-gradient(90deg, #0000, #091118c4 22%, #091118c4 78%, #0000);
-    animation: ps-title-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.22s both;
-  }
-  #powerStage.unleash .ps-title {
-    animation: ps-title-out 0.4s ease-in both;
-  }
   #heroPowerFx.center {
     transform: translateX(-50%);
     filter: drop-shadow(0 0 26px var(--spell)) drop-shadow(0 0 70px color-mix(in srgb, var(--spell) 60%, transparent));
@@ -634,12 +467,6 @@
   #heroPowerFx.center .power-sigil > b {
     font-size: clamp(15px, 3.6vw, 22px);
     padding: 26px 8px 14px;
-  }
-  .hero-power .piece.power-piece {
-    filter: drop-shadow(0 0 14px #a5c8ed) drop-shadow(0 0 30px #a5c8ed) brightness(1.2);
-  }
-  .hero-power.destiny .piece.power-piece {
-    filter: drop-shadow(0 0 14px #d1b2ec) drop-shadow(0 0 30px #d1b2ec) brightness(1.2);
   }
   @keyframes brasa-awaken {
     40% {
@@ -722,6 +549,16 @@
       transform: translate(-50%, -50%) scale(5.2);
     }
   }
+  @keyframes power-dash {
+    from {
+      transform: rotate(14deg);
+      opacity: 0.4;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
   @keyframes power-piece-pop {
     0% {
       transform: scale(1);
@@ -731,103 +568,6 @@
     }
     100% {
       transform: scale(1);
-    }
-  }
-  @keyframes ps-in {
-    from {
-      opacity: 0;
-    }
-  }
-  @keyframes ps-out {
-    to {
-      opacity: 0;
-    }
-  }
-  @keyframes sigil-in {
-    from {
-      opacity: 0;
-      transform: scale(0.35) rotate(-120deg);
-    }
-  }
-  @keyframes sigil-breathe {
-    from {
-      opacity: 0.55;
-      transform: scale(0.94);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1.04);
-    }
-  }
-  @keyframes sigil-draw {
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-  @keyframes sigil-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @keyframes sigil-collapse {
-    to {
-      transform: scale(0) rotate(-540deg);
-      opacity: 0;
-      filter: drop-shadow(0 0 20px #fff) brightness(2);
-    }
-  }
-  @keyframes sigil-bloom {
-    35% {
-      filter: drop-shadow(0 0 22px #fff) brightness(2.4);
-    }
-    100% {
-      transform: scale(1.9) rotate(40deg);
-      opacity: 0;
-    }
-  }
-  @keyframes sigil-flash {
-    30% {
-      opacity: 1;
-      transform: scale(1.25);
-      filter: brightness(2);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(1.7);
-    }
-  }
-  @keyframes time-ripple {
-    0% {
-      opacity: 0.95;
-      transform: scale(0.12);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(2.3);
-    }
-  }
-  @keyframes purify-wave {
-    0% {
-      opacity: 1;
-      transform: scale(0.2);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(3);
-    }
-  }
-  @keyframes ps-title-in {
-    from {
-      opacity: 0;
-      letter-spacing: 0.7em;
-      filter: blur(6px);
-    }
-  }
-  @keyframes ps-title-out {
-    to {
-      opacity: 0;
-      transform: translateY(-14px);
-      filter: blur(4px);
     }
   }
   @keyframes power-slam {
