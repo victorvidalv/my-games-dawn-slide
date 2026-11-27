@@ -50,7 +50,14 @@ it('Personalizar: está en el menú principal, solo muestra los cosméticos sele
   panel.querySelector('[data-outfit-show="jean:sakura"]').click();
   const show = document.querySelector('.outfit-show-ov');
   expect(show).toBeTruthy();
+  expect([...show.querySelectorAll('[data-os-pose]')].map((tab) => tab.textContent)).toEqual([
+    'Cuerpo entero',
+    'Pasiva',
+    'Combate',
+  ]);
   expect(show.querySelector('.os-art').getAttribute('src')).toContain('jean-sakura-adv');
+  show.querySelector('[data-os-pose="sel"]').click();
+  expect(show.querySelector('.os-art').getAttribute('src')).toContain('jean-sakura-sel');
   show.querySelector('[data-os-pose="act"]').click();
   expect(show.querySelector('.os-art').getAttribute('src')).toContain('jean-sakura-act');
   expect(show.classList.contains('is-locked')).toBe(true); // aún no lo tienes: muestra qué falta

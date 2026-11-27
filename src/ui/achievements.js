@@ -431,9 +431,9 @@ function openPreview(type, id) {
 
 /* ---------- Visor de atuendos ---------- */
 const POSES = [
-  ['adv', 'Aventura'],
-  ['sel', 'Selección'],
-  ['act', 'Pose'],
+  ['adv', 'Cuerpo entero'],
+  ['sel', 'Pasiva'],
+  ['act', 'Combate'],
 ];
 let showcase = null;
 
