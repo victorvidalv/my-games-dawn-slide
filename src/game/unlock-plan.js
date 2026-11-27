@@ -1,650 +1,298 @@
 /**
- * Lo que hay que hacer para desbloquear cada objeto de Personalizar: lista de condiciones [estadística, meta] que deben
- * cumplirse TODAS. GENERADO por scripts/plan-unlocks.mjs a partir del modelo de progresión (scripts/lib/unlock-model.mjs);
- * explicado en docs/desbloqueos.md. Se puede retocar a mano, pero conviene volver a pasar scripts/analyze-unlocks.mjs.
+ * Lo que hay que hacer para desbloquear cada objeto de Personalizar: una línea por objeto, «id estadística:meta …»; todas
+ * las condiciones de la línea deben cumplirse a la vez. GENERADO por scripts/plan-unlocks.mjs a partir del modelo de
+ * progresión (scripts/lib/unlock-model.mjs); explicado en docs/desbloqueos.md. Se puede retocar a mano, pero conviene volver
+ * a pasar scripts/analyze-unlocks.mjs. Los atuendos van como «héroe:traje» (outfit).
  */
-export const PLAN = {
-  board: {
-    slate: [['boardsSolved', 20]],
-    amber: [['dailySolved', 4]],
-    jade: [['challengeBoards', 6]],
-    moss: [['maxLevel', 7]],
-    sand: [['bestStreak', 3]],
-    rose: [['perfects', 10]],
-    steel: [['dailySolved', 4]],
-    marble: [['challengeBest', 5]],
-    sapphire: [['completed', 1]],
-    ivory: [['dailySolved', 8]],
-    copper: [['boardsSolved', 95]],
-    reef: [['bestStreak', 6]],
-    lavender: [['challengeBoards', 14]],
-    forest: [['hardLevel', 8]],
-    bronze: [['dailyGold', 3]],
-    crimson: [
-      ['expertLevel', 4],
-      ['dailySolved', 21],
-    ],
-    obsidian: [
-      ['hardLevel', 18],
-      ['challengeBest', 6],
-    ],
-    tide: [
-      ['perfects', 80],
-      ['bestStreak', 14],
-    ],
-    sakura: [
-      ['expertLevel', 9],
-      ['challengeBoards', 35],
-    ],
-    storm: [
-      ['completed', 6],
-      ['dailyGold', 5],
-    ],
-    lava: [
-      ['boardsSolved', 450],
-      ['challengeBest', 10],
-    ],
-    glacier: [
-      ['perfects', 130],
-      ['dailySolved', 40],
-    ],
-    neon: [
-      ['expertLevel', 20],
-      ['challengeBoards', 50],
-    ],
-    toxic: [
-      ['completed', 10],
-      ['bestStreak', 27],
-    ],
-    celestial: [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    dawnfire: [
-      ['fateSeenCount', 28],
-      ['challengeWonCount', 3],
-      ['dailyGold', 11],
-    ],
-    nebula: [
-      ['completed', 20],
-      ['challengeBest', 14],
-      ['dailyGold', 17],
-    ],
-    eclipse: [
-      ['perfects', 450],
-      ['challengeBest', 12],
-      ['masterSolved', 75],
-    ],
-    prism: [
-      ['bestGrade', 5],
-      ['challengeWonCount', 3],
-      ['bestStreak', 21],
-    ],
-  },
-  pieces: {
-    stone: [['bestRunStreak', 7]],
-    glass: [['dailySolved', 4]],
-    clay: [['challengeBoards', 6]],
-    candy: [['perfects', 10]],
-    bamboo: [['bestStreak', 3]],
-    night: [['iceRock', 10]],
-    ceramic: [['dailySolved', 6]],
-    brass: [['challengeBest', 5]],
-    marble: [['locks', 10]],
-    jelly: [['dailySolved', 9]],
-    copper: [['heavyBoards', 11]],
-    silk: [['heroWinsCount', 3]],
-    pearl: [['challengeBoards', 15]],
-    tide: [['cleanCity', 10]],
-    volt: [['bestStreak', 10]],
-    runic: [
-      ['powersUsed', 140],
-      ['dailySolved', 21],
-    ],
-    lacquer: [
-      ['iceRock', 45],
-      ['challengeBest', 6],
-    ],
-    oldgold: [
-      ['locks', 40],
-      ['dailyGold', 4],
-    ],
-    frostedge: [
-      ['heavyBoards', 45],
-      ['challengeBoards', 35],
-    ],
-    neon: [
-      ['perfects', 100],
-      ['bestStreak', 17],
-    ],
-    aurora: [
-      ['cleanCity', 25],
-      ['challengeBest', 10],
-    ],
-    plasma: [
-      ['powersUsed', 280],
-      ['dailySolved', 40],
-    ],
-    holo: [
-      ['iceRock', 90],
-      ['challengeBoards', 50],
-    ],
-    lava: [['heroHardWinsCount', 3]],
-    ember: [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    galaxia: [
-      ['fateSeenCount', 28],
-      ['challengeWonCount', 3],
-      ['dailyGold', 11],
-    ],
-    solar: [
-      ['completed', 20],
-      ['challengeBest', 14],
-      ['dailyGold', 17],
-    ],
-    prisma: [
-      ['perfects', 450],
-      ['challengeBest', 12],
-      ['masterSolved', 75],
-    ],
-    abismo: [
-      ['bestGrade', 5],
-      ['challengeWonCount', 3],
-      ['bestStreak', 21],
-    ],
-  },
-  key: {
-    amber: [['boardsSolved', 20]],
-    iron: [['dailySolved', 4]],
-    rose: [['challengeBoards', 6]],
-    jade: [['boardsSolved', 22]],
-    copper: [['bestStreak', 3]],
-    lilac: [['perfects', 10]],
-    bone: [['dailyBestBoard', 14]],
-    emerald: [['challengeBest', 5]],
-    sapphire: [['fateCards', 6]],
-    crystal: [['dailySolved', 6]],
-    moon: [['pacts', 2]],
-    ocean: [['dailySolved', 10]],
-    topaz: [['challengeBoards', 13]],
-    ruby: [['completed', 2]],
-    frost: [['masterSolved', 15]],
-    forest: [['pacts', 5]],
-    obsidian: [
-      ['fateCards', 27],
-      ['bestStreak', 11],
-    ],
-    star: [
-      ['completed', 4],
-      ['challengeBest', 6],
-    ],
-    phoenix: [
-      ['perfects', 85],
-      ['dailyGold', 4],
-    ],
-    storm: [
-      ['pacts', 10],
-      ['challengeBoards', 35],
-    ],
-    toxic: [
-      ['fateCards', 45],
-      ['masterSolved', 35],
-    ],
-    aurora: [
-      ['completed', 8],
-      ['challengeBest', 10],
-    ],
-    magma: [
-      ['perfects', 140],
-      ['dailySolved', 45],
-    ],
-    neon: [['boardsSolved', 100]],
-    gold: [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    eclipse: [
-      ['fateSeenCount', 28],
-      ['challengeWonCount', 3],
-      ['dailyGold', 11],
-    ],
-    galaxy: [['boardsSolved', 300]],
-    dragon: [
-      ['perfects', 450],
-      ['challengeBest', 12],
-      ['masterSolved', 75],
-    ],
-    chrono: [
-      ['bestGrade', 5],
-      ['challengeWonCount', 3],
-      ['bestStreak', 21],
-    ],
-  },
-  card: {
-    pergamino: [['bestRunStreak', 7]],
-    pizarra: [['dailySolved', 4]],
-    bosque: [['challengeBoards', 6]],
-    cuaderno: [['powersUsed', 20]],
-    piedra: [['bestStreak', 3]],
-    bronce: [['fateCards', 6]],
-    cristal: [['dailySolved', 6]],
-    zafiro: [['challengeBest', 5]],
-    lacre: [['pacts', 3]],
-    jade: [['dailySolved', 14]],
-    ticket: [['cleanCity', 11]],
-    neon: [
-      ['fateSeenCount', 14],
-      ['dailyGold', 3],
-    ],
-    forja: [
-      ['fateCards', 35],
-      ['challengeBoards', 30],
-    ],
-    hielo: [
-      ['pacts', 12],
-      ['bestStreak', 20],
-    ],
-    circuito: [
-      ['cleanCity', 35],
-      ['challengeBest', 14],
-    ],
-    aurora: [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    galaxia: [
-      ['fateSeenCount', 28],
-      ['challengeWonCount', 3],
-      ['dailyGold', 11],
-    ],
-    dragon: [
-      ['completed', 20],
-      ['challengeBest', 14],
-      ['dailyGold', 17],
-    ],
-    eclipse: [
-      ['perfects', 450],
-      ['challengeBest', 12],
-      ['masterSolved', 75],
-    ],
-  },
-  music: {
-    z0: [['maxLevel', 6]],
-    z1: [['dailySolved', 4]],
-    z2: [['challengeBoards', 6]],
-    z4: [['boardsSolved', 45]],
-    z3: [['bestStreak', 3]],
-    heroes: [['fateCards', 6]],
-    z5: [['dailySolved', 8]],
-    s0: [['challengeBest', 5]],
-    l0: [['completed', 1]],
-    l2: [['dailySolved', 13]],
-    l3: [['hardLevel', 8]],
-    v0: [['bestStreak', 10]],
-    s1: [
-      ['expertLevel', 4],
-      ['dailyGold', 3],
-    ],
-    fate: [
-      ['boardsSolved', 400],
-      ['challengeBoards', 35],
-    ],
-    v1: [
-      ['fateCards', 70],
-      ['dailySolved', 50],
-    ],
-    z6: [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    s2: [
-      ['fateSeenCount', 28],
-      ['challengeWonCount', 3],
-      ['dailyGold', 11],
-    ],
-    l6: [
-      ['completed', 20],
-      ['challengeBest', 14],
-      ['dailyGold', 17],
-    ],
-    v6: [
-      ['perfects', 450],
-      ['challengeBest', 12],
-      ['masterSolved', 75],
-    ],
-  },
-  cover: {
-    'vapor-dorado': [['boardsSolved', 20]],
-    descanso: [['dailySolved', 4]],
-    mapa: [['challengeBoards', 6]],
-    lia: [['powersUsed', 30]],
-    van: [['dailySolved', 6]],
-    jean: [['completed', 1]],
-    'magia-tiempo': [['bestStreak', 8]],
-    'magia-engranajes': [['challengeBest', 5]],
-    battle: [
-      ['hardLevel', 15],
-      ['dailyGold', 3],
-    ],
-    'neon-cibernetico': [
-      ['perfects', 75],
-      ['challengeBoards', 27],
-    ],
-    'magia-digital': [
-      ['expertLevel', 8],
-      ['dailySolved', 28],
-    ],
-    'combate-arcano': [
-      ['completed', 6],
-      ['challengeBest', 8],
-    ],
-    'combate-vapor': [
-      ['powersUsed', 260],
-      ['bestStreak', 20],
-    ],
-    pelea: [
-      ['boardsSolved', 550],
-      ['challengeBoards', 50],
-    ],
-    'combate-neon': [
-      ['perfects', 160],
-      ['dailyGold', 7],
-    ],
-    victory: [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    'noche-carmesi': [
-      ['fateSeenCount', 28],
-      ['challengeWonCount', 3],
-      ['dailyGold', 11],
-    ],
-    'magia-sangre': [
-      ['bestGrade', 5],
-      ['challengeBest', 14],
-      ['masterSolved', 75],
-    ],
-    'combate-sombras': [
-      ['completed', 20],
-      ['challengeBest', 12],
-      ['dailyGold', 17],
-    ],
-    oro: [
-      ['perfects', 450],
-      ['challengeWonCount', 3],
-      ['bestStreak', 21],
-    ],
-    tormenta: [
-      ['paths', 3],
-      ['challengeWonCount', 3],
-      ['bestStreak', 14],
-    ],
-  },
-  bg: {
-    mirador: [['maxLevel', 6]],
-    muralla: [['dailySolved', 4]],
-    'puente-otono': [['challengeBoards', 6]],
-    'ciudad-blanca': [['boardsSolved', 55]],
-    'ciudad-linternas': [['dailySolved', 8]],
-    'fortaleza-lunar': [['hardLevel', 5]],
-    'ciudad-flotante': [['bestStreak', 10]],
-    'castillo-rojo': [
-      ['perfects', 65],
-      ['dailySolved', 21],
-    ],
-    'calle-cerezos': [
-      ['expertLevel', 8],
-      ['challengeBest', 7],
-    ],
-    'torii-gigante': [
-      ['completed', 7],
-      ['dailyGold', 5],
-    ],
-    'puente-dragon': [
-      ['boardsSolved', 625],
-      ['challengeBest', 14],
-    ],
-    'neon-luna': [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    'plaza-neon': [
-      ['fateSeenCount', 28],
-      ['challengeWonCount', 3],
-      ['dailyGold', 11],
-    ],
-    'coloso-neon': [
-      ['completed', 20],
-      ['challengeBest', 14],
-      ['dailyGold', 17],
-    ],
-    'santuario-carmesi': [
-      ['perfects', 450],
-      ['challengeBest', 12],
-      ['masterSolved', 75],
-    ],
-  },
-  trail: {
-    dust: [['boardsSolved', 20]],
-    embers: [['dailySolved', 4]],
-    leaves: [['challengeBoards', 6]],
-    petals: [['perfects', 12]],
-    bubbles: [['dailySolved', 6]],
-    ink: [['iceRock', 10]],
-    frost: [['bestStreak', 7]],
-    sparks: [['challengeBest', 5]],
-    lightning: [
-      ['powersUsed', 140],
-      ['dailySolved', 21],
-    ],
-    rainbow: [
-      ['heavyBoards', 50],
-      ['challengeBoards', 35],
-    ],
-    starlight: [['dailyBestBoard', 14]],
-    comet: [['dailyBestBoard', 15]],
-    phoenix: [
-      ['completed', 20],
-      ['challengeWonCount', 3],
-      ['dailyGold', 17],
-    ],
-    eclipse: [
-      ['perfects', 450],
-      ['challengeBest', 14],
-      ['dailyGold', 11],
-    ],
-  },
-  fx: {
-    embers: [['boardsSolved', 20]],
-    sparks: [['dailySolved', 4]],
-    petals: [['challengeBoards', 6]],
-    leaves: [['perfects', 12]],
-    ink: [['dailySolved', 6]],
-    frost: [['bestRunStreak', 10]],
-    stars: [['bestStreak', 6]],
-    confetti: [['challengeBest', 5]],
-    coins: [['cleanCity', 11]],
-    aurora: [
-      ['completed', 4],
-      ['dailyGold', 3],
-    ],
-    prism: [
-      ['perfects', 100],
-      ['challengeBest', 8],
-    ],
-    lightning: [
-      ['boardsSolved', 625],
-      ['dailySolved', 50],
-    ],
-    phoenix: [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    fireworks: [
-      ['perfects', 450],
-      ['challengeWonCount', 3],
-      ['dailyGold', 17],
-    ],
-  },
-  aura: {
-    fireflies: [['maxLevel', 6]],
-    mist: [['dailySolved', 4]],
-    sunmotes: [['challengeBoards', 6]],
-    drizzle: [['boardsSolved', 55]],
-    leaves: [['bestStreak', 6]],
-    petals: [['fateCards', 21]],
-    snow: [
-      ['hardLevel', 15],
-      ['dailyGold', 3],
-    ],
-    ash: [
-      ['expertLevel', 11],
-      ['challengeBest', 8],
-    ],
-    meteors: [
-      ['completed', 10],
-      ['bestStreak', 27],
-    ],
-    storm: [
-      ['expertDone', 1],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    aurora: [
-      ['perfects', 450],
-      ['challengeWonCount', 3],
-      ['dailyGold', 17],
-    ],
-  },
-  ui: {
-    thyes: [['maxLevel', 6]],
-    jade: [['bestStreak', 3]],
-    crimson: [['challengeBest', 5]],
-    glacier: [['completed', 3]],
-    faro: [
-      ['powersUsed', 140],
-      ['dailySolved', 21],
-    ],
-    neon: [
-      ['fateSeenCount', 24],
-      ['challengeBoards', 60],
-    ],
-    eclipse: [
-      ['completed', 20],
-      ['challengeWonCount', 3],
-      ['dailyGold', 17],
-    ],
-  },
-  outfit: {
-    'lia:aviadora': [['heroBoardsLia', 16]],
-    'lia:arquera': [['heroBoardsLia', 20]],
-    'lia:cartografa': [['heroBoardsLia', 25]],
-    'lia:alquimista': [['heroWinLia', 1]],
-    'lia:buscatesoros': [['heroBoardsLia', 30]],
-    'lia:ingeniera': [['heroWinLia', 1]],
-    'lia:mecanica': [['heroBoardsLia', 75]],
-    'lia:piloto': [
-      ['heroBoardsLia', 100],
-      ['dailySolved', 21],
-    ],
-    'lia:neon': [
-      ['heroBoardsLia', 160],
-      ['challengeBest', 8],
-    ],
-    'lia:violeta': [
-      ['heroBoardsLia', 240],
-      ['bestStreak', 27],
-    ],
-    'lia:brasas': [['heroHardWinLia', 1]],
-    'lia:vampira': [
-      ['heroBoardsLia', 425],
-      ['challengeWonCount', 3],
-      ['dailyGold', 11],
-    ],
-    'lia:lunar': [
-      ['heroBoardsLia', 525],
-      ['challengeBest', 14],
-      ['dailyGold', 17],
-    ],
-    'lia:guerrera': [
-      ['heroBoardsLia', 600],
-      ['challengeBest', 12],
-      ['masterSolved', 75],
-    ],
-    'jean:aviador': [['heroBoardsJean', 16]],
-    'jean:nomada': [['heroBoardsJean', 20]],
-    'jean:astronomo': [['heroBoardsJean', 25]],
-    'jean:relojero': [['heroWinJean', 1]],
-    'jean:erudito': [['heroBoardsJean', 30]],
-    'jean:arqueologo': [['heroBoardsJean', 55]],
-    'jean:principe': [['heroBoardsJean', 75]],
-    'jean:centurion': [
-      ['heroBoardsJean', 100],
-      ['dailySolved', 21],
-    ],
-    'jean:astrologo': [
-      ['heroBoardsJean', 140],
-      ['challengeBest', 7],
-    ],
-    'jean:sakura': [['heroHardWinJean', 1]],
-    'jean:cibernetico': [
-      ['heroBoardsJean', 250],
-      ['challengeBoards', 60],
-    ],
-    'jean:oni': [['heroWinJean', 1]],
-    'jean:violeta': [
-      ['heroBoardsJean', 525],
-      ['challengeWonCount', 3],
-      ['dailyGold', 17],
-    ],
-    'jean:shogun': [
-      ['heroBoardsJean', 600],
-      ['challengeBest', 14],
-      ['dailyGold', 11],
-    ],
-    'van:navegante': [['heroBoardsVan', 16]],
-    'van:maga': [['heroBoardsVan', 20]],
-    'van:boticaria': [['heroBoardsVan', 25]],
-    'van:oraculo': [['heroWinVan', 1]],
-    'van:carmesi': [['heroWinVan', 1]],
-    'van:astral': [['heroBoardsVan', 55]],
-    'van:verde': [['heroBoardsVan', 75]],
-    'van:cuervo': [
-      ['heroBoardsVan', 100],
-      ['dailySolved', 21],
-    ],
-    'van:dama': [
-      ['heroBoardsVan', 140],
-      ['challengeBest', 7],
-    ],
-    'van:cuervera': [
-      ['heroBoardsVan', 180],
-      ['bestStreak', 20],
-    ],
-    'van:guardiana': [
-      ['heroBoardsVan', 250],
-      ['challengeBoards', 60],
-    ],
-    'van:necromante': [
-      ['heroBoardsVan', 295],
-      ['challengeWonCount', 2],
-      ['bestStreak', 30],
-    ],
-    'van:espinas': [
-      ['heroBoardsVan', 525],
-      ['challengeWonCount', 3],
-      ['dailyGold', 17],
-    ],
-    'van:cuervos': [['heroHardWinVan', 1]],
-  },
+// prettier-ignore
+const TEXT = {
+  board: `
+slate boardsSolved:20
+amber dailySolved:4
+jade challengeBoards:6
+moss maxLevel:7
+sand bestStreak:3
+rose perfects:10
+steel dailySolved:4
+marble challengeBest:5
+sapphire completed:1
+ivory dailySolved:8
+copper boardsSolved:95
+reef bestStreak:6
+lavender challengeBoards:14
+forest hardLevel:8
+bronze dailyGold:3
+crimson expertLevel:4 dailySolved:21
+obsidian hardLevel:18 challengeBest:6
+tide perfects:80 bestStreak:14
+sakura expertLevel:9 challengeBoards:35
+storm completed:6 dailyGold:5
+lava boardsSolved:450 challengeBest:10
+glacier perfects:130 dailySolved:40
+neon expertLevel:20 challengeBoards:50
+toxic completed:10 bestStreak:27
+celestial expertDone:1 challengeWonCount:2 bestStreak:30
+dawnfire fateSeenCount:28 challengeWonCount:3 dailyGold:11
+nebula completed:20 challengeBest:14 dailyGold:17
+eclipse perfects:450 challengeBest:12 masterSolved:75
+prism bestGrade:5 challengeWonCount:3 bestStreak:21
+`,
+  pieces: `
+stone bestRunStreak:7
+glass dailySolved:4
+clay challengeBoards:6
+candy perfects:10
+bamboo bestStreak:3
+night iceRock:10
+ceramic dailySolved:6
+brass challengeBest:5
+marble locks:10
+jelly dailySolved:9
+copper heavyBoards:11
+silk heroWinsCount:3
+pearl challengeBoards:15
+tide cleanCity:10
+volt bestStreak:10
+runic powersUsed:140 dailySolved:21
+lacquer iceRock:45 challengeBest:6
+oldgold locks:40 dailyGold:4
+frostedge heavyBoards:45 challengeBoards:35
+neon perfects:100 bestStreak:17
+aurora cleanCity:25 challengeBest:10
+plasma powersUsed:280 dailySolved:40
+holo iceRock:90 challengeBoards:50
+lava heroHardWinsCount:3
+ember expertDone:1 challengeWonCount:2 bestStreak:30
+galaxia fateSeenCount:28 challengeWonCount:3 dailyGold:11
+solar completed:20 challengeBest:14 dailyGold:17
+prisma perfects:450 challengeBest:12 masterSolved:75
+abismo bestGrade:5 challengeWonCount:3 bestStreak:21
+`,
+  key: `
+amber boardsSolved:20
+iron dailySolved:4
+rose challengeBoards:6
+jade boardsSolved:22
+copper bestStreak:3
+lilac perfects:10
+bone dailyBestBoard:14
+emerald challengeBest:5
+sapphire fateCards:6
+crystal dailySolved:6
+moon pacts:2
+ocean dailySolved:10
+topaz challengeBoards:13
+ruby completed:2
+frost masterSolved:15
+forest pacts:5
+obsidian fateCards:27 bestStreak:11
+star completed:4 challengeBest:6
+phoenix perfects:85 dailyGold:4
+storm pacts:10 challengeBoards:35
+toxic fateCards:45 masterSolved:35
+aurora completed:8 challengeBest:10
+magma perfects:140 dailySolved:45
+neon boardsSolved:100
+gold expertDone:1 challengeWonCount:2 bestStreak:30
+eclipse fateSeenCount:28 challengeWonCount:3 dailyGold:11
+galaxy boardsSolved:300
+dragon perfects:450 challengeBest:12 masterSolved:75
+chrono bestGrade:5 challengeWonCount:3 bestStreak:21
+`,
+  card: `
+pergamino bestRunStreak:7
+pizarra dailySolved:4
+bosque challengeBoards:6
+cuaderno powersUsed:20
+piedra bestStreak:3
+bronce fateCards:6
+cristal dailySolved:6
+zafiro challengeBest:5
+lacre pacts:3
+jade dailySolved:14
+ticket cleanCity:11
+neon fateSeenCount:14 dailyGold:3
+forja fateCards:35 challengeBoards:30
+hielo pacts:12 bestStreak:20
+circuito cleanCity:35 challengeBest:14
+aurora expertDone:1 challengeWonCount:2 bestStreak:30
+galaxia fateSeenCount:28 challengeWonCount:3 dailyGold:11
+dragon completed:20 challengeBest:14 dailyGold:17
+eclipse perfects:450 challengeBest:12 masterSolved:75
+`,
+  music: `
+z0 maxLevel:6
+z1 dailySolved:4
+z2 challengeBoards:6
+z4 boardsSolved:45
+z3 bestStreak:3
+heroes fateCards:6
+z5 dailySolved:8
+s0 challengeBest:5
+l0 completed:1
+l2 dailySolved:13
+l3 hardLevel:8
+v0 bestStreak:10
+s1 expertLevel:4 dailyGold:3
+fate boardsSolved:400 challengeBoards:35
+v1 fateCards:70 dailySolved:50
+z6 expertDone:1 challengeWonCount:2 bestStreak:30
+s2 fateSeenCount:28 challengeWonCount:3 dailyGold:11
+l6 completed:20 challengeBest:14 dailyGold:17
+v6 perfects:450 challengeBest:12 masterSolved:75
+`,
+  cover: `
+vapor-dorado boardsSolved:20
+descanso dailySolved:4
+mapa challengeBoards:6
+lia powersUsed:30
+van dailySolved:6
+jean completed:1
+magia-tiempo bestStreak:8
+magia-engranajes challengeBest:5
+battle hardLevel:15 dailyGold:3
+neon-cibernetico perfects:75 challengeBoards:27
+magia-digital expertLevel:8 dailySolved:28
+combate-arcano completed:6 challengeBest:8
+combate-vapor powersUsed:260 bestStreak:20
+pelea boardsSolved:550 challengeBoards:50
+combate-neon perfects:160 dailyGold:7
+victory expertDone:1 challengeWonCount:2 bestStreak:30
+noche-carmesi fateSeenCount:28 challengeWonCount:3 dailyGold:11
+magia-sangre bestGrade:5 challengeBest:14 masterSolved:75
+combate-sombras completed:20 challengeBest:12 dailyGold:17
+oro perfects:450 challengeWonCount:3 bestStreak:21
+tormenta paths:3 challengeWonCount:3 bestStreak:14
+`,
+  bg: `
+mirador maxLevel:6
+muralla dailySolved:4
+puente-otono challengeBoards:6
+ciudad-blanca boardsSolved:55
+ciudad-linternas dailySolved:8
+fortaleza-lunar hardLevel:5
+ciudad-flotante bestStreak:10
+castillo-rojo perfects:65 dailySolved:21
+calle-cerezos expertLevel:8 challengeBest:7
+torii-gigante completed:7 dailyGold:5
+puente-dragon boardsSolved:625 challengeBest:14
+neon-luna expertDone:1 challengeWonCount:2 bestStreak:30
+plaza-neon fateSeenCount:28 challengeWonCount:3 dailyGold:11
+coloso-neon completed:20 challengeBest:14 dailyGold:17
+santuario-carmesi perfects:450 challengeBest:12 masterSolved:75
+`,
+  trail: `
+dust boardsSolved:20
+embers dailySolved:4
+leaves challengeBoards:6
+petals perfects:12
+bubbles dailySolved:6
+ink iceRock:10
+frost bestStreak:7
+sparks challengeBest:5
+lightning powersUsed:140 dailySolved:21
+rainbow heavyBoards:50 challengeBoards:35
+starlight dailyBestBoard:14
+comet dailyBestBoard:15
+phoenix completed:20 challengeWonCount:3 dailyGold:17
+eclipse perfects:450 challengeBest:14 dailyGold:11
+`,
+  fx: `
+embers boardsSolved:20
+sparks dailySolved:4
+petals challengeBoards:6
+leaves perfects:12
+ink dailySolved:6
+frost bestRunStreak:10
+stars bestStreak:6
+confetti challengeBest:5
+coins cleanCity:11
+aurora completed:4 dailyGold:3
+prism perfects:100 challengeBest:8
+lightning boardsSolved:625 dailySolved:50
+phoenix expertDone:1 challengeWonCount:2 bestStreak:30
+fireworks perfects:450 challengeWonCount:3 dailyGold:17
+`,
+  aura: `
+fireflies maxLevel:6
+mist dailySolved:4
+sunmotes challengeBoards:6
+drizzle boardsSolved:55
+leaves bestStreak:6
+petals fateCards:21
+snow hardLevel:15 dailyGold:3
+ash expertLevel:11 challengeBest:8
+meteors completed:10 bestStreak:27
+storm expertDone:1 challengeWonCount:2 bestStreak:30
+aurora perfects:450 challengeWonCount:3 dailyGold:17
+`,
+  ui: `
+thyes maxLevel:6
+jade bestStreak:3
+crimson challengeBest:5
+glacier completed:3
+faro powersUsed:140 dailySolved:21
+neon fateSeenCount:24 challengeBoards:60
+eclipse completed:20 challengeWonCount:3 dailyGold:17
+`,
+  outfit: `
+lia:aviadora heroBoardsLia:16
+lia:arquera heroBoardsLia:20
+lia:cartografa heroBoardsLia:25
+lia:alquimista heroWinLia:1
+lia:buscatesoros heroBoardsLia:30
+lia:ingeniera heroWinLia:1
+lia:mecanica heroBoardsLia:75
+lia:piloto heroBoardsLia:100 dailySolved:21
+lia:neon heroBoardsLia:160 challengeBest:8
+lia:violeta heroBoardsLia:240 bestStreak:27
+lia:brasas heroHardWinLia:1
+lia:vampira heroBoardsLia:425 challengeWonCount:3 dailyGold:11
+lia:lunar heroBoardsLia:525 challengeBest:14 dailyGold:17
+lia:guerrera heroBoardsLia:600 challengeBest:12 masterSolved:75
+jean:aviador heroBoardsJean:16
+jean:nomada heroBoardsJean:20
+jean:astronomo heroBoardsJean:25
+jean:relojero heroWinJean:1
+jean:erudito heroBoardsJean:30
+jean:arqueologo heroBoardsJean:55
+jean:principe heroBoardsJean:75
+jean:centurion heroBoardsJean:100 dailySolved:21
+jean:astrologo heroBoardsJean:140 challengeBest:7
+jean:sakura heroHardWinJean:1
+jean:cibernetico heroBoardsJean:250 challengeBoards:60
+jean:oni heroWinJean:1
+jean:violeta heroBoardsJean:525 challengeWonCount:3 dailyGold:17
+jean:shogun heroBoardsJean:600 challengeBest:14 dailyGold:11
+van:navegante heroBoardsVan:16
+van:maga heroBoardsVan:20
+van:boticaria heroBoardsVan:25
+van:oraculo heroWinVan:1
+van:carmesi heroWinVan:1
+van:astral heroBoardsVan:55
+van:verde heroBoardsVan:75
+van:cuervo heroBoardsVan:100 dailySolved:21
+van:dama heroBoardsVan:140 challengeBest:7
+van:cuervera heroBoardsVan:180 bestStreak:20
+van:guardiana heroBoardsVan:250 challengeBoards:60
+van:necromante heroBoardsVan:295 challengeWonCount:2 bestStreak:30
+van:espinas heroBoardsVan:525 challengeWonCount:3 dailyGold:17
+van:cuervos heroHardWinVan:1
+`,
 };
+
+/** { tipo: { id: [[estadística, meta], …] } } */
+export const PLAN = Object.fromEntries(
+  Object.entries(TEXT).map(([type, text]) => [
+    type,
+    Object.fromEntries(
+      text
+        .trim()
+        .split('\n')
+        .map((line) => {
+          const [id, ...reqs] = line.split(' ');
+          return [id, reqs.map((r) => [r.slice(0, r.indexOf(':')), Number(r.slice(r.indexOf(':') + 1))])];
+        }),
+    ),
+  ]),
+);

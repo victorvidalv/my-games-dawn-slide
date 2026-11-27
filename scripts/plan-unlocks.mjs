@@ -15,7 +15,7 @@
  *   node scripts/plan-unlocks.mjs        → reescribe src/game/unlock-plan.js
  *   node scripts/analyze-unlocks.mjs     → cuándo llegaría cada objeto un jugador casual, regular y dedicado
  */
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { OUTFITS, REWARDS } from '../src/game/achievements.js';
 import { dayToReach, nice, REGULAR } from './lib/unlock-model.mjs';
 
@@ -259,19 +259,17 @@ Object.entries(OUTFITS).forEach(([hero, list], v) => {
   for (const [id, r] of Object.entries(p)) plan.outfit[`${hero}:${id}`] = r;
 });
 
-const lines = Object.entries(plan).map(
-  ([type, items]) =>
-    `  ${type}: {\n${Object.entries(items)
-      .map(([id, reqs]) => `    '${id}': [${reqs.map(([s, g]) => `['${s}', ${g}]`).join(', ')}],`)
-      .join('\n')}\n  },`,
-);
-writeFileSync(
-  new URL('../src/game/unlock-plan.js', import.meta.url),
-  `/**
- * Lo que hay que hacer para desbloquear cada objeto de Personalizar: lista de condiciones [estadística, meta] que deben
- * cumplirse TODAS. GENERADO por scripts/plan-unlocks.mjs a partir del modelo de progresión (scripts/lib/unlock-model.mjs);
- * explicado en docs/desbloqueos.md. Se puede retocar a mano, pero conviene volver a pasar scripts/analyze-unlocks.mjs.
- */
-export const PLAN = {\n${lines.join('\n')}\n};\n`,
-);
+const text = Object.entries(plan)
+  .map(
+    ([type, items]) =>
+      `  ${type}: \`\n${Object.entries(items)
+        .map(([id, reqs]) => `${id} ${reqs.map(([s, g]) => `${s}:${g}`).join(' ')}`)
+        .join('\n')}\n\`,`,
+  )
+  .join('\n');
+// Misma plantilla que src/game/unlock-plan.js: solo se reescribe la tabla TEXT.
+const file = new URL('../src/game/unlock-plan.js', import.meta.url);
+const src = readFileSync(file, 'utf8');
+const start = src.indexOf('const TEXT = {\n') + 'const TEXT = {\n'.length;
+writeFileSync(file, `${src.slice(0, start)}${text}\n${src.slice(src.indexOf('\n};\n', start) + 1)}`);
 console.log('plan escrito:', Object.fromEntries(Object.entries(plan).map(([t, v]) => [t, Object.keys(v).length])));
