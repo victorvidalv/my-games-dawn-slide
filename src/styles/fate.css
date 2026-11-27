@@ -1,0 +1,1234 @@
+/* fate — capa «screens» */
+@layer screens {
+  #travel {
+    padding: 0;
+    background: #0a151f;
+    overflow: hidden;
+    backdrop-filter: none;
+    z-index: 62;
+  }
+  .travel-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+  }
+  .travel-vignette {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .travel-vignette {
+    z-index: 2;
+    background:
+      linear-gradient(180deg, #08121ad8 0%, #08121a18 28%, #08121a30 58%, #08121af0 100%),
+      linear-gradient(90deg, transparent 0%, transparent 38%, #08121a9e 76%, #08121ae0 100%);
+  }
+  .travel-shell {
+    position: relative;
+    z-index: 3;
+    width: min(100%, 1160px);
+    min-height: 100dvh;
+    margin: 0 auto;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 12px;
+    padding: calc(env(safe-area-inset-top) + 14px) clamp(14px, 3.2vw, 34px) calc(env(safe-area-inset-bottom) + 16px);
+  }
+  .travel-heading {
+    font: 700 clamp(22px, 4vw, 38px)/1.12 var(--font-book);
+    color: #f7eed6;
+    margin: 0;
+    letter-spacing: -0.01em;
+    text-shadow:
+      0 2px 0 #091118,
+      0 4px 18px #000c;
+  }
+  .travel-bottom {
+    width: 100%;
+    align-self: end;
+  }
+  @media (min-aspect-ratio: 11/10) {
+    .travel-vignette {
+      background:
+        linear-gradient(180deg, #08121a99 0%, transparent 35%, transparent 65%, #08121ae8 100%),
+        linear-gradient(90deg, transparent 0%, #08121a70 38%, #08121ae8 64%);
+    }
+    .travel-shell {
+      grid-template-columns: minmax(220px, 1fr) minmax(340px, 540px);
+      grid-template-rows: 1fr auto auto;
+      align-content: end;
+      gap: 14px 28px;
+    }
+    .travel-bottom {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      max-width: 760px;
+      justify-self: end;
+    }
+  }
+  @media (min-aspect-ratio: 11/10) and (max-height: 540px) {
+    .travel-shell {
+      grid-template-columns: minmax(180px, 1fr) minmax(300px, 520px);
+      grid-template-rows: auto auto auto;
+      gap: 8px 18px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .travel-heading {
+      font-size: 21px;
+    }
+    .travel-bottom {
+      grid-column: 2;
+      max-width: none;
+    }
+  }
+  @media (max-height: 670px) and (max-aspect-ratio: 11/10) {
+    .travel-shell {
+      gap: 8px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .travel-heading {
+      font-size: 20px;
+    }
+  }
+  .mini {
+    --c: 50px;
+    position: relative;
+    width: 250px;
+    height: calc(var(--c) + 28px);
+    border-radius: 12px;
+    background: #0c1820;
+    border: 2px solid #ffffff22;
+    overflow: hidden;
+  }
+  .mini .mp {
+    position: absolute;
+    top: 14px;
+    height: var(--c);
+    width: var(--c);
+    border-radius: 9px;
+    box-shadow:
+      0 4px 0 #0006,
+      inset 0 2px 0 #ffffff66;
+  }
+  .mini .mp.red {
+    width: calc(var(--c) * 2);
+    left: 12px;
+    background: var(--hatch), var(--red-key-paint);
+  }
+  .mini .mp.blk {
+    background: linear-gradient(#7fb4e6, #4a82b8);
+  }
+  .mini .mexit {
+    position: absolute;
+    right: 8px;
+    top: calc(var(--c) * 0.5 + 4px);
+    color: #ffd24a;
+    font-size: 22px;
+  }
+  .mini .finger {
+    position: absolute;
+    left: 44px;
+    top: calc(var(--c) + 6px);
+    font-size: 26px;
+    animation: finger 2.6s ease-in-out infinite;
+  }
+  .mini .mp.red {
+    animation: demo-slide 2.6s ease-in-out infinite;
+  }
+  .mini .wall.demo {
+    position: absolute;
+    right: 46px;
+    top: 8px;
+    width: calc(var(--c) + 12px);
+    height: calc(var(--c) + 12px);
+    padding: 6px;
+    --wa: #8a9a6a;
+    --wb: #5f6e47;
+    --wd: #3f4a2e;
+  }
+  .mini .mp.bump {
+    animation: bump-demo 2.2s ease-in-out infinite;
+  }
+  #travel {
+    background: #070b18;
+    overflow-y: auto;
+    align-items: flex-start;
+  }
+  .travel-css-bg,
+  .travel-css-bg::before,
+  .travel-css-bg::after {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  }
+  .travel-css-bg {
+    z-index: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 92% 56% at 50% 106%, #d97a3a4a 0%, #7d364d2e 40%, transparent 72%),
+      radial-gradient(ellipse 68% 48% at 18% 22%, #30688442 0%, transparent 66%),
+      radial-gradient(ellipse 68% 46% at 84% 24%, #6a3b7d42 0%, transparent 66%),
+      linear-gradient(180deg, #060916 0%, #0f162b 46%, #1b1732 82%, #24192b 100%);
+  }
+  .travel-css-bg::before {
+    content: '';
+    inset: -16%;
+    background:
+      radial-gradient(circle at 26% 32%, #44b0c230 0%, transparent 38%),
+      radial-gradient(circle at 74% 66%, #f4b25434 0%, transparent 42%),
+      radial-gradient(circle at 52% 18%, #a662cf28 0%, transparent 36%);
+    filter: blur(26px);
+  }
+  .travel-css-bg::after {
+    content: '';
+    inset: -12%;
+    opacity: 0.46;
+    background:
+      radial-gradient(circle, #fff1b0 0 1.1px, transparent 2.5px) 12% 28%/152px 118px,
+      radial-gradient(circle, #ffd890aa 0 1.2px, transparent 3px) 58% 72%/192px 158px,
+      radial-gradient(circle, #9adcf099 0 1px, transparent 2.4px) 36% 48%/218px 180px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html:not(.lite) #travel.show .travel-css-bg::before {
+      animation: travel-aurora 18s ease-in-out infinite alternate;
+    }
+    html:not(.lite) #travel.show .travel-css-bg::after {
+      animation: travel-motes 16s ease-in-out infinite alternate;
+    }
+  }
+  .travel-vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 30%, #ffe8ad1c, transparent 52%),
+      linear-gradient(180deg, #060a1680 0%, transparent 28%, #070b1848 64%, #060914e6 100%);
+  }
+  .travel-hero {
+    position: fixed;
+    left: 0;
+    bottom: clamp(125px, 23dvh, 195px);
+    z-index: 2;
+    height: clamp(230px, calc(100dvh - 420px), 660px);
+    width: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 0 22px #f2c87433) drop-shadow(0 12px 28px #000c);
+    mask-image: linear-gradient(#000 84%, transparent);
+    pointer-events: none;
+    user-select: none;
+  }
+  .travel-shell {
+    position: relative;
+    z-index: 3;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: 100dvh;
+    width: min(100%, 1160px);
+    margin: 0 auto;
+    grid-template-columns: none !important;
+    grid-template-rows: none !important;
+    padding: calc(env(safe-area-inset-top) + 22px) clamp(16px, 4vw, 36px) calc(env(safe-area-inset-bottom) + 24px);
+    padding-left: max(clamp(16px, 4vw, 36px), env(safe-area-inset-left));
+    padding-right: max(clamp(16px, 4vw, 36px), env(safe-area-inset-right));
+  }
+  .travel-head {
+    text-align: left;
+    max-width: min(100%, 560px);
+  }
+  .travel-heading {
+    margin: 0;
+    font: 800 clamp(30px, 8vw, 48px)/1.05 var(--font-book);
+    color: #f5ce74;
+    text-shadow:
+      0 3px 0 #091118,
+      0 0 28px #f1ce8244;
+  }
+  .travel-bottom {
+    width: 100%;
+    max-width: 640px;
+    align-self: center;
+  }
+  @media (min-aspect-ratio: 11/10) {
+    .travel-hero {
+      bottom: 0;
+      width: min(47vw, 660px);
+      height: min(88dvh, 850px);
+    }
+    .travel-head,
+    .travel-bottom {
+      margin-left: min(44vw, 520px);
+    }
+    .travel-head {
+      max-width: 560px;
+    }
+    .travel-bottom {
+      width: auto;
+      max-width: 600px;
+      align-self: stretch;
+    }
+  }
+  @media (min-aspect-ratio: 11/10) and (max-width: 760px) {
+    .travel-hero {
+      width: clamp(100px, 32vw, 225px);
+    }
+    .travel-head,
+    .travel-bottom {
+      margin-left: clamp(100px, 30vw, 210px);
+    }
+  }
+  @media (min-aspect-ratio: 11/10) and (max-height: 520px) {
+    #travel .travel-shell {
+      gap: 8px;
+      padding-top: calc(env(safe-area-inset-top) + 10px);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+    }
+    #travel .travel-heading {
+      font-size: clamp(22px, 4vw, 34px);
+    }
+  }
+  @media (max-aspect-ratio: 11/10) and (max-height: 640px) {
+    .travel-hero {
+      bottom: clamp(93px, 19dvh, 125px);
+      height: clamp(200px, calc(100dvh - 365px), 275px);
+    }
+  }
+  .logo,
+  .card h2,
+  .hero-selector h2,
+  .pause-menu h2,
+  .power-toast b,
+  .power-sigil > b,
+  .hero-choice-name,
+  .travel-heading,
+  .pemo {
+    font-family: var(--font-title) !important;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+  }
+
+  .travel-heading {
+    font-family: var(--font-title) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #f6e6bd;
+    text-shadow:
+      0 3px 0 #150e0c,
+      2px 4px 0 #150e0c,
+      0 0 26px #e0b04f55;
+  }
+  #travel.show .travel-hero {
+    animation: tr-hero 0.55s cubic-bezier(0.2, 1.2, 0.4, 1) 0.12s both;
+  }
+  #travel.show .travel-head {
+    animation: tr-rise 0.5s ease-out 0.2s both;
+  }
+
+  .fate-card {
+    --w: clamp(104px, 30vw, 224px);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: var(--w);
+    min-height: calc(var(--w) * 1.56);
+    height: auto;
+    padding: 0;
+    border: 0;
+    border-radius: calc(var(--w) * 0.08);
+    background: none;
+    color: #1c1208;
+    font: inherit;
+    text-align: center;
+    text-shadow: none;
+    cursor: default;
+    perspective: 900px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button.fate-card {
+    cursor: pointer;
+    text-shadow: none;
+  }
+  .fate-card * {
+    text-shadow: none;
+  }
+  .fate-face {
+    position: relative;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    justify-items: center;
+    align-items: start;
+    gap: calc(var(--w) * 0.035);
+    padding: calc(var(--w) * 0.068) calc(var(--w) * 0.055) calc(var(--w) * 0.068);
+    border-radius: inherit;
+    border: 2px solid #1c1208;
+    background:
+      radial-gradient(ellipse 70% 42% at 50% 30%, color-mix(in srgb, var(--fb) 82%, #fff) 0 40%, transparent 72%),
+      repeating-linear-gradient(135deg, #ffffff12 0 2px, transparent 2px 9px),
+      linear-gradient(170deg, var(--fb) 0%, color-mix(in srgb, var(--fa) 55%, var(--fb)) 46%, var(--fa) 100%);
+    box-shadow:
+      inset 0 0 0 calc(var(--w) * 0.022) #fff6dc,
+      inset 0 0 0 calc(var(--w) * 0.036) color-mix(in srgb, var(--fa) 70%, #1c1208),
+      0 6px 0 #091118,
+      0 12px 26px #000a;
+    overflow: visible;
+  }
+  .fate-card.is-pact .fate-face {
+    color: #fbeede;
+    background:
+      radial-gradient(ellipse 70% 42% at 50% 30%, color-mix(in srgb, var(--fa) 75%, #fff) 0 34%, transparent 70%),
+      repeating-linear-gradient(45deg, #ffffff0c 0 1.5px, transparent 1.5px 8px),
+      repeating-linear-gradient(-45deg, #0000003a 0 1.5px, transparent 1.5px 8px),
+      linear-gradient(170deg, color-mix(in srgb, var(--fa) 60%, #1a0d14), #1a0d14 92%);
+    box-shadow:
+      inset 0 0 0 calc(var(--w) * 0.022) #e8b25f,
+      inset 0 0 0 calc(var(--w) * 0.04) #5c1622,
+      0 6px 0 #091118,
+      0 12px 26px #000a,
+      0 0 0 1px #d9604f66;
+  }
+  .fate-corner {
+    position: absolute;
+    top: calc(var(--w) * 0.055);
+    left: calc(var(--w) * 0.075);
+    font: 900 calc(var(--w) * 0.08) / 1 var(--font-book, Georgia, serif);
+    opacity: 0.75;
+  }
+  .fate-kind {
+    justify-self: end;
+    margin-right: calc(var(--w) * -0.005);
+    padding: 2px calc(var(--w) * 0.05);
+    border-radius: 999px;
+    font:
+      800 max(9px, calc(var(--w) * 0.055)) / 1.2 system-ui,
+      sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: #fff6dce8;
+    color: #3a260a;
+    border: 1px solid #1c120866;
+  }
+  .is-pact .fate-kind {
+    background: #6b1624;
+    color: #ffe2d6;
+    border-color: #e8b25faa;
+  }
+  .fate-emblem {
+    display: grid;
+    place-items: center;
+    width: 36%;
+    max-width: 68px;
+    aspect-ratio: 1;
+    margin-top: calc(var(--w) * 0.005);
+  }
+  .fate-art {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 3px 0 #1c120855);
+  }
+  .fate-body {
+    align-self: stretch;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: calc(var(--w) * 0.028);
+    padding: calc(var(--w) * 0.045) calc(var(--w) * 0.05);
+    border-radius: calc(var(--w) * 0.055);
+    background: #fffaf0f4;
+    border: 1.5px solid #1c120844;
+    box-shadow: inset 0 1px 0 #ffffff;
+  }
+  .is-pact .fate-body {
+    background: #14080ef2;
+    border-color: #e8b25f66;
+    box-shadow: inset 0 1px 0 #ffffff18;
+  }
+  .fate-name {
+    font: 900 max(13px, calc(var(--w) * 0.092)) / 1.1 var(--font-book, Georgia, serif);
+    color: #1c1208;
+  }
+  .is-pact .fate-name {
+    color: #ffe7b0;
+  }
+  .fate-gain,
+  .fate-cost,
+  .fate-muted-note {
+    font:
+      600 max(10.5px, calc(var(--w) * 0.065)) / 1.3 system-ui,
+      sans-serif;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+  }
+  .fate-gain {
+    color: #164022;
+  }
+  .is-pact .fate-gain {
+    color: #c6ffd2;
+  }
+  .fate-cost {
+    width: 100%;
+    padding: 3px calc(var(--w) * 0.04);
+    border-radius: 6px;
+    color: #fff2ee;
+    background: #9c1c2a;
+    border: 1px solid #ff9c8a88;
+  }
+  .fate-cost::before {
+    content: '✕ ';
+    font-weight: 900;
+  }
+  .fate-muted-note {
+    color: #5b4a3a;
+    font-style: italic;
+  }
+  .fate-card.is-muted .fate-face {
+    filter: grayscale(0.75) brightness(0.85);
+  }
+  .fate-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 10px;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 45%, #2a1d10ee, #08121af5 70%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.35s ease,
+      visibility 0s linear 0.35s;
+  }
+  #travel.intro .fate-intro {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.2s ease;
+  }
+  .fate-intro small {
+    font:
+      800 12px/1 system-ui,
+      sans-serif;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #e9d9ae;
+  }
+  .fate-intro b {
+    font: 900 clamp(28px, 8vw, 48px) / 1.05 var(--font-title, Georgia, serif);
+    color: #f5ce74;
+    text-shadow:
+      0 3px 0 #091118,
+      0 0 30px #f1ce8266;
+  }
+  .fate-intro span {
+    font: italic 600 15px/1.3 var(--font-book, Georgia, serif);
+    color: #f6ecd0;
+  }
+  .fate-intro-card {
+    width: 84px;
+    aspect-ratio: 5 / 7.6;
+    margin: 14px 0 6px;
+    border: 2px solid #1c1208;
+    border-radius: 8px;
+    background:
+      radial-gradient(circle at 50% 50%, #fff6d6 0 8%, #0000 9%),
+      repeating-linear-gradient(45deg, #ffffff14 0 2px, #0000 2px 8px), linear-gradient(160deg, #6d3d8a, #2a1a3f);
+    box-shadow:
+      inset 0 0 0 3px #e8b25f,
+      0 0 0 0 #ffd36b;
+  }
+  #travel.intro .fate-intro-card {
+    animation: fate-intro-card 1.4s ease-in-out both;
+  }
+  #travel.intro .fate-intro > :not(.fate-intro-card) {
+    animation: tr-rise 0.45s ease-out both;
+  }
+  #travel.intro .travel-shell {
+    opacity: 0;
+  }
+  #travel .travel-shell {
+    transition: opacity 0.4s ease;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: clamp(12px, 2.2dvh, 22px);
+    text-align: center;
+  }
+  #travel .travel-head,
+  #travel .travel-bottom {
+    margin-left: 0 !important;
+    margin-inline: auto;
+    width: min(96vw, 680px);
+    max-width: 680px;
+    align-self: center !important;
+    text-align: center;
+  }
+  #travel .travel-hero {
+    inset: auto 0 0;
+    margin-inline: auto;
+    width: auto;
+    max-width: min(98vw, 720px);
+    height: min(92dvh, 900px);
+    object-fit: contain;
+    object-position: center bottom;
+    opacity: 0.46;
+    filter: drop-shadow(0 0 42px rgba(0, 0, 0, 0.85)) saturate(1.06);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, #000 68%, rgba(0, 0, 0, 0.2) 100%);
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, #000 68%, rgba(0, 0, 0, 0.2) 100%);
+  }
+  .fate-rewards {
+    margin: 4px 0 0;
+    font:
+      600 13px/1.35 system-ui,
+      sans-serif;
+    color: #e9e0c8;
+    text-shadow: 0 1px 0 #091118;
+  }
+  .fate-rewards {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #1d3a2bcc;
+    border: 1px solid #86efac66;
+    color: #c8f7d4;
+  }
+  .fate-rewards[hidden] {
+    display: none;
+  }
+  .fate-offer {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: clamp(8px, 2.4vw, 20px);
+    margin-top: 14px;
+    perspective: 1200px;
+  }
+  .fate-offer .fate-card {
+    opacity: 0;
+    transform: translateY(60px) rotateY(180deg) scale(0.85);
+    transition:
+      transform 560ms cubic-bezier(0.2, 0.9, 0.25, 1.15) calc(var(--i) * 140ms),
+      opacity 300ms ease calc(var(--i) * 140ms),
+      filter 300ms ease;
+  }
+  #travel.fate-dealt .fate-offer .fate-card {
+    opacity: 1;
+    transform: translateY(0) rotate(calc((var(--i) - 1) * 3deg));
+  }
+  #travel.fate-dealt .fate-offer .fate-card:is(:hover, :focus-visible):not(:disabled) {
+    transform: translateY(-12px) scale(1.05);
+    transition-delay: 0s;
+    z-index: 2;
+  }
+  .fate-offer .fate-card:focus-visible {
+    outline: none;
+  }
+  .fate-offer .fate-card:focus-visible .fate-face {
+    outline: 3px solid #fff2ba;
+    outline-offset: 3px;
+  }
+  #travel.fate-dealt .fate-offer .fate-card.picked {
+    transform: translateY(-22px) scale(1.12);
+    transition-delay: 0s;
+    z-index: 3;
+  }
+  .fate-card.picked .fate-face {
+    animation: fate-glow 1s ease-out both;
+  }
+  #travel.fate-dealt .fate-offer .fate-card.unpicked {
+    opacity: 0;
+    transform: translateY(46px) rotate(calc((var(--i) - 1) * 9deg)) scale(0.8);
+    filter: grayscale(1) brightness(0.4);
+    transition-delay: 0s;
+    transition-duration: 700ms;
+  }
+  @media (min-aspect-ratio: 11/10) {
+    #travel .travel-hero {
+      inset: auto 0 0;
+      margin-inline: auto;
+      width: auto;
+      max-width: min(72vw, 820px);
+      height: min(95dvh, 960px);
+    }
+    .fate-offer {
+      justify-content: center;
+    }
+    .fate-card {
+      --w: clamp(128px, 17vw, 196px);
+    }
+  }
+  @media (max-height: 640px) {
+    .fate-card {
+      --w: clamp(88px, 24vw, 132px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #travel.intro .fate-intro-card,
+    #travel.intro .fate-intro > * {
+      animation: none;
+    }
+    .fate-offer .fate-card,
+    #travel.fate-dealt .fate-offer .fate-card {
+      transition: none;
+      transform: none;
+      opacity: 1;
+    }
+    .fate-card.picked .fate-face {
+      animation: none;
+      box-shadow: 0 0 0 4px #ffe38a;
+    }
+  }
+  .fate-owned {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: #0a151ed9;
+    border: 1px solid #d4af6455;
+  }
+  .fate-owned[hidden] {
+    display: none;
+  }
+  .fate-owned summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .fate-owned summary::-webkit-details-marker {
+    display: none;
+  }
+  .fate-owned[open] summary {
+    margin-bottom: 8px;
+  }
+  .fate-icons {
+    display: flex;
+    flex: 1;
+    gap: 3px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .fate-icons i {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    padding: 1px;
+    border-radius: 5px;
+    border: 1px solid #1c1208;
+    background: linear-gradient(170deg, var(--fb), var(--fa));
+  }
+  .fate-icons i.is-muted {
+    filter: grayscale(0.85) brightness(0.75);
+  }
+  .fate-icons .fate-art {
+    filter: none;
+  }
+  .fate-owned-more {
+    flex: none;
+    font:
+      700 11px/1 system-ui,
+      sans-serif;
+    color: #e9d9ae;
+  }
+  .fate-owned-more::after {
+    content: ' ▾';
+  }
+  .fate-owned[open] .fate-owned-more::after {
+    content: ' ▴';
+  }
+  .fate-owned summary b {
+    flex: none;
+    margin: 0;
+    font:
+      800 11px/1.2 system-ui,
+      sans-serif;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #f5ce74;
+  }
+  .fate-owned .fate-totals {
+    justify-content: flex-start;
+    margin-bottom: 8px;
+    gap: 4px;
+  }
+  .fate-owned .fate-chip {
+    padding: 2px 8px;
+    font-size: 11px;
+  }
+  .fate-minis {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 5px;
+    max-height: min(30dvh, 230px);
+    margin: 0;
+    padding: 0 2px 0 0;
+    list-style: none;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .fate-mini {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 8px 5px 5px;
+    border-radius: 9px;
+    border: 1.5px solid #1c1208;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--fa) 38%, #13232f), #13232f 85%);
+    color: #f3e5c2;
+  }
+  .fate-mini.is-pact {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--fa) 45%, #1a0d14), #1a0d14 80%);
+    border-color: #d9604f99;
+  }
+  .fate-mini.is-muted {
+    filter: grayscale(0.8) brightness(0.8);
+  }
+  .fate-mini-art {
+    display: block;
+    width: 42px;
+    height: 42px;
+    padding: 2px;
+    border-radius: 7px;
+    background: linear-gradient(170deg, var(--fb), var(--fa));
+  }
+  .fate-mini-art .fate-art {
+    filter: none;
+  }
+  .fate-mini-copy {
+    display: grid;
+    min-width: 0;
+    text-align: left;
+  }
+  .fate-mini-copy b {
+    font: 800 12px/1.15 var(--font-book, Georgia, serif);
+  }
+  .fate-mini-copy small,
+  .fate-mini-copy em {
+    font:
+      600 10px/1.2 system-ui,
+      sans-serif;
+  }
+  .fate-mini-copy small {
+    color: #c8f0d2;
+  }
+  .fate-mini-copy em {
+    font-style: normal;
+    color: #ffc4b8;
+  }
+  .fate-mini-muted {
+    font:
+      italic 600 10.5px/1.2 system-ui,
+      sans-serif;
+    color: #d8cdb4;
+  }
+  .fate-mini-copy em::before {
+    content: '✕ ';
+  }
+  .fate-btn {
+    flex: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 44px;
+    padding: 0 10px 0 8px;
+    border-radius: 14px;
+    border: 2px solid #1c1208;
+    background: linear-gradient(180deg, #3a2b52, #23193a);
+    color: #ffe3a6;
+    box-shadow:
+      0 3px 0 #091118,
+      inset 0 1px 0 #ffffff22;
+  }
+  .fate-btn[hidden] {
+    display: none;
+  }
+  .fate-btn b {
+    font: 900 18px/1 var(--font-book, Georgia, serif);
+  }
+  .fate-btn-stack {
+    position: relative;
+    width: 26px;
+    height: 30px;
+  }
+  .fate-btn-stack i {
+    position: absolute;
+    inset: 3px 6px;
+    border-radius: 3px;
+    border: 1.5px solid #1c1208;
+    background: linear-gradient(170deg, var(--fb), var(--fa));
+    transform: rotate(-14deg) translateX(-4px);
+  }
+  .fate-btn-stack i:nth-child(2) {
+    transform: rotate(0deg);
+  }
+  .fate-btn-stack i:nth-child(3) {
+    transform: rotate(14deg) translateX(4px);
+  }
+  .fate-btn.pulse {
+    animation: fate-pulse 900ms ease-out;
+  }
+  .daily-run .fate-btn {
+    display: none;
+  }
+  .fate-panel {
+    width: min(94vw, 520px);
+    max-height: 92dvh;
+    overflow-y: auto;
+    text-align: center;
+  }
+  .fate-panel h2 {
+    margin: 4px 0 10px;
+  }
+  .fate-totals {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .fate-chip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font:
+      700 12px/1.3 system-ui,
+      sans-serif;
+    border: 1px solid #ffffff2a;
+    background: #ffffff12;
+    color: #f3e5c2;
+  }
+  .fate-chip.is-points,
+  .fate-chip.is-good {
+    background: #1d3a2b;
+    border-color: #86efac55;
+    color: #c8f7d4;
+  }
+  .fate-chip.is-turns {
+    background: #1d2f45;
+    border-color: #7dd3fc55;
+    color: #cdeeff;
+  }
+  .fate-chip.is-bad {
+    background: #4a1720;
+    border-color: #fda4af55;
+    color: #ffd4cc;
+  }
+  .fate-minis.fate-hand {
+    grid-template-columns: 1fr;
+    max-height: none;
+    margin-bottom: 16px;
+    text-align: left;
+  }
+  .fate-hand .fate-mini {
+    grid-template-columns: 52px 1fr;
+    padding: 7px 10px 7px 7px;
+  }
+  .fate-hand .fate-mini-art {
+    width: 52px;
+    height: 52px;
+  }
+  .fate-hand .fate-mini-copy b {
+    font-size: 15px;
+  }
+  .fate-hand .fate-mini-copy small,
+  .fate-hand .fate-mini-copy em {
+    font-size: 12.5px;
+  }
+  .fate-empty {
+    opacity: 0.8;
+  }
+  .mini.fate-demo {
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+  .mini.fate-demo i {
+    position: absolute;
+    width: 34px;
+    height: 50px;
+    border-radius: 5px;
+    border: 2px solid #1c1208;
+    background: linear-gradient(170deg, #fff1c1, #e3a33b);
+    transform: rotate(-16deg) translateX(-22px);
+  }
+  .mini.fate-demo i:nth-child(2) {
+    background: linear-gradient(170deg, #f2c6d8, #8e3b5f);
+    transform: translateY(-6px);
+  }
+  .mini.fate-demo i:nth-child(3) {
+    background: linear-gradient(170deg, #e0fbff, #5fd0e6);
+    transform: rotate(16deg) translateX(22px);
+  }
+  .fate-reroll-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  .fate-reroll {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 2px solid #e8b25faa;
+    background: #141c2ee6;
+    color: #ffe7b0;
+    font: 800 12px/1 var(--font-ui, system-ui, sans-serif);
+    letter-spacing: 0.03em;
+    text-shadow: none;
+    box-shadow: 0 3px 0 #091118;
+    cursor: pointer;
+  }
+  .fate-reroll:hover:not(:disabled) {
+    background: #1f2b44;
+    border-color: #ffe38a;
+  }
+  .fate-reroll[hidden] {
+    display: none;
+  }
+  .run-build {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1.5px solid #e8b25f55;
+    background: #0d1322cc;
+    text-align: center;
+  }
+  .run-build[hidden] {
+    display: none;
+  }
+  .build-title {
+    font: 800 10px/1 var(--font-ui, system-ui, sans-serif);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e8c780;
+  }
+  .build-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+  .build-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1.5px solid #e8b25f66;
+    background: #1b2438;
+    color: #fff3d6;
+    font: 700 12px/1 var(--font-ui, system-ui, sans-serif);
+  }
+  .build-chip .ic {
+    width: 15px;
+    height: 15px;
+    display: block;
+  }
+  .build-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .build-card {
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    width: 66px;
+    padding: 5px 4px;
+    border-radius: 9px;
+    border: 1.5px solid #1c1208;
+    background: linear-gradient(170deg, var(--fb), var(--fa));
+    color: #1c1208;
+    text-shadow: none;
+  }
+  .build-card.is-pact {
+    background: linear-gradient(170deg, color-mix(in srgb, var(--fa) 60%, #1a0d14), #1a0d14);
+    border-color: #d9604f88;
+    color: #ffe7b0;
+  }
+  .build-card-art {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+  .build-card small {
+    font: 800 9.5px/1.1 var(--font-ui, system-ui, sans-serif);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .run-near {
+    margin: 4px 0 0;
+    font: 700 12px/1.25 var(--font-ui, system-ui, sans-serif);
+    color: #f8de9d;
+  }
+  .run-near[hidden] {
+    display: none;
+  }
+  .run-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+    margin: 8px 0 10px;
+  }
+  .run-stats[hidden] {
+    display: none;
+  }
+  .run-stats > div {
+    padding: 7px 6px;
+    border-radius: 10px;
+    border: 1px solid rgba(216, 171, 82, 0.28);
+    background: rgba(16, 20, 38, 0.72);
+    text-align: center;
+  }
+  .run-stats small {
+    display: block;
+    font: 800 9px/1.1 var(--font-ui, system-ui, sans-serif);
+    letter-spacing: 0.08em;
+    color: #c8c4d4;
+  }
+  .run-stats b {
+    display: block;
+    margin-top: 3px;
+    font: 800 15px/1.1 var(--font-ui, system-ui, sans-serif);
+    color: #f9eccf;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .run-stats > .run-stats-wide {
+    grid-column: 1 / -1;
+  }
+  #travel .ofx {
+    z-index: 1;
+    opacity: 0.7;
+    --ofx-y: 46%;
+  }
+  @keyframes demo-slide {
+    0%,
+    15% {
+      left: 12px;
+    }
+    70%,
+    100% {
+      left: 128px;
+    }
+  }
+  @keyframes finger {
+    0%,
+    15% {
+      transform: translateX(0);
+    }
+    70%,
+    100% {
+      transform: translateX(116px);
+    }
+  }
+  @keyframes bump-demo {
+    0% {
+      left: 12px;
+    }
+    45%,
+    55% {
+      left: 74px;
+    }
+    100% {
+      left: 12px;
+    }
+  }
+  @keyframes travel-aurora {
+    from {
+      transform: translate3d(-3%, -2%, 0) scale(1);
+      opacity: 0.76;
+    }
+    to {
+      transform: translate3d(4%, 3%, 0) scale(1.08);
+      opacity: 1;
+    }
+  }
+  @keyframes travel-motes {
+    to {
+      transform: translate3d(4%, -7%, 0);
+      opacity: 0.7;
+    }
+  }
+  @keyframes tr-hero {
+    from {
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+  }
+  @keyframes tr-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  @keyframes fate-intro-card {
+    0% {
+      transform: translateY(18px) scale(0.7) rotateY(0deg);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(0) scale(1) rotateY(0deg);
+    }
+    75% {
+      box-shadow:
+        inset 0 0 0 3px #fff1c4,
+        0 0 40px 12px #ffd36b99;
+    }
+    100% {
+      transform: scale(1.08) rotateY(180deg);
+      box-shadow:
+        inset 0 0 0 3px #fff1c4,
+        0 0 60px 20px #ffd36b00;
+    }
+  }
+  @keyframes fate-glow {
+    0% {
+      box-shadow:
+        inset 0 0 0 3px #fff6dc,
+        0 0 0 0 #ffe38a;
+    }
+    45% {
+      box-shadow:
+        inset 0 0 0 3px #fff6dc,
+        0 0 0 10px #ffe38a66,
+        0 0 46px 14px color-mix(in srgb, var(--fa) 70%, #fff);
+    }
+    100% {
+      box-shadow:
+        inset 0 0 0 3px #fff6dc,
+        0 0 0 4px #ffe38a,
+        0 0 30px 6px color-mix(in srgb, var(--fa) 60%, #fff);
+    }
+  }
+  @keyframes fate-pulse {
+    35% {
+      transform: scale(1.18);
+      box-shadow:
+        0 3px 0 #091118,
+        0 0 0 6px #ffe38a66;
+    }
+  }
+}

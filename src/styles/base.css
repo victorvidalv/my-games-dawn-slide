@@ -1,0 +1,614 @@
+/* base — capa «base» */
+@layer base {
+  :root {
+    --cell: clamp(40px, min(calc((100vw - 52px) / 6), calc((100dvh - 395px) / 6)), 84px);
+    --gap: 5px;
+    --gold: #ffcf6b;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  html,
+  body {
+    margin: 0;
+    height: 100%;
+    overscroll-behavior: none;
+  }
+  body {
+    font-family: 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+    color: #eef0ff;
+    overflow: hidden;
+    background:
+      radial-gradient(700px 500px at 10% -10%, var(--t1), transparent 60%),
+      radial-gradient(700px 600px at 100% 105%, var(--t2), transparent 60%), linear-gradient(165deg, #1b2347, #080b1c);
+  }
+  body.flash::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #ff2d4a00 30%, #ff2d4acc);
+    animation: flashout 1s forwards;
+    pointer-events: none;
+    z-index: 40;
+  }
+
+  #app {
+    position: relative;
+    z-index: 1;
+    height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: safe center;
+    gap: 12px;
+    padding: calc(env(safe-area-inset-top) + 8px) 14px calc(env(safe-area-inset-bottom) + 12px);
+  }
+  :root {
+    --p0a: #43e0c1;
+    --p0b: #12a38c;
+    --p0d: #0b6e5f;
+    --p1a: #ffc65a;
+    --p1b: #ee8f1d;
+    --p1d: #9c5a09;
+    --p2a: #b18cff;
+    --p2b: #7a4fe0;
+    --p2d: #4a2aa0;
+    --p3a: #6fd96a;
+    --p3b: #34a42f;
+    --p3d: #1f6d1c;
+    --p4a: #6cb6ff;
+    --p4b: #2f7de0;
+    --p4d: #1b4d99;
+    --p5a: #ff9cc7;
+    --p5b: #e0508f;
+    --p5d: #99285d;
+    --p6a: #c9d2e6;
+    --p6b: #8591ad;
+    --p6d: #515c78;
+    --p7a: #ff9a6a;
+    --p7b: #e0572b;
+    --p7d: #933414;
+  }
+  button {
+    font: inherit;
+    font-weight: 800;
+    font-size: 14px;
+    color: #fff;
+    border: 0;
+    cursor: pointer;
+    padding: 12px 18px;
+    border-radius: 15px;
+    background: linear-gradient(180deg, #5a63b3, #3a4285);
+    box-shadow:
+      0 5px 0 #20265a,
+      0 10px 16px #0007,
+      inset 0 1px 0 #ffffff44;
+    transition:
+      transform 0.08s,
+      box-shadow 0.08s,
+      filter 0.15s;
+  }
+  button:active {
+    transform: translateY(4px);
+    box-shadow:
+      0 1px 0 #20265a,
+      0 4px 8px #0007;
+  }
+  button:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  button.primary {
+    background: linear-gradient(180deg, #ffb35c, #f07a1c);
+    box-shadow:
+      0 5px 0 #8f4509,
+      0 10px 16px #0007,
+      inset 0 1px 0 #fff6;
+  }
+  button.primary:active {
+    box-shadow:
+      0 1px 0 #8f4509,
+      0 4px 8px #0007;
+  }
+  button.danger {
+    background: linear-gradient(180deg, #ff6a7a, #c92a45);
+    box-shadow:
+      0 5px 0 #6e1226,
+      0 10px 16px #0007,
+      inset 0 1px 0 #fff5;
+  }
+  html,
+  body {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+  }
+  button {
+    min-height: 44px;
+  }
+  @media (max-height: 740px) {
+    #app {
+      gap: 7px;
+      padding-top: calc(env(safe-area-inset-top) + 4px);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+    }
+    button {
+      min-height: 42px;
+    }
+  }
+  @media (min-aspect-ratio: 13/10) {
+    #app {
+      max-width: none;
+      display: grid;
+      grid-template-columns: minmax(240px, 380px) auto;
+      justify-content: center;
+      align-content: center;
+      align-items: center;
+      column-gap: 26px;
+      row-gap: 9px;
+      padding: calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 40px)
+        calc(env(safe-area-inset-bottom) + 8px) calc(env(safe-area-inset-left) + 18px);
+    }
+  }
+  @media (min-width: 700px) and (max-aspect-ratio: 13/10) {
+    #app {
+      max-width: 760px;
+    }
+  }
+  @media (min-width: 700px) and (min-height: 700px) {
+    button {
+      font-size: 16px;
+      min-height: 50px;
+    }
+  }
+  button.primary {
+    text-shadow: 0 1px 2px #5a2a0088;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(#080d24d9, #080d24f5),
+      var(--scene) center/cover;
+    z-index: 0;
+  }
+  :root {
+    --ink: #120e14;
+    --paper: #f2e5cb;
+    --brass: #d8ab52;
+    --key: #d93829;
+    --p0a: #3ec49e;
+    --p0b: #1b7d65;
+    --p0d: #0e473b;
+    --p1a: #f4bc4a;
+    --p1b: #c97f18;
+    --p1d: #7d4909;
+    --p2a: #9c78d8;
+    --p2b: #5e3d9c;
+    --p2d: #351e61;
+    --p3a: #4e98d8;
+    --p3b: #285f99;
+    --p3d: #15365c;
+    --p4a: #e87aa4;
+    --p4b: #b43e6c;
+    --p4d: #6e1e3f;
+    --p5a: #f08052;
+    --p5b: #c24824;
+    --p5d: #752510;
+    --p6a: #7ec858;
+    --p6b: #468a2b;
+    --p6d: #265216;
+    --p7a: #9ab0d0;
+    --p7b: #586d94;
+    --p7d: #303e5c;
+  }
+  body {
+    background: #111e29;
+    color: #e4dfd2;
+  }
+  body::before {
+    background:
+      radial-gradient(ellipse at 50% 52%, #0f1f2a33 0, #09131bb8 100%),
+      var(--scene) center/cover;
+  }
+  button {
+    border-radius: 10px;
+    border: 2px solid #091118;
+    background: linear-gradient(180deg, #304350, #22313c);
+    box-shadow:
+      0 3px 0 #091118,
+      inset 0 1px 0 #ffffff1c;
+    font-weight: 700;
+    transition:
+      background 0.15s,
+      transform 0.1s,
+      box-shadow 0.1s,
+      border-color 0.15s;
+  }
+  button:hover {
+    border-color: #091118;
+    filter: brightness(1.07);
+  }
+  button:active,
+  button.primary:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #091118;
+  }
+  body::before {
+    transition: opacity 0.9s ease;
+  }
+  body.low-turns::before {
+    opacity: 0.6;
+  }
+  body.last-turn::before {
+    opacity: 0.36;
+  }
+  :root {
+    /* tipografía: rótulos tipo cartel de aventuras (Copperplate / Palatino, que traen todos los sistemas) y lectura en serif de libro */
+    --font-title:
+      'Copperplate', 'Copperplate Gothic Bold', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    --font-book: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    --font-ui: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+    /* paleta suave de fichas: salvia, arena, lavanda, verde musgo, azul niebla, albaricoque, piedra cálida y rosa viejo */
+    --p0a: #9ccbc0;
+    --p0b: #6aa396;
+    --p0d: #3d6a61;
+    --p1a: #ead39b;
+    --p1b: #cbab66;
+    --p1d: #866a33;
+    --p2a: #c2b4df;
+    --p2b: #9483bf;
+    --p2d: #584a7e;
+    --p3a: #b8cd97;
+    --p3b: #8aa567;
+    --p3d: #526838;
+    --p4a: #a8c0e0;
+    --p4b: #7692c0;
+    --p4d: #43587e;
+    --p5a: #f0bb9c;
+    --p5b: #d58d6b;
+    --p5d: #8b5237;
+    --p6a: #e4dccd;
+    --p6b: #bcae97;
+    --p6d: #776a55;
+    --p7a: #e5b0bd;
+    --p7b: #c27f8f;
+    --p7d: #7b4452;
+    --hatch:
+      repeating-linear-gradient(122deg, #080b1629 0 1px, #0000 1px 7px),
+      repeating-linear-gradient(28deg, #fff3d409 0 1px, #0000 1px 11px);
+    --ink-panel: linear-gradient(157deg, #293344 0 29%, #202434 29.5% 71%, #161a2a 71.5%);
+    --red-key-paint: linear-gradient(151deg, #ff8c5f 0 23%, #db4d34 23.75% 73%, #831b23 74%);
+    --wob-a: 19px 25px 16px 23px / 23px 16px 25px 19px; /* paneles grandes */
+    --wob-b: 13px 18px 12px 17px / 17px 12px 18px 13px; /* tarjetas y botones */
+    --wob-c: 9px 13px 8px 12px / 12px 8px 13px 9px; /* fichas */
+    --wob-d: 11px 8px 14px 9px / 9px 14px 8px 11px;
+    --cast: 5px 7px 0 #150e0c; /* sombra de tinta desplazada */
+    --paper-grain:
+      radial-gradient(#ffffff07 1px, transparent 1.4px) 0 0/7px 7px,
+      repeating-linear-gradient(103deg, #0000 0 5px, #ffffff05 5px 6px, #0000 6px 11px);
+    --glow-warm: 0 0 0 1px #d6bf8d3d;
+    --brass: #e0b04f;
+    --plate:
+      inset 0 0 0 2px #e0b04f55, inset 0 3px 0 #e3cd9a40, inset 0 -4px 0 #0007, 0 0 0 2px #e0b04f, 0 0 0 5px #150e0c,
+      7px 10px 0 5px #150e0ccc, 0 26px 50px #000a;
+    /* remache de latón: se coloca en las cuatro esquinas de los paneles */
+    --rivet: radial-gradient(circle at 35% 30%, #f3dfa6 0 1.4px, #a98445 2.4px, #4a3417 3.6px, #0000 4.2px) no-repeat;
+    --rivets:
+      var(--rivet) left 13px top 13px/9px 9px, var(--rivet) right 13px top 13px/9px 9px,
+      var(--rivet) left 13px bottom 13px/9px 9px, var(--rivet) right 13px bottom 13px/9px 9px;
+  }
+  button {
+    border-radius: var(--wob-b);
+    border-width: 2.5px;
+    box-shadow:
+      inset 0 0 0 1.5px #ffffff14,
+      inset 0 2px 0 #ffffff26,
+      inset 0 -4px 0 #0005,
+      3px 5px 0 #150e0c;
+  }
+  button.primary {
+    background: var(--hatch), linear-gradient(175deg, #c2402a, #a63019 70%, #8f2713);
+    box-shadow:
+      3px 5px 0 #150e0c,
+      inset 0 2px 0 #ffe6b84a,
+      inset 0 -3px 0 #5e281c88;
+  }
+  button:active,
+  button.primary:active {
+    transform: translate(2px, 3px);
+    box-shadow:
+      1px 2px 0 #150e0c,
+      inset 0 2px 0 #0003;
+  }
+  body {
+    --zb1: #070b18;
+    --zb2: #11182c;
+    --zb3: #1b1830;
+    --zg1: #3ca6b828;
+    --zg2: #f4a44d24;
+    --zg3: #a662cf1e;
+    --zmote: #ffe5a3;
+    background: var(--zb1);
+  }
+  body[data-zone='1'] {
+    /* Valle Esmeralda */
+    --zb1: #061014;
+    --zb2: #0c1b20;
+    --zb3: #132226;
+    --zg1: #2eb8922b;
+    --zg2: #e8b86522;
+    --zg3: #2a7ea024;
+    --zmote: #c2f5df;
+  }
+  body[data-zone='2'] {
+    /* Puerto de las Velas */
+    --zb1: #060d1c;
+    --zb2: #0d192e;
+    --zb3: #162034;
+    --zg1: #3ba6cc2c;
+    --zg2: #e8944828;
+    --zg3: #2d5c9e24;
+    --zmote: #ffe0a8;
+  }
+  body[data-zone='3'] {
+    /* Aldea de Otoño */
+    --zb1: #110a16;
+    --zb2: #1d1221;
+    --zb3: #26161d;
+    --zg1: #d978342c;
+    --zg2: #a0447224;
+    --zg3: #e8b35a20;
+    --zmote: #ffd29e;
+  }
+  body[data-zone='4'] {
+    /* Refugio Glacial */
+    --zb1: #060e1c;
+    --zb2: #0b192f;
+    --zb3: #11223a;
+    --zg1: #5cc9eb2c;
+    --zg2: #8c7be324;
+    --zg3: #4ea0cc22;
+    --zmote: #d4f4ff;
+  }
+  body[data-zone='5'] {
+    /* Ciudad del Reloj */
+    --zb1: #0b091c;
+    --zb2: #16112e;
+    --zb3: #1e1636;
+    --zg1: #a45ee62c;
+    --zg2: #e6b45824;
+    --zg3: #4496c422;
+    --zmote: #ebd2ff;
+  }
+  body[data-zone='6'] {
+    /* Puerto del Volcán */
+    --zb1: #120810;
+    --zb2: #1e0d15;
+    --zb3: #281316;
+    --zg1: #de51302e;
+    --zg2: #f0a14026;
+    --zg3: #8c2e5422;
+    --zmote: #ffc28a;
+  }
+  body[data-zone='7'] {
+    /* Castillo Dorado */
+    --zb1: #0b0b1a;
+    --zb2: #181428;
+    --zb3: #241b23;
+    --zg1: #f2c25c30;
+    --zg2: #4a7ec426;
+    --zg3: #d97c4624;
+    --zmote: #ffeaad;
+  }
+  body::before {
+    background:
+      radial-gradient(ellipse 88% 54% at 50% 104%, var(--zg2) 0%, transparent 70%),
+      radial-gradient(ellipse 68% 48% at 16% 18%, var(--zg1) 0%, transparent 66%),
+      radial-gradient(ellipse 64% 46% at 84% 24%, var(--zg3) 0%, transparent 66%),
+      linear-gradient(180deg, var(--zb1) 0%, var(--zb2) 48%, var(--zb3) 100%);
+    transition:
+      opacity 0.9s ease,
+      background 0.8s ease;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: -12%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.42;
+    background:
+      radial-gradient(circle at 24% 32%, var(--zg1) 0%, transparent 40%),
+      radial-gradient(circle at 76% 68%, var(--zg2) 0%, transparent 42%),
+      radial-gradient(circle, color-mix(in srgb, var(--zmote) 75%, transparent) 0 1px, transparent 2.4px) 14% 28%/164px
+        128px,
+      radial-gradient(circle, color-mix(in srgb, var(--zmote) 55%, transparent) 0 1.1px, transparent 2.8px) 62%
+        74%/208px 172px;
+    transition: opacity 0.9s ease;
+  }
+  body.low-turns::after {
+    opacity: 0.24;
+  }
+  body.last-turn::after {
+    opacity: 0.14;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html:not(.lite) body::after {
+      animation: zone-drift 22s ease-in-out infinite alternate;
+    }
+    html:not(.lite) body.level-scenery-in::before {
+      animation: level-scenery-in 1.8s cubic-bezier(0.2, 0.65, 0.3, 1);
+    }
+  }
+  button {
+    background: var(--hatch), linear-gradient(180deg, #2c7585, #215666);
+  }
+  button {
+    text-shadow: 0 2px 0 #150e0c88;
+  }
+  button:disabled {
+    opacity: 0.62;
+  }
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:focus-visible {
+    outline: 2px solid #f1ce82;
+    outline-offset: 2px;
+  }
+  button.primary {
+    position: relative;
+    overflow: hidden;
+  }
+  button.primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(105deg, #fff0 40%, #ffffff47 50%, #fff0 60%);
+    background-size: 260% 100%;
+    animation: key-glint 3.4s ease-in-out infinite;
+  }
+  html:lang(zh-Hans) {
+    --font-title: 'Songti SC', 'STSong', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', Georgia, serif;
+    --font-book: 'Songti SC', 'STSong', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', Georgia, serif;
+    --font-ui: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', system-ui, sans-serif;
+  }
+  html:lang(zh-Hans) body {
+    line-break: strict;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+  html:lang(zh-Hans) :is(h1, h2, h3, .tag, button, small, b, strong, span, p),
+  html:lang(ja) :is(h1, h2, h3, .tag, button, small, b, strong, span, p) {
+    letter-spacing: 0.02em;
+    font-style: normal;
+  }
+  html:lang(zh-Hans) .logo,
+  html:lang(ja) .logo {
+    letter-spacing: 0.07em;
+  }
+  body.daily-run #bHint,
+  body.daily-run #bPower,
+  body.daily-run .scores {
+    display: none !important;
+  }
+  body.daily-run .top {
+    justify-content: space-between;
+  }
+
+  :root {
+    --rar-common: #b9a682;
+    --rar-rare: #5aa8ff;
+    --rar-epic: #b585ff;
+    --rar-legendary: #ffd24a;
+  }
+  :root {
+    --mp-ink: #151114;
+    --mp-navy-1: #232b4d;
+    --mp-navy-2: #181e38;
+    --mp-navy-3: #101426;
+    --mp-plum-1: #563d6e;
+    --mp-plum-2: #352348;
+    --mp-teal-1: #3d6c75;
+    --mp-teal-2: #24454d;
+    --mp-red-1: #aa3c2c;
+    --mp-red-2: #76231a;
+    --mp-gold: #d8ab52;
+    --mp-gold-hi: #f2d48c;
+    --mp-parch: #f2e5cb;
+    --mp-muted: #c8c4d4;
+    --mp-border: rgba(216, 171, 82, 0.34);
+    --mp-border-strong: rgba(242, 212, 140, 0.68);
+    --mp-shadow: 0 18px 44px rgba(8, 9, 18, 0.62);
+    --mp-card-shadow: 0 4px 14px rgba(8, 9, 18, 0.36);
+
+    /* Tokens compartidos con el resto de hojas */
+    --ink-panel: linear-gradient(168deg, rgba(31, 38, 68, 0.94), rgba(16, 20, 38, 0.96));
+    --rivet: none;
+    --rivets: none;
+    --btn-jade: linear-gradient(180deg, #3d6c75, #274a52);
+    --btn-jade-hi: linear-gradient(180deg, #477b85, #2f5861);
+    --btn-crimson: linear-gradient(180deg, #b34230, #82281d);
+    --btn-crimson-hi: linear-gradient(180deg, #c24b38, #922e22);
+    --btn-amethyst: linear-gradient(180deg, #563d6e, #37244a);
+    --gold-rim: inset 0 1px 0 rgba(242, 212, 140, 0.16);
+  }
+  button {
+    background: var(--btn-jade);
+    border: 1.5px solid rgba(242, 212, 140, 0.26);
+    border-radius: 12px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 3px 10px rgba(8, 9, 18, 0.28);
+    text-shadow: none;
+  }
+
+  body {
+    --w1: var(--zb1);
+    --w2: var(--zb2);
+    --w3: var(--zb3);
+    --wa: var(--zg1);
+    --wb: var(--zg2);
+    --wc: var(--zg3);
+    --wmote: var(--zmote);
+    --wkey: #e0573f;
+    --wblocks: 0.22;
+    --wkeyshow: 0; /* en el juego no hay llave de fondo: no se confunde con la pieza roja del tablero */
+  }
+  body::before,
+  body::after {
+    content: none !important;
+  }
+  @keyframes shake {
+    10%,
+    50%,
+    90% {
+      transform: translateX(-9px);
+    }
+    30%,
+    70% {
+      transform: translateX(9px);
+    }
+  }
+  @keyframes flashout {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes zone-drift {
+    from {
+      transform: translate3d(-2.5%, 1.5%, 0) scale(1);
+      opacity: 0.34;
+    }
+    to {
+      transform: translate3d(3%, -2.5%, 0) scale(1.06);
+      opacity: 0.52;
+    }
+  }
+  @keyframes level-scenery-in {
+    from {
+      transform: translate(-0.8%, 0.45%) scale(1.03);
+    }
+    to {
+      transform: none;
+    }
+  }
+}

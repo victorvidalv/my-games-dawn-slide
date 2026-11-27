@@ -1,0 +1,20 @@
+@property --t1 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #4a35a066;
+}
+@property --t2 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0e8a9a55;
+}
+@property --spin {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --rar-ang {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
