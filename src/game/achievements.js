@@ -619,18 +619,18 @@ export function setOutfit(store, hero, id) {
   return true;
 }
 
-/** Imagen de un atuendo: `adv` cuerpo entero (aventura), `sel` busto y `act` pose (selección). */
+/** Imagen de un atuendo: `adv` cuerpo entero, `sel` retrato pasivo y `act` retrato de combate. */
 /** Versión de cada traje en la URL (la caché del service worker es por URL): se sube al cambiar sus imágenes. */
 const OUTFIT_ART_REV = {
-  'lia:capitana': 4,
-  'lia:ingeniera': 4,
-  'lia:brasas': 5,
-  'jean:vigia': 4,
-  'jean:sakura': 4,
-  'jean:oni': 4,
-  'van:escriba': 4,
-  'van:carmesi': 4,
-  'van:cuervos': 4,
+  'lia:capitana': 5,
+  'lia:ingeniera': 5,
+  'lia:brasas': 6,
+  'jean:vigia': 5,
+  'jean:sakura': 5,
+  'jean:oni': 5,
+  'van:escriba': 5,
+  'van:carmesi': 5,
+  'van:cuervos': 5,
 };
 export const outfitArt = (hero, id, pose) =>
   `imagenes/atuendo-${hero}-${id}-${pose}.webp?v=${OUTFIT_ART_REV[`${hero}:${id}`] || 3}`;

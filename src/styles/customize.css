@@ -853,8 +853,8 @@
     inset: 0;
     z-index: var(--z-top);
     display: grid;
-    grid-template-rows: 1fr auto;
-    overflow: hidden;
+    grid-template-rows: minmax(0, 1fr) auto;
+    overflow: clip;
     background: #05040a;
     color: #f1ecff;
     animation: os-in 0.35s ease both;
@@ -866,6 +866,7 @@
   }
   .os-bg {
     inset: 0;
+    overflow: clip;
     background:
       radial-gradient(ellipse 80% 60% at 50% 105%, color-mix(in srgb, var(--accent) 38%, #12081c) 0, transparent 70%),
       radial-gradient(ellipse 70% 50% at 50% -10%, #1c1032 0, transparent 70%),
@@ -910,11 +911,12 @@
     margin: 0;
     padding: clamp(40px, 7dvh, 64px) 16px 0;
     min-height: 0;
+    container-type: size;
   }
   .os-art {
     display: block;
-    max-width: min(94vw, 520px);
-    max-height: 100%;
+    width: min(100cqw, 100cqh, 520px);
+    height: auto;
     object-fit: contain;
     filter: drop-shadow(0 0 28px color-mix(in srgb, var(--accent) 55%, transparent)) drop-shadow(0 12px 22px #000b);
     -webkit-mask-image: none;
@@ -1738,7 +1740,7 @@
     opacity: 1;
     filter: saturate(0.55) brightness(0.78);
   }
-  #menu .custom-catalog .outfit-card.locked .outfit-art img {
+  #menu .custom-catalog .outfit-card.locked:where(:not(.r-epic, .r-legendary)) .outfit-art img {
     filter: brightness(0.55) saturate(0.45);
   }
   #menu .custom-catalog .ach-shop-card.locked:is(.r-epic, .r-legendary) .ach-shop-art {
@@ -2005,7 +2007,7 @@
     filter: drop-shadow(0 0 10px color-mix(in srgb, #ffb347 60%, transparent));
   }
   .outfit-card.r-legendary.locked .outfit-art img {
-    filter: brightness(0.6) saturate(0.6) drop-shadow(0 0 10px color-mix(in srgb, #ffb347 50%, transparent));
+    filter: brightness(0.83) saturate(0.92) drop-shadow(0 0 10px color-mix(in srgb, #ffb347 50%, transparent));
   }
   .os-bg .lg-storm .lg-ring {
     width: min(120vmin, 900px);
@@ -2019,9 +2021,6 @@
     left: 58%;
     width: 9%;
     height: 46%;
-  }
-  .outfit-show-ov.r-legendary.is-locked .os-art {
-    filter: brightness(0.72) saturate(0.7) drop-shadow(0 0 26px #ffb34788) drop-shadow(0 12px 22px #000b);
   }
   .outfit-show-ov.r-legendary .os-art {
     filter: drop-shadow(0 0 34px #ffb347cc) drop-shadow(0 12px 22px #000b);
@@ -2166,7 +2165,7 @@
     filter: drop-shadow(0 0 9px #b585ff88);
   }
   .outfit-card.r-epic.locked .outfit-art img {
-    filter: brightness(0.6) saturate(0.6) drop-shadow(0 0 9px #b585ff66);
+    filter: brightness(0.83) saturate(0.92) drop-shadow(0 0 9px #b585ff66);
   }
   .outfit-show-ov.r-epic .os-bg {
     background:
@@ -2188,9 +2187,6 @@
   }
   .outfit-show-ov.r-epic .os-art {
     filter: drop-shadow(0 0 30px #b585ffaa) drop-shadow(0 12px 22px #000b);
-  }
-  .outfit-show-ov.r-epic.is-locked .os-art {
-    filter: brightness(0.72) saturate(0.7) drop-shadow(0 0 24px #b585ff77) drop-shadow(0 12px 22px #000b);
   }
   @media (prefers-reduced-motion: no-preference) {
     .ep-nebula {

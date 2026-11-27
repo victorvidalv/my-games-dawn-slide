@@ -4,7 +4,7 @@ import { outfitArt, outfitOf } from '../game/achievements.js';
 import { heroOf, store } from '../state.js';
 import { mountOutfitFx } from './outfit-fx.js';
 
-/** Imagen del atuendo puesto (`adv` aventura, `sel` busto y `act` pose de selección). */
+/** Imagen del atuendo puesto (`adv` cuerpo entero, `sel` pose pasiva, `act` pose de combate). */
 export const outfitImg = (id, pose) => outfitArt(id, outfitOf(store, id), pose);
 
 export function endingStory(victory, id) {
