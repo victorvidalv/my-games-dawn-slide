@@ -1,8 +1,9 @@
 /* ============================ Cartas del destino ============================
- * Al cerrar cada tramo (niveles 3, 6, 9, 12, 15 y 18) se elige 1 carta entre 3. Hay 31 cartas (21 bendiciones y 10 pactos) y 6 elecciones:
- *   · al empezar la aventura se baraja el mazo con la semilla de la partida (`run.fateDeck`);
+ * Al cerrar cada tramo (niveles 3, 6, 9, 12, 15 y 18) se elige 1 carta entre 3. Hay 35 cartas (24 bendiciones y 11 pactos) y 6 elecciones:
+ *   · al empezar la aventura se arma el mazo con la semilla de la partida (`run.fateDeck`): un barajado JUSTO, no puro
+ *     (ver `fateDeck`): cada tramo muestra 3 cartas equilibradas, y las de cierre no salen pronto;
  *   · el tramo k (1..6) muestra las siguientes 3 cartas del mazo: se descartan elijas la que elijas, así que ninguna
- *     carta se repite en una partida (pasan 18 de las 31) y el orden cambia cada vez;
+ *     carta se repite en una partida (pasan 18 de las 35) y el orden cambia cada vez;
  *   · las elegidas (`run.fate`) se acumulan hasta el final y sus efectos se suman.
  * Solo en Aventura (ni Diario, ni Práctica, ni Desafío). Todo son funciones puras sobre `run` (sin DOM).
  */
@@ -28,7 +29,7 @@ export const STREAK_TURNS_EVERY = 2;
 export const STREAK_TURNS_MAX = 3;
 
 /**
- * Las 31 cartas (21 bendiciones, 10 pactos). Las nuevas van al final: el código de guardado usa su posición. `hue` son sus dos colores; el arte vive en `ui/fate-art.js`.
+ * Las 35 cartas (24 bendiciones, 11 pactos). Las nuevas van al final: el código de guardado usa su posición. `hue` son sus dos colores; el arte vive en `ui/fate-art.js`.
  */
 export const FATE_CARDS = [
   /* ───── Bendiciones: puntaje ───── */
@@ -295,6 +296,39 @@ export const FATE_CARDS = [
     hue: ['#c99a1e', '#fff0b8'],
     fx: { points: 0.28, cityHints: -1 },
   },
+  {
+    id: 'calma',
+    kind: 'blessing',
+    name: 'Calma',
+    gain: '+1 turno extra en cada tablero y +2 pistas inmediatas al elegirla',
+    hue: ['#6fb7b0', '#dcf5f1'],
+    fx: { turns: 1, pickHints: 2 },
+  },
+  {
+    id: 'ahorro',
+    kind: 'blessing',
+    name: 'Ahorro',
+    gain: '+4 % de puntos en cada tablero y +1 pista al cerrar cada tramo',
+    hue: ['#c8a13c', '#fbefc2'],
+    fx: { points: 0.04, cityHints: 1 },
+  },
+  {
+    id: 'mesura',
+    kind: 'blessing',
+    name: 'Mesura',
+    gain: '+10 % de puntos y +1 turno extra en cada tablero',
+    hue: ['#7c9fc4', '#e2edfa'],
+    fx: { points: 0.1, turns: 1 },
+  },
+  {
+    id: 'trueque',
+    kind: 'pact',
+    name: 'Trueque',
+    gain: '+4 turnos extra en cada tablero',
+    cost: 'No puedes usar pistas',
+    hue: ['#9a6a3a', '#f3dcc0'],
+    fx: { turns: 4, noHints: true },
+  },
 ];
 
 const BY_ID = new Map(FATE_CARDS.map((c) => [c.id, c]));
@@ -303,15 +337,105 @@ export const fateById = (id) => BY_ID.get(id);
 /** ¿Lleva cartas del destino esta partida? (solo Aventura) */
 export const usesFate = (run) => !!run && !run.daily && run.mode !== 'p';
 
-/** Mazo barajado de la partida (orden de las 24 cartas), siempre el mismo para la misma semilla. */
-export function fateDeck(seed) {
-  const rng = mulberry32(hash32(seed | 0, 0x4fa7e));
-  const ids = FATE_CARDS.map((c) => c.id);
+/* ───────────── Barajado justo ─────────────
+ * Un Fisher-Yates puro deja que, por mala suerte, un tramo ofrezca 3 Pactos o 3 cartas de puntaje sin ninguna de margen, o que
+ * una carta de cierre (Abismo, Frenesí) salga en el tramo 1 cuando aún no luce. El mazo se arma tramo a tramo con aleatoriedad
+ * controlada: cada trío se sortea con la semilla, UNIFORME entre los tríos válidos (se descartan los inválidos). Un trío es válido si:
+ *   1. tiene al menos 1 Bendición (nunca 3 Pactos);
+ *   2. mezcla familias: al menos 1 carta de puntaje y al menos 1 de margen/utilidad (turnos, pistas, revivir, poder, racha);
+ *   3. en los tramos 1–2 incluye al menos 1 carta "base" (rinde desde el primer tablero y define el estilo);
+ *   4. no incluye cartas de cierre antes de su tramo (`LATE_FROM`).
+ * Las 17 cartas que quedan al final son la reserva del cambio de cartas, que también cumple las reglas de su tramo.
+ */
+const MARGIN = new Set([
+  'respiro',
+  'holgura',
+  'carga',
+  'power-echo',
+  'bolsillo',
+  'brujula',
+  'fenix',
+  'impulso',
+  'maestria',
+  'pendulo-roto',
+  'reencarnacion',
+  'calma',
+  'trueque',
+]); // el resto (puntaje, racha, cosecha…) es de la familia de puntaje
+/** Cartas mixtas: cuentan como puntaje y como margen. */
+const HYBRID = new Set(['ahorro', 'mesura']);
+/** Cartas de cierre: primer tramo en que pueden salir (Gran tablero, Frenesí y Maestría valen desde el nivel 12; Abismo cierra la partida). */
+export const LATE_FROM = { 'long-board': 3, frenesi: 3, maestria: 3, abismo: 4 };
+/** Cartas que rinden desde el primer tablero y definen el estilo (para los tramos 1–2). */
+const BASE = new Set([
+  'brillo',
+  'fortuna',
+  'constelacion',
+  'destello',
+  'racha-larga',
+  'racha-firme',
+  'respiro',
+  'carga',
+  'power-echo',
+  'impulso',
+  'brujula',
+  'cosecha',
+  'ascetismo',
+  'calma',
+]);
+export const BASE_UNTIL = 2;
+
+/** ¿Es válido este trío de cartas (ids) como oferta del tramo `city`? */
+export function fairOffer(ids, city) {
+  const cards = ids.map(fateById);
+  if (cards.some((c) => !c)) return false;
+  if (ids.some((id) => (LATE_FROM[id] || 0) > city)) return false;
+  if (!cards.some((c) => c.kind === 'blessing')) return false;
+  if (!ids.some((id) => MARGIN.has(id) || HYBRID.has(id)) || ids.every((id) => MARGIN.has(id))) return false;
+  if (city <= BASE_UNTIL && !ids.some((id) => BASE.has(id))) return false;
+  return true;
+}
+
+/** Primer trío válido de la lista, en su orden (cambio de cartas: determinista). */
+function firstFair(pool, city) {
+  for (let i = 0; i < pool.length; i++)
+    for (let j = i + 1; j < pool.length; j++)
+      for (let k = j + 1; k < pool.length; k++)
+        if (fairOffer([pool[i], pool[j], pool[k]], city)) return [pool[i], pool[j], pool[k]];
+  return null;
+}
+
+function shuffled(list, rng) {
+  const ids = [...list];
   for (let i = ids.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
     [ids[i], ids[j]] = [ids[j], ids[i]];
   }
   return ids;
+}
+
+/** Mazo de la partida (orden de las cartas): tramos 1–6 de 3 en 3, y la reserva del cambio al final. Siempre el mismo para la misma semilla. */
+export function fateDeck(seed) {
+  const rng = mulberry32(hash32(seed | 0, 0x4fa7e));
+  const all = FATE_CARDS.map((c) => c.id);
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const pool = shuffled(all, rng);
+    const deck = [];
+    for (let city = 1; city <= FATE_PICKS; city++) {
+      let trio = null;
+      for (let t = 0; t < 40 && !trio; t++) {
+        const pick = shuffled(pool, rng).slice(0, FATE_OFFER); // sorteo uniforme; se queda el primero válido
+        if (fairOffer(pick, city)) trio = pick;
+      }
+      trio ||= firstFair(pool, city);
+      if (!trio) break;
+      deck.push(...trio);
+      for (const id of trio) pool.splice(pool.indexOf(id), 1);
+    }
+    const reserveOk = [...Array(FATE_PICKS)].every((_, c) => firstFair(pool, c + 1));
+    if (deck.length === FATE_PICKS * FATE_OFFER && reserveOk) return [...deck, ...pool];
+  }
+  return shuffled(all, rng); // no debería pasar nunca con estas reglas; el mazo sigue siendo válido
 }
 
 /** Mazo de la partida (lo crea si falta: partidas guardadas de otra versión del mazo). */
@@ -327,14 +451,16 @@ export const fateCards = (run) => (run?.fate || []).map(fateById).filter(Boolean
 
 /**
  * Las cartas que ofrece el cierre del tramo `city` (1..6 = tras los niveles 3, 6, 9, 12, 15, 18): 3 cartas.
- * Si se usó el cambio de cartas en este tramo, saca 3 cartas nuevas de la reserva al final del mazo.
+ * Si se usó el cambio de cartas en este tramo, saca 3 cartas nuevas de la reserva al final del mazo (también equilibradas para ese tramo).
  */
 export function fateOffer(run, city, size = offerSize(run)) {
   if (city < 1 || city > FATE_PICKS) return [];
-  const from = run?.fateRerollCity === city ? FATE_PICKS * size : (city - 1) * size;
-  return deckOf(run)
-    .slice(from, from + size)
-    .map(fateById);
+  const deck = deckOf(run);
+  if (run?.fateRerollCity !== city) return deck.slice((city - 1) * size, city * size).map(fateById);
+  const reserve = deck.slice(FATE_PICKS * size);
+  return (size === FATE_OFFER && firstFair(reserve, city) ? firstFair(reserve, city) : reserve.slice(0, size)).map(
+    fateById,
+  );
 }
 
 /** ¿Puede cambiar las 3 cartas ofrecidas en este tramo? (1 vez por partida) */

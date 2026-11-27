@@ -200,6 +200,25 @@ const ART = {
     <path d="M22 20l4-8h12l4 8z" fill="${b}"/><path d="M22 20h20" stroke-width="3"/>
     <circle cx="32" cy="40" r="7" fill="${GOLD_LT}"/><path d="M32 36v8M29 38h5a2 2 0 0 1 0 4h-5" fill="none" stroke-width="1.6"/>
     <path d="M50 8l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1z" fill="${CREAM}" fill-opacity=".7"/>`,
+  /** Luna sobre aguas quietas con un reloj de arena: la calma (más turnos y pistas). */
+  calma: (a, b) =>
+    `<path d="M6 44c6-4 10-4 16 0s10 4 16 0 10-4 20 0v12H6z" fill="${a}"/><path d="M6 50c6-4 10-4 16 0s10 4 16 0 10-4 20 0" fill="none" stroke-width="1.6"/>
+    <path d="M40 8a14 14 0 1 0 14 18 11 11 0 0 1-14-18z" fill="${b}"/><circle cx="20" cy="18" r="2" fill="${CREAM}" stroke="none"/><circle cx="14" cy="30" r="1.4" fill="${CREAM}" stroke="none"/>`,
+  /** Hucha con una moneda cayendo y una pista asomando: el ahorro. */
+  ahorro: (a, b) =>
+    `<ellipse cx="30" cy="38" rx="20" ry="15" fill="${a}"/><path d="M48 32l8-4v10l-8-2z" fill="${a}"/><path d="M18 50v6h6v-4M38 52v4h6v-6" fill="none"/>
+    <path d="M24 26h14" stroke-width="3"/><circle cx="42" cy="34" r="2" fill="${INK}" stroke="none"/>
+    <circle cx="31" cy="12" r="6" fill="${GOLD_LT}"/><path d="M31 9v6M29 11h3a1.4 1.4 0 0 1 0 3h-3" fill="none" stroke-width="1.4"/><path d="M12 28l-5-4 3 7z" fill="${b}"/>`,
+  /** Balanza en equilibrio: puntos y turnos a partes iguales, la mesura. */
+  mesura: (a, b) =>
+    `<path d="M32 10v40M20 54h24" stroke-width="3"/><path d="M10 22h44" stroke-width="3"/><circle cx="32" cy="10" r="4" fill="${GOLD}"/>
+    <path d="M10 22l-6 14h16z" fill="${a}"/><path d="M54 22l-6 14h16z" fill="${b}" transform="translate(-4 0)"/>
+    <path d="M4 36c0 4 3 6 6 6s6-2 6-6" fill="none"/><path d="M42 36c0 4 3 6 6 6s6-2 6-6" fill="none"/>`,
+  /** Reloj que se funde en una cadena rota (pistas por turnos): el trueque. */
+  trueque: (a, b) =>
+    `<circle cx="32" cy="26" r="18" fill="${b}"/><path d="M32 14v12l8 5" fill="none" stroke-width="3"/>
+    <path d="M10 50c4-6 10-6 14-2s4 8 8 8 6-4 10-4 8 4 12 2" fill="none" stroke="${a}" stroke-width="5"/>
+    <path d="M44 6l6 6M50 6l-6 6" stroke="${INK}" stroke-width="2.4"/>`,
 };
 
 /** SVG de la carta (sin marco): su emblema propio con sus colores. */
