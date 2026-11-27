@@ -282,6 +282,7 @@ function animateDefeatRank(snapshot) {
     if (k < 1) rankAnim = requestAnimationFrame(step);
     else finish();
   };
+  paint(0, false);
   rankAnim = requestAnimationFrame(step);
 }
 /* Derrota: «Jugar de nuevo» vuelve a abrir el mismo camino (elige héroe y empieza) */

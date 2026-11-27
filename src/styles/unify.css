@@ -55,12 +55,14 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    text-shadow: none;
   }
   .sc.max b {
     background: linear-gradient(180deg, #fff3b0, #ffb300);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    text-shadow: none;
   }
   .mrow {
     color: var(--surf-dim);
