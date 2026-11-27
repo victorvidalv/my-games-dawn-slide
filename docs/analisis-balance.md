@@ -133,3 +133,14 @@ lector de QR del navegador que las versiones 10, 11 y 12 se leen bien.
 
 - El modelo infravalora los usos extra de poder (Eco del poder): en el juego real un tercer rebobinado vale más.
   Conviene mirarlo con partidas reales.
+
+## Cambios aplicados tras este análisis (fases 1–5)
+
+Medidos con `node scripts/analyze-balance.mjs` (antes → después). Los números viejos de las secciones 1–6 describen el estado previo.
+
+- **Rangos:** el techo (máximo de puntos) es ahora por camino, reliquia y héroe (`src/game/rank-max.js`, `npm run rank-max`). Un jugador perfecto llega a S+ con cualquier combinación (antes ≈0–2 %, ahora 12–24 %). En la pantalla final se ve cuántos puntos faltan para la siguiente letra y el máximo posible con tu héroe y tu reliquia.
+- **Desbloqueos:** 73 requisitos reescalados al Desafío de 15 tableros; `key:bone` pasa a `dailyBestBoard 14`. `tests/unlock-reachable.test.js` comprueba que todo es alcanzable.
+- **Cartas:** Maestría anclada al nivel 12; Carga/Eco con identidad propia para Lía (`LIA_CARGA_EMBER`); Juramento da +1 turno; Ofrenda y Péndulo roto reajustados; Reencarnación moderada.
+- **Héroes y reliquias:** Farol da +5 % de puntos en tableros sin pista (Normal: ≈+0,3 % → +4,5 %); Brasa intacta de Lía +12 % → +18 % y se conserva la parte no gastada. Lía vs Jean (hab. 0,6, Normal): 24,6k vs 27,2k → 25,7k vs 28,2k.
+- **Desafío:** pistas de premio limitadas a +2 en Experto.
+- **Sin cambios (no confirmado):** Abismo y Ceniza tibia (positivos en todos los picks), Holgura vs Respiro (≤0,1 niv, dentro del ruido), Fénix (+0,06 niv).

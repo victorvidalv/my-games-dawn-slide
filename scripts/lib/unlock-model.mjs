@@ -17,8 +17,10 @@ export const REGULAR = {
   fateCards: (d) => 1.0 * Math.max(0, d - 1), // 6 cartas por aventura
   pacts: (d) => 0.25 * Math.max(0, d - 2),
   cleanCity: (d) => 0.5 * d,
-  dailySolved: (d) => 1.2 * d,
-  dailyGold: (d) => 0.42 * d,
+  // Desafío diario (node scripts/simulate-challenge.mjs): solo suma UNA vez al día y el oro (15 tableros, 150 turnos exactos,
+  // ni uno de más) es el de un jugador que ya domina Experto (habilidad 0,9 ≈ 14 % de los días); llegar a 13 es casi seguro.
+  dailySolved: (d) => 0.85 * d, // juega ~85 % de los días y casi siempre llega a 13 tableros
+  dailyGold: (d) => 0.12 * d, // 0,85 días jugados × ≈ 14 % de oro
   challengeBoards: (d) => 1.0 * Math.max(0, d - 1), // el Desafío está abierto desde el principio
   completed: (d) => 0.16 * Math.max(0, d - 5), // una aventura entera dura ~40 min
   heroBoardsLia: (d) => 4 * d, // reparte su juego entre los tres héroes
@@ -31,8 +33,9 @@ export const REGULAR = {
   challengeBest: (d) => Math.min(14, Math.max(0, 0.25 * (d - 4))),
   bestRunStreak: (d) => Math.min(21, 3 + 0.9 * d),
   bestStreak: (d) => Math.floor(1 + 0.45 * d), // días seguidos: casi siempre vuelve cada día
-  dailyKinds: (d) => (d < 4.2 ? 1 : d < 5.8 ? 2 : d < 8.4 ? 3 : d < 10 ? 4 : 5), // cada reto se abre al llegar a un nivel
-  masterSolved: (d) => 0.5 * Math.max(0, d - 10),
+  dailyKinds: () => 1, // hoy solo hay un reto diario (el Desafío): ninguna meta puede pedir más de 1 tipo
+  masterSolved: (d) => 0.85 * d, // es el mismo contador que dailySolved (el Desafío es el único reto)
+  dailyBestBoard: (d) => Math.min(15, d < 1 ? 0 : d < 2 ? 12 : d < 5 ? 13 : d < 12 ? 14 : 15), // mejor tablero del Desafío (13 al 3.er día, 15 con oro)
   fateSeenCount: (d) => 31 * (1 - Math.exp(-d / 45)), // cartas distintas vistas (31 en total)
   // Hitos (0/1 o escalones): el día en que llegan
   bestGrade: (d) => (d < 8 ? 2 : d < 30 ? 3 : d < 110 ? 4 : 5), // rango: 3 = A, 4 = S, 5 = S+
@@ -40,6 +43,11 @@ export const REGULAR = {
   heroWinLia: (d) => (d >= 6 ? 1 : 0),
   heroWinJean: (d) => (d >= 14 ? 1 : 0),
   heroWinVan: (d) => (d >= 22 ? 1 : 0),
+  // Difícil o Experto completado con cada héroe: el primero llega con Difícil (día 36) y los otros dos van despacio
+  heroHardWinLia: (d) => (d >= 36 ? 1 : 0),
+  heroHardWinJean: (d) => (d >= 52 ? 1 : 0),
+  heroHardWinVan: (d) => (d >= 72 ? 1 : 0),
+  heroHardWinsCount: (d) => (d >= 72 ? 3 : d >= 52 ? 2 : d >= 36 ? 1 : 0),
   heroWinsCount: (d) => (d >= 22 ? 3 : d >= 14 ? 2 : d >= 6 ? 1 : 0),
   hardDone: (d) => (d >= 36 ? 1 : 0),
   expertDone: (d) => (d >= 64 ? 1 : 0),

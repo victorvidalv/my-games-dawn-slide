@@ -121,7 +121,7 @@ export async function startRun(start, mode, preset) {
     return;
   }
   if (S.run) recordBest(true); // si abandonas, lo logrado cuenta
-  const hints = startHintsFor(start) + streakHintBonus(store.daily, dayNumber());
+  const hints = startHintsFor(start) + streakHintBonus(store.daily, dayNumber(), start);
   setBoard(null);
   setRun(
     newAdventureRun({

@@ -1,5 +1,5 @@
 /** Reto diario único: 15 tableros progresivos (mínimos de 3 a 17) con una reserva compartida de 150 turnos exactos. */
-import { minReach } from '../engine/difficulty.js';
+import { byPath, minReach } from '../engine/difficulty.js';
 import { buildLevel, pickBoard } from '../engine/levels.js';
 import { hash32, mulberry32 } from '../engine/rng.js';
 import { levelPlan } from './mechanics.js';
@@ -37,11 +37,18 @@ export const STREAK_HINT_REWARDS = DAILY_HINT_MILESTONES;
 export const dailyHintReward = (cleared = 0) =>
   DAILY_HINT_MILESTONES.reduce((bonus, m) => (cleared >= m.board ? m.hints : bonus), 0);
 
-/** Pistas extra ganadas hoy por el reto diario (para sumar al iniciar Aventura). */
-export const streakHintBonus = (stateOrDays, day = dayNumber()) => {
-  if (typeof stateOrDays === 'number') return dailyHintReward(stateOrDays);
+/**
+ * Tope de las pistas del Desafío al empezar una aventura, por camino. En Experto se empieza con 1 pista y las +5 del oro la
+ * multiplicaban por 6 (≈ +1,2 niveles y +11 % de puntos en la simulación, más que el Farol de pistas): se limita a +2.
+ */
+export const DAILY_HINT_CAP = { 1: Infinity, 50: Infinity, 75: 2 };
+
+/** Pistas extra ganadas hoy por el reto diario (para sumar al iniciar una aventura del camino `start`). */
+export const streakHintBonus = (stateOrDays, day = dayNumber(), start = 1) => {
+  const cap = byPath(DAILY_HINT_CAP, start);
+  if (typeof stateOrDays === 'number') return Math.min(cap, dailyHintReward(stateOrDays));
   const res = todayResult(stateOrDays, DAILY_CHALLENGE.id, day);
-  return dailyHintReward(res?.cleared || 0);
+  return Math.min(cap, dailyHintReward(res?.cleared || 0));
 };
 
 export const DAILY_CHALLENGE = {
