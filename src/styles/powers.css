@@ -1,0 +1,856 @@
+/* powers — capa «components» */
+@layer components {
+  .hero-power {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 17px;
+    margin-top: 17px;
+    border: 1px solid color-mix(in srgb, var(--chosen) 35%, transparent);
+    border-radius: 17px;
+    background: linear-gradient(120deg, #ffffff08, #ffffff02);
+  }
+  .hero-power h3 {
+    font-size: 18px;
+    margin: 0 0 3px;
+    color: #fff0d6;
+  }
+  .hero-power strong {
+    font-size: 12px;
+    color: var(--chosen);
+  }
+  .hero-power p {
+    font-size: 12px !important;
+    color: #d3dfef;
+    margin: 7px 0 0 !important;
+    line-height: 1.55 !important;
+    opacity: 1 !important;
+  }
+  @media (max-width: 600px) {
+    .hero-power {
+      padding: 13px;
+      gap: 10px;
+    }
+    .hero-power h3 {
+      font-size: 17px;
+    }
+  }
+  @media (max-height: 660px) {
+    .hero-power {
+      margin-top: 10px;
+      padding: 10px;
+    }
+  }
+  .hero-power {
+    padding: 13px;
+    border-radius: 10px;
+    border: 1.5px solid #091118;
+    background: #0f1d2799;
+    margin-top: 14px;
+  }
+  .hero-power h3 {
+    font: 19px var(--font-book);
+    color: #e7d9bd;
+  }
+  .hero-power strong {
+    font-size: 12px;
+  }
+  .hero-power p {
+    font-size: 12px !important;
+    color: #bac7ca;
+  }
+  @media (max-width: 600px) {
+    .hero-power {
+      padding: 11px;
+      gap: 9px;
+    }
+    .hero-power p {
+      font-size: 11px !important;
+    }
+    .hero-power h3 {
+      font-size: 18px;
+    }
+  }
+
+  .hero-power {
+    align-items: center;
+  }
+  #bUndo,
+  [hidden]#bPower,
+  [hidden]#liaReserve,
+  [hidden]#liaReserveLabel {
+    display: none !important;
+  }
+  #bPower {
+    --power: #a5c8ed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 0;
+    border: 1px solid #a5c8ed66;
+    background: #203849;
+    box-shadow: inset 0 1px 0 #e7dcc322;
+  }
+  #bPower[data-hero='van'] {
+    --power: #d1b2ec;
+    background: #352c43;
+    border-color: #d1b2ec66;
+  }
+  #bPower > span {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+  #bPower b {
+    font-size: 12px;
+    color: #f0e5ce;
+  }
+  #bPower small {
+    font-size: 9px;
+    line-height: 1.3;
+    font-weight: 500;
+    color: var(--power);
+    white-space: normal;
+  }
+  #bPower .ic {
+    width: 26px;
+    height: 26px;
+  }
+  #bPower:disabled {
+    opacity: 0.52;
+  }
+  .lia-reserve {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 3;
+    pointer-events: none;
+    border-left: 2px solid #c9f0c1;
+    background: repeating-linear-gradient(120deg, #68d8bd70 0 4px, #305d4b70 4px 8px);
+    box-shadow: inset 0 0 5px #9ee3bb55;
+  }
+  .reserve-label {
+    font-size: 10px;
+    text-align: right;
+    color: #a9d6bd;
+    margin-top: 6px;
+    letter-spacing: 0.025em;
+    font-variant-numeric: tabular-nums;
+  }
+  .reserve-label.active {
+    color: #e0f6cf;
+  }
+  .reserve-awaken {
+    animation: brasa-awaken 0.8s ease-out;
+  }
+  #heroPowerFx {
+    position: fixed;
+    z-index: 54;
+    display: none;
+    pointer-events: none;
+    width: calc(var(--awakening-height, 260px) / 2);
+    height: var(--awakening-height, 260px);
+    transform: translateX(-50%);
+    --spell: #a5c8ed;
+  }
+  #heroPowerFx.show {
+    display: block;
+    animation: power-rise 0.34s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  }
+  #heroPowerFx[data-hero='van'] {
+    --spell: #d1b2ec;
+  }
+  #heroPowerFx::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 260%;
+    height: 150%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--spell) 55%, transparent), transparent);
+    animation: power-aura 1.5s ease-in-out both;
+  }
+  #heroPowerFx::after {
+    content: '';
+    position: absolute;
+    inset: -18%;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 50%;
+    border: 3px solid var(--spell);
+    animation: power-ring 1.5s ease-out infinite;
+  }
+  .power-sigil::before {
+    content: '';
+    position: absolute;
+    inset: -60%;
+    z-index: 1;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0.55;
+    background: repeating-conic-gradient(
+      from 0deg,
+      color-mix(in srgb, var(--spell) 70%, transparent) 0 6deg,
+      transparent 6deg 22deg
+    );
+    animation: power-rays 3s linear infinite;
+    -webkit-mask: radial-gradient(circle, #0000 0, #000 60%);
+    mask: radial-gradient(circle, #0000 0, #000 60%);
+  }
+  #heroPowerFx[data-kind='rewind'] .power-sigil::before {
+    animation-direction: reverse;
+  }
+  .power-sigil > b {
+    z-index: 3;
+    font-size: 17px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow:
+      0 0 10px var(--spell),
+      0 0 22px var(--spell),
+      0 2px 3px #000;
+  }
+  .power-sigil {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--spell);
+    border-radius: 13px;
+    overflow: hidden;
+    background: #142631;
+    box-shadow:
+      0 0 24px color-mix(in srgb, var(--spell) 35%, transparent),
+      0 10px 28px #0008;
+  }
+  .power-sigil img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .power-sigil > b {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 18px 6px 10px;
+    background: linear-gradient(transparent, #10202bf5);
+    font-family: var(--font-book);
+    font-size: 14px;
+    line-height: 1.2;
+    color: #f0e5ce;
+    text-align: center;
+  }
+  .power-sigil > span,
+  .power-sigil > i {
+    display: none;
+  }
+  .hero-power .piece {
+    transition: translate 0.29s ease-in-out;
+  }
+  .hero-power .piece.power-piece {
+    z-index: 12;
+    filter: drop-shadow(0 0 9px #a5c8ed);
+    outline: 2px solid #d8eaff;
+    outline-offset: -3px;
+    border-radius: 9px;
+  }
+  .hero-power.destiny .piece.power-piece {
+    filter: drop-shadow(0 0 10px #d1b2ec);
+    outline-color: #ecd7ff;
+  }
+  .hero-power::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    z-index: 15;
+    border: 2px solid #a5c8ed88;
+    border-radius: 12px;
+    box-shadow: 0 0 22px #a5c8ed44;
+    pointer-events: none;
+    animation: spell-border 1.2s ease-in-out infinite alternate;
+  }
+  .hero-power.destiny::after {
+    border-color: #d1b2ecaa;
+    box-shadow: 0 0 22px #d1b2ec55;
+  }
+  .power-toast {
+    position: fixed;
+    left: 50%;
+    top: 22%;
+    z-index: 56;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 12px 22px;
+    border-radius: 16px;
+    border: 1px solid #68d8bd;
+    background: linear-gradient(#10302b, #102026);
+    color: #e7fff8;
+    text-align: center;
+    pointer-events: none;
+    box-shadow:
+      0 0 28px #68d8bd66,
+      0 12px 30px #000a;
+    animation: power-toast 2.4s ease-out both;
+  }
+  .power-toast b {
+    font-family: var(--font-book);
+    font-size: 19px;
+    letter-spacing: 0.04em;
+    text-shadow:
+      0 0 12px #68d8bd,
+      0 0 24px #68d8bd;
+  }
+  .power-toast span {
+    font-size: 13px;
+    color: #b7f0dd;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .power-toast {
+      animation: none;
+    }
+  }
+  @media (max-width: 360px) {
+    #bPower {
+      padding: 7px 5px;
+      gap: 4px;
+    }
+    #bPower b {
+      font-size: 11px;
+    }
+    #bPower small {
+      font-size: 8px;
+    }
+    #bPower .ic {
+      width: 21px;
+      height: 21px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .power-sigil,
+    .power-sigil::before,
+    #heroPowerFx.show,
+    #heroPowerFx::before,
+    #heroPowerFx::after,
+    .hero-power::after,
+    .reserve-awaken {
+      animation: none;
+    }
+    .hero-power .piece {
+      transition: none;
+    }
+  }
+  .hero-power::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 30%;
+    aspect-ratio: 1;
+    z-index: 14;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    border: 2px solid #d8eaff;
+    box-shadow:
+      0 0 18px #a5c8ed,
+      inset 0 0 18px #a5c8ed66;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  .hero-power.destiny::before {
+    border-color: #ecd7ff;
+    box-shadow:
+      0 0 18px #d1b2ec,
+      inset 0 0 18px #d1b2ec66;
+  }
+  .hero-power.wave::before {
+    animation: power-wave 0.55s ease-out;
+  }
+  .hero-power.rewind .piece:not(.power-piece) {
+    filter: sepia(0.35) saturate(0.8) brightness(0.92);
+  }
+  .hero-power .piece.power-piece {
+    animation: power-piece-pop 0.36s ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-power::before,
+    .hero-power .piece.power-piece {
+      animation: none;
+    }
+  }
+  .power-toast,
+  .tip {
+    border-radius: var(--wob-b);
+  }
+  .hero-selector .hero-power {
+    background: var(--hatch), linear-gradient(153deg, var(--portrait-tone) 0 68%, #202434 68.5%) !important;
+    border: 2.5px solid #150e0c !important;
+    border-radius: var(--wob-d) !important;
+    box-shadow:
+      inset 0 0 0 1.5px #e0b04f40,
+      3px 5px 0 #150e0c;
+  }
+  #bPower:disabled {
+    opacity: 1;
+    background: var(--hatch), linear-gradient(180deg, #3a4656, #2a3340);
+  }
+  #bPower:disabled b {
+    color: #fff5e3;
+  }
+  #bPower:disabled small {
+    color: #d8e6f5;
+  }
+  #bPower b {
+    color: #fff5e3;
+  }
+  #bPower small {
+    color: #d8e6f5;
+  }
+  #bPower[data-hero='van'] small {
+    color: #eadcf7;
+  }
+  #powerStage {
+    position: fixed;
+    inset: 0;
+    z-index: 53;
+    display: none;
+    pointer-events: none;
+    overflow: hidden;
+    --spell: #a5c8ed;
+    --spell2: #f6dc9a;
+    background: radial-gradient(
+      circle at var(--cx, 50%) var(--cy, 50%),
+      #0000 0,
+      #0000 22%,
+      #060a1466 46%,
+      #04070ed9 100%
+    );
+  }
+  #powerStage[data-hero='van'] {
+    --spell: #d1b2ec;
+    --spell2: #fff0c4;
+  }
+  #powerStage.show {
+    display: block;
+    animation: ps-in 0.25s ease-out both;
+  }
+  .ps-sigil {
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+  .ps-sigil svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 3px var(--spell)) drop-shadow(0 0 12px var(--spell));
+    animation: sigil-in 0.7s cubic-bezier(0.2, 1.1, 0.3, 1) both;
+  }
+  .ps-glow {
+    position: absolute;
+    inset: -12%;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--spell) 50%, transparent) 0,
+      color-mix(in srgb, var(--spell) 16%, transparent) 42%,
+      #0000 68%
+    );
+    animation: sigil-breathe 1s ease-in-out infinite alternate;
+  }
+  .ps-sigil .ring {
+    fill: none;
+    stroke: var(--spell2);
+    stroke-width: 0.9;
+    vector-effect: non-scaling-stroke;
+    stroke-width: 1.6px;
+  }
+  .ps-sigil .ring.thick {
+    stroke-width: 3px;
+  }
+  .ps-sigil .ring.thin {
+    stroke-width: 1.1px;
+    opacity: 0.75;
+  }
+  .ps-sigil .ring.dash {
+    stroke-dasharray: 3 5;
+    opacity: 0.85;
+  }
+  .ps-sigil .ring.draw {
+    stroke-dasharray: 640;
+    stroke-dashoffset: 640;
+    animation: sigil-draw 0.75s ease-out 0.05s forwards;
+  }
+  .ps-sigil .tick {
+    stroke: var(--spell2);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.8;
+  }
+  .ps-sigil .tick.big {
+    stroke-width: 2.2px;
+    opacity: 1;
+  }
+  .ps-sigil .glyphs text {
+    fill: var(--spell2);
+    font-family: var(--font-title, Georgia, serif);
+    font-weight: 700;
+  }
+  .ps-sigil .hub,
+  .ps-sigil .hand path {
+    fill: #fff;
+  }
+  .ps-sigil g {
+    transform-box: view-box;
+    transform-origin: 0 0;
+  }
+  .ps-sigil .spin {
+    animation: sigil-spin 6s linear infinite;
+  }
+  .ps-sigil .spin.slow {
+    animation-duration: 14s;
+  }
+  .ps-sigil .spin-back {
+    animation: sigil-spin 7s linear infinite reverse;
+  }
+  .ps-sigil .spin-back.slow {
+    animation-duration: 12s;
+  }
+  .ps-sigil .spin-back.fast {
+    animation-duration: 1.6s;
+  }
+  .ps-sigil .hand.hour {
+    animation: sigil-spin 1.5s cubic-bezier(0.5, 0, 0.9, 0.6) infinite reverse;
+  }
+  .ps-sigil .hand.minute {
+    animation: sigil-spin 0.5s linear infinite reverse;
+  }
+  .ps-wave {
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    opacity: 0;
+    border: 2px solid var(--spell2);
+    box-shadow:
+      0 0 26px var(--spell),
+      inset 0 0 40px color-mix(in srgb, var(--spell) 60%, transparent);
+  }
+  #powerStage[data-kind='rewind'].unleash .ps-sigil svg {
+    animation: sigil-collapse 0.55s cubic-bezier(0.6, 0, 0.8, 0.3) forwards;
+  }
+  #powerStage[data-kind='rewind'].unleash .ps-wave {
+    animation: time-ripple 0.7s cubic-bezier(0.1, 0.6, 0.3, 1) both;
+  }
+  #powerStage[data-kind='rewind'].unleash .ps-wave.two {
+    animation-delay: 0.14s;
+  }
+  #powerStage[data-kind='destiny'].unleash .ps-sigil svg {
+    animation: sigil-bloom 0.6s ease-out forwards;
+  }
+  #powerStage[data-kind='destiny'].unleash .ps-wave {
+    background: radial-gradient(circle, #fff0 40%, color-mix(in srgb, var(--spell2) 70%, transparent) 62%, #fff0 72%);
+    border: 0;
+    animation: purify-wave 0.7s ease-out both;
+  }
+  #powerStage[data-kind='destiny'].unleash .ps-wave.two {
+    animation-delay: 0.16s;
+  }
+  #powerStage.unleash .ps-glow {
+    animation: sigil-flash 0.6s ease-out forwards;
+  }
+  #powerStage.unleash {
+    animation: ps-out 0.45s ease-in 0.3s both;
+  }
+  .ps-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(var(--cy, 50%) + var(--sz, 300px) * 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    padding: 0 12px;
+    font-size: clamp(22px, 6.4vw, 46px);
+  }
+  .ps-title b {
+    font: 700 1em/1 var(--font-title, Georgia, serif);
+    letter-spacing: 0.2em;
+    padding-left: 0.2em;
+    text-transform: uppercase;
+    color: #fffaf0;
+    text-shadow:
+      0 2px 0 #091118,
+      0 0 14px var(--spell),
+      0 0 34px var(--spell);
+    animation: ps-title-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.1s both;
+  }
+  .ps-title span {
+    font:
+      700 clamp(10px, 2.5vw, 14px)/1 system-ui,
+      sans-serif;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--spell2);
+    padding: 6px 16px 6px calc(16px + 0.5em);
+    border-block: 1px solid color-mix(in srgb, var(--spell2) 70%, transparent);
+    background: linear-gradient(90deg, #0000, #091118c4 22%, #091118c4 78%, #0000);
+    animation: ps-title-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.22s both;
+  }
+  #powerStage.unleash .ps-title {
+    animation: ps-title-out 0.4s ease-in both;
+  }
+  #heroPowerFx.center {
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 26px var(--spell)) drop-shadow(0 0 70px color-mix(in srgb, var(--spell) 60%, transparent));
+  }
+  #heroPowerFx.center.show {
+    animation:
+      power-slam 0.3s cubic-bezier(0.2, 1.6, 0.4, 1) both,
+      power-charge 1s 0.3s ease-in-out infinite alternate;
+  }
+  #heroPowerFx.center .power-sigil {
+    border-width: 2px;
+    border-radius: 18px;
+    box-shadow:
+      0 0 0 3px #091118,
+      0 0 44px var(--spell),
+      0 16px 40px #000b;
+  }
+  #heroPowerFx.center .power-sigil > b {
+    font-size: clamp(15px, 3.6vw, 22px);
+    padding: 26px 8px 14px;
+  }
+  .hero-power .piece.power-piece {
+    filter: drop-shadow(0 0 14px #a5c8ed) drop-shadow(0 0 30px #a5c8ed) brightness(1.2);
+  }
+  .hero-power.destiny .piece.power-piece {
+    filter: drop-shadow(0 0 14px #d1b2ec) drop-shadow(0 0 30px #d1b2ec) brightness(1.2);
+  }
+  @keyframes brasa-awaken {
+    40% {
+      box-shadow: 0 0 22px #68d8bd77;
+    }
+  }
+  @keyframes power-rise {
+    0% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(70px) scale(0.35);
+    }
+    60% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-6px) scale(1.1);
+    }
+    100% {
+      transform: translateX(-50%) scale(1);
+    }
+  }
+  @keyframes power-aura {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.4);
+    }
+    35% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.5;
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+  }
+  @keyframes power-ring {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.55);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  @keyframes power-rays {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes power-toast {
+    0% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(18px) scale(0.6);
+    }
+    12% {
+      opacity: 1;
+      transform: translateX(-50%) scale(1.08);
+    }
+    20% {
+      transform: translateX(-50%) scale(1);
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-24px);
+    }
+  }
+  @keyframes spell-border {
+    to {
+      opacity: 0.4;
+    }
+  }
+  @keyframes power-wave {
+    0% {
+      opacity: 0.9;
+      transform: translate(-50%, -50%) scale(0.2);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(5.2);
+    }
+  }
+  @keyframes power-piece-pop {
+    0% {
+      transform: scale(1);
+    }
+    35% {
+      transform: scale(1.07);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes ps-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes ps-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes sigil-in {
+    from {
+      opacity: 0;
+      transform: scale(0.35) rotate(-120deg);
+    }
+  }
+  @keyframes sigil-breathe {
+    from {
+      opacity: 0.55;
+      transform: scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+  }
+  @keyframes sigil-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes sigil-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes sigil-collapse {
+    to {
+      transform: scale(0) rotate(-540deg);
+      opacity: 0;
+      filter: drop-shadow(0 0 20px #fff) brightness(2);
+    }
+  }
+  @keyframes sigil-bloom {
+    35% {
+      filter: drop-shadow(0 0 22px #fff) brightness(2.4);
+    }
+    100% {
+      transform: scale(1.9) rotate(40deg);
+      opacity: 0;
+    }
+  }
+  @keyframes sigil-flash {
+    30% {
+      opacity: 1;
+      transform: scale(1.25);
+      filter: brightness(2);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.7);
+    }
+  }
+  @keyframes time-ripple {
+    0% {
+      opacity: 0.95;
+      transform: scale(0.12);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(2.3);
+    }
+  }
+  @keyframes purify-wave {
+    0% {
+      opacity: 1;
+      transform: scale(0.2);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(3);
+    }
+  }
+  @keyframes ps-title-in {
+    from {
+      opacity: 0;
+      letter-spacing: 0.7em;
+      filter: blur(6px);
+    }
+  }
+  @keyframes ps-title-out {
+    to {
+      opacity: 0;
+      transform: translateY(-14px);
+      filter: blur(4px);
+    }
+  }
+  @keyframes power-slam {
+    0% {
+      opacity: 0;
+      transform: translateX(-50%) scale(0.2) rotate(-8deg);
+      filter: brightness(3);
+    }
+    60% {
+      opacity: 1;
+      transform: translateX(-50%) scale(1.08) rotate(1deg);
+    }
+    100% {
+      transform: translateX(-50%) scale(1);
+    }
+  }
+  @keyframes power-charge {
+    from {
+      transform: translateX(-50%) scale(1);
+    }
+    to {
+      transform: translateX(-50%) scale(1.035);
+      filter: drop-shadow(0 0 40px var(--spell)) drop-shadow(0 0 100px var(--spell)) brightness(1.12);
+    }
+  }
+}

@@ -4,55 +4,22 @@
  * el resto son módulos de interfaz que se comunican mediante el estado compartido de src/state.js.
  */
 import './i18n.js';
-import './styles/01-base.css';
-import './styles/02-hud.css';
-import './styles/03-board.css';
-import './styles/04-buttons-modals.css';
-import './styles/05-layout.css';
-import './styles/06-effects.css';
-import './styles/07-menu-paths.css';
-import './styles/08-pause-dialogs.css';
-import './styles/09-map-journey.css';
-import './styles/10-compact-screens.css';
-import './styles/12-journal-art.css';
-import './styles/13-route-hero.css';
-import './styles/14-ink-theme.css';
-import './styles/15-cover.css';
-import './styles/16-result.css';
-import './styles/18-turns.css';
-import './styles/19-specials.css';
-import './styles/20-icons.css';
-import './styles/21-minimal-hud.css';
-import './styles/22-travel.css';
-import './styles/23-powers.css';
-import './styles/24-heroic-paths.css';
-import './styles/26-handmade.css';
-import './styles/27-travel-feedback.css';
-import './styles/30-curse.css';
-import './styles/31-polish.css';
-import './styles/32-menus.css';
-import './styles/33-daily.css';
-import './styles/34-menu-home.css';
-import './styles/37-achievements-shop.css';
-import './styles/38-cosmetics-preview.css';
-import './styles/39-menu-palette.css';
-import './styles/40-piece-key-skins.css';
-import './styles/41-fate-cards.css';
-import './styles/42-cosmetics-animated.css';
-import './styles/43-key-collection.css';
-import './styles/44-piece-collection.css';
-import './styles/47-defeat.css';
-import './styles/48-outfit-showcase.css';
-import './styles/51-trail-fx-swatches.css';
-import './styles/53-custom-fullscreen.css';
-import './styles/54-world.css'; // fondo animado compartido: inicio, elección de héroe y juego
-import './styles/55-customize.css'; // Personalizar: pulido final y efectos de rareza
-import './styles/56-premium-skins.css'; // llaves y fichas de Personalizar con materiales nobles
-import './styles/57-legendary-storm.css'; // trajes legendarios: tormenta de poder al fondo
-import './styles/58-epic-arcane.css'; // trajes épicos: santuario arcano al fondo
-import './styles/59-outfit-fx.css'; // escena de poder del traje en selección, cartas, derrota y final
-import './styles/60-weather.css'; // clima aleatorio del fondo: lluvia, nieve, luciérnagas…
-import './styles/35-lite.css'; // modo ligero automático (src/ui/perf.js): siempre la última
+import './styles/layers.css';
+import './styles/properties.css';
+import './styles/base.css';
+import './styles/layout.css';
+import './styles/world.css';
+import './styles/components.css';
+import './styles/hud.css';
+import './styles/board.css';
+import './styles/specials.css';
+import './styles/powers.css';
+import './styles/menus.css';
+import './styles/fate.css';
+import './styles/results.css';
+import './styles/customize.css';
+import './styles/skins.css';
+import './styles/lite.css';
 import './ui/transitions.js';
 import './ui/achievements.js';
 import { hooks } from './audio/sound.js';

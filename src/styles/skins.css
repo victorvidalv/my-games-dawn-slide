@@ -1,0 +1,3286 @@
+/* skins — capa «skins» */
+@layer skins {
+  .ach-shop-grid.cols-3 .ach-shop-art .sw-real {
+    width: 100%;
+    max-width: 100px;
+    height: 56px;
+  }
+
+  .ach-shop-art .sw {
+    width: 54px;
+    height: 54px;
+    border-radius: 13px;
+  }
+  :where([data-pieces='paint']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(122deg, #ffffff28 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, var(--a) 0 42%, var(--b) 42.5% 88%, color-mix(in oklab, var(--b) 65%, var(--d)) 100%);
+    box-shadow:
+      0 3px 0 #120e14,
+      0 6px 10px #0000004d,
+      inset 0 2px 0 #ffffff66,
+      inset 0 -3px 0 var(--d),
+      inset 0 0 0 1.5px #120e1444;
+    border-color: #120e14;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='paint']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 3px 10% auto;
+    width: auto;
+    height: 2px;
+    background: linear-gradient(90deg, #fff0, #ffffff99, #fff0);
+    background-size: auto;
+    border-radius: 2px;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  :where([data-pieces='paint']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='paint']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='stone']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(135deg, #ffffff22 0 38%, #0000 38.5% 68%, #00000024 68.5%),
+      radial-gradient(circle at 28% 34%, #ffffff22 0 0.8px, #0000 1.3px) 0 0 / 8px 7px,
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 52%, #ddd9d2) 0 46%,
+        color-mix(in oklab, var(--b) 50%, #98938b) 46.5% 100%
+      );
+    box-shadow:
+      0 3px 0 #120e14,
+      0 6px 10px #0000004d,
+      inset 0 0 0 2.5px #ffffff33,
+      inset 0 2px 0 #ffffff66,
+      inset 0 -3px 0 #120e144d;
+    border-color: #120e14;
+    border-radius: 5px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='stone']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 3px 6% auto;
+    width: auto;
+    height: 24%;
+    background: linear-gradient(180deg, #ffffff38, #fff0);
+    background-size: auto;
+    border-radius: 3px 3px 0 0;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  :where([data-pieces='stone']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='stone']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='glass']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(116deg, #fff0 0 14%, #ffffff66 14.5% 26%, #fff0 26.5% 33%, #ffffff38 33.5% 38%, #fff0 38.5%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 78%, #ffffff) 0 48%,
+        color-mix(in oklab, var(--b) 82%, #c9f6ff) 100%
+      );
+    box-shadow:
+      0 3px 0 #120e14,
+      0 6px 12px color-mix(in oklab, var(--a) 30%, #00000066),
+      inset 0 0 0 1.5px #ffffffcc,
+      inset 0 0 12px #ffffff55,
+      inset 0 -3px 0 color-mix(in oklab, var(--d) 70%, #0000);
+    border-color: #120e14;
+    border-radius: 10px;
+    filter: none;
+    opacity: 0.96;
+  }
+  :where([data-pieces='glass']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 2px 6% auto;
+    width: auto;
+    height: 28%;
+    background: linear-gradient(180deg, #ffffff99, #fff0);
+    background-size: auto;
+    border-radius: 8px 8px 40% 40%;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  :where([data-pieces='glass']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='glass']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='ceramic']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(130deg, #ffffff99 0 28%, #fff0 28.5%),
+      linear-gradient(180deg, #fcf8f0 0 54%, color-mix(in oklab, var(--a) 18%, #e9e2d3) 100%);
+    box-shadow:
+      0 3px 0 #120e14,
+      0 6px 10px #00000055,
+      inset 0 0 0 3.5px var(--a),
+      inset 0 0 0 5px #120e1455,
+      inset 0 -3px 0 var(--d);
+    border-color: #120e14;
+    border-radius: 12px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='ceramic']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 5px 14% auto;
+    width: auto;
+    height: 20%;
+    background: linear-gradient(180deg, #ffffffcc, #fff0);
+    background-size: auto;
+    border-radius: 6px;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  :where([data-pieces='ceramic']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='ceramic']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='night']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(circle at 22% 28%, #ffffffdd 0 0.8px, #0000 1.4px) 0 0 / 16px 13px,
+      radial-gradient(circle at 72% 68%, var(--a) 0 0.9px, #0000 1.6px) 3px 2px / 20px 15px,
+      linear-gradient(
+        160deg,
+        color-mix(in oklab, var(--b) 42%, #1d223c) 0 45%,
+        color-mix(in oklab, var(--d) 45%, #0d1020) 45.5% 100%
+      );
+    box-shadow:
+      0 3px 0 #080910,
+      0 6px 12px color-mix(in oklab, var(--a) 32%, #00000077),
+      inset 0 0 0 2px var(--a),
+      inset 0 0 10px color-mix(in oklab, var(--a) 45%, #0000);
+    border-color: #080910;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='night']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 3px 10% auto;
+    width: auto;
+    height: 1.5px;
+    background: linear-gradient(90deg, #fff0, #ffffffaa, #fff0);
+    background-size: auto;
+    border-radius: 2px;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  :where([data-pieces='night']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='night']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='brass']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(115deg, #fff0 0 20%, #fff8dc55 20.5% 32%, #fff0 32.5%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 44%, #f6e4b4) 0 38%,
+        color-mix(in oklab, var(--b) 48%, #d1ad62) 38.5% 74%,
+        color-mix(in oklab, var(--d) 44%, #96722d) 74.5% 100%
+      );
+    box-shadow:
+      0 3px 0 #2b1e0a,
+      0 6px 10px #00000055,
+      inset 0 2px 0 #fffbe6cc,
+      inset 0 0 0 2px #f6d98a55,
+      inset 0 -3px 0 #6e501b;
+    border-color: #2b1e0a;
+    border-radius: 8px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='brass']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 3px 10% auto;
+    width: auto;
+    height: 1.5px;
+    background: linear-gradient(90deg, #fff0, #fffbe8ee, #fff0);
+    background-size: auto;
+    border-radius: 0;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  :where([data-pieces='brass']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='brass']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='runic']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      repeating-linear-gradient(60deg, color-mix(in oklab, var(--b) 28%, #0000) 0 1.5px, #0000 1.5px 10px),
+      repeating-linear-gradient(-60deg, color-mix(in oklab, var(--b) 28%, #0000) 0 1.5px, #0000 1.5px 10px),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 30%, #fff4d8) 0 46%,
+        color-mix(in oklab, var(--a) 48%, #e4cc9a) 100%
+      );
+    box-shadow:
+      0 3px 0 #120e14,
+      0 6px 12px color-mix(in oklab, var(--a) 32%, #00000066),
+      inset 0 0 0 2.5px var(--b),
+      inset 0 0 0 4px #fff8e6aa,
+      inset 0 -3px 0 var(--d);
+    border-color: #120e14;
+    border-radius: 8px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='runic']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0 auto 0 -45%;
+    width: 34%;
+    height: auto;
+    background: linear-gradient(100deg, #fff0, #fff9e099 50%, #fff0);
+    background-size: auto;
+    border-radius: 0;
+    transform: skewX(-18deg);
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  :where([data-pieces='runic']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='runic']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='lacquer']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      conic-gradient(
+          color-mix(in oklab, var(--a) 88%, #fff) 90deg,
+          #16121a 90deg 180deg,
+          color-mix(in oklab, var(--b) 90%, #000) 180deg 270deg,
+          #16121a 270deg
+        )
+        0 0 / 16px 16px,
+      linear-gradient(180deg, var(--b), var(--d));
+    box-shadow:
+      0 3px 0 #0a080d,
+      0 6px 14px color-mix(in oklab, var(--a) 35%, #00000077),
+      inset 0 0 0 2.5px #120e14,
+      inset 0 0 0 4px #f2cf78dd,
+      inset 0 2px 0 #ffffff66;
+    border-color: #0a080d;
+    border-radius: 9px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='lacquer']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0 auto 0 -45%;
+    width: 30%;
+    height: auto;
+    background: linear-gradient(100deg, #fff0, #fff4cc80 50%, #fff0);
+    background-size: auto;
+    border-radius: 0;
+    transform: skewX(-18deg);
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  :where([data-pieces='lacquer']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='lacquer']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='oldgold']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(122deg, #fff0 0 18%, #fffbe088 18.5% 27%, #fff0 27.5%),
+      repeating-linear-gradient(45deg, #fff6c91c 0 2px, #0000 2px 8px),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 32%, #fff0b8) 0 38%,
+        color-mix(in oklab, var(--b) 36%, #e4b448) 38.5% 76%,
+        color-mix(in oklab, var(--d) 36%, #a66f18) 76.5% 100%
+      );
+    box-shadow:
+      0 3px 0 #261806,
+      0 0 14px #f5c95a66,
+      0 6px 12px #00000066,
+      inset 0 0 0 1.5px #fffbe0dd,
+      inset 0 0 0 3px #8c5c12,
+      inset 0 0 0 4.5px #ffe594aa,
+      inset 0 -3px 0 #70470b;
+    border-color: #261806;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='oldgold']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0 auto 0 -45%;
+    width: 32%;
+    height: auto;
+    background: linear-gradient(100deg, #fff0, #ffffffcc 50%, #fff0);
+    background-size: auto;
+    border-radius: 0;
+    transform: skewX(-18deg);
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+  :where([data-pieces='oldgold']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='oldgold']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-key='red']) .piece.red .face {
+    background:
+      linear-gradient(122deg, #ffffff38 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #ff6248 0 42%, #d62d20 42.5% 84%, #8c1614 100%);
+    box-shadow:
+      0 4px 0 #120e14,
+      0 0 14px #ff5a3c66,
+      inset 0 -4px 0 #6b1110,
+      inset 0 0 0 1.5px #120e1466,
+      inset 0 0 0 3.5px #ffd982cc,
+      inset 0 2px 0 #fff4d688;
+    border-color: #120e14;
+    opacity: 1;
+  }
+  :where([data-key='red']) .piece.red .face::before {
+    inset: 0;
+    background:
+      linear-gradient(105deg, #fff0 38%, #ffffff99 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+    background-size:
+      260% 100%,
+      100% 100%;
+    border-radius: 13px;
+    animation: key-glint 3.4s ease-in-out infinite;
+    opacity: 1;
+    transform: none;
+    width: auto;
+    height: auto;
+  }
+  :where([data-key='red']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff0b8' stroke='%23120e14' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 2px 0 #120e14);
+  }
+  :where([data-key='red']) .piece.red {
+    animation: keyGlow 2.4s ease-in-out infinite;
+  }
+  :where([data-key='amber']) .piece.red .face {
+    background:
+      linear-gradient(122deg, #fffbe066 0 20%, #fff0 20.5%),
+      linear-gradient(180deg, #ffe270 0 42%, #f09b1c 42.5% 84%, #a85208 100%);
+    box-shadow:
+      0 4px 0 #120e14,
+      0 0 14px #ffb84a77,
+      inset 0 -4px 0 #7a3b06,
+      inset 0 0 0 1.5px #120e1455,
+      inset 0 0 0 3.5px #fff2b2cc,
+      inset 0 2px 0 #ffffffaa;
+    border-color: #120e14;
+    opacity: 1;
+  }
+  :where([data-key='amber']) .piece.red .face::before {
+    inset: 0;
+    background:
+      linear-gradient(105deg, #fff0 38%, #ffffffa6 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+    background-size:
+      260% 100%,
+      100% 100%;
+    border-radius: 13px;
+    animation: key-glint 3.4s ease-in-out infinite;
+    opacity: 1;
+    transform: none;
+    width: auto;
+    height: auto;
+  }
+  :where([data-key='amber']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff9e0' stroke='%234a2004' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 2px 0 #120e14);
+  }
+  :where([data-key='amber']) .piece.red {
+    animation: skin-glow-amber 2.6s ease-in-out infinite;
+  }
+  :where([data-key='iron']) .piece.red .face {
+    background:
+      linear-gradient(118deg, #ffffff55 0 14%, #fff0 14.5% 46%, #ffffff22 46.5% 51%, #fff0 51.5%),
+      linear-gradient(180deg, #b8c6d4 0 40%, #637386 40.5% 80%, #2a333f 100%);
+    box-shadow:
+      0 4px 0 #120e14,
+      0 7px 12px #0007,
+      inset 0 -4px 0 #1a2028,
+      inset 0 0 0 1.5px #120e1488,
+      inset 0 0 0 3.5px #e2ebf588,
+      inset 0 2px 0 #ffffff66;
+    border-color: #120e14;
+    opacity: 1;
+  }
+  :where([data-key='iron']) .piece.red .face::before {
+    inset: 0;
+    background:
+      linear-gradient(105deg, #fff0 38%, #ffffff99 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+    background-size:
+      260% 100%,
+      100% 100%;
+    border-radius: 13px;
+    animation: key-glint 3.6s ease-in-out infinite;
+    opacity: 0.65;
+    transform: none;
+    width: auto;
+    height: auto;
+  }
+  :where([data-key='iron']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23f2b672' stroke='%23120e14' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 2px 0 #120e14);
+  }
+  :where([data-key='iron']) .piece.red {
+    animation: none;
+  }
+  :where([data-key='rose']) .piece.red .face {
+    background:
+      linear-gradient(122deg, #ffffff4d 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #ffb6ce 0 38%, #eb5684 38.5% 82%, #9a1d48 100%);
+    box-shadow:
+      0 4px 0 #120e14,
+      0 0 14px #ff7ca477,
+      inset 0 -4px 0 #701434,
+      inset 0 0 0 1.5px #120e1455,
+      inset 0 0 0 3.5px #ffe3ecdd,
+      inset 0 2px 0 #ffffffcc;
+    border-color: #120e14;
+    opacity: 1;
+  }
+  :where([data-key='rose']) .piece.red .face::before {
+    inset: 0;
+    background:
+      linear-gradient(105deg, #fff0 38%, #ffffffa6 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+    background-size:
+      260% 100%,
+      100% 100%;
+    border-radius: 13px;
+    animation: key-glint 3.4s ease-in-out infinite;
+    opacity: 1;
+    transform: none;
+    width: auto;
+    height: auto;
+  }
+  :where([data-key='rose']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff8fa' stroke='%2359102a' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 2px 0 #120e14);
+  }
+  :where([data-key='rose']) .piece.red {
+    animation: skin-glow-rose 2.6s ease-in-out infinite;
+  }
+  :where([data-key='emerald']) .piece.red .face {
+    background:
+      linear-gradient(120deg, #ffffffb8 0 12%, #fff0 12.5%),
+      conic-gradient(
+        from 20deg at 50% 50%,
+        #d4ffe8 0 8%,
+        #2ad47e 8% 22%,
+        #0c6e3d 22% 36%,
+        #52ed9e 36% 48%,
+        #09542e 48% 62%,
+        #86f7bc 62% 74%,
+        #12854b 74% 88%,
+        #d4ffe8 88%
+      );
+    box-shadow:
+      0 4px 0 #120e14,
+      0 0 18px #42f09899,
+      inset 0 -4px 0 #094526,
+      inset 0 0 0 1.5px #120e1466,
+      inset 0 0 0 3.5px #f2cf78,
+      inset 0 0 0 5px #09452666;
+    border-color: #120e14;
+    opacity: 1;
+  }
+  :where([data-key='emerald']) .piece.red .face::before {
+    inset: 0;
+    background:
+      linear-gradient(105deg, #fff0 38%, #ffffffa6 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+    background-size:
+      260% 100%,
+      100% 100%;
+    border-radius: 13px;
+    animation: key-glint 3.2s ease-in-out infinite;
+    opacity: 1;
+    transform: none;
+    width: auto;
+    height: auto;
+  }
+  :where([data-key='emerald']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff0a8' stroke='%2308381f' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 2px 0 #120e14);
+  }
+  :where([data-key='emerald']) .piece.red {
+    animation: skin-glow-emerald 2.4s ease-in-out infinite;
+  }
+  :where([data-key='sapphire']) .piece.red .face {
+    background:
+      linear-gradient(120deg, #ffffff99 0 12%, #fff0 12.5%),
+      conic-gradient(
+        from 20deg at 50% 50%,
+        #d8f0ff 0 8%,
+        #3490f2 8% 22%,
+        #103a8f 22% 36%,
+        #62b8ff 36% 48%,
+        #0c2a6e 48% 62%,
+        #96d4ff 62% 74%,
+        #184ca8 74% 88%,
+        #d8f0ff 88%
+      );
+    box-shadow:
+      0 4px 0 #120e14,
+      0 0 18px #52b4ff99,
+      inset 0 -4px 0 #0a2254,
+      inset 0 0 0 1.5px #120e1466,
+      inset 0 0 0 3.5px #e6f2ff,
+      inset 0 0 0 5px #0a225466;
+    border-color: #120e14;
+    opacity: 1;
+  }
+  :where([data-key='sapphire']) .piece.red .face::before {
+    inset: 0;
+    background:
+      linear-gradient(105deg, #fff0 38%, #ffffffa6 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+    background-size:
+      260% 100%,
+      100% 100%;
+    border-radius: 13px;
+    animation: key-glint 3.2s ease-in-out infinite;
+    opacity: 1;
+    transform: none;
+    width: auto;
+    height: auto;
+  }
+  :where([data-key='sapphire']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23f4f9ff' stroke='%230a2254' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 2px 0 #120e14);
+  }
+  :where([data-key='sapphire']) .piece.red {
+    animation: skin-glow-sapphire 2.4s ease-in-out infinite;
+  }
+  :where([data-key='crystal']) .piece.red .face {
+    background:
+      linear-gradient(
+        116deg,
+        #ffffffee 0 13%,
+        #fff0 13.5% 40%,
+        #ffffff99 40.5% 47%,
+        #fff0 47.5% 68%,
+        #ffffff55 68.5% 72%,
+        #fff0 72.5%
+      ),
+      linear-gradient(90deg, #ff99b866, #ffe48a66 25%, #8affd266 50%, #7ad8ff66 75%, #c89aff66),
+      linear-gradient(160deg, #ffffff, #b4ecff 50%, #5cb8e6);
+    box-shadow:
+      0 4px 0 #120e14,
+      0 0 18px #8fe8ffbb,
+      inset 0 -4px 0 #246f99,
+      inset 0 0 0 1.5px #120e1455,
+      inset 0 0 0 3.5px #ffffffee,
+      inset 0 0 14px #ffffffaa;
+    border-color: #120e14;
+    opacity: 0.98;
+  }
+  :where([data-key='crystal']) .piece.red .face::before {
+    inset: 0;
+    background:
+      linear-gradient(105deg, #fff0 38%, #ffffffb8 50%, #fff0 62%), linear-gradient(180deg, #ffffff55, #fff0 45%);
+    background-size:
+      260% 100%,
+      100% 100%;
+    border-radius: 13px;
+    animation: key-glint 3s ease-in-out infinite;
+    opacity: 1;
+    transform: none;
+    width: auto;
+    height: auto;
+  }
+  :where([data-key='crystal']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffffff' stroke='%23185278' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 2px 0 #120e14);
+  }
+  :where([data-key='crystal']) .piece.red {
+    animation: skin-glow-crystal 2.2s ease-in-out infinite;
+  }
+  :where([data-key='obsidian']) .piece.red .face {
+    background:
+      linear-gradient(118deg, #ffffff55 0 9%, #fff0 9.5% 46%, #ffffff26 46.5% 51%, #fff0 51.5%),
+      repeating-linear-gradient(128deg, #0000 0 9px, #c47cffaa 9px 10.5px, #0000 10.5px 22px),
+      radial-gradient(ellipse at 72% 80%, #ff4d8877, #0000 58%), linear-gradient(160deg, #3c2658, #140c24 58%, #07040d);
+    box-shadow:
+      0 4px 0 #08040e,
+      0 0 20px #b87aff99,
+      inset 0 -4px 0 #05020a,
+      inset 0 0 0 1.5px #08040e,
+      inset 0 0 0 3.5px #d4a6ffaa,
+      inset 0 0 14px #9a4cff66;
+    border-color: #08040e;
+    opacity: 1;
+  }
+  :where([data-key='obsidian']) .piece.red .face::before {
+    inset: 0;
+    background:
+      linear-gradient(105deg, #fff0 38%, #f0d6ffaa 50%, #fff0 62%), linear-gradient(180deg, #ffffff44, #fff0 45%);
+    background-size:
+      260% 100%,
+      100% 100%;
+    border-radius: 13px;
+    animation: key-glint 2.8s ease-in-out infinite;
+    opacity: 1;
+    transform: none;
+    width: auto;
+    height: auto;
+  }
+  :where([data-key='obsidian']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23f2dcff' stroke='%23120820' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #c884ff) drop-shadow(0 2px 0 #08040e);
+  }
+  :where([data-key='obsidian']) .piece.red {
+    animation: skin-glow-obsidian 2.4s ease-in-out infinite;
+  }
+  :where([data-key='star']) .piece.red .face {
+    background:
+      radial-gradient(circle at 14% 72%, #fff 0 1.1px, #0000 1.8px),
+      radial-gradient(circle at 88% 22%, #ffe9ad 0 1.3px, #0000 2px),
+      radial-gradient(circle at 46% 86%, #fff 0 0.9px, #0000 1.5px),
+      radial-gradient(ellipse at 72% 28%, #ff7ad077, #0000 50%),
+      radial-gradient(ellipse at 24% 42%, #5ed8ff66, #0000 55%), linear-gradient(160deg, #6e46e0, #2a1778 55%, #0f0730);
+    box-shadow:
+      0 4px 0 #0a061c,
+      0 0 20px #9c7cffaa,
+      inset 0 -4px 0 #160a42,
+      inset 0 0 0 1.5px #0a061c,
+      inset 0 0 0 3.5px #ffebb0cc;
+    border-color: #0a061c;
+    opacity: 1;
+  }
+  :where([data-key='star']) .piece.red .face::before {
+    inset: 10% 12%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cg stroke='%23fff' stroke-width='.8' opacity='.85' fill='none'%3E%3Cpath d='M4 6l7 4 6-3 4 6'/%3E%3C/g%3E%3Cg fill='%23fff'%3E%3Ccircle cx='4' cy='6' r='1.2'/%3E%3Ccircle cx='11' cy='10' r='1.4'/%3E%3Ccircle cx='17' cy='7' r='1.1'/%3E%3Ccircle cx='21' cy='13' r='1.3'/%3E%3C/g%3E%3C/svg%3E")
+      center / contain no-repeat;
+    background-size: contain;
+    border-radius: 0;
+    animation: skin-twinkle 2s ease-in-out infinite alternate;
+    opacity: 1;
+    transform: none;
+    width: auto;
+    height: auto;
+  }
+  :where([data-key='star']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffe68a' stroke='%23160a42' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 4px #ffd24a) drop-shadow(0 2px 0 #0a061c);
+  }
+  :where([data-key='star']) .piece.red {
+    animation: skin-glow-star 2.6s ease-in-out infinite;
+  }
+  :where([data-key='gold']) .piece.red .face {
+    background:
+      linear-gradient(120deg, #fff0 0 18%, #ffffffaa 18.5% 27%, #fff0 27.5%),
+      radial-gradient(ellipse at 26% 18%, #fffdf0 0, #ffe678 28%, #eb9e14 64%, #9a5204 94%);
+    box-shadow:
+      0 4px 0 #1c1002,
+      0 0 24px #ffd24acc,
+      inset 0 -4px 0 #7a4404,
+      inset 0 0 0 1.5px #4a2a04,
+      inset 0 0 0 3.2px #fff8d4,
+      inset 0 0 0 4.8px #b87814,
+      inset 0 2px 0 #ffffff;
+    border-color: #1c1002;
+    opacity: 1;
+  }
+  :where([data-key='gold']) .piece.red .face::before {
+    inset: -30% auto -30% -70%;
+    background: linear-gradient(100deg, #fff0, #ffffffee 50%, #fff0);
+    background-size: auto;
+    border-radius: 0;
+    animation: skin-sheen 2.4s ease-in-out infinite;
+    opacity: 1;
+    transform: skewX(-18deg);
+    width: 48%;
+    height: auto;
+  }
+  :where([data-key='gold']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%23fff6cc' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23e82842' stroke='%233d060e' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #ff546a) drop-shadow(0 2px 0 #1c1002);
+  }
+  :where([data-key='gold']) .piece.red {
+    animation: skin-glow-gold 2s ease-in-out infinite;
+  }
+  :where([data-pieces='runic']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    animation: skin-sheen 5.5s ease-in-out infinite;
+  }
+  :where([data-pieces='lacquer']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    animation: skin-sheen 4.8s ease-in-out infinite;
+  }
+  :where([data-pieces='oldgold']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    animation: skin-sheen 3.6s ease-in-out infinite;
+  }
+  .sw-real {
+    position: relative;
+    display: block;
+    overflow: visible;
+    border: 0;
+    border-radius: 12px;
+    background: radial-gradient(circle at 50% 45%, #242c4d, #101426);
+    box-shadow:
+      inset 0 0 0 1.5px #120e148c,
+      inset 0 2px 8px #0008;
+    --gap: 2px;
+  }
+  .ach-shop-art .sw-real {
+    width: 100px;
+    height: 68px;
+  }
+  .sw-real .piece {
+    position: absolute;
+    translate: none;
+    transition: none;
+    cursor: default;
+    pointer-events: none;
+  }
+  .sw-real .face {
+    display: block;
+  }
+  .sw-real .face::after {
+    scale: 0.85;
+  }
+  .sw-real[data-pieces] .piece.h {
+    left: 6px;
+    top: 6px;
+    width: 60px;
+    height: 30px;
+  }
+  .sw-real[data-pieces] .piece.h + .piece.h {
+    top: 36px;
+    width: 46px;
+    height: 26px;
+  }
+  .sw-real[data-pieces] .piece.v {
+    left: auto;
+    right: 6px;
+    top: 6px;
+    width: 28px;
+    height: 56px;
+  }
+  .sw-real[data-key] .piece.red {
+    left: 50%;
+    top: 50%;
+    width: 76px;
+    height: 36px;
+    margin: -18px 0 0 -38px;
+  }
+  .ach-shop-card:is(.r-epic, .r-legendary) .sw-real::before {
+    display: none;
+  }
+  :where([data-pieces='frostedge']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(circle at 22% 28%, #ffffff55 0 1px, #0000 1.6px) 0 0 / 9px 8px,
+      linear-gradient(125deg, #ffffff40 0 22%, #fff0 22.5%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 45%, #e8f8ff) 0 44%,
+        color-mix(in oklab, var(--b) 50%, #9ccbe6) 44.5% 100%
+      );
+    box-shadow:
+      0 3px 0 #0b1a26,
+      0 0 10px #9fe7ff55,
+      0 6px 10px #0005,
+      inset 0 2px 0 #ffffffaa,
+      inset 0 -3px 0 color-mix(in oklab, var(--d) 60%, #2b5d7a);
+    border-color: #0b1a26;
+    border-radius: 9px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='frostedge']) .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+    display: block;
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    width: auto;
+    height: auto;
+    padding: 2.5px;
+    border-radius: inherit;
+    background:
+      conic-gradient(from var(--spin), #0000 0 55%, #ffffff 66%, #7fd6ff 74%, #0000 84%),
+      linear-gradient(#cfefffaa, #8fd2f0aa);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 1;
+    filter: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='neon']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(122deg, #ffffff1c 0 16%, #fff0 16.5%),
+      repeating-linear-gradient(0deg, #ffffff06 0 1px, #0000 1px 4px),
+      linear-gradient(180deg, color-mix(in oklab, var(--b) 30%, #1a1430), #0c0a18);
+    box-shadow:
+      0 3px 0 #05040a,
+      0 0 12px color-mix(in oklab, var(--a) 70%, #0000),
+      0 6px 10px #0006,
+      inset 0 0 10px color-mix(in oklab, var(--a) 45%, #0000);
+    border-color: #05040a;
+    border-radius: 9px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='neon']) .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+    display: block;
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    width: auto;
+    height: auto;
+    padding: 2.5px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--spin),
+      var(--a),
+      #ff4fd8,
+      #4fe3ff,
+      color-mix(in oklab, var(--a) 50%, #fff),
+      var(--a)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 1;
+    filter: drop-shadow(0 0 3px #ff4fd8aa);
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='ember']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(circle at 30% 85%, #ffb04a55 0 1.5px, #0000 2.5px) 0 0 / 11px 10px,
+      linear-gradient(122deg, #fff4d61c 0 16%, #fff0 16.5%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 35%, #3a2420) 0 50%,
+        color-mix(in oklab, var(--d) 40%, #160c0c) 50.5% 100%
+      );
+    box-shadow:
+      0 3px 0 #120604,
+      0 0 14px #ff7a3d66,
+      0 6px 12px #0007,
+      inset 0 -6px 10px #ff6a3d44,
+      inset 0 2px 0 #ffd9a255;
+    border-color: #120604;
+    border-radius: 9px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='ember']) .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+    display: block;
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    width: auto;
+    height: auto;
+    padding: 3px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--spin), #ffd24a, #ff7a3d, #ff3d2e, #ffb04a, #fff0b8, #ffd24a), #ff7a3d;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 1;
+    filter: drop-shadow(0 0 4px #ff8a3d);
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='ember']) .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: auto 0 0;
+    width: auto;
+    height: 55%;
+    background:
+      radial-gradient(circle at 20% 100%, #ffd24a 0 1.2px, #0000 2px) 0 0 / 14px 18px,
+      radial-gradient(circle at 70% 100%, #ff9a3d 0 1px, #0000 1.8px) 0 0 / 17px 22px;
+    border-radius: 0;
+    transform: none;
+    opacity: 0.9;
+    filter: none;
+  }
+  :where([data-key='moon']) .piece.red .face {
+    background:
+      radial-gradient(circle at 78% 30%, #ffffff 0 4px, #0000 4.5px),
+      radial-gradient(circle at 74% 26%, #2a3550 0 5px, #0000 5.5px),
+      linear-gradient(122deg, #ffffff55 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #e6ecf6 0 40%, #a7b6cf 40.5% 84%, #5f6f8c 100%);
+    box-shadow:
+      0 4px 0 #0e1422,
+      0 0 16px #c9dcff88,
+      inset 0 -4px 0 #4a5874,
+      inset 0 0 0 1.5px #0e142266,
+      inset 0 0 0 3.5px #f4f8ffcc,
+      inset 0 2px 0 #ffffff;
+    border-color: #0e1422;
+    opacity: 1;
+  }
+  :where([data-key='moon']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffffff' stroke='%231a2440' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 4px #c9dcff) drop-shadow(0 2px 0 #0e1422);
+  }
+  :where([data-key='phoenix']) .piece.red .face {
+    background:
+      repeating-linear-gradient(120deg, #0000 0 7px, #ffd24a33 7px 9px, #0000 9px 16px),
+      radial-gradient(ellipse at 30% 110%, #fff0b8, #ffb04a 30%, #ff5a2a 62%, #9a1c10 96%);
+    box-shadow:
+      0 4px 0 #2a0804,
+      0 0 22px #ff7a3dcc,
+      inset 0 -4px 0 #7a1608,
+      inset 0 0 0 1.5px #2a0804,
+      inset 0 2px 0 #fff4d6aa;
+    border-color: #2a0804;
+    opacity: 1;
+  }
+  :where([data-key='phoenix']) .piece.red .face::before {
+    inset: 0;
+    padding: 3px;
+    background: conic-gradient(from var(--spin), #fff0b8, #ffd24a, #ff7a3d, #ff3d2e, #ffd24a, #fff0b8);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    border-radius: inherit;
+    transform: none;
+    width: auto;
+    height: auto;
+    opacity: 1;
+  }
+  :where([data-key='phoenix']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff6cc' stroke='%233d0a04' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 6px #ffb04a) drop-shadow(0 2px 0 #2a0804);
+  }
+  :where([data-key='eclipse']) .piece.red .face {
+    background:
+      radial-gradient(circle at 50% 50%, #05040a 0 36%, #1d1430 52%, #0000 70%),
+      radial-gradient(circle at 50% 50%, #ffe9ad 0 30%, #ff9a3d 46%, #a35cff 66%, #120c20 90%);
+    box-shadow:
+      0 4px 0 #05040a,
+      0 0 26px #ffcf5acc,
+      0 0 44px #a35cff66,
+      inset 0 0 0 1.5px #05040a,
+      inset 0 0 0 3.2px #ffe9adcc,
+      inset 0 0 0 4.8px #6b3a9a;
+    border-color: #05040a;
+    opacity: 1;
+  }
+  :where([data-key='eclipse']) .piece.red .face::before {
+    inset: 0;
+    background:
+      repeating-conic-gradient(from var(--spin), #fff3c466 0 4deg, #0000 4deg 18deg),
+      conic-gradient(from var(--spin), #0000 0 60%, #fff6d6cc 75%, #0000 90%);
+    border-radius: inherit;
+    transform: none;
+    width: auto;
+    height: auto;
+    opacity: 1;
+    mix-blend-mode: screen;
+  }
+  :where([data-key='eclipse']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%23fff6cc' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23120c20' stroke='%23ffcf5a' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 56%;
+    height: 56%;
+    filter: drop-shadow(0 0 6px #ffcf5a) drop-shadow(0 2px 0 #05040a);
+  }
+
+  :is(
+      [data-key='storm'],
+      [data-key='toxic'],
+      [data-key='magma'],
+      [data-key='neon'],
+      [data-key='galaxy'],
+      [data-key='dragon'],
+      [data-key='chrono']
+    )
+    .piece.red
+    .face::before {
+    content: '';
+    inset: 0;
+    width: auto;
+    height: auto;
+    transform: none;
+    opacity: 1;
+    border-radius: inherit;
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+  :where([data-key='jade']) .piece.red .face {
+    background:
+      repeating-linear-gradient(115deg, #0000 0 9px, #ffffff26 9px 11px),
+      linear-gradient(122deg, #ffffff40 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #8ff0b4 0 40%, #2fa874 40.5% 84%, #146a47);
+    box-shadow:
+      0 4px 0 #0a2a1c,
+      0 0 14px #7fe0a866,
+      inset 0 -4px 0 #0a2a1c99,
+      inset 0 0 0 1.5px #0a2a1c,
+      inset 0 0 0 3.4px #e8ffe8cc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #0a2a1c;
+    opacity: 1;
+  }
+  :where([data-key='jade']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23f3ffe9' stroke='%230a3a26' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #7fe0a8) drop-shadow(0 2px 0 #0a2a1c);
+  }
+  :where([data-key='copper']) .piece.red .face {
+    background:
+      radial-gradient(circle at 16% 80%, #4fd1b0 0 4px, #0000 5px),
+      radial-gradient(circle at 86% 20%, #4fd1b0 0 3px, #0000 4px),
+      radial-gradient(circle at 70% 84%, #3ab59a 0 2px, #0000 3px),
+      linear-gradient(122deg, #ffffff3a 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #f6ae78 0 40%, #c26a35 40.5% 84%, #7a3a1a);
+    box-shadow:
+      0 4px 0 #2a0f06,
+      0 0 14px #f0a06655,
+      inset 0 -4px 0 #2a0f0699,
+      inset 0 0 0 1.5px #2a0f06,
+      inset 0 0 0 3.4px #ffd9b0cc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #2a0f06;
+    opacity: 1;
+  }
+  :where([data-key='copper']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 13h26M25 5l12 8-12 8' fill='none' stroke='%233a1708' stroke-width='7.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M5 13h26M25 5l12 8-12 8' fill='none' stroke='%23fff0dc' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #f6ae78) drop-shadow(0 2px 0 #2a0f06);
+  }
+  :where([data-key='lilac']) .piece.red .face {
+    background:
+      radial-gradient(circle at 20% 24%, #fff 0 1.6px, #0000 2.2px),
+      radial-gradient(circle at 78% 70%, #fff 0 1.4px, #0000 2px),
+      radial-gradient(circle at 60% 20%, #fff 0 1px, #0000 1.6px),
+      linear-gradient(122deg, #ffffff55 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #eedcff 0 42%, #b693f0 42.5% 86%, #7a55c4);
+    box-shadow:
+      0 4px 0 #2a1850,
+      0 0 14px #c9a8ff66,
+      inset 0 -4px 0 #2a185099,
+      inset 0 0 0 1.5px #2a1850,
+      inset 0 0 0 3.4px #fff6ffcc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #2a1850;
+    opacity: 1;
+  }
+  :where([data-key='lilac']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M7 5l11 8-11 8M21 5l11 8-11 8' fill='none' stroke='%233a2270' stroke-width='7.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M7 5l11 8-11 8M21 5l11 8-11 8' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #d9bfff) drop-shadow(0 2px 0 #2a1850);
+  }
+  :where([data-key='bone']) .piece.red .face {
+    background:
+      repeating-linear-gradient(78deg, #0000 0 13px, #6b5d3e30 13px 14.5px),
+      linear-gradient(122deg, #ffffff66 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #fff8e4 0 42%, #e0d2b0 42.5% 86%, #a89a78);
+    box-shadow:
+      0 4px 0 #2e2412,
+      0 0 14px #e6d8b844,
+      inset 0 -4px 0 #2e241299,
+      inset 0 0 0 1.5px #2e2412,
+      inset 0 0 0 3.4px #fffaf0cc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #2e2412;
+    opacity: 1;
+  }
+  :where([data-key='bone']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M4 13l8-7h14l10 7-10 7H12Z' fill='%233a2e1a' stroke='%23fff8e6' stroke-width='1.8' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #f0e2c0) drop-shadow(0 2px 0 #2e2412);
+  }
+  :where([data-key='ocean']) .piece.red .face {
+    background:
+      repeating-radial-gradient(circle at 50% 135%, #ffffff34 0 3px, #0000 3px 8px),
+      linear-gradient(122deg, #ffffff44 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #6aeee8 0 38%, #1c8fb0 38.5% 80%, #0b4a73);
+    box-shadow:
+      0 4px 0 #06344f,
+      0 0 14px #5ee4e088,
+      inset 0 -4px 0 #06344f99,
+      inset 0 0 0 1.5px #06344f,
+      inset 0 0 0 3.4px #d8fbffcc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #06344f;
+    opacity: 1;
+  }
+  :where([data-key='ocean']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%23aef4ff' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffffff' stroke='%2306344f' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #7ff0ff) drop-shadow(0 2px 0 #06344f);
+  }
+  :where([data-key='topaz']) .piece.red .face {
+    background:
+      repeating-linear-gradient(45deg, #0000 0 8px, #8a3d0a33 8px 9px),
+      repeating-linear-gradient(-45deg, #0000 0 8px, #ffffff22 8px 9px),
+      conic-gradient(from 45deg at 50% 50%, #ffe9a0, #ffb347, #ff8a3d, #ffd36e, #ffb347, #ffe9a0);
+    box-shadow:
+      0 4px 0 #4a1c04,
+      0 0 14px #ffb34788,
+      inset 0 -4px 0 #4a1c0499,
+      inset 0 0 0 1.5px #4a1c04,
+      inset 0 0 0 3.4px #fff2c0cc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #4a1c04;
+    opacity: 1;
+  }
+  :where([data-key='topaz']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M4 13l8-7h14l10 7-10 7H12Z' fill='none' stroke='%23ffd36e' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M4 13l8-7h14l10 7-10 7H12Z' fill='%23fff7d6' stroke='%236a2c04' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #ffd36e) drop-shadow(0 2px 0 #4a1c04);
+  }
+  :where([data-key='ruby']) .piece.red .face {
+    background:
+      linear-gradient(62deg, #0000 38%, #ffffff26 39% 41%, #0000 42%),
+      linear-gradient(-58deg, #0000 52%, #00000033 53% 55%, #0000 56%),
+      radial-gradient(ellipse at 28% 22%, #ffd0d8 0, #ff4a6a 30%, #b0102e 66%, #4a0614 98%);
+    box-shadow:
+      0 4px 0 #3a0410,
+      0 0 14px #ff4a6acc,
+      inset 0 -4px 0 #3a041099,
+      inset 0 0 0 1.5px #3a0410,
+      inset 0 0 0 3.4px #ffc0cccc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #3a0410;
+    opacity: 1;
+  }
+  :where([data-key='ruby']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%23ff8aa0' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23fff0f2' stroke='%233a0410' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #ff6a86) drop-shadow(0 2px 0 #3a0410);
+  }
+  :where([data-key='frost']) .piece.red .face {
+    background:
+      repeating-linear-gradient(60deg, #0000 0 10px, #ffffff77 10px 11px),
+      repeating-linear-gradient(-60deg, #0000 0 10px, #ffffff55 10px 11px),
+      linear-gradient(180deg, #f4fcff 0 40%, #a8dcf5 40.5% 84%, #5a9cc8);
+    box-shadow:
+      0 4px 0 #10365c,
+      0 0 14px #a8dcf5aa,
+      inset 0 -4px 0 #10365c99,
+      inset 0 0 0 1.5px #10365c,
+      inset 0 0 0 3.4px #ffffffcc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #10365c;
+    opacity: 1;
+  }
+  :where([data-key='frost']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M7 5l11 8-11 8M21 5l11 8-11 8' fill='none' stroke='%231c4a78' stroke-width='7.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M7 5l11 8-11 8M21 5l11 8-11 8' fill='none' stroke='%23e8f8ff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #c8ecff) drop-shadow(0 2px 0 #10365c);
+  }
+  :where([data-key='forest']) .piece.red .face {
+    background:
+      radial-gradient(ellipse 7px 3px at 20% 72%, #d4ffb0aa 0, #0000 100%),
+      radial-gradient(ellipse 7px 3px at 78% 28%, #d4ffb088 0, #0000 100%),
+      radial-gradient(ellipse 6px 2.5px at 58% 80%, #d4ffb066 0, #0000 100%),
+      linear-gradient(122deg, #ffffff38 0 18%, #fff0 18.5%),
+      linear-gradient(180deg, #a8e888 0 40%, #3f9a3c 40.5% 84%, #1c5a26);
+    box-shadow:
+      0 4px 0 #0c2e12,
+      0 0 14px #7ae05a66,
+      inset 0 -4px 0 #0c2e1299,
+      inset 0 0 0 1.5px #0c2e12,
+      inset 0 0 0 3.4px #d9a05acc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #0c2e12;
+    opacity: 1;
+  }
+  :where([data-key='forest']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 13h26M25 5l12 8-12 8' fill='none' stroke='%232a1608' stroke-width='7.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M5 13h26M25 5l12 8-12 8' fill='none' stroke='%23fff4c8' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #d4ffb0) drop-shadow(0 2px 0 #0c2e12);
+  }
+  :where([data-key='storm']) .piece.red .face {
+    background:
+      radial-gradient(ellipse at 50% 120%, #5a78d0 0, #2a3a80 40%, #0c1230 90%),
+      linear-gradient(180deg, #3c4a78, #0c1230);
+    box-shadow:
+      0 4px 0 #050818,
+      0 0 20px #8ab4ffaa,
+      inset 0 -4px 0 #05081899,
+      inset 0 0 0 1.5px #050818,
+      inset 0 0 0 3.4px #bfe3ffcc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #050818;
+    opacity: 1;
+  }
+  :where([data-key='storm']) .piece.red .face::before {
+    background:
+      linear-gradient(100deg, #0000 38%, #e8f4ff 50%, #0000 62%),
+      radial-gradient(ellipse at 50% 0, #bfe3ff99, #0000 70%);
+  }
+  :where([data-key='storm']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M25 2 11 14h9l-4 10 15-13h-9Z' fill='none' stroke='%23ffffff' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M25 2 11 14h9l-4 10 15-13h-9Z' fill='%23fff6a8' stroke='%230c1230' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #ffe96a) drop-shadow(0 2px 0 #050818);
+  }
+  :where([data-key='toxic']) .piece.red .face {
+    background: radial-gradient(ellipse at 50% 125%, #e8ff7a, #6fe02a 36%, #1f8a2a 70%, #0a3a18);
+    box-shadow:
+      0 4px 0 #04200c,
+      0 0 20px #8aff3acc,
+      inset 0 -4px 0 #04200c99,
+      inset 0 0 0 1.5px #04200c,
+      inset 0 0 0 3.4px #d6ff5acc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #04200c;
+    opacity: 1;
+  }
+  :where([data-key='toxic']) .piece.red .face::before {
+    background:
+      radial-gradient(circle at 18% 78%, #f2ffb0 0 2.6px, #0000 3.4px),
+      radial-gradient(circle at 56% 92%, #f2ffb0aa 0 2px, #0000 2.8px),
+      radial-gradient(circle at 84% 70%, #f2ffb0 0 3px, #0000 3.8px);
+    background-size: 100% 34px;
+    background-repeat: repeat-y;
+  }
+  :where([data-key='toxic']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%230c2a10' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%230c2a10' stroke='%23d6ff5a' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #b6ff3a) drop-shadow(0 2px 0 #04200c);
+  }
+  :where([data-key='aurora']) .piece.red .face {
+    background:
+      linear-gradient(180deg, #ffffff30, #0000 45%, #00000066),
+      linear-gradient(115deg, #3cf0c0, #4a8cff, #b06aff, #ff6ad0, #3cf0c0);
+    background-size:
+      100% 100%,
+      320% 100%;
+    box-shadow:
+      0 4px 0 #0a0a2a,
+      0 0 20px #7affd8aa,
+      inset 0 -4px 0 #0a0a2a99,
+      inset 0 0 0 1.5px #0a0a2a,
+      inset 0 0 0 3.4px #e6fff6cc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #0a0a2a;
+    opacity: 1;
+  }
+  :where([data-key='aurora']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%23ffffff' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffffff' stroke='%231a1a4a' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #b0fff0) drop-shadow(0 2px 0 #0a0a2a);
+  }
+  :where([data-key='magma']) .piece.red .face {
+    background: radial-gradient(ellipse at 50% 120%, #ff8a2a30, #0000 70%), linear-gradient(180deg, #2a1210, #120606);
+    box-shadow:
+      0 4px 0 #120606,
+      0 0 20px #ff6a1acc,
+      inset 0 -4px 0 #12060699,
+      inset 0 0 0 1.5px #120606,
+      inset 0 0 0 3.4px #ff9a3dcc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #120606;
+    opacity: 1;
+  }
+  :where([data-key='magma']) .piece.red .face::before {
+    background: repeating-linear-gradient(115deg, #0000 0 9px, #ff7a1a 9px 11px, #ffd24a 11px 11.8px, #0000 12px 21px);
+  }
+  :where([data-key='magma']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M7 5l11 8-11 8M21 5l11 8-11 8' fill='none' stroke='%233a0c04' stroke-width='7.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M7 5l11 8-11 8M21 5l11 8-11 8' fill='none' stroke='%23ffe08a' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #ff9a3d) drop-shadow(0 2px 0 #120606);
+  }
+  :where([data-key='neon']) .piece.red .face {
+    background: linear-gradient(180deg, #1c0a3a, #0a0418);
+    box-shadow:
+      0 4px 0 #0a0418,
+      0 0 20px #40f0ffaa,
+      inset 0 -4px 0 #0a041899,
+      inset 0 0 0 1.5px #0a0418,
+      inset 0 0 0 3.4px #40f0ffcc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #0a0418;
+    opacity: 1;
+  }
+  :where([data-key='neon']) .piece.red .face::before {
+    background: linear-gradient(180deg, #0000 40%, #40f0ff99 50%, #0000 60%);
+    background-size: 100% 300%;
+    background-repeat: repeat-y;
+  }
+  :where([data-key='neon']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 13h26M25 5l12 8-12 8' fill='none' stroke='%2314042a' stroke-width='7.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M5 13h26M25 5l12 8-12 8' fill='none' stroke='%23ff4ad8' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #40f0ff) drop-shadow(0 2px 0 #0a0418);
+  }
+  :where([data-key='galaxy']) .piece.red .face {
+    background:
+      radial-gradient(circle at 22% 30%, #fff 0 1.3px, #0000 2px),
+      radial-gradient(circle at 74% 24%, #fff 0 1px, #0000 1.8px),
+      radial-gradient(circle at 62% 74%, #fff 0 1.4px, #0000 2.1px),
+      radial-gradient(circle at 12% 78%, #e0d0ff 0 1px, #0000 1.8px),
+      radial-gradient(ellipse at 50% 50%, #7a4ae8 0, #2a1470 46%, #0a0620 82%);
+    box-shadow:
+      0 4px 0 #05020f,
+      0 0 26px #a37affcc,
+      inset 0 -4px 0 #05020f99,
+      inset 0 0 0 1.5px #05020f,
+      inset 0 0 0 3.4px #e0d0ffcc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #05020f;
+    opacity: 1;
+  }
+  :where([data-key='galaxy']) .piece.red .face::before {
+    background: conic-gradient(from var(--spin), #0000 0 45%, #c9a8ffaa 68%, #ffffffcc 78%, #0000 92%);
+  }
+  :where([data-key='galaxy']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%23c9a8ff' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%23ffffff' stroke='%232a1470' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #c9a8ff) drop-shadow(0 2px 0 #05020f);
+  }
+  :where([data-key='dragon']) .piece.red .face {
+    background:
+      radial-gradient(circle at 50% 100%, #0000 0 5.5px, #0a4a2e 6px 7px, #0000 7.5px),
+      linear-gradient(180deg, #5ee09a, #177048 62%, #07301e);
+    background-size:
+      14px 9px,
+      100% 100%;
+    box-shadow:
+      0 4px 0 #07301e,
+      0 0 26px #ffb02acc,
+      inset 0 -4px 0 #07301e99,
+      inset 0 0 0 1.5px #07301e,
+      inset 0 0 0 3.4px #ffe27acc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #07301e;
+    opacity: 1;
+  }
+  :where([data-key='dragon']) .piece.red .face::before {
+    background: conic-gradient(from var(--spin), #ffe27a, #ff9a2a, #ff5a1a, #ffd24a, #ffe27a);
+  }
+  :where([data-key='dragon']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M4 13l8-7h14l10 7-10 7H12Z' fill='none' stroke='%23fff2b0' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M4 13l8-7h14l10 7-10 7H12Z' fill='%23ffe27a' stroke='%233a1a02' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #ffb02a) drop-shadow(0 2px 0 #07301e);
+  }
+  :where([data-key='chrono']) .piece.red .face {
+    background: radial-gradient(circle at 50% 50%, #fff8d8 0, #f0d070 36%, #b8892a 70%, #4a3008);
+    box-shadow:
+      0 4px 0 #2a1c06,
+      0 0 26px #ffe27acc,
+      inset 0 -4px 0 #2a1c0699,
+      inset 0 0 0 1.5px #2a1c06,
+      inset 0 0 0 3.4px #fff2b0cc,
+      inset 0 2px 0 #ffffff88;
+    border-color: #2a1c06;
+    opacity: 1;
+  }
+  :where([data-key='chrono']) .piece.red .face::before {
+    background:
+      repeating-conic-gradient(#2a1c06aa 0 1.6deg, #0000 1.6deg 30deg),
+      conic-gradient(from var(--spin), #0000 0 88%, #fff8d8 99%, #0000 100%);
+  }
+  :where([data-key='chrono']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='none' stroke='%232a1c06' stroke-width='5.2' stroke-linejoin='round'/%3E%3Cpath d='M5 10h19V5l14 8-14 8v-5H5l3.5-3Z' fill='%232a1c06' stroke='%23ffe9a0' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 0 5px #fff2b0) drop-shadow(0 2px 0 #2a1c06);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :is([data-key='neon'], [data-key='neon'] .look-mini, .sw-real[data-key='neon']) .piece.red .face::before {
+      animation: kc-scan 2.2s linear infinite;
+    }
+    :is([data-key='neon'], [data-key='neon'] .look-mini, .sw-real[data-key='neon']) .piece.red {
+      animation: kc-pulse-neon 1.6s ease-in-out infinite alternate;
+    }
+    :is([data-key='galaxy'], [data-key='galaxy'] .look-mini, .sw-real[data-key='galaxy']) .piece.red .face::before {
+      animation: spin-ring 7s linear infinite;
+    }
+    :is([data-key='galaxy'], [data-key='galaxy'] .look-mini, .sw-real[data-key='galaxy']) .piece.red {
+      animation: kc-pulse-galaxy 3.2s ease-in-out infinite;
+    }
+  }
+  :where([data-pieces='clay']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(ellipse at 28% 16%, #ffffff30, #0000 58%),
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 58%, #e09a6a), color-mix(in oklab, var(--b) 58%, #b2623a));
+    box-shadow:
+      0 3px 0 #2a1208,
+      0 6px 10px #0005,
+      inset 0 1px 0 #ffffff48,
+      inset 0 -3px 0 #00000036;
+    border-color: #120e14;
+    border-radius: 8px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='clay']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: none;
+  }
+  :where([data-pieces='clay']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='clay']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='candy']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background: linear-gradient(180deg, var(--a), var(--b));
+    box-shadow:
+      0 3px 0 var(--d),
+      0 6px 10px color-mix(in oklab, var(--b) 55%, #0000),
+      inset 0 -3px 0 #0000002e,
+      inset 0 0 0 1.5px #ffffff44;
+    border-color: #120e14;
+    border-radius: 999px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='candy']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    inset: 2px 12% 50%;
+    background: linear-gradient(180deg, #ffffffc4, #ffffff1f);
+    border-radius: 999px;
+  }
+  :where([data-pieces='candy']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='candy']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='bamboo']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--a) 52%, #eef6b0),
+      color-mix(in oklab, var(--b) 58%, #86a846)
+    );
+    box-shadow:
+      0 3px 0 #1c2a0e,
+      0 6px 10px #0005,
+      inset 0 1px 0 #ffffff66,
+      inset 0 -3px 0 color-mix(in oklab, var(--d) 60%, #2a3a10);
+    border-color: #120e14;
+    border-radius: 7px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='bamboo']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    inset: 0 auto 0 14%;
+    width: 13%;
+    background: linear-gradient(90deg, #fff0, #ffffff4a, #fff0);
+    border-radius: 0;
+  }
+  :where([data-pieces='bamboo']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='bamboo']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='marble']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background: linear-gradient(
+      135deg,
+      #ffffff 0%,
+      color-mix(in oklab, var(--a) 44%, #f4f1ec) 46%,
+      color-mix(in oklab, var(--b) 48%, #d0cabf) 100%
+    );
+    box-shadow:
+      0 3px 0 #120e14,
+      0 6px 10px #0005,
+      inset 0 0 0 1.5px #d9b96a,
+      inset 0 2px 0 #ffffffcc,
+      inset 0 -3px 0 color-mix(in oklab, var(--d) 30%, #00000026);
+    border-color: #120e14;
+    border-radius: 6px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='marble']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    inset: 0;
+    background:
+      linear-gradient(112deg, #0000 37%, color-mix(in oklab, var(--d) 34%, #0000) 38% 39.2%, #0000 40%),
+      linear-gradient(63deg, #0000 62%, color-mix(in oklab, var(--d) 22%, #0000) 63% 63.8%, #0000 64.6%);
+    border-radius: inherit;
+  }
+  :where([data-pieces='marble']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='marble']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='jelly']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(ellipse at 28% 18%, #ffffffb8 0 10%, #0000 42%),
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 82%, #ffffff), var(--b));
+    box-shadow:
+      0 4px 0 color-mix(in oklab, var(--d) 85%, #000),
+      0 8px 14px color-mix(in oklab, var(--b) 55%, #0000),
+      inset 0 0 12px #ffffff66,
+      inset 0 -5px 8px color-mix(in oklab, var(--d) 55%, #0000);
+    border-color: #120e14;
+    border-radius: 13px;
+    filter: none;
+    opacity: 0.97;
+  }
+  :where([data-pieces='jelly']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: none;
+  }
+  :where([data-pieces='jelly']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='jelly']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='copper']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(115deg, #ffffff34 0 20%, #0000 20.5%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 34%, #f2b484) 0 42%,
+        color-mix(in oklab, var(--b) 30%, #b8622f) 42.5% 100%
+      );
+    box-shadow:
+      0 3px 0 #2a1006,
+      0 6px 10px #0005,
+      inset 0 0 0 2px #52d6b455,
+      inset 0 2px 0 #ffe3c8aa,
+      inset 0 -3px 0 #6a3012;
+    border-color: #120e14;
+    border-radius: 7px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='copper']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    inset: 3px 8% auto;
+    height: 20%;
+    background: linear-gradient(180deg, #ffffff40, #fff0);
+    border-radius: 4px 4px 0 0;
+  }
+  :where([data-pieces='copper']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='copper']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='silk']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.34) 0%,
+        transparent 38%,
+        rgba(123, 245, 255, 0.22) 68%,
+        rgba(255, 160, 232, 0.3) 100%
+      ),
+      linear-gradient(35deg, transparent 0 42%, rgba(255, 255, 255, 0.24) 48%, transparent 54% 100%),
+      radial-gradient(ellipse 90% 70% at 24% 18%, color-mix(in oklab, var(--a) 55%, #b8fbff) 0%, transparent 64%),
+      radial-gradient(ellipse 85% 65% at 82% 88%, color-mix(in oklab, var(--d) 52%, #a876ff) 0%, transparent 66%),
+      linear-gradient(
+        165deg,
+        color-mix(in oklab, var(--a) 70%, #d8f8ff) 0%,
+        color-mix(in oklab, var(--b) 78%, #22265a) 52%,
+        color-mix(in oklab, var(--d) 82%, #171238) 100%
+      );
+    box-shadow:
+      0 3px 0 color-mix(in oklab, var(--d) 86%, #0b0820),
+      0 0 12px color-mix(in oklab, var(--a) 42%, #7bf5ff55),
+      0 6px 12px #0007,
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.85),
+      inset 0 -3px 6px color-mix(in oklab, var(--d) 55%, #2b145a99),
+      inset 0 0 0 1.5px rgba(210, 248, 255, 0.45);
+    border-color: color-mix(in oklab, var(--d) 60%, #1a1236);
+    border-radius: 10px;
+    overflow: hidden;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='silk']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    display: block;
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 0.9;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    /* Banda prismática iridiscente que recorre las facetas del cristal */
+    background: linear-gradient(
+      115deg,
+      transparent 0 28%,
+      rgba(123, 245, 255, 0.32) 38%,
+      rgba(255, 255, 255, 0.78) 46%,
+      rgba(210, 162, 255, 0.42) 54%,
+      rgba(255, 168, 226, 0.28) 60%,
+      transparent 70% 100%
+    );
+    background-size: 260% 100%;
+    background-position: 130% 0;
+  }
+  :where([data-pieces='silk']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='silk']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: block;
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    width: auto;
+    height: auto;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 0.85;
+    filter: none;
+    border-radius: inherit;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    /* Destellos cristalinos internos y bisel superior de diamante */
+    background:
+      radial-gradient(circle, #ffffff 0 1.2px, rgba(168, 248, 255, 0.65) 2.2px, transparent 3.8px) 20% 28% / 44px 36px,
+      radial-gradient(circle, #ffffffef 0 1px, rgba(226, 178, 255, 0.6) 2px, transparent 3.4px) 76% 68% / 50px 40px,
+      radial-gradient(circle, #fff8d8 0 0.9px, transparent 2.4px) 52% 44% / 58px 46px,
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.34) 0%,
+        transparent 28%,
+        transparent 78%,
+        rgba(123, 245, 255, 0.24) 100%
+      );
+  }
+  :where([data-pieces='pearl']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(125deg, #ffd9f0b0, #d9f2ffb0 30%, #fff3d0b0 55%, #e0d4ffb0 80%),
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 60%, #ffffff), color-mix(in oklab, var(--b) 54%, #efe9f8));
+    box-shadow:
+      0 3px 0 color-mix(in oklab, var(--d) 60%, #3a3048),
+      0 6px 12px #0004,
+      inset 0 0 10px #ffffffaa,
+      inset 0 -3px 0 color-mix(in oklab, var(--d) 28%, #0000);
+    border-color: #120e14;
+    border-radius: 11px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='pearl']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    inset: 3px 10% auto;
+    height: 30%;
+    background: linear-gradient(180deg, #ffffffcc, #fff0);
+    border-radius: 999px;
+  }
+  :where([data-pieces='pearl']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='pearl']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='aurora']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(180deg, #ffffff26, #0000 45%, #00000040),
+      linear-gradient(115deg, var(--a), color-mix(in oklab, var(--b) 50%, #7a6cff), #ff6ad0, var(--a));
+    background-size:
+      100% 100%,
+      320% 100%;
+    box-shadow:
+      0 3px 0 #0a0a2a,
+      0 0 12px color-mix(in oklab, var(--a) 70%, #0000),
+      0 6px 10px #0005,
+      inset 0 1px 0 #ffffff80,
+      inset 0 0 0 1.5px #ffffff3a;
+    border-color: #120e14;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='aurora']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: none;
+  }
+  :where([data-pieces='aurora']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='aurora']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='plasma']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(circle at 28% 62%, var(--a) 0, #0000 46%),
+      radial-gradient(circle at 76% 34%, color-mix(in oklab, var(--b) 60%, #ff4fd8) 0, #0000 50%),
+      linear-gradient(180deg, #1c1236, #0a0716);
+    background-size:
+      170% 170%,
+      170% 170%,
+      100% 100%;
+    box-shadow:
+      0 3px 0 #05030c,
+      0 0 14px color-mix(in oklab, var(--a) 75%, #0000),
+      0 6px 10px #0006,
+      inset 0 0 10px color-mix(in oklab, var(--a) 40%, #0000);
+    border-color: #120e14;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='plasma']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: none;
+  }
+  :where([data-pieces='plasma']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='plasma']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='holo']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 55%, #0000), color-mix(in oklab, var(--b) 55%, #0000)),
+      conic-gradient(from 200deg at 50% 50%, #ff9ad5, #9ad8ff, #b8ffcf, #fff0a0, #ff9ad5);
+    box-shadow:
+      0 3px 0 #1a1230,
+      0 0 10px #9ad8ff66,
+      0 6px 10px #0005,
+      inset 0 1px 0 #ffffffb0,
+      inset 0 -3px 0 color-mix(in oklab, var(--d) 45%, #0000);
+    border-color: #120e14;
+    border-radius: 9px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='holo']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    inset: -30% auto -30% -70%;
+    width: 46%;
+    background: linear-gradient(100deg, #fff0, #ffffffd0 50%, #fff0);
+    border-radius: 0;
+    transform: skewX(-18deg);
+  }
+  :where([data-pieces='holo']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='holo']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='lava']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(ellipse 92% 76% at 50% 94%, color-mix(in oklab, var(--a) 26%, #ff821c) 0%, transparent 64%),
+      radial-gradient(ellipse 60% 48% at 20% 22%, #481d15 0%, transparent 66%),
+      radial-gradient(ellipse 56% 44% at 80% 70%, #3e1611 0%, transparent 64%),
+      linear-gradient(158deg, #2d1313 0%, #140608 46%, #240c0a 100%);
+    box-shadow:
+      0 3px 0 #070203,
+      0 0 15px #ff621682,
+      0 6px 14px #000a,
+      inset 0 0 0 1.5px #ffaa4c66,
+      inset 0 -4px 10px #ff3e0099,
+      inset 0 1.5px 3px #ffe8a066;
+    border-color: #180605;
+    border-radius: 9px;
+    overflow: hidden;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='lava']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    display: block;
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 0.96;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    /* Red de fisuras incandescentes de magma con núcleo blanco-dorado */
+    background:
+      linear-gradient(
+        118deg,
+        transparent 0 24%,
+        #ff340099 28%,
+        #ffb83ef2 30.2%,
+        #fff9cc 31.4%,
+        #ff6a14d4 33%,
+        transparent 38% 100%
+      ),
+      linear-gradient(
+        54deg,
+        transparent 0 58%,
+        #ff34008c 62%,
+        #ffa02ef0 64.4%,
+        #fff5b8 65.4%,
+        #e82c00b2 67.4%,
+        transparent 72% 100%
+      ),
+      radial-gradient(
+        ellipse 66% 42% at 50% 86%,
+        #fff6c4dd 0%,
+        color-mix(in oklab, var(--a) 26%, #ff7f1a) 38%,
+        #d9220077 70%,
+        transparent 100%
+      ),
+      radial-gradient(ellipse 48% 34% at 24% 36%, #ff6a1496 0%, transparent 72%);
+    background-size:
+      170% 170%,
+      160% 160%,
+      120% 120%,
+      130% 130%;
+    background-position:
+      15% 20%,
+      80% 75%,
+      50% 100%,
+      20% 30%;
+  }
+  :where([data-pieces='lava']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='lava']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: block;
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    width: auto;
+    height: auto;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 0.9;
+    filter: none;
+    border-radius: inherit;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    /* Chispas de brasas flotantes y reflejo vítreo sutil de la piedra volcánica */
+    background:
+      radial-gradient(circle, #fff8c8 0 1.2px, #ff9d2e99 2.2px, transparent 3.4px) 18% 72% / 36px 30px,
+      radial-gradient(circle, #ffd25a 0 1px, #ff510088 2px, transparent 3px) 74% 34% / 44px 34px,
+      radial-gradient(circle, #ffffffdd 0 0.9px, transparent 2.2px) 48% 54% / 52px 42px,
+      linear-gradient(180deg, #ffe2a826 0%, transparent 32%, transparent 74%, #ff510038 100%);
+  }
+  :where([data-pieces='tide']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--a) 45%, #86ecff),
+      color-mix(in oklab, var(--b) 40%, #0f4a8a)
+    );
+    box-shadow:
+      0 3px 0 #06284a,
+      0 0 10px #5ee4ff55,
+      0 6px 10px #0005,
+      inset 0 1px 0 #ffffff88,
+      inset 0 -3px 0 #06284a66;
+    border-color: #120e14;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='tide']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    inset: 0;
+    background: linear-gradient(100deg, #0000 28%, #ffffff55 50%, #0000 72%);
+    background-size: 220% 100%;
+    border-radius: inherit;
+  }
+  :where([data-pieces='tide']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='tide']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+  }
+  :where([data-pieces='volt']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background: linear-gradient(180deg, #3d4864, #171b28);
+    box-shadow:
+      0 3px 0 #05060a,
+      0 0 12px color-mix(in oklab, var(--a) 65%, #0000),
+      0 6px 10px #0007,
+      inset 0 0 8px color-mix(in oklab, var(--a) 35%, #0000);
+    border-color: #120e14;
+    border-radius: 8px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='volt']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: none;
+  }
+  :where([data-pieces='volt']) .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: block;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 2.5px;
+    border-radius: inherit;
+    background:
+      conic-gradient(from var(--spin), #0000 0 40%, var(--a) 58%, #ffffff 66%, var(--a) 74%, #0000 90%),
+      color-mix(in oklab, var(--a) 45%, #0000);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    filter: drop-shadow(0 0 3px var(--a));
+  }
+  :where([data-pieces='galaxia']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(ellipse at 28% 24%, color-mix(in oklab, var(--a) 55%, #7a4ae8) 0, #0000 56%),
+      radial-gradient(ellipse at 76% 82%, #ff6ad066 0, #0000 56%), linear-gradient(180deg, #140a34, #05020f);
+    box-shadow:
+      0 3px 0 #02010a,
+      0 0 16px #a37aff88,
+      0 6px 12px #0007,
+      inset 0 0 10px #a37aff44;
+    border-color: #120e14;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='galaxia']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: none;
+  }
+  :where([data-pieces='galaxia']) .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: block;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 2.5px;
+    border-radius: inherit;
+    background:
+      conic-gradient(from var(--spin), #0000 0 45%, #c9a8ffaa 62%, #ffffff 74%, #c9a8ff 82%, #0000 94%), #a37aff44;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    filter: drop-shadow(0 0 4px #c9a8ff);
+  }
+  :where([data-pieces='solar']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background: radial-gradient(
+      circle at 50% 38%,
+      #fff3b0 0,
+      color-mix(in oklab, var(--a) 40%, #ffb02a) 42%,
+      color-mix(in oklab, var(--b) 40%, #e0541a) 82%,
+      #7a2408
+    );
+    box-shadow:
+      0 3px 0 #3a1204,
+      0 0 18px #ffb02aaa,
+      0 6px 12px #0006,
+      inset 0 1px 0 #fff6c8cc,
+      inset 0 -3px 0 #7a2408;
+    border-color: #120e14;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='solar']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: none;
+  }
+  :where([data-pieces='solar']) .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: block;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 3px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--spin), #fff3b0, #ffb02a, #ff5a1a, #ffd24a, #fff3b0);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    filter: drop-shadow(0 0 5px #ffb02a);
+  }
+  :where([data-pieces='prisma']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(135deg, #ffffff70 0 14%, #0000 14.5%),
+      linear-gradient(180deg, color-mix(in oklab, var(--a) 55%, #eaf6ff), color-mix(in oklab, var(--b) 55%, #b6d8ff));
+    box-shadow:
+      0 3px 0 #1a2a4a,
+      0 0 14px #b6d8ff77,
+      0 6px 12px #0006,
+      inset 0 1px 0 #ffffffcc,
+      inset 0 -3px 0 color-mix(in oklab, var(--d) 45%, #4a6aa0);
+    border-color: #120e14;
+    border-radius: 9px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='prisma']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    inset: 0;
+    background: linear-gradient(135deg, #fff0 40%, #ffffff3c 41% 58%, #fff0 59%);
+    border-radius: inherit;
+  }
+  :where([data-pieces='prisma']) .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: block;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 2.5px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--spin), #ff7ad0, #ffd36e, #7affb0, #6ad8ff, #b08cff, #ff7ad0);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    filter: drop-shadow(0 0 4px #ffffff99);
+  }
+  :where([data-pieces='abismo']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(ellipse at 50% 124%, color-mix(in oklab, var(--b) 45%, #2af0ff) 0, #0000 62%),
+      linear-gradient(180deg, #0c0c1c, #020208);
+    box-shadow:
+      0 3px 0 #000,
+      0 0 16px #2af0ff66,
+      0 6px 12px #0008,
+      inset 0 0 12px #8a5cff55;
+    border-color: #120e14;
+    border-radius: 10px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='abismo']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    content: '';
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    background: none;
+    background-size: auto;
+    border-radius: inherit;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
+    mask: none;
+    -webkit-mask: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: none;
+  }
+  :where([data-pieces='abismo']) .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+    content: '';
+    inset: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    mask: none;
+    -webkit-mask: none;
+    opacity: 1;
+    filter: none;
+    border-radius: 0;
+    animation: none;
+    box-shadow: none;
+    aspect-ratio: auto;
+    display: block;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 2.5px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--spin), #2af0ff, #8a5cff, #ff4ad8, #2af0ff);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    filter: drop-shadow(0 0 5px #8a5cff);
+  }
+  :where([data-pieces='stone']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(135deg, #ffffff26 0 36%, #0000 36.5% 66%, #00000026 66.5%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 74%, #d6cfc2) 0 46%,
+        color-mix(in oklab, var(--b) 72%, #8c8478) 46.5% 100%
+      );
+    box-shadow:
+      0 3px 0 #120e14,
+      0 6px 10px color-mix(in oklab, var(--b) 30%, #0005),
+      inset 0 0 0 2.5px #ffffff2e,
+      inset 0 2px 0 #ffffff70,
+      inset 0 -3px 0 color-mix(in oklab, var(--d) 60%, #0000);
+  }
+  :where([data-pieces='glass']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(116deg, #fff0 0 14%, #ffffff66 14.5% 26%, #fff0 26.5% 33%, #ffffff38 33.5% 38%, #fff0 38.5%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 58%, #ffffff) 0 48%,
+        color-mix(in oklab, var(--b) 72%, #c9f6ff) 100%
+      );
+  }
+  :where([data-pieces='brass']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      linear-gradient(115deg, #fff0 0 20%, #fff8dc55 20.5% 32%, #fff0 32.5%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 62%, #f6e4b4) 0 38%,
+        color-mix(in oklab, var(--b) 62%, #d1ad62) 38.5% 74%,
+        color-mix(in oklab, var(--d) 58%, #96722d) 74.5% 100%
+      );
+  }
+  :where([data-pieces='ceramic']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    box-shadow:
+      0 3px 0 #120e14,
+      0 6px 12px color-mix(in oklab, var(--a) 35%, #0005),
+      inset 0 0 0 3.5px var(--a),
+      inset 0 0 0 5px #120e1455,
+      inset 0 -3px 0 var(--d);
+  }
+  :where([data-pieces='paint']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    box-shadow:
+      0 3px 0 #120e14,
+      0 6px 10px color-mix(in oklab, var(--b) 35%, #0005),
+      inset 0 2px 0 #ffffff70,
+      inset 0 -3px 0 var(--d),
+      inset 0 0 0 1.5px #120e1444;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+      .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+      .face::before {
+      animation: pc-crystal-sheen 3.6s ease-in-out infinite;
+    }
+    :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+      .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+      .face::after {
+      animation: pc-crystal-glint 4.4s ease-in-out infinite alternate;
+    }
+    :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+      .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) {
+      animation: pc-pulse-crystal 3.2s ease-in-out infinite;
+    }
+    :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+      .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+      .face::before {
+      animation: pc-lava 4.2s ease-in-out infinite alternate;
+    }
+    :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+      .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+      .face::after {
+      animation: pc-lava-embers 4.8s linear infinite;
+    }
+    :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+      .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) {
+      animation: pc-pulse-lava 2.6s ease-in-out infinite;
+    }
+  }
+  #menu .custom-catalog .ach-shop-art .sw-real {
+    width: 100px;
+    max-width: none;
+    height: 68px;
+    scale: 1.2;
+  }
+  :is([data-key='neon'], [data-key='galaxy']) .piece.red .face::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 26'%3E%3Cpath d='M6 13h24M24 6l11 7-11 7' fill='none' stroke='%23120e14' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M6 13h24M24 6l11 7-11 7' fill='none' stroke='%23e8b84a' stroke-width='5.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M6 13h24M24 6l11 7-11 7' fill='none' stroke='%23fff6dc' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    width: 54%;
+    height: 54%;
+    filter: drop-shadow(0 2px 0 #120e14);
+  }
+  :where([data-key='neon']) .piece.red .face {
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 18%, #ffffff40, #0000 60%),
+      repeating-linear-gradient(60deg, #0000 0 7px, #f3c76a2e 7px 8px),
+      repeating-linear-gradient(-60deg, #0000 0 7px, #f3c76a24 7px 8px),
+      linear-gradient(180deg, #d8473a, #9c1c22 58%, #5e0e16);
+    box-shadow:
+      0 4px 0 #2a0a0c,
+      0 6px 12px #0007,
+      inset 0 0 0 1.5px #120e14,
+      inset 0 0 0 3px #e8b84a,
+      inset 0 0 0 4px #7a4a14,
+      inset 0 2px 0 #ffffff70,
+      inset 0 -4px 6px #3a060a99;
+    border-color: #120e14;
+    opacity: 1;
+  }
+  :where([data-key='neon']) .piece.red .face::before {
+    background: linear-gradient(105deg, #0000 35%, #fff1c466 48%, #ffffffaa 50%, #fff1c466 52%, #0000 65%);
+    background-size: 300% 100%;
+    background-position: 120% 0;
+  }
+  :where([data-key='galaxy']) .piece.red .face {
+    background:
+      radial-gradient(ellipse 70% 90% at 50% 120%, #fff3c4cc 0%, #ffd06a66 30%, #0000 62%),
+      repeating-conic-gradient(from -90deg at 50% 118%, #fff3c42e 0 3deg, #0000 3deg 9deg),
+      radial-gradient(ellipse 80% 55% at 30% 12%, #ffffff55, #0000 60%),
+      linear-gradient(180deg, #7a1428 0%, #c8342a 36%, #f08a3a 70%, #ffc865 100%);
+    box-shadow:
+      0 4px 0 #3a0a10,
+      0 0 22px #ffb24a88,
+      0 6px 12px #0007,
+      inset 0 0 0 1.5px #120e14,
+      inset 0 0 0 3.2px #ffe08a,
+      inset 0 0 0 4.4px #8a5214,
+      inset 0 2px 0 #ffffff88;
+    border-color: #120e14;
+    opacity: 1;
+  }
+  :where([data-key='galaxy']) .piece.red .face::before {
+    background: conic-gradient(from var(--spin), #0000 0 55%, #fff3c4aa 70%, #ffffffdd 76%, #0000 86%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    padding: 3px;
+  }
+  :where([data-pieces='silk']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(ellipse 90% 60% at 30% 10%, #ffffff3a, #0000 60%),
+      repeating-radial-gradient(ellipse 160% 46% at 30% 140%, #0000 0 4px, #2a140828 4px 5.5px, #0000 5.5px 9px),
+      repeating-linear-gradient(178deg, #0000 0 3px, #3a1c0a30 3px 4px, #0000 4px 7px, #fff0d014 7px 8px),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--a) 48%, #c4884a),
+        color-mix(in oklab, var(--b) 48%, #8a5228) 60%,
+        color-mix(in oklab, var(--d) 45%, #4a2812)
+      );
+    box-shadow:
+      0 3px 0 #1e1008,
+      0 6px 12px #0006,
+      inset 0 0 0 2px color-mix(in oklab, var(--d) 70%, #1e1008),
+      inset 0 0 0 3.2px #e6c27a,
+      inset 0 0 0 4.2px #5a3614,
+      inset 0 1.5px 0 #ffffff66;
+    border-color: #120e14;
+    border-radius: 9px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='silk']) .piece.v:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(ellipse 60% 90% at 20% 30%, #ffffff3a, #0000 60%),
+      repeating-radial-gradient(ellipse 46% 160% at 140% 30%, #0000 0 4px, #2a140828 4px 5.5px, #0000 5.5px 9px),
+      repeating-linear-gradient(88deg, #0000 0 3px, #3a1c0a30 3px 4px, #0000 4px 7px, #fff0d014 7px 8px),
+      linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--a) 48%, #c4884a),
+        color-mix(in oklab, var(--b) 48%, #8a5228) 60%,
+        color-mix(in oklab, var(--d) 45%, #4a2812)
+      );
+  }
+  :where([data-pieces='silk']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    background: linear-gradient(110deg, #0000 38%, #fff6dc55 50%, #0000 62%);
+    background-size: 300% 100%;
+    background-position: 120% 0;
+    opacity: 1;
+  }
+  :where([data-pieces='silk']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='silk']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: none;
+  }
+  :where([data-pieces='lava']) .piece:not(.red, .heavy, .ice, .gate) .face {
+    background:
+      radial-gradient(ellipse 70% 55% at 30% 18%, #ffffffaa 0%, #ffffff22 30%, #0000 55%),
+      radial-gradient(ellipse 90% 70% at 70% 100%, color-mix(in oklab, var(--d) 70%, #000) 0%, #0000 70%),
+      linear-gradient(170deg, color-mix(in oklab, var(--a) 85%, #fff) 0%, color-mix(in oklab, var(--b) 92%, #000) 70%);
+    box-shadow:
+      0 3px 0 #2a1806,
+      0 0 12px #ffd24a44,
+      0 6px 12px #0007,
+      inset 0 0 0 1.5px #3a2208,
+      inset 0 0 0 3.5px #ffd36a,
+      inset 0 0 0 4.5px #9a6418,
+      inset 0 0 0 5.5px #fff0b0aa,
+      inset 0 2px 0 #ffffffaa;
+    border-color: #120e14;
+    border-radius: 9px;
+    filter: none;
+    opacity: 1;
+  }
+  :where([data-pieces='lava']) .piece:not(.red, .heavy, .ice, .gate) .face::before {
+    background: linear-gradient(115deg, #0000 40%, #fffbe8aa 49%, #ffffff 50%, #fffbe8aa 51%, #0000 60%);
+    background-size: 320% 100%;
+    background-position: 130% 0;
+    opacity: 0.9;
+  }
+  :where([data-pieces='lava']) .piece.h:not(.red, .heavy, .ice, .gate) .face::after,
+  :where([data-pieces='lava']) .piece.v:not(.red, .heavy, .ice, .gate) .face::after {
+    display: block;
+    content: '';
+    position: absolute;
+    inset: auto auto 4px 5px;
+    width: 9px;
+    height: 9px;
+    margin: 0;
+    background:
+      radial-gradient(circle, #fff 0 1px, #ffe7a0 1.5px, #0000 3px),
+      conic-gradient(
+        from 45deg,
+        #0000 0 10%,
+        #fff6 12%,
+        #0000 14% 35%,
+        #fff6 37%,
+        #0000 39% 60%,
+        #fff6 62%,
+        #0000 64% 85%,
+        #fff6 87%,
+        #0000 89%
+      );
+    border-radius: 50%;
+    opacity: 0;
+    mask: none;
+    -webkit-mask: none;
+  }
+  :is([data-key='neon'], [data-key='neon'] .look-mini, .sw-real[data-key='neon']) .piece.red,
+  :is([data-key='neon'], [data-key='neon'] .look-mini, .sw-real[data-key='neon']) .piece.red .face::before,
+  :is([data-key='galaxy'], [data-key='galaxy'] .look-mini, .sw-real[data-key='galaxy']) .piece.red,
+  :is([data-key='galaxy'], [data-key='galaxy'] .look-mini, .sw-real[data-key='galaxy']) .piece.red .face::before,
+  :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate),
+  :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::before,
+  :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::after,
+  :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate),
+  :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::before,
+  :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+    .face::after {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :is([data-key='neon'], [data-key='neon'] .look-mini, .sw-real[data-key='neon']) .piece.red .face::before {
+      animation: ps-sweep 3.4s ease-in-out infinite;
+    }
+    :is([data-key='galaxy'], [data-key='galaxy'] .look-mini, .sw-real[data-key='galaxy']) .piece.red .face::before {
+      animation: spin-ring 4.5s linear infinite;
+    }
+    :is([data-key='galaxy'], [data-key='galaxy'] .look-mini, .sw-real[data-key='galaxy']) .piece.red {
+      animation: ps-dawn-glow 3.2s ease-in-out infinite;
+    }
+    :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
+      .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+      .face::before {
+      animation: ps-sweep 6s ease-in-out infinite;
+    }
+    :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+      .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+      .face::before {
+      animation: ps-sweep 4.2s ease-in-out infinite;
+    }
+    :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
+      .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
+      .face::after {
+      animation: ps-twinkle 4.2s ease-in-out infinite;
+    }
+    :is([data-pieces='silk'], [data-pieces='lava']) .piece:nth-child(3n + 1) .face::before,
+    :is([data-pieces='silk'], [data-pieces='lava']) .piece:nth-child(3n + 1) .face::after {
+      animation-delay: -1.3s !important;
+    }
+    :is([data-pieces='silk'], [data-pieces='lava']) .piece:nth-child(3n + 2) .face::before,
+    :is([data-pieces='silk'], [data-pieces='lava']) .piece:nth-child(3n + 2) .face::after {
+      animation-delay: -2.6s !important;
+    }
+  }
+
+  @keyframes skin-sheen {
+    0%,
+    55% {
+      translate: 0 0;
+    }
+    100% {
+      translate: 440% 0;
+    }
+  }
+  @keyframes skin-twinkle {
+    from {
+      opacity: 0.4;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes skin-glow-amber {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 3px #ffb84a44);
+    }
+    50% {
+      filter: drop-shadow(0 0 13px #ffb84add);
+    }
+  }
+  @keyframes skin-glow-rose {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 3px #ff7ca444);
+    }
+    50% {
+      filter: drop-shadow(0 0 13px #ff7ca4dd);
+    }
+  }
+  @keyframes skin-glow-emerald {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 4px #42f09855);
+    }
+    50% {
+      filter: drop-shadow(0 0 14px #42f098dd);
+    }
+  }
+  @keyframes skin-glow-sapphire {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 4px #52b4ff55);
+    }
+    50% {
+      filter: drop-shadow(0 0 14px #52b4ffdd);
+    }
+  }
+  @keyframes skin-glow-crystal {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 4px #9ceeff55);
+    }
+    50% {
+      filter: drop-shadow(0 0 15px #9ceeffe6);
+    }
+  }
+  @keyframes skin-glow-obsidian {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 4px #c884ff66);
+    }
+    50% {
+      filter: drop-shadow(0 0 16px #c884ffdd);
+    }
+  }
+  @keyframes skin-glow-star {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 4px #9c7cff66);
+    }
+    50% {
+      filter: drop-shadow(0 0 16px #b898ffdd);
+    }
+  }
+  @keyframes skin-glow-gold {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 5px #ffd24a66);
+    }
+    50% {
+      filter: drop-shadow(0 0 18px #ffd24aee);
+    }
+  }
+
+  @keyframes spin-ring {
+    to {
+      --spin: 360deg;
+    }
+  }
+  @keyframes kc-scan {
+    from {
+      background-position: 0 100%;
+    }
+    to {
+      background-position: 0 -100%;
+    }
+  }
+  @keyframes kc-pulse-neon {
+    from {
+      filter: drop-shadow(0 0 4px #40f0ff88);
+    }
+    to {
+      filter: drop-shadow(0 0 16px #ff4ad8cc);
+    }
+  }
+  @keyframes kc-pulse-galaxy {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 6px #a37aff66);
+    }
+    50% {
+      filter: drop-shadow(0 0 20px #c9a8ffcc);
+    }
+  }
+  @keyframes pc-crystal-sheen {
+    0%,
+    16% {
+      background-position: 145% 0;
+      opacity: 0.72;
+    }
+    52% {
+      background-position: -35% 0;
+      opacity: 1;
+    }
+    100% {
+      background-position: -45% 0;
+      opacity: 0.65;
+    }
+  }
+  @keyframes pc-crystal-glint {
+    0% {
+      opacity: 0.68;
+      filter: brightness(0.95);
+    }
+    50% {
+      opacity: 1;
+      filter: brightness(1.18);
+    }
+    100% {
+      opacity: 0.8;
+      filter: brightness(1.04);
+    }
+  }
+  @keyframes pc-pulse-crystal {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 4px rgba(123, 245, 255, 0.35));
+    }
+    50% {
+      filter: drop-shadow(0 0 9px rgba(196, 160, 255, 0.7));
+    }
+  }
+  @keyframes pc-lava {
+    0% {
+      background-position:
+        10% 15%,
+        85% 80%,
+        45% 100%,
+        15% 25%;
+      opacity: 0.78;
+      filter: brightness(0.94);
+    }
+    50% {
+      background-position:
+        55% 45%,
+        45% 40%,
+        55% 92%,
+        45% 42%;
+      opacity: 1;
+      filter: brightness(1.16);
+    }
+    100% {
+      background-position:
+        88% 78%,
+        16% 20%,
+        48% 98%,
+        72% 55%;
+      opacity: 0.86;
+      filter: brightness(1.04);
+    }
+  }
+  @keyframes pc-lava-embers {
+    from {
+      background-position:
+        0 0,
+        0 0,
+        0 0,
+        0 0;
+    }
+    to {
+      background-position:
+        14px -30px,
+        -12px -34px,
+        8px -42px,
+        0 0;
+    }
+  }
+  @keyframes pc-pulse-lava {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 4px #ff541266);
+    }
+    50% {
+      filter: drop-shadow(0 0 13px #ff8a2acc);
+    }
+  }
+  @keyframes ps-sweep {
+    0%,
+    45% {
+      background-position: 120% 0;
+    }
+    80%,
+    100% {
+      background-position: -20% 0;
+    }
+  }
+  @keyframes ps-dawn-glow {
+    50% {
+      filter: drop-shadow(0 0 8px #ffb24a99);
+    }
+  }
+  @keyframes ps-twinkle {
+    0%,
+    55%,
+    100% {
+      opacity: 0;
+      transform: scale(0.4) rotate(0deg);
+    }
+    68% {
+      opacity: 1;
+      transform: scale(1.1) rotate(45deg);
+    }
+  }
+}
