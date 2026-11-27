@@ -90,7 +90,8 @@ export function playBoard(
         const k = 1 + Math.floor(Math.log(1 - rng()) / Math.log(0.5)); // 1 + geométrica (media 2)
         let waste = 0;
         for (let j = 0; j < k; j++) {
-          if (rng() < MODEL.slip) waste += 1; // fallo de +1: cuesta un solo movimiento extra
+          if (rng() < MODEL.slip)
+            waste += 1; // fallo de +1: cuesta un solo movimiento extra
           else waste += rng() >= MODEL.notice ? MODEL.unnoticedCost : 2;
         }
         if (rewind > 0) {
