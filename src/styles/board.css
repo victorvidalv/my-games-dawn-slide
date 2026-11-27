@@ -250,7 +250,7 @@
   }
   #board.reviving .piece {
     transition-duration: 0.55s;
-    filter: brightness(1.22) drop-shadow(0 0 10px #68d8bd88);
+    filter: brightness(1.22) drop-shadow(0 0 10px #f29f4b88);
   }
   #board[data-city='1'] {
     --wa: #b8864a;

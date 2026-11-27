@@ -521,17 +521,17 @@
     box-shadow:
       0 6px 0 #091118,
       0 22px 54px #000b,
-      inset 0 0 0 1px #68d8bd44 !important;
+      inset 0 0 0 1px #f29f4b44 !important;
   }
   .rescue-card .rescue-portrait {
     border: 2.5px solid #091118;
-    box-shadow: 0 0 28px #68d8bd55;
+    box-shadow: 0 0 28px #f29f4b55;
   }
   .rescue-card .rescue-heart {
-    color: #68d8bd;
+    color: #f29f4b;
     text-shadow:
       0 2px 0 #091118,
-      0 0 18px #68d8bd88;
+      0 0 18px #f29f4b88;
     animation: rescueBeat 1.2s ease-in-out infinite;
   }
   #rescueContinue {
@@ -557,7 +557,7 @@
     box-shadow: 0 2px 0 #091118;
   }
   #reviveFx {
-    --fx: #68d8bd;
+    --fx: #f29f4b;
     position: fixed;
     inset: 0;
     z-index: var(--z-revive-fx);
@@ -565,7 +565,7 @@
     align-items: center;
     justify-content: center;
     pointer-events: none;
-    background: radial-gradient(circle at center, #68d8bd33 0%, #08141a88 55%, transparent 85%);
+    background: radial-gradient(circle at center, #f29f4b33 0%, #1a100888 55%, transparent 85%);
   }
   #reviveFx:not(.is-hero) {
     --fx: #ffd074;

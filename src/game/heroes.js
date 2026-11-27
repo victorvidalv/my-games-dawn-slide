@@ -12,7 +12,7 @@ export const HEROES = [
     name: 'Lía',
     role: 'Portadora de la Brasa',
     icon: 'heart',
-    color: '#68d8bd',
+    color: '#f29f4b',
     power: 'Turnos de reserva',
     short: 'Más turnos en cada tablero',
     detail:
@@ -24,7 +24,7 @@ export const HEROES = [
     name: 'Jean',
     role: 'Vigía del Péndulo',
     icon: 'clock',
-    color: '#8fb9ff',
+    color: '#6cb4ff',
     power: 'Rebobinar',
     short: 'Retrocede varios movimientos',
     detail:
@@ -36,7 +36,7 @@ export const HEROES = [
     name: 'Juth',
     role: 'Escriba de las Runas',
     icon: 'stars',
-    color: '#c5a2ff',
+    color: '#b580ff',
     power: 'Trazar destino',
     short: 'Ejecuta movimientos óptimos',
     detail:

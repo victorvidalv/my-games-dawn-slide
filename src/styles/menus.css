@@ -62,7 +62,7 @@
       transform 0.1s,
       filter 0.15s;
     cursor: pointer;
-    --pc: #43e0c1;
+    --pc: #f5a85a;
   }
   .path:active {
     transform: translateY(3px);
