@@ -61,11 +61,6 @@
   transform: translateY(3px);
   box-shadow: 0 1px 0 #0004;
 }
-.ptop {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
 .pemo {
   width: 48px;
   height: 48px;
@@ -103,11 +98,6 @@
 .pinfo small {
   font-size: 11px;
   opacity: 0.6;
-}
-.pgo {
-  font-size: 20px;
-  color: var(--pc);
-  flex: none;
 }
 .pach {
   margin-top: 9px;
@@ -148,21 +138,6 @@
   width: 100%;
   margin-bottom: 12px;
 }
-.how {
-  font-size: 12.5px;
-  text-align: left;
-  opacity: 0.85;
-  margin-top: 6px;
-}
-.how summary {
-  cursor: pointer;
-  text-align: center;
-  font-weight: 700;
-  padding: 6px;
-}
-.how .rules {
-  margin: 8px 0 0;
-}
 /* Menú en dos columnas en pantallas apaisadas */
 @media (min-aspect-ratio: 13/10) {
   #menu .card {
@@ -186,14 +161,8 @@
   #menu .card .logo {
     text-align: center;
   }
-  #menu .card .how {
-    grid-column: 1;
-  }
 }
 @media (min-aspect-ratio: 13/10) and (max-height: 520px) {
-  #menu .card .how {
-    display: none;
-  }
   .modeinfo {
     min-height: 0;
     font-size: 11.5px;
@@ -270,12 +239,6 @@
 .lv {
   flex: none;
   min-width: 58px;
-}
-.pchip {
-  margin-top: 3px;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
 }
 .scores {
   flex: 1;
@@ -406,9 +369,6 @@
   .menubtn em {
     font-size: 12px;
   }
-  .pchip {
-    font-size: 11px;
-  }
 }
 
 /* ---------- Tarjetas de camino: puntaje destacado ---------- */
@@ -433,51 +393,5 @@
   color: var(--gold);
   text-shadow: 0 0 16px #ffcf6b55;
 }
-.linkbtn {
-  background: none;
-  box-shadow: none;
-  border: 0;
-  opacity: 0.8;
-  font-size: 13px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  margin-top: 4px;
-  padding: 8px;
-  min-height: 0;
-}
-.linkbtn:active {
-  transform: none;
-  box-shadow: none;
-}
-.optb {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
 
 /* Puntos de reinicio (niveles 21 · 51 · 71): banderines encendidos o apagados, sin texto */
-.pflags {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  font-weight: 400;
-}
-.pflag {
-  display: block;
-  width: 11px;
-  height: 14px;
-  background: #f0cf86;
-  clip-path: polygon(0 0, 100% 28%, 0 56%, 0 100%, 0 100%, 0 100%, 12% 100%, 12% 56%, 0 56%);
-  filter: drop-shadow(0 1px 0 #091118);
-}
-.pflag {
-  clip-path: polygon(0 0, 100% 25%, 14% 52%, 14% 100%, 0 100%);
-}
-.pflag.on {
-  background: linear-gradient(135deg, #ffe9a8, #e2a83a);
-}
-.pflag.off {
-  background: #5b6b75;
-  opacity: 0.55;
-}

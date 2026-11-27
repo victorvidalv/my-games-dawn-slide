@@ -508,30 +508,6 @@
 
 /* Movimientos (también en las miniaturas de Personalizar) */
 @media (prefers-reduced-motion: no-preference) {
-  :is([data-key='storm'], [data-key='storm'] .look-mini, .sw-real[data-key='storm']) .piece.red .face::before {
-    animation: kc-flash 3.4s ease-in-out infinite;
-  }
-  :is([data-key='storm'], [data-key='storm'] .look-mini, .sw-real[data-key='storm']) .piece.red {
-    animation: kc-storm-glow 3.4s ease-in-out infinite;
-  }
-  :is([data-key='toxic'], [data-key='toxic'] .look-mini, .sw-real[data-key='toxic']) .piece.red .face::before {
-    animation: kc-bubbles 2.2s linear infinite;
-  }
-  :is([data-key='toxic'], [data-key='toxic'] .look-mini, .sw-real[data-key='toxic']) .piece.red {
-    animation: kc-pulse-green 1.8s ease-in-out infinite;
-  }
-  :is([data-key='aurora'], [data-key='aurora'] .look-mini, .sw-real[data-key='aurora']) .piece.red .face {
-    animation: kc-aurora 6s linear infinite;
-  }
-  :is([data-key='aurora'], [data-key='aurora'] .look-mini, .sw-real[data-key='aurora']) .piece.red {
-    animation: kc-pulse-aurora 3.6s ease-in-out infinite;
-  }
-  :is([data-key='magma'], [data-key='magma'] .look-mini, .sw-real[data-key='magma']) .piece.red .face::before {
-    animation: kc-magma 2.6s ease-in-out infinite alternate;
-  }
-  :is([data-key='magma'], [data-key='magma'] .look-mini, .sw-real[data-key='magma']) .piece.red {
-    animation: kc-pulse-magma 2.6s ease-in-out infinite alternate;
-  }
   :is([data-key='neon'], [data-key='neon'] .look-mini, .sw-real[data-key='neon']) .piece.red .face::before {
     animation: kc-scan 2.2s linear infinite;
   }
@@ -543,95 +519,6 @@
   }
   :is([data-key='galaxy'], [data-key='galaxy'] .look-mini, .sw-real[data-key='galaxy']) .piece.red {
     animation: kc-pulse-galaxy 3.2s ease-in-out infinite;
-  }
-  :is([data-key='dragon'], [data-key='dragon'] .look-mini, .sw-real[data-key='dragon']) .piece.red .face::before {
-    animation: spin-ring 3.2s linear infinite;
-  }
-  :is([data-key='dragon'], [data-key='dragon'] .look-mini, .sw-real[data-key='dragon']) .piece.red {
-    animation: kc-pulse-dragon 1.8s ease-in-out infinite alternate;
-  }
-  :is([data-key='chrono'], [data-key='chrono'] .look-mini, .sw-real[data-key='chrono']) .piece.red .face::before {
-    animation: spin-ring 6s linear infinite;
-  }
-  :is([data-key='chrono'], [data-key='chrono'] .look-mini, .sw-real[data-key='chrono']) .piece.red {
-    animation: kc-pulse-chrono 3s ease-in-out infinite;
-  }
-}
-
-@keyframes kc-flash {
-  0%,
-  52%,
-  60%,
-  100% {
-    opacity: 0;
-  }
-  54% {
-    opacity: 1;
-  }
-  57% {
-    opacity: 0.25;
-  }
-  58% {
-    opacity: 0.9;
-  }
-}
-@keyframes kc-storm-glow {
-  0%,
-  52%,
-  100% {
-    filter: drop-shadow(0 0 4px #8ab4ff66);
-  }
-  54%,
-  58% {
-    filter: drop-shadow(0 0 16px #e8f4ffee);
-  }
-}
-@keyframes kc-bubbles {
-  to {
-    background-position: 0 -34px;
-  }
-}
-@keyframes kc-pulse-green {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 5px #8aff3a66);
-  }
-  50% {
-    filter: drop-shadow(0 0 16px #b6ff3add);
-  }
-}
-@keyframes kc-aurora {
-  to {
-    background-position:
-      0 0,
-      320% 0;
-  }
-}
-@keyframes kc-pulse-aurora {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 6px #7affd866);
-  }
-  50% {
-    filter: drop-shadow(0 0 18px #ff6ad0aa);
-  }
-}
-@keyframes kc-magma {
-  from {
-    opacity: 0.45;
-    background-position: 0 0;
-  }
-  to {
-    opacity: 1;
-    background-position: 14px 0;
-  }
-}
-@keyframes kc-pulse-magma {
-  from {
-    filter: drop-shadow(0 0 5px #ff6a1a66);
-  }
-  to {
-    filter: drop-shadow(0 0 18px #ffb04aee);
   }
 }
 @keyframes kc-scan {
@@ -657,22 +544,5 @@
   }
   50% {
     filter: drop-shadow(0 0 20px #c9a8ffcc);
-  }
-}
-@keyframes kc-pulse-dragon {
-  from {
-    filter: drop-shadow(0 0 6px #ff9a2a77);
-  }
-  to {
-    filter: drop-shadow(0 0 20px #ffd24aee);
-  }
-}
-@keyframes kc-pulse-chrono {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 6px #ffe27a66);
-  }
-  50% {
-    filter: drop-shadow(0 0 18px #fff2b0cc);
   }
 }

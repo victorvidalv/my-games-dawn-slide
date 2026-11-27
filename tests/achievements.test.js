@@ -35,7 +35,9 @@ import {
 } from '../src/game/achievements.js';
 import { CHALLENGES } from '../src/game/daily.js';
 import { HEROES } from '../src/game/heroes.js';
-import { DICTS } from '../src/i18n.js';
+import { DICTS, loadAllDicts } from '../src/i18n.js';
+
+await loadAllDicts();
 import { bestAdventureRecord, mergePaths, mergeSaves } from '../src/game/save-merge.js';
 
 describe('registro de logros y tienda', () => {

@@ -63,7 +63,7 @@ import { showFateDialog, syncFateHud } from '../ui/fate.js';
 import { endRun } from '../ui/finale.js';
 import { showResult } from '../ui/result.js';
 import { chooseHero, showRescue, showReviveOffer, syncHero } from '../ui/heroes.js';
-import { applyZone, renderStage } from '../ui/map.js';
+import { applyZone } from '../ui/map.js';
 import { openMenu } from '../ui/menu.js';
 import {
   dimBoard,
@@ -217,7 +217,6 @@ async function startLevel() {
   G.colors ||= [0, 1, 2, 3, 4, 5, 6, 7].sort(() => Math.random() - 0.5);
   renderLevelHud(run, G, heroOf().id);
   applyZone(zoneIdx(G.n));
-  renderStage();
   syncFateHud();
   buildPieces();
   boardSwapDone();

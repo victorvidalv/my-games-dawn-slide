@@ -14,13 +14,28 @@
  * Cambiar de idioma es instantáneo (no recarga la página, así la música no se corta): se restauran los textos originales y
  * se traduce de nuevo la pantalla, y se avisa con el evento `langchange` para que la interfaz repinte números y listas.
  */
-import { EN } from './i18n/en.js';
-import { ZH } from './i18n/zh.js';
-
 const KEY = 'slideslay.lang';
 export const LANGS = ['en', 'es', 'zh'];
-/** Diccionario de cada idioma traducido (el español es el idioma de origen y no necesita ninguno). */
-export const DICTS = { en: EN, zh: ZH };
+/**
+ * Diccionario de cada idioma traducido que ya se ha cargado (el español es el idioma de origen y no necesita ninguno).
+ * Se cargan por demanda con `import()` dinámico: solo el idioma activo viaja en el arranque y el resto se pide al cambiarlo
+ * (el Service Worker precachea todos los trozos, así que también funciona sin conexión).
+ */
+export const DICTS = {};
+const LOADERS = {
+  en: () => import('./i18n/en.js').then((m) => m.EN),
+  zh: () => import('./i18n/zh.js').then((m) => m.ZH),
+};
+const pending = {};
+/** Carga el diccionario de un idioma (no hace nada para el español, que es el de origen, ni si ya está cargado). */
+export function loadDict(code) {
+  if (!LOADERS[code] || DICTS[code]) return Promise.resolve(DICTS[code]);
+  return (pending[code] ||= LOADERS[code]()
+    .then((d) => (DICTS[code] = d))
+    .finally(() => delete pending[code]));
+}
+/** Carga todos los diccionarios (para tests y herramientas). */
+export const loadAllDicts = () => Promise.all(Object.keys(LOADERS).map(loadDict));
 /** Datos de cada idioma: etiqueta HTML (`lang`), formato de números y nombre propio para el selector. */
 export const LANG_INFO = {
   en: { html: 'en', locale: 'en-US', name: 'English' },
@@ -64,6 +79,16 @@ export let lang = LANGS.includes(stored) ? stored : detectLang(browserLocales())
 /** true cuando el idioma activo es el inglés (se conserva por compatibilidad; para saber si hay que traducir usa `lang !== 'es'`). */
 export let isEnglish = lang === 'en';
 export const numLocale = () => LANG_INFO[lang].locale;
+/* El módulo espera al diccionario del idioma inicial (como ya no va en el paquete principal, se pide aquí). Si no se puede
+ * cargar (sin conexión y sin caché), se arranca en español sin guardar esa elección. */
+if (lang !== 'es') {
+  try {
+    await loadDict(lang);
+  } catch {
+    lang = 'es';
+    isEnglish = false;
+  }
+}
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim();
 const esc = (s) => s.replace(/[.*+?^$()|[\]\\]/g, '\\$&');
@@ -199,8 +224,14 @@ function stopTranslating() {
 }
 
 /** Cambia de idioma al instante: guarda la elección, retraduce la pantalla y avisa a la interfaz (`langchange`). */
-export function setLang(next, { persist = true } = {}) {
+export async function setLang(next, { persist = true } = {}) {
   if (!LANGS.includes(next) || next === lang) return;
+  try {
+    await loadDict(next);
+  } catch {
+    return; // el diccionario no está disponible (sin conexión y sin caché): se conserva el idioma actual
+  }
+  if (next === lang) return; // otro cambio llegó mientras se cargaba
   lang = next;
   isEnglish = next === 'en';
   if (persist) {

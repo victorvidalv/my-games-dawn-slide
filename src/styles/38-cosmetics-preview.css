@@ -8,254 +8,8 @@
 }
 
 /* ---------- Cofres de colección ---------- */
-.ach-chests {
-  margin-bottom: 12px;
-  padding: 10px 12px 11px;
-  border-radius: var(--wob-d);
-  border: 2px solid #091118;
-  background: linear-gradient(160deg, #2a2231, #171420);
-  box-shadow:
-    0 3px 0 #091118,
-    inset 0 1px 0 #ffffff14;
-}
-
-.ach-chests-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.ach-chests-head b {
-  color: #ffe7a8;
-  font: 850 13px/1.1 var(--font-ui);
-}
-
-.ach-chests-head small {
-  color: #cdbfa6;
-  font: 750 11px/1 var(--font-ui);
-  font-variant-numeric: tabular-nums;
-}
-
-.ach-chest-track {
-  position: relative;
-  height: 58px;
-  margin: 0 18px;
-}
-
-.ach-chest-track > u {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 16px;
-  height: 6px;
-  border-radius: 99px;
-  background: #0c0a12;
-  box-shadow: inset 0 1px 2px #000a;
-  overflow: hidden;
-}
-
-.ach-chest-track > u i {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #e09a26, #ffdf73);
-  box-shadow: 0 0 8px #ffd24a88;
-}
-
-.ach-chest-track ol {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.chest {
-  position: absolute;
-  top: 0;
-  left: calc(var(--at) * 1%);
-  transform: translateX(-50%);
-  display: grid;
-  justify-items: center;
-}
-
-.chest > button,
-.chest:not(.ready) {
-  display: grid;
-  justify-items: center;
-  gap: 1px;
-}
-
-.chest > button {
-  min-height: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
-  color: inherit;
-  cursor: pointer;
-}
-
-.chest i {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  border: 2px solid #091118;
-  background: #2b2735;
-  color: #7e7590;
-  box-shadow: 0 2px 0 #091118;
-}
-
-.chest i .ic {
-  width: 17px;
-  height: 17px;
-}
-
-.chest b {
-  color: #cdbfa6;
-  font: 850 10.5px/1 var(--font-ui);
-  font-variant-numeric: tabular-nums;
-}
-
-.chest small {
-  color: #9d917c;
-  font: 750 9px/1 var(--font-ui);
-}
-
-.chest.open i {
-  background: linear-gradient(160deg, #3d5a4a, #22362b);
-  color: #9ae6cc;
-}
-
-.chest.ready i {
-  background: linear-gradient(180deg, #ffdf73, #e09a26);
-  color: #241606;
-  box-shadow:
-    0 2px 0 #091118,
-    0 0 16px #ffd24aaa;
-}
-
-.chest.ready b,
-.chest.ready small {
-  color: #ffe39e;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .chest.ready i {
-    animation: chest-wiggle 1.6s ease-in-out infinite;
-  }
-}
-
-@keyframes chest-wiggle {
-  0%,
-  60%,
-  100% {
-    transform: rotate(0) scale(1);
-  }
-  70% {
-    transform: rotate(-9deg) scale(1.1);
-  }
-  80% {
-    transform: rotate(8deg) scale(1.1);
-  }
-  90% {
-    transform: rotate(-4deg) scale(1.05);
-  }
-}
-
-.ach-chests-note {
-  margin: 4px 0 0;
-  color: #d9ccb2;
-  font: 650 11.5px/1.3 var(--font-ui);
-  text-align: center;
-}
-
-.ach-chest-open {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  margin-top: 4px;
-  padding: 9px 12px;
-  border-radius: 11px;
-  border: 2px solid #091118;
-  background: linear-gradient(180deg, #ffdf73, #e09a26);
-  color: #191006;
-  font: 800 12.5px/1.1 var(--font-ui);
-  box-shadow:
-    0 3px 0 #091118,
-    0 0 16px #ffd24a77;
-}
-
-.ach-chest-open .ic {
-  width: 18px;
-  height: 18px;
-}
-
-.ach-chest-open b {
-  font-weight: 900;
-}
 
 /* Grupo con su avance */
-.ach-group-h {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  align-items: center;
-  gap: 8px;
-}
-
-.ach-group-h small {
-  color: #cdbfa6;
-  font: 750 11px/1 var(--font-ui);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.ach-group-h u {
-  height: 4px;
-  border-radius: 99px;
-  background: #0c0a12;
-  overflow: hidden;
-}
-
-.ach-group-h u i {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, #4fae95, #9ae6cc);
-}
-
-.ach-group-h.full u i {
-  background: linear-gradient(90deg, #e09a26, #ffdf73);
-}
-
-.ach-near-h::before {
-  content: '';
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin-right: 6px;
-  border-radius: 50%;
-  background: #ffd24a;
-  box-shadow: 0 0 8px #ffd24a;
-  vertical-align: 1px;
-}
-
-.ach-near .ach {
-  border-color: #6b5a3a !important;
-}
-
-.ach-claim-banner {
-  margin-top: 2px;
-}
-
-.ach-claim-banner + .ach-list {
-  margin-bottom: 12px;
-}
 
 /* Aviso de logro: color según dificultad */
 .ach-toast.tier-silver {
@@ -299,12 +53,6 @@
 
 .ach-shop-card.on {
   border-color: #e7b963;
-}
-
-.ach-shop-card.can-buy {
-  box-shadow:
-    0 3px 0 #091118,
-    0 0 0 1px color-mix(in srgb, var(--rar) 60%, transparent);
 }
 
 /* Destello que recorre las legendarias */
@@ -398,11 +146,6 @@
   border-radius: 13px;
 }
 
-.ach-shop-card .ach-shop-art .sw-cover {
-  width: 100%;
-  height: 84px;
-}
-
 .shop-save {
   display: block;
   width: 100%;
@@ -418,63 +161,10 @@
   background: color-mix(in srgb, var(--rar, #e7b963) 80%, #fff);
 }
 
-.shop-save.pv-save {
-  height: 7px;
-  margin-bottom: 8px;
-}
-
-.shop-act.buy:not(.affordable) {
-  opacity: 0.92;
-}
-
 /* Muestras: más grandes, con brillo propio en las animadas */
 .sw {
   position: relative;
   overflow: hidden;
-}
-
-.sw-board {
-  box-shadow: inset 0 0 0 8px #121c2a;
-}
-
-.sw-board[data-board='celestial'] {
-  background:
-    radial-gradient(circle at 18% 22%, #fff 0 1.5px, #0000 2px),
-    radial-gradient(circle at 78% 30%, #ffe9ad 0 1.5px, #0000 2px),
-    radial-gradient(circle at 30% 82%, #bfe6ff 0 1.2px, #0000 1.8px),
-    radial-gradient(circle at 84% 78%, #fff 0 1.2px, #0000 1.8px), linear-gradient(150deg, #34497a, #121a33);
-  border-color: #ffe08a;
-}
-
-.sw-board[data-board='obsidian'] {
-  background:
-    repeating-linear-gradient(60deg, #c084fc22 0 1px, #0000 1px 7px), linear-gradient(150deg, #2c243a, #0e0b16);
-}
-
-.sw-board[data-board='crimson'] {
-  background:
-    radial-gradient(circle at 20% 80%, #ff9a3d 0 2px, #0000 3px),
-    radial-gradient(circle at 75% 20%, #ffd24a 0 1.5px, #0000 2.5px), linear-gradient(150deg, #8c3030, #381217);
-}
-
-.sw-music {
-  background: radial-gradient(circle, #f3e5c8 0 12%, #150e0c 13% 16%, #2c2433 17% 100%);
-  border-radius: 50%;
-  color: #ffe39e;
-}
-
-.r-rare .sw-music {
-  background: radial-gradient(circle, #cfe6ff 0 12%, #091118 13% 16%, #1c3756 17% 100%);
-}
-
-.r-epic .sw-music {
-  background: radial-gradient(circle, #ecdcff 0 12%, #091118 13% 16%, #3a2466 17% 100%);
-}
-
-.sw-music .ic {
-  width: 18px;
-  height: 18px;
-  opacity: 0.85;
 }
 
 /* Destello animado en las muestras épicas y legendarias */
@@ -623,18 +313,6 @@
   box-shadow: inset 0 2px 10px #000a;
 }
 
-.look-pv-replay,
-.look-pv-play {
-  min-height: 34px;
-  padding: 7px 14px;
-  border-radius: 10px;
-  border: 2px solid #091118;
-  background: linear-gradient(180deg, #3c5b73, #274054);
-  color: #f3f7fb;
-  font: 800 12px/1 var(--font-ui);
-  box-shadow: 0 2px 0 #091118;
-}
-
 .look-pv-note {
   display: grid;
   gap: 2px;
@@ -659,12 +337,6 @@
 .look-pv-foot .shop-act {
   min-height: 42px;
   font-size: 13.5px;
-}
-
-.look-pv-foot .shop-act.buy:not(.affordable) {
-  background: #1b2732;
-  color: #a9b7c4;
-  cursor: default;
 }
 
 .look-pv-sub {
@@ -772,194 +444,19 @@
 }
 
 /* Portada */
-.look-pv-cover {
-  width: 100%;
-  border-radius: 12px;
-  background: radial-gradient(circle at 50% 62%, #314969, #121c2c);
-  overflow: hidden;
-}
-
-.look-pv-cover img {
-  display: block;
-  width: 100%;
-  height: 210px;
-  object-fit: contain;
-  object-position: center bottom;
-}
-
-.r-legendary .look-pv-cover {
-  background:
-    repeating-conic-gradient(from 0deg at 50% 70%, #ffd24a1f 0 8deg, #0000 8deg 20deg),
-    radial-gradient(circle at 50% 62%, #6b4a1e, #1c140c);
-}
 
 /* Melodía: disco que gira mientras suena */
-.look-pv-music {
-  display: grid;
-  justify-items: center;
-  gap: 12px;
-  padding: 6px 0 2px;
-}
-
-.look-disc {
-  display: grid;
-  place-items: center;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  border: 3px solid #091118;
-  background:
-    radial-gradient(circle, color-mix(in srgb, var(--rar) 75%, #fff) 0 17%, #091118 18% 20%, #0000 21%),
-    repeating-radial-gradient(circle, #1a1622 0 2px, #241f2e 2px 4px);
-  box-shadow:
-    0 6px 0 #091118,
-    0 0 26px color-mix(in srgb, var(--rar) 30%, transparent);
-}
-
-.look-disc i .ic {
-  width: 26px;
-  height: 26px;
-  color: #241606;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .look-pv-music.on .look-disc {
-    animation: disc-spin 3s linear infinite;
-  }
-}
-
-@keyframes disc-spin {
-  to {
-    rotate: 360deg;
-  }
-}
 
 /* ======================== Cosméticos animados en el tablero ======================== */
 /* Un anillo (máscara: solo el marco, no el tablero) con su propio brillo. Fuera en Desafío, Diario y tableros girados. */
-body:is([data-board='celestial'], [data-board='obsidian'], [data-board='crimson'])
-  .frame:is([data-rot='0'], [data-rot=''])::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  padding: inherit;
-  border-radius: inherit;
-  pointer-events: none;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-}
 
 /* Observatorio astral (legendaria): cielo estrellado que titila y un hilo dorado que recorre el borde */
-body[data-board='celestial'] .frame {
-  background:
-    radial-gradient(circle at 8% 14%, #fff 0 1px, #0000 1.6px),
-    radial-gradient(circle at 92% 10%, #ffe9ad 0 1.2px, #0000 1.8px),
-    radial-gradient(circle at 96% 88%, #fff 0 1px, #0000 1.6px),
-    radial-gradient(circle at 4% 70%, #bfe6ff 0 1px, #0000 1.6px),
-    linear-gradient(135deg, #f3cd7a22 0%, transparent 30%, #7dd3fc22 100%),
-    linear-gradient(155deg, #2d3e61, #192440 55%, #0f172b);
-}
-
-body[data-board='celestial'] .frame:is([data-rot='0'], [data-rot=''])::after {
-  background:
-    radial-gradient(circle at 20% 4%, #fff 0 1.4px, #0000 2px),
-    radial-gradient(circle at 50% 97%, #ffe9ad 0 1.6px, #0000 2.2px),
-    radial-gradient(circle at 2% 40%, #fff 0 1.3px, #0000 2px),
-    radial-gradient(circle at 98% 55%, #bfe6ff 0 1.5px, #0000 2.2px),
-    radial-gradient(circle at 72% 3%, #fff 0 1.2px, #0000 1.8px),
-    radial-gradient(circle at 35% 98%, #fff 0 1.2px, #0000 1.8px),
-    conic-gradient(from 0deg, #0000 0 70%, #ffe08a99 82%, #0000 92%);
-}
 
 /* Obsidiana real (épica): runas violetas que laten */
-body[data-board='obsidian'] .frame:is([data-rot='0'], [data-rot=''])::after {
-  background:
-    repeating-linear-gradient(60deg, #d8b4fe55 0 1.5px, #0000 1.5px 11px),
-    repeating-linear-gradient(-60deg, #c084fc33 0 1px, #0000 1px 13px),
-    radial-gradient(ellipse at 50% 50%, #c084fc44, #0000 70%);
-}
 
 /* Forja carmesí (épica): brasas que respiran en el metal */
-body[data-board='crimson'] .frame:is([data-rot='0'], [data-rot=''])::after {
-  background:
-    radial-gradient(circle at 10% 96%, #ffb04a 0 2px, #0000 4px),
-    radial-gradient(circle at 60% 3%, #ffd24a 0 1.5px, #0000 3px),
-    radial-gradient(circle at 97% 30%, #ff7a3d 0 2px, #0000 4px),
-    radial-gradient(circle at 3% 25%, #ff9a3d 0 1.5px, #0000 3px),
-    radial-gradient(circle at 85% 97%, #ffd24a 0 1.5px, #0000 3px),
-    linear-gradient(0deg, #ff6a3d44, #0000 40%, #0000 60%, #ff9a3d33);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  body[data-board='celestial'] .frame:is([data-rot='0'], [data-rot=''])::after,
-  body[data-board='celestial'] .look-mini::after {
-    animation: ring-twinkle 2.6s ease-in-out infinite alternate;
-  }
-  body[data-board='obsidian'] .frame:is([data-rot='0'], [data-rot=''])::after,
-  body[data-board='obsidian'] .look-mini::after {
-    animation: ring-pulse 3.2s ease-in-out infinite;
-  }
-  body[data-board='crimson'] .frame:is([data-rot='0'], [data-rot=''])::after,
-  body[data-board='crimson'] .look-mini::after {
-    animation: ring-ember 1.9s ease-in-out infinite alternate;
-  }
-}
-
-@keyframes ring-twinkle {
-  0% {
-    opacity: 0.45;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes ring-pulse {
-  0%,
-  100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes ring-ember {
-  0% {
-    opacity: 0.55;
-  }
-  40% {
-    opacity: 0.9;
-  }
-  55% {
-    opacity: 0.65;
-  }
-  100% {
-    opacity: 1;
-  }
-}
 
 /* Celebraciones en la muestra: anillos de ráfaga para las de varias oleadas */
-.sw-fx[data-fx='aurora']::after,
-.sw-fx[data-fx='prism']::after,
-.sw-fx[data-fx='fireworks']::after {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  border-radius: 50%;
-  border: 2px dashed #ffffffaa;
-}
-
-.sw-fx[data-fx='fireworks']::after {
-  inset: 3px;
-  border: 2px dotted #fff;
-  box-shadow:
-    inset 0 0 0 6px #0000,
-    inset 0 0 0 8px #ffffff55;
-}
 
 /* En las tarjetas, «Animado» va bajo la rareza para que no choquen en pantallas angostas */
 .ach-shop-card .anim-chip {
@@ -980,63 +477,3 @@ body[data-board='crimson'] .frame:is([data-rot='0'], [data-rot=''])::after {
 }
 
 /* Muestras de celebración: cada una dibuja su efecto (brasas, chispas, pétalos, tinta, copos, estrellas, aurora, prisma, cohetes) */
-.sw-fx[data-fx='embers'] {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='14' cy='34' r='3' fill='%23ffd24a'/%3E%3Ccircle cx='24' cy='22' r='2.4' fill='%23ff9a3d'/%3E%3Ccircle cx='33' cy='30' r='3.2' fill='%23fff0b8'/%3E%3Ccircle cx='20' cy='12' r='1.8' fill='%23ffd24a'/%3E%3Ccircle cx='36' cy='15' r='2' fill='%23ff9a3d'/%3E%3Ccircle cx='28' cy='40' r='2.2' fill='%23ff6a3d'/%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
-    radial-gradient(circle at 50% 120%, #ff6a3d, #3a1208 70%);
-}
-.sw-fx[data-fx='sparks'] {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg stroke-linecap='round' stroke-width='2.4'%3E%3Cpath d='M24 24 L8 10' stroke='%23fff6c9'/%3E%3Cpath d='M24 24 L40 8' stroke='%23ffd24a'/%3E%3Cpath d='M24 24 L6 30' stroke='%23e0b04f'/%3E%3Cpath d='M24 24 L42 28' stroke='%23fff'/%3E%3Cpath d='M24 24 L16 42' stroke='%23ffd24a'/%3E%3Cpath d='M24 24 L34 42' stroke='%23fff6c9'/%3E%3C/g%3E%3Ccircle cx='24' cy='24' r='3' fill='%23fff'/%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
-    radial-gradient(circle, #5a4210, #1a1206 75%);
-}
-.sw-fx[data-fx='petals'] {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cellipse cx='14' cy='14' rx='6' ry='3' transform='rotate(30 14 14)' fill='%23ffb7d0'/%3E%3Cellipse cx='32' cy='12' rx='6' ry='3' transform='rotate(-20 32 12)' fill='%23ff8fb8'/%3E%3Cellipse cx='22' cy='26' rx='6' ry='3' transform='rotate(60 22 26)' fill='%23ffe3ee'/%3E%3Cellipse cx='36' cy='32' rx='6' ry='3' transform='rotate(15 36 32)' fill='%23f7c6d9'/%3E%3Cellipse cx='12' cy='36' rx='6' ry='3' transform='rotate(-40 12 36)' fill='%23ff8fb8'/%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
-    radial-gradient(circle, #5a2a40, #2a1220 75%);
-}
-.sw-fx[data-fx='ink'] {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg fill='%23150e0c'%3E%3Ccircle cx='22' cy='24' r='10'/%3E%3Ccircle cx='34' cy='16' r='4'/%3E%3Ccircle cx='36' cy='32' r='3'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3Ccircle cx='10' cy='34' r='3.5'/%3E%3Ccircle cx='28' cy='38' r='2'/%3E%3C/g%3E%3Ccircle cx='20' cy='21' r='2.5' fill='%23e0b04f'/%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
-    #e9d6a6;
-}
-.sw-fx[data-fx='frost'] {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='19' fill='none' stroke='%238ab8ff' stroke-width='1.5' opacity='.7'/%3E%3Cg stroke='%23e8fbff' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M24 10v28M11.9 17l24.2 14M11.9 31l24.2-14'/%3E%3Cpath d='M21 13l3 3 3-3M21 35l3-3 3 3' fill='none'/%3E%3C/g%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
-    radial-gradient(circle, #1d4a6b, #0c1a2a 75%);
-}
-.sw-fx[data-fx='stars'] {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath transform='translate(16 16) scale(0.7)' d='M0-10 2.9-4 9.5-3.1 4.7 1.5 5.9 8.1 0 5 -5.9 8.1 -4.7 1.5 -9.5-3.1 -2.9-4Z' fill='%23fff'/%3E%3Cpath transform='translate(32 26) scale(0.9)' d='M0-10 2.9-4 9.5-3.1 4.7 1.5 5.9 8.1 0 5 -5.9 8.1 -4.7 1.5 -9.5-3.1 -2.9-4Z' fill='%23ffe9ad'/%3E%3Cpath transform='translate(14 36) scale(0.5)' d='M0-10 2.9-4 9.5-3.1 4.7 1.5 5.9 8.1 0 5 -5.9 8.1 -4.7 1.5 -9.5-3.1 -2.9-4Z' fill='%238fd8ff'/%3E%3Cpath transform='translate(36 10) scale(0.4)' d='M0-10 2.9-4 9.5-3.1 4.7 1.5 5.9 8.1 0 5 -5.9 8.1 -4.7 1.5 -9.5-3.1 -2.9-4Z' fill='%23d7c3ff'/%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
-    linear-gradient(160deg, #3a2a7a, #120a33);
-}
-.sw-fx[data-fx='aurora'] {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M2 20c10-8 18 6 28-2s12-4 16-2' stroke='%2358f0c8' stroke-width='5' opacity='.85'/%3E%3Cpath d='M2 30c10-8 18 6 28-2s12-4 16-2' stroke='%23b08cff' stroke-width='4' opacity='.8'/%3E%3Cpath d='M2 38c10-6 18 4 28-1s12-3 16-1' stroke='%238fd8ff' stroke-width='2.5' opacity='.8'/%3E%3C/g%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
-    linear-gradient(180deg, #08122a, #10243a);
-}
-.sw-fx[data-fx='prism'] {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke-width='2.4'%3E%3Ccircle cx='24' cy='24' r='17' stroke='%23ff8a65'/%3E%3Ccircle cx='24' cy='24' r='14' stroke='%23ffd54f'/%3E%3Ccircle cx='24' cy='24' r='11' stroke='%234dd0e1'/%3E%3Ccircle cx='24' cy='24' r='8' stroke='%23ce93d8'/%3E%3C/g%3E%3Cpath d='M24 15l5 9-5 9-5-9z' fill='%23fff8e1'/%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
-    radial-gradient(circle, #2a2440, #120f1f 75%);
-}
-.sw-fx[data-fx='fireworks'] {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg stroke-linecap='round' stroke-width='2'%3E%3Cpath d='M19 16L23 16' stroke='%23ff5f8f'/%3E%3Cpath d='M13 16L9 16' stroke='%23ff5f8f'/%3E%3Cpath d='M16 19L16 23' stroke='%23ff5f8f'/%3E%3Cpath d='M16 13L16 9' stroke='%23ff5f8f'/%3E%3Cpath d='M18.1 18.1L20.9 20.9' stroke='%23ff5f8f'/%3E%3Cpath d='M13.9 18.1L11.100000000000001 20.9' stroke='%23ff5f8f'/%3E%3Cpath d='M18.1 13.9L20.9 11.100000000000001' stroke='%23ff5f8f'/%3E%3Cpath d='M13.9 13.9L11.100000000000001 11.100000000000001' stroke='%23ff5f8f'/%3E%3Cpath d='M36 22L40 22' stroke='%23ffd24a'/%3E%3Cpath d='M30 22L26 22' stroke='%23ffd24a'/%3E%3Cpath d='M33 25L33 29' stroke='%23ffd24a'/%3E%3Cpath d='M33 19L33 15' stroke='%23ffd24a'/%3E%3Cpath d='M35.1 24.1L37.9 26.9' stroke='%23ffd24a'/%3E%3Cpath d='M30.9 24.1L28.1 26.9' stroke='%23ffd24a'/%3E%3Cpath d='M35.1 19.9L37.9 17.1' stroke='%23ffd24a'/%3E%3Cpath d='M30.9 19.9L28.1 17.1' stroke='%23ffd24a'/%3E%3Cpath d='M24 46V34' stroke='%236cb6ff' stroke-dasharray='2 3'/%3E%3C/g%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
-    linear-gradient(180deg, #0b0f24, #1a1a3a);
-}
-.sw-fx[data-fx]::after {
-  display: none;
-}
-.sw-fx {
-  border-radius: 14px;
-}

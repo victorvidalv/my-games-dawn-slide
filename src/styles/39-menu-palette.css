@@ -46,7 +46,6 @@
 /* ---------- Superficie base de paneles y modales: limpios, minimalistas, sin remaches ---------- */
 #menu #menuCard,
 .modal .card,
-#pause .sheet,
 #heroSelect .hero-selector,
 #finale .card,
 #saveTransfer .transfer-card {
@@ -75,12 +74,6 @@
 #menu #menuCard:not([data-view='home']) {
   width: min(92vw, 460px);
   max-width: 460px;
-}
-
-#pause .sheet {
-  width: min(92vw, 390px);
-  max-width: 390px;
-  padding: 20px 18px;
 }
 
 #ask .askcard {
@@ -140,7 +133,6 @@ button.primary:hover,
 }
 .pause-actions button,
 .opt,
-.map-close,
 .snd-btn {
   border: 1.5px solid rgba(242, 212, 140, 0.2);
   border-radius: 12px;
@@ -277,22 +269,6 @@ button.primary:hover,
   background: rgba(42, 50, 88, 0.88);
   border-color: var(--mp-border-strong);
 }
-#menu .tool-btn {
-  width: 44px;
-  height: 44px;
-  border: 1.5px solid var(--mp-border);
-  border-radius: 12px;
-  background: rgba(31, 38, 68, 0.9);
-  color: var(--mp-gold-hi);
-  box-shadow: var(--mp-card-shadow);
-}
-#menu .tool-btn.snd-btn {
-  border-radius: 12px;
-  background: linear-gradient(180deg, var(--mp-teal-1), var(--mp-teal-2));
-}
-#menu .tool-btn.snd-btn[data-state='off'] {
-  background: rgba(46, 44, 62, 0.88);
-}
 #menu .menu-head {
   padding-bottom: 10px;
   margin-bottom: 12px;
@@ -339,13 +315,6 @@ button.primary:hover,
   border-color: var(--mp-gold-hi);
   color: #fff6e6;
   box-shadow: 0 4px 14px rgba(170, 60, 44, 0.45);
-}
-#menu .home-credit {
-  color: var(--mp-parch);
-}
-#menu .home-credit a {
-  background: rgba(16, 20, 38, 0.8);
-  border: 1px solid rgba(216, 171, 82, 0.28);
 }
 
 /* ---------- Aventura: botón Continuar y tarjetas de dificultad ---------- */
@@ -457,45 +426,6 @@ button.primary:hover,
 }
 
 /* ---------- Retos diarios: patina verde-petróleo de Lía ---------- */
-#menu .daily-streak,
-#menu .daily-reset,
-#menu .daily-rewards {
-  border: 1.5px solid var(--mp-border);
-  border-radius: 12px;
-  background: rgba(16, 20, 38, 0.58);
-  box-shadow: none;
-}
-#menu .daily-card {
-  border: 1.5px solid var(--mp-border);
-  border-radius: 14px !important;
-  background: linear-gradient(165deg, rgba(58, 102, 112, 0.88), rgba(33, 64, 72, 0.94));
-  box-shadow: var(--mp-card-shadow);
-  text-shadow: none;
-}
-#menu .daily-card:hover:not(.locked) {
-  border-color: var(--mp-border-strong);
-  filter: brightness(1.06);
-}
-#menu .daily-card.done {
-  background: linear-gradient(165deg, rgba(54, 96, 78, 0.9), rgba(32, 62, 50, 0.95));
-  border-color: rgba(134, 239, 172, 0.45);
-}
-#menu .daily-card.locked {
-  background: rgba(26, 31, 52, 0.74);
-  border: 1.5px dashed rgba(200, 196, 212, 0.28);
-  box-shadow: none;
-}
-#menu .dc-ico {
-  border: 1.5px solid rgba(242, 212, 140, 0.36);
-  background: rgba(16, 20, 38, 0.45);
-}
-#menu .dc-copy b {
-  text-shadow: none;
-}
-#menu .dc-side.go b {
-  border: 1.5px solid #151114;
-  box-shadow: none;
-}
 
 /* ---------- Selector de héroes: limpio, directo y teñido por el héroe ---------- */
 #heroSelect .hero-selector {
@@ -544,9 +474,6 @@ button.primary:hover,
     min-height: 48px;
     font-size: 15px;
   }
-  #pause .sheet {
-    max-width: 440px;
-  }
   #finale .card {
     width: min(92vw, 560px);
     max-width: 560px;
@@ -559,20 +486,6 @@ button.primary:hover,
 }
 
 /* ---------- Logros dentro del menú ---------- */
-#menu .ach-tab {
-  border: 1.5px solid var(--mp-border);
-  border-radius: 10px;
-  background: rgba(29, 36, 64, 0.88);
-}
-#menu .ach-tab.on {
-  border-color: var(--mp-gold);
-  background: linear-gradient(160deg, var(--mp-plum-1), var(--mp-plum-2));
-}
-#menu .ach-wallet {
-  border: 1.5px solid var(--mp-border-strong);
-  border-radius: 12px;
-  background: rgba(24, 30, 56, 0.9);
-}
 #menu .ach {
   border: 1.5px solid var(--mp-border);
   border-radius: 12px;
@@ -609,12 +522,6 @@ button.primary:hover,
     justify-content: center;
   }
 }
-@media (max-aspect-ratio: 13/10) and (max-height: 600px) {
-  #menu .home-credit a {
-    min-height: 24px;
-    padding-block: 2px;
-  }
-}
 @media (min-aspect-ratio: 13/10) {
   #menu.show {
     grid-template-columns: minmax(260px, 1fr) minmax(380px, 520px);
@@ -635,11 +542,6 @@ button.primary:hover,
     justify-content: center;
     justify-items: center;
     padding-bottom: max(10px, env(safe-area-inset-bottom));
-  }
-  #menu[data-view='home'] .home-credit {
-    position: static;
-    grid-area: credit;
-    margin-top: -6px;
   }
   #menu .home-btn:is(.hb-adv, .hb-daily, .hb-ach) {
     min-height: 82px;

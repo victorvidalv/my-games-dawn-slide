@@ -1,12 +1,7 @@
 /* ---------- Revisión de tamaños: tocables y letra mínima ---------- */
-.linkbtn {
-  min-height: 44px;
-}
 .top small,
 .sc small,
 .pscore small,
-.pstat small,
-.pchip,
 .stats small {
   font-size: 10px;
 }
@@ -42,12 +37,6 @@
   .ring b {
     font-size: 22px;
   }
-  .fico {
-    width: 56px;
-    height: 56px;
-    font-size: 30px;
-    margin-bottom: 6px;
-  }
   .finale h2 {
     font-size: 26px;
   }
@@ -68,27 +57,9 @@
     font-size: 16px;
     padding: 12px 14px;
   }
-  .pstat {
-    margin: 4px 0 10px;
-  }
-  .pstat div {
-    padding: 6px 2px;
-  }
-  .pstat b {
-    font-size: 15px;
-  }
   #pause .tag,
   #pause .ver {
     display: none;
-  }
-  .breakdown {
-    margin: 0 0 8px;
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-  #how .rules {
-    margin: 6px 0 10px;
-    font-size: 12px;
   }
   .rules div {
     margin: 2px 0;
@@ -128,12 +99,6 @@
   }
   #pause h2 {
     margin-bottom: 4px;
-  }
-  #pause .pstat {
-    margin: 2px 0 8px;
-  }
-  #pause .pstat div {
-    padding: 5px 2px;
   }
   #pause .stack {
     display: grid;
@@ -179,13 +144,6 @@
     column-gap: 20px;
     align-items: center;
   }
-  #finale .fico {
-    grid-column: 1;
-    width: 54px;
-    height: 54px;
-    font-size: 28px;
-    margin: 0 auto 4px;
-  }
   #finale .tag,
   #finale h2,
   #finale p,
@@ -209,16 +167,6 @@
     gap: 8px;
   }
   /* ayuda en dos columnas */
-  #how .tag {
-    display: none;
-  }
-  #how .rules {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px 16px;
-    margin: 6px 0 10px;
-    font-size: 12px;
-  }
 }
 @media (min-aspect-ratio: 13/10) and (max-height: 400px) {
   .path {
@@ -232,9 +180,6 @@
     gap: 5px;
   }
   .modeinfo {
-    display: none;
-  }
-  .tagline {
     display: none;
   }
   .pemo {

@@ -48,9 +48,6 @@ button {
     height: 11px;
     margin: 5px 0 4px;
   }
-  .pot {
-    font-size: 11px;
-  }
   .hint-text {
     height: 30px;
     font-size: 12px;
@@ -71,15 +68,8 @@ button {
   .controls em {
     display: none;
   }
-  .pot {
-    font-size: 10.5px;
-  }
   .mrow {
     font-size: 11px;
-  }
-  .rec-line {
-    font-size: 9px;
-    letter-spacing: 0.02em;
   }
 }
 /* Pantalla apaisada (móvil horizontal, iPad, PC): panel a la izquierda, tablero grande a la derecha */
@@ -137,12 +127,6 @@ button {
   .mrow b {
     font-size: 28px;
   }
-  .pot {
-    font-size: 14px;
-  }
-  .pot b {
-    font-size: 17px;
-  }
   .bar {
     height: 16px;
   }
@@ -154,9 +138,6 @@ button {
   button {
     font-size: 16px;
     min-height: 50px;
-  }
-  .rec-line {
-    font-size: 12px;
   }
   .meter {
     padding: 13px 18px 14px;

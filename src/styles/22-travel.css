@@ -1,7 +1,4 @@
 /* Selección de carta del destino: fondo oscuro CSS animado acorde al menú, imagen del héroe y las cartas. */
-.travel-legacy {
-  display: none !important;
-}
 #travel {
   background: #070b18;
   overflow-y: auto;
@@ -116,18 +113,6 @@
     0 3px 0 #091118,
     0 0 28px #f1ce8244;
 }
-.travel-heading .travel-city {
-  color: inherit;
-}
-.travel-inscription {
-  margin: 10px 0 0 !important;
-  max-width: 30ch;
-  font: italic 600 clamp(17px, 4.6vw, 23px)/1.32 var(--font-book) !important;
-  color: #f6ecd0;
-  text-shadow:
-    0 2px 0 #091118,
-    0 0 18px #000;
-}
 .travel-bottom {
   width: 100%;
   max-width: 640px;
@@ -171,18 +156,10 @@
   #travel .travel-heading {
     font-size: clamp(22px, 4vw, 34px);
   }
-  #travel .travel-inscription {
-    font-size: clamp(14px, 2.7vw, 18px) !important;
-  }
 }
 @media (max-aspect-ratio: 11/10) and (max-height: 640px) {
   .travel-hero {
     bottom: clamp(93px, 19dvh, 125px);
     height: clamp(200px, calc(100dvh - 365px), 275px);
-  }
-
-  #travel .travel-bottom .choice-icon {
-    width: 36px;
-    height: 36px;
   }
 }

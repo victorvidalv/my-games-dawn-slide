@@ -617,9 +617,6 @@
     power-slam 0.3s cubic-bezier(0.2, 1.6, 0.4, 1) both,
     power-charge 1s 0.3s ease-in-out infinite alternate;
 }
-#heroPowerFx.center.launch {
-  animation: power-burst 0.3s ease-in forwards;
-}
 #heroPowerFx.center .power-sigil {
   border-width: 2px;
   border-radius: 18px;
@@ -655,32 +652,6 @@
     filter: drop-shadow(0 0 40px var(--spell)) drop-shadow(0 0 100px var(--spell)) brightness(1.12);
   }
 }
-@keyframes power-burst {
-  to {
-    opacity: 0;
-    transform: translateX(-50%) scale(2.1);
-    filter: brightness(3) blur(3px);
-  }
-}
-@keyframes power-shake {
-  10%,
-  90% {
-    transform: translate(-2px, 1px);
-  }
-  20%,
-  80% {
-    transform: translate(5px, -3px);
-  }
-  30%,
-  50%,
-  70% {
-    transform: translate(-8px, 4px);
-  }
-  40%,
-  60% {
-    transform: translate(8px, -4px);
-  }
-}
 .hero-power .piece.power-piece {
   filter: drop-shadow(0 0 14px #a5c8ed) drop-shadow(0 0 30px #a5c8ed) brightness(1.2);
 }
@@ -689,21 +660,11 @@
 }
 
 /* ---------- Elegir camino: entra por partes y la elección se celebra ---------- */
-#travel.show .travel-city-bg {
-  animation: tr-zoom 1.1s cubic-bezier(0.2, 0.8, 0.3, 1) both;
-}
 #travel.show .travel-hero {
   animation: tr-hero 0.55s cubic-bezier(0.2, 1.2, 0.4, 1) 0.12s both;
 }
 #travel.show .travel-head {
   animation: tr-rise 0.5s ease-out 0.2s both;
-}
-
-@keyframes tr-zoom {
-  from {
-    transform: scale(1.14);
-    filter: brightness(0.4) saturate(1.05);
-  }
 }
 @keyframes tr-hero {
   from {
@@ -721,17 +682,6 @@
   from {
     opacity: 0;
     transform: translateY(34px) scale(0.9);
-  }
-}
-@keyframes tr-pick {
-  0% {
-    transform: scale(1);
-  }
-  45% {
-    transform: scale(1.07);
-  }
-  100% {
-    transform: scale(1.02);
   }
 }
 
@@ -800,8 +750,7 @@ button.primary::after {
     transform: translateY(26px) scale(0.96);
   }
 }
-.modal.show > .card,
-.modal.show > .sheet {
+.modal.show > .card {
   animation: menu-card 0.32s cubic-bezier(0.2, 1.2, 0.4, 1) both;
 }
 
@@ -926,18 +875,6 @@ button.primary {
 #journey.show {
   animation: jin 0.28s ease-out forwards;
 }
-#journey.show .mtag {
-  animation: tr-rise 0.45s ease-out 0.05s both;
-  padding: 7px 18px;
-  border-block: 1.5px solid #f1ce8266;
-  background: linear-gradient(90deg, #0000, #091118cc 20%, #091118cc 80%, #0000);
-  color: #f6dc9a;
-  font-size: 10px;
-}
-
-#journey.show .mcap {
-  animation: tr-rise 0.5s ease-out 0.3s both;
-}
 
 /* solo opacidad: su posición va en el atributo transform */
 
@@ -945,24 +882,7 @@ button.primary {
   animation: jout 0.15s ease-in forwards;
 }
 
-@keyframes road-march {
-  to {
-    stroke-dashoffset: -16;
-  }
-}
-
 /* ============ Elegir camino: dos placas del mismo arte que el juego (trama, latón, cantoneras) y la dificultad a la vista ============ */
-
-@keyframes ember-glow {
-  50% {
-    box-shadow:
-      0 5px 0 #091118,
-      inset 0 0 0 1.5px #ffd98acc,
-      inset 0 0 0 4px #09111866,
-      0 0 34px #ff8a4a99,
-      0 14px 30px #000a;
-  }
-}
 
 /* ============ Nivel superado: placa de puntos de tinta y latón, luz en vez de papelitos, y los puntos vuelan al marcador ============ */
 #result {
@@ -1169,11 +1089,9 @@ body.perfect .frame {
   #menu.show .title-lockup,
   #menu.show .card,
   #menu.show .path,
-  #travel.show .travel-city-bg,
   #travel.show .travel-hero,
   #travel.show .travel-head,
   #heroPowerFx.center.show,
-  body.power-shake #app,
   .modal.show > .card,
   .res-card,
   .res-prize b,
@@ -1181,9 +1099,7 @@ body.perfect .frame {
   #score.score-bump,
   #board.board-win,
   #board.board-win .piece .face,
-  #result.perfect .res-card::after,
-  #journey.show .mcap,
-  #journey.show .mtag {
+  #result.perfect .res-card::after {
     animation: none !important;
   }
 }

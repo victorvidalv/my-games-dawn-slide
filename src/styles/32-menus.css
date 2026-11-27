@@ -91,40 +91,8 @@
     0 0 18px color-mix(in srgb, var(--accent) 60%, #0000),
     4px 7px 0 #150e0c;
 }
-.hero-summary {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
-  gap: 8px;
-  margin-top: 12px;
-  padding: 8px 10px;
-  border: 2px solid #150e0c;
-  border-left: 4px solid var(--chosen);
-  border-radius: var(--wob-d);
-  background: var(--hatch), linear-gradient(153deg, var(--portrait-tone) 0 68%, #202434 68.5%);
-}
-.hero-summary > div {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.hero-summary i {
-  display: grid;
-  place-items: center;
-  flex: 0 0 24px;
-}
-.hero-summary .ic {
-  width: 24px;
-  height: 24px;
-}
-.hero-summary .hero-ability-label,
 .hero-relics legend {
   margin-bottom: 3px;
-}
-.hero-summary strong {
-  display: block;
-  color: #fff0cf;
-  font-size: 13px;
-  line-height: 1.18;
 }
 .hero-relics {
   border: 0;
@@ -222,15 +190,6 @@
   #heroSelect .hero-choice-name {
     font-size: 19px;
     bottom: 6px;
-  }
-  #heroSelect #heroStartNote {
-    display: none;
-  }
-  #heroSelect .start-chip {
-    min-height: 38px;
-  }
-  #heroSelect .start-chip small {
-    display: none;
   }
   #heroSelect .hero-selector-actions {
     margin-top: 9px;
@@ -335,10 +294,6 @@
   #heroSelect .hero-choice.selected {
     transform: none;
   }
-  .hero-summary {
-    margin-top: 6px;
-    padding-block: 4px;
-  }
   .hero-relics {
     margin-top: 5px;
   }
@@ -350,13 +305,6 @@
   }
   .relic-art {
     width: 32px;
-  }
-  #heroSelect #heroStartNote,
-  #heroSelect .start-chip small {
-    display: none;
-  }
-  #heroSelect .start-chip {
-    min-height: 32px;
   }
   #heroSelect .hero-selector-actions {
     margin-top: 6px;

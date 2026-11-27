@@ -23,11 +23,6 @@
 .controls button .bi {
   margin-right: 2px;
 }
-.shop-item .ico .ic {
-  width: 84%;
-  height: 84%;
-  filter: none;
-}
 .chip i .ic {
   width: 1.35em;
   height: 1.35em;
@@ -42,11 +37,6 @@
   width: 1.3em;
   height: 1.3em;
   vertical-align: -0.3em;
-}
-.hero-power-icon .ic {
-  width: 30px;
-  height: 30px;
-  filter: none;
 }
 .askico .ic {
   width: 70%;

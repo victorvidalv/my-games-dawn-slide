@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { tr, isEnglish, lang, LANGS, DICTS, LANG_INFO, detectLang } from '../src/i18n.js';
+import { tr, isEnglish, lang, LANGS, DICTS, LANG_INFO, detectLang, loadAllDicts, loadDict } from '../src/i18n.js';
 import { EN } from '../src/i18n/en.js';
 import { CHAPTERS, HERO_LORE, HERO_TALK, HERO_TUTORIAL_TALK } from '../src/data/story.js';
 import { HEROES } from '../src/game/heroes.js';
 import { ZONES } from '../src/data/zones.js';
+
+await loadAllDicts(); // los diccionarios se cargan por demanda: los tests los necesitan todos
 
 /** Todos los textos de una estructura (cadenas anidadas en objetos y listas). */
 const strings = (v) =>
@@ -15,6 +17,15 @@ const missing = (list) =>
   [...new Set(list)].filter(
     (s) => s.length > 3 && !NAMES.test(s) && /[A-Za-zÁ-ú]/.test(s) && tr(s) === s.replace(/\s+/g, ' ').trim(),
   );
+
+describe('diccionarios por demanda', () => {
+  it('cada idioma traducido se carga una vez; el español (idioma de origen) no tiene diccionario', async () => {
+    expect(await loadDict('zh')).toBe(DICTS.zh);
+    expect(await loadDict('en')).toBe(DICTS.en);
+    expect(await loadDict('es')).toBeUndefined();
+    expect(DICTS.es).toBeUndefined();
+  });
+});
 
 describe('tres idiomas: inglés, español y chino, con las mismas claves', () => {
   const ph = (x) => (x.match(/\{\w+\}/g) || []).sort().join();
@@ -84,7 +95,7 @@ describe('idioma: el inglés es el idioma por defecto y cubre la historia', () =
     expect(tr('Sello de Corazón')).toBe('Heart Seal');
     expect(tr('Carta del destino 3 de 9')).toBe('Fate card 3 of 9');
     expect(tr('Tu destino · 4 de 9')).toBe('Your fate · 4 of 9');
-    expect(tr('Perfecto · +480 puntos · Una puerta menos.')).toBe('Perfect · +480 points · One door fewer.');
+    expect(tr('Pista · Nivel 4')).toBe('Hint · Level 4'); // el trozo {p} es un texto conocido y también se traduce
   });
   it('lo que ya está en inglés o no tiene letras se deja igual', () => {
     expect(tr('Lía')).toBe('Lía');

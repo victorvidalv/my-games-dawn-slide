@@ -1,13 +1,17 @@
 /**
- * Visor y reproductor de pruebas para las canciones de Juth (output/juth-canciones.html).
- * Permite comparar Original vs. Mejorada vs. Versión Stardew Alegre (con toques de piano),
- * reproducirlas con el motor del juego o con el reproductor MIDI multipista, y descargar .mid.
+ * Visor y reproductor de pruebas para las canciones de Jean, Juth y Lía (output/<héroe>-canciones.html).
+ * Permite comparar Original vs. Mejorada vs. Versión Más Alegre, reproducirlas con el motor del juego
+ * o con el reproductor MIDI multipista integrado, y descargar los archivos .mid.
+ * Un único visor para los tres: `scripts/build-song-preview.mjs <jean|juth|lia>` lo compila con `__PREVIEW__` (los datos del
+ * héroe, de config.js) y el alias `@song-data` (sus propuestas, themes-<héroe>-preview.js).
  */
-import { Music } from '../audio/music.js';
-import { CITY_REPERTOIRES, LAYERS_PER_CITY, SCALES, chordMidi, entryAt, parseBar, shiftBar, shiftEntry } from '../audio/themes.js';
-import { JUTH_IMPROVED_DATA, JUTH_HAPPY_DATA } from '../audio/themes-juth-preview.js';
-import { ZONES } from '../data/zones.js';
-import { themeToMidiBytes, themeToMidiData } from './midi-export.js';
+import { Music } from '../../src/audio/music.js';
+import { CITY_REPERTOIRES, LAYERS_PER_CITY, SCALES, chordMidi, entryAt, parseBar, shiftBar, shiftEntry } from '../../src/audio/themes.js';
+import * as SONGS from '@song-data';
+import { ZONES } from '../../src/data/zones.js';
+import { themeToMidiBytes, themeToMidiData } from '../../src/tools/midi-export.js';
+
+const CFG = __PREVIEW__;
 
 const NAMES = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
 const noteName = (m) => NAMES[m % 12];
@@ -33,23 +37,23 @@ function compileSong(base, song) {
     bassV: 0.07,
     compV: 0.02,
     arpV: 0.02,
-    leadV: 0.034,
+    leadV: CFG.leadV,
     epic: 1,
-    groove: 'soft',
+    groove: CFG.groove,
     echo: true,
     ...d,
     tune: d.tuneText.map((b) => parseBar(b).notes),
   };
 }
 
-const ORIGINALS = CITY_REPERTOIRES.van;
-const IMPROVED = JUTH_IMPROVED_DATA.map((s, i) => compileSong(ORIGINALS[i], s));
-const HAPPY = JUTH_HAPPY_DATA.map((s, i) => compileSong(ORIGINALS[i], s));
+const ORIGINALS = CITY_REPERTOIRES[CFG.repertoire];
+const IMPROVED = SONGS[`${CFG.prefix}_IMPROVED_DATA`].map((s, i) => compileSong(ORIGINALS[i], s));
+const HAPPY = SONGS[`${CFG.prefix}_HAPPY_DATA`].map((s, i) => compileSong(ORIGINALS[i], s));
 
 const VERSIONS = [
   { key: 'orig', label: 'Original (actual)', list: ORIGINALS },
-  { key: 'impr', label: 'Mejorada (calmada)', list: IMPROVED },
-  { key: 'happy', label: 'Stardew Alegre (Piano)', list: HAPPY },
+  { key: 'impr', label: CFG.labels.impr, list: IMPROVED },
+  { key: 'happy', label: CFG.labels.happy, list: HAPPY },
 ];
 
 function chordName(th, entry) {

@@ -1283,21 +1283,6 @@
 
 /* Movimientos (también en las muestras de Personalizar) */
 @media (prefers-reduced-motion: no-preference) {
-  :is([data-pieces='aurora'], [data-pieces='aurora'] .look-mini, .sw-real[data-pieces='aurora'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
-    .face {
-    animation: pc-aurora 7s linear infinite;
-  }
-  :is([data-pieces='plasma'], [data-pieces='plasma'] .look-mini, .sw-real[data-pieces='plasma'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
-    .face {
-    animation: pc-plasma 6s ease-in-out infinite alternate;
-  }
-  :is([data-pieces='holo'], [data-pieces='holo'] .look-mini, .sw-real[data-pieces='holo'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
-    .face::before {
-    animation: skin-sheen 3.4s ease-in-out infinite;
-  }
   :is([data-pieces='silk'], [data-pieces='silk'] .look-mini, .sw-real[data-pieces='silk'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
     .face::before {
@@ -1325,72 +1310,6 @@
   :is([data-pieces='lava'], [data-pieces='lava'] .look-mini, .sw-real[data-pieces='lava'])
     .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) {
     animation: pc-pulse-lava 2.6s ease-in-out infinite;
-  }
-  :is([data-pieces='tide'], [data-pieces='tide'] .look-mini, .sw-real[data-pieces='tide'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
-    .face::before {
-    animation: pc-tide 4.2s linear infinite;
-  }
-  :is([data-pieces='volt'], [data-pieces='volt'] .look-mini, .sw-real[data-pieces='volt'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
-    .face::after {
-    animation:
-      spin-ring 2.2s linear infinite,
-      pc-flicker 1.1s steps(1) infinite;
-  }
-  :is([data-pieces='galaxia'], [data-pieces='galaxia'] .look-mini, .sw-real[data-pieces='galaxia'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
-    .face::after {
-    animation: spin-ring 5.5s linear infinite;
-  }
-  :is([data-pieces='solar'], [data-pieces='solar'] .look-mini, .sw-real[data-pieces='solar'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
-    .face::after {
-    animation: spin-ring 3s linear infinite;
-  }
-  :is([data-pieces='prisma'], [data-pieces='prisma'] .look-mini, .sw-real[data-pieces='prisma'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
-    .face::after {
-    animation: spin-ring 4s linear infinite;
-  }
-  :is([data-pieces='abismo'], [data-pieces='abismo'] .look-mini, .sw-real[data-pieces='abismo'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate)
-    .face::after {
-    animation: spin-ring 3.6s linear infinite;
-  }
-  :is([data-pieces='galaxia'], [data-pieces='galaxia'] .look-mini, .sw-real[data-pieces='galaxia'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) {
-    animation: pc-pulse-violet 3.4s ease-in-out infinite;
-  }
-  :is([data-pieces='solar'], [data-pieces='solar'] .look-mini, .sw-real[data-pieces='solar'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) {
-    animation: pc-pulse-sun 2.2s ease-in-out infinite;
-  }
-  :is([data-pieces='abismo'], [data-pieces='abismo'] .look-mini, .sw-real[data-pieces='abismo'])
-    .piece:is(.h, .v):not(.red, .heavy, .ice, .gate) {
-    animation: pc-pulse-abyss 3s ease-in-out infinite;
-  }
-}
-
-@keyframes pc-aurora {
-  to {
-    background-position:
-      0 0,
-      320% 0;
-  }
-}
-@keyframes pc-plasma {
-  from {
-    background-position:
-      0% 0%,
-      100% 100%,
-      0 0;
-  }
-  to {
-    background-position:
-      100% 100%,
-      0% 0%,
-      0 0;
   }
 }
 @keyframes pc-crystal-sheen {
@@ -1483,56 +1402,5 @@
   }
   50% {
     filter: drop-shadow(0 0 13px #ff8a2acc);
-  }
-}
-@keyframes pc-tide {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 220% 0;
-  }
-}
-@keyframes pc-flicker {
-  0%,
-  62%,
-  100% {
-    opacity: 1;
-  }
-  64% {
-    opacity: 0.35;
-  }
-  68% {
-    opacity: 1;
-  }
-  74% {
-    opacity: 0.55;
-  }
-}
-@keyframes pc-pulse-violet {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 4px #a37aff55);
-  }
-  50% {
-    filter: drop-shadow(0 0 13px #c9a8ffcc);
-  }
-}
-@keyframes pc-pulse-sun {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 5px #ffb02a66);
-  }
-  50% {
-    filter: drop-shadow(0 0 15px #ffd24add);
-  }
-}
-@keyframes pc-pulse-abyss {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 4px #2af0ff55);
-  }
-  50% {
-    filter: drop-shadow(0 0 14px #8a5cffcc);
   }
 }
