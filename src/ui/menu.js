@@ -68,8 +68,11 @@ function renderPaths() {
       return;
     }
     d.tabIndex = 0;
-    const pct =
-      rec?.score > 0 && (rec.pct > 0 || rec.runs > 0) ? percentOf(rec.score, p.s) : rec?.pct > 0 ? rec.pct : 0;
+    // el rango del récord: el mejor entre el de su puntaje (con el máximo del camino) y el que dio la reliquia usada al terminar
+    const pct = Math.max(
+      rec?.score > 0 && (rec.pct > 0 || rec.runs > 0) ? percentOf(rec.score, p.s) : 0,
+      rec?.pct || 0,
+    );
     const rank = pct ? rankFor(pct, p.s) : null;
     const badge = rank
       ? `<span class="rank-badge" data-grade="${rank.cls}" title="${pct} % del máximo">${rank.grade}</span>`

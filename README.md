@@ -83,7 +83,7 @@ un BFS desde las posiciones ganadoras, así conoce la **distancia exacta** de ca
 siempre exactos.
 
 **Dificultad.** `src/data/calibration.json` fija el mínimo de movimientos de cada uno de los 21 niveles en cada camino
-(Normal 3 → 22, Difícil 10 → 28, Experto 16 → 32) y qué mecánicas trae cada nivel. `rateAt(camino, nivel)` lo traduce a
+(Normal 3 → 22, Difícil 10 → 30, Experto 17 → 37) y qué mecánicas trae cada nivel. `rateAt(camino, nivel)` lo traduce a
 la dificultad del banco y `buildLevel()` elige el estado inicial con el mínimo exacto (con un ajuste adaptativo de ±2
 según cómo juegues).
 
@@ -101,7 +101,9 @@ los tableros se generan antes con `npm run levels:all` (y se versionan `levels.j
 ## La aventura
 
 **Puntos.** `base = 50 + 55·mínimo` × eficiencia (100 % en el mínimo, 0 % al doble). Perfecto: +20 %. Racha: ×1,1 por
-tablero seguido con ≥ 90 % de eficiencia (máx. ×1,5). Al final se da un **rango** (C a S+).
+tablero seguido con ≥ 90 % de eficiencia (máx. ×1,5). Al final se da un **rango** (C a S+): el porcentaje que lograste del máximo de una partida perfecta con tu héroe y tu
+reliquia (Lía se mide contra el techo de Lía, y quien no lleva Medallón solar contra uno sin su +15 %), así que S+ es posible
+con cualquier combinación (`npm run rank-max` recalcula los máximos y `scripts/rank-balance.mjs` los tramos).
 
 **Ayudas.** Pistas al empezar (3 / 2 / 1 según el camino) y una cada 4 / 5 / 6 niveles. En Normal, los niveles 1-3 se
 pueden repetir gratis al perder.
@@ -110,7 +112,7 @@ pueden repetir gratis al perder.
 
 | Héroe | Poder |
 |---|---|
-| **Lía** | Turnos de reserva: +34 % del mínimo en Normal, +23 % en Difícil, +21 % en Experto. **Brasa intacta:** +12 % de puntos si termina el tablero sin tocarla. |
+| **Lía** | Turnos de reserva: +34 % del mínimo en Normal, +23 % en Difícil, +21 % en Experto. **Brasa intacta:** +18 % de puntos si termina el tablero sin tocar la reserva (si la gasta en parte, conserva la parte que le queda). |
 | **Jean** | Rebobinar: vuelve ~⅓ de los movimientos (mín. 3) y recupera sus turnos. 1 uso por tablero (2 si el mínimo es 16+). |
 | **Juth** | Trazar destino: ejecuta ~¼ de los pasos óptimos que faltan (nunca el último). 1 uso por tablero. |
 
@@ -120,7 +122,7 @@ El poder de Jean y Juth «descansa» en algunos tableros según el camino (`POWE
 ### Reliquias
 
 Se elige una al empezar: **Medallón solar** (+15 % de puntos), **Reloj de arena** (+2 turnos en cada tablero) o
-**Farol de pistas** (+3 pistas). [`src/game/relics.js`](src/game/relics.js).
+**Farol de pistas** (+3 pistas y +5 % de puntos en los tableros resueltos sin pedir pista). [`src/game/relics.js`](src/game/relics.js).
 
 ### Cartas del destino
 
@@ -134,21 +136,10 @@ Pactos con costo), barajado por partida: ninguna se repite y se puede cambiar la
 
 ## Otros modos
 
-**Retos diarios** ([`src/game/daily.js`](src/game/daily.js)): tres tableros iguales para todos, que cambian a la
-medianoche local. Medalla de oro en el mínimo, plata hasta un 15 % más, bronce al resolver. La racha de días da pistas
-extra al empezar una aventura (3 / 5 / 7 días → +1 / +2 / +3).
-
-| Reto | Se abre | Mínimos |
-|---|---|---|
-| Clásico | Desde el principio | 5 · 9 · 12 |
-| Rocas | Nivel 10 en Aventura | 6 · 10 · 13 |
-| Hielo | Nivel 13 | 7 · 11 · 14 |
-| Mecanismos | Nivel 18 | 8 · 12 · 15 |
-| Todo junto | Nivel 21 | 9 · 13 · 16 |
-
-**Desafío** ([`src/game/daily.js`](src/game/daily.js)): reto diario de entrada directa en 1 clic con 15 tableros y 150 turnos
+**Desafío diario** ([`src/game/daily.js`](src/game/daily.js)): es el único reto diario (cambia a la medianoche local); entrada directa en 1 clic con 15 tableros y 150 turnos
 exactos (mínimos del 3 al 17 sin margen), piezas especiales progresivas, sin pistas ni reinicio, y premios al superar los
-tableros 13 (+1 pista), 14 (+3 pistas y estela) y 15 (+5 pistas y estela).
+tableros 13 (+1 pista), 14 (+3 pistas y estela) y 15 (+5 pistas y estela) para la siguiente aventura (en Experto, que empieza con
+1 pista, el premio se limita a +2). Suma como mucho un «resuelto» al día; el oro (los 15) no admite ni un turno de más.
 
 **Logros y Canjear** ([`src/game/achievements.js`](src/game/achievements.js)): 113 logros en cinco grupos y cofres
 de colección; sus puntos se canjean por tableros, fichas, llaves, celebraciones, melodías y portadas. Los diseños épicos y

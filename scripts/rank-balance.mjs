@@ -5,7 +5,7 @@
  */
 import { simulateRun } from '../src/game/balance.js';
 import { hash32, mulberry32 } from '../src/engine/rng.js';
-import { maxScoreFor } from '../src/game/rank.js';
+import { maxScoreFor, rankFor } from '../src/game/rank.js';
 
 const N = Number(process.argv[2] || 3000);
 const names = { 1: 'Normal', 50: 'Difícil', 75: 'Experto' };
@@ -33,20 +33,28 @@ for (const start of [1, 50, 75]) {
   const bySkill = new Map();
   for (let i = 0; i < N; i++) {
     const skill = pickSkill(rng());
+    const relic = RELICS[Math.floor(rng() * 3)];
+    const hero = HEROES[Math.floor(rng() * 3)];
     const r = simulateRun({
-      hero: HEROES[Math.floor(rng() * 3)],
+      hero,
       start,
       skill,
       fate: 3,
       pick: rng() < 0.6 ? 'survival' : 'score',
-      relic: RELICS[Math.floor(rng() * 3)],
+      relic,
       seed: hash32(i, start, 4242),
     });
-    const pct = Math.min(100, (100 * r.score) / maxScoreFor(start));
+    const pct = Math.min(100, (100 * r.score) / maxScoreFor(start, relic, hero));
     all.push(pct);
     (bySkill.get(skill) || bySkill.set(skill, []).get(skill)).push(pct);
   }
   all.sort((a, b) => a - b);
+  const share = Object.fromEntries(
+    ['S+', 'S', 'A', 'B'].map((g) => [g, (100 * all.filter((p) => rankFor(p, start).grade === g).length) / N]),
+  );
+  console.log(
+    `  con los tramos actuales: S+ ${share['S+'].toFixed(1)} % · S ${share.S.toFixed(1)} % · A ${share.A.toFixed(1)} % · B ${share.B.toFixed(1)} % · C ${(100 - share['S+'] - share.S - share.A - share.B).toFixed(1)} %`,
+  );
   const th = Object.fromEntries(Object.entries(TARGET).map(([g, f]) => [g, quantile(all, 1 - f)]));
   console.log(`\n${names[start]}  (máx. ${maxScoreFor(start)})  ${N} partidas`);
   console.log(
@@ -61,4 +69,40 @@ for (const start of [1, 50, 75]) {
       `  habilidad ${skill}: mediana ${quantile(p, 0.5).toFixed(1)} · p90 ${quantile(p, 0.9).toFixed(1)} · p99 ${quantile(p, 0.99).toFixed(1)}`,
     );
   }
+}
+
+/* Jugador perfecto (habilidad 1, siempre en el mínimo) con cada héroe y reliquia: qué parte llega a cada letra.
+ * Un jugador perfecto debe poder llegar a S+ con cualquier combinación, no solo con Lía + Medallón solar. */
+const PERFECT_RUNS = Number(process.argv[3] || 600);
+const RELIC_NAMES = { sun: 'Medallón', purse: 'Reloj', lantern: 'Farol' };
+for (const pick of ['score', 'survival']) {
+  console.log(
+    `\n== Jugador perfecto eligiendo cartas «${pick}» · % de partidas en S+ / S o más (${PERFECT_RUNS} partidas por celda) ==`,
+  );
+  console.log(
+    'camino   héroe  | ' +
+      Object.values(RELIC_NAMES)
+        .map((n) => n.padEnd(17))
+        .join(' | '),
+  );
+  for (const start of [1, 50, 75])
+    for (const hero of HEROES) {
+      const cols = Object.keys(RELIC_NAMES).map((relic) => {
+        let splus = 0;
+        let s = 0;
+        let pctSum = 0;
+        for (let i = 0; i < PERFECT_RUNS; i++) {
+          const r = simulateRun({ hero, start, skill: 1, fate: 3, pick, relic, seed: hash32(i, start, 777) });
+          const pct = Math.min(100, (100 * r.score) / maxScoreFor(start, relic, hero));
+          pctSum += pct;
+          const grade = rankFor(pct, start).grade;
+          if (grade === 'S+') splus++;
+          if (grade === 'S+' || grade === 'S') s++;
+        }
+        return `${((100 * splus) / PERFECT_RUNS).toFixed(0).padStart(3)}% / ${((100 * s) / PERFECT_RUNS).toFixed(0).padStart(3)}% (${(pctSum / PERFECT_RUNS).toFixed(0)})`.padEnd(
+          17,
+        );
+      });
+      console.log(`${names[start].padEnd(8)} ${hero.padEnd(6)} | ${cols.join(' | ')}`);
+    }
 }

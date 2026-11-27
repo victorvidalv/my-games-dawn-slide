@@ -11,18 +11,18 @@ export const PLAN = {
     moss: [['maxLevel', 7]],
     sand: [['bestStreak', 3]],
     rose: [['perfects', 10]],
-    steel: [['dailySolved', 6]],
+    steel: [['dailySolved', 4]],
     marble: [['challengeBest', 5]],
     sapphire: [['completed', 1]],
-    ivory: [['dailyGold', 4]],
+    ivory: [['dailySolved', 8]],
     copper: [['boardsSolved', 95]],
     reef: [['bestStreak', 6]],
     lavender: [['challengeBoards', 14]],
     forest: [['hardLevel', 8]],
-    bronze: [['dailyGold', 9]],
+    bronze: [['dailyGold', 3]],
     crimson: [
       ['expertLevel', 4],
-      ['dailySolved', 29],
+      ['dailySolved', 21],
     ],
     obsidian: [
       ['hardLevel', 18],
@@ -38,7 +38,7 @@ export const PLAN = {
     ],
     storm: [
       ['completed', 6],
-      ['dailyGold', 16],
+      ['dailyGold', 5],
     ],
     lava: [
       ['boardsSolved', 450],
@@ -46,7 +46,7 @@ export const PLAN = {
     ],
     glacier: [
       ['perfects', 130],
-      ['dailySolved', 55],
+      ['dailySolved', 40],
     ],
     neon: [
       ['expertLevel', 20],
@@ -64,17 +64,17 @@ export const PLAN = {
     dawnfire: [
       ['fateSeenCount', 28],
       ['challengeWonCount', 3],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
     nebula: [
       ['completed', 20],
       ['challengeBest', 14],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     eclipse: [
       ['perfects', 450],
       ['challengeBest', 12],
-      ['masterSolved', 40],
+      ['masterSolved', 75],
     ],
     prism: [
       ['bestGrade', 5],
@@ -89,10 +89,10 @@ export const PLAN = {
     candy: [['perfects', 10]],
     bamboo: [['bestStreak', 3]],
     night: [['iceRock', 10]],
-    ceramic: [['dailyGold', 3]],
+    ceramic: [['dailySolved', 6]],
     brass: [['challengeBest', 5]],
     marble: [['locks', 10]],
-    jelly: [['dailySolved', 13]],
+    jelly: [['dailySolved', 9]],
     copper: [['heavyBoards', 11]],
     silk: [['heroWinsCount', 3]],
     pearl: [['challengeBoards', 15]],
@@ -100,7 +100,7 @@ export const PLAN = {
     volt: [['bestStreak', 10]],
     runic: [
       ['powersUsed', 140],
-      ['dailySolved', 29],
+      ['dailySolved', 21],
     ],
     lacquer: [
       ['iceRock', 45],
@@ -108,7 +108,7 @@ export const PLAN = {
     ],
     oldgold: [
       ['locks', 40],
-      ['dailyGold', 13],
+      ['dailyGold', 4],
     ],
     frostedge: [
       ['heavyBoards', 45],
@@ -124,7 +124,7 @@ export const PLAN = {
     ],
     plasma: [
       ['powersUsed', 280],
-      ['dailySolved', 55],
+      ['dailySolved', 40],
     ],
     holo: [
       ['iceRock', 90],
@@ -139,17 +139,17 @@ export const PLAN = {
     galaxia: [
       ['fateSeenCount', 28],
       ['challengeWonCount', 3],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
     solar: [
       ['completed', 20],
       ['challengeBest', 14],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     prisma: [
       ['perfects', 450],
       ['challengeBest', 12],
-      ['masterSolved', 40],
+      ['masterSolved', 75],
     ],
     abismo: [
       ['bestGrade', 5],
@@ -164,15 +164,15 @@ export const PLAN = {
     jade: [['boardsSolved', 22]],
     copper: [['bestStreak', 3]],
     lilac: [['perfects', 10]],
-    bone: [['dailyKinds', 2]],
+    bone: [['dailyBestBoard', 14]],
     emerald: [['challengeBest', 5]],
     sapphire: [['fateCards', 6]],
-    crystal: [['dailyGold', 3]],
+    crystal: [['dailySolved', 6]],
     moon: [['pacts', 2]],
-    ocean: [['dailySolved', 14]],
+    ocean: [['dailySolved', 10]],
     topaz: [['challengeBoards', 13]],
     ruby: [['completed', 2]],
-    frost: [['masterSolved', 4]],
+    frost: [['masterSolved', 15]],
     forest: [['pacts', 5]],
     obsidian: [
       ['fateCards', 27],
@@ -184,7 +184,7 @@ export const PLAN = {
     ],
     phoenix: [
       ['perfects', 85],
-      ['dailyGold', 13],
+      ['dailyGold', 4],
     ],
     storm: [
       ['pacts', 10],
@@ -192,7 +192,7 @@ export const PLAN = {
     ],
     toxic: [
       ['fateCards', 45],
-      ['masterSolved', 15],
+      ['masterSolved', 35],
     ],
     aurora: [
       ['completed', 8],
@@ -200,7 +200,7 @@ export const PLAN = {
     ],
     magma: [
       ['perfects', 140],
-      ['dailySolved', 65],
+      ['dailySolved', 45],
     ],
     neon: [['boardsSolved', 100]],
     gold: [
@@ -211,13 +211,13 @@ export const PLAN = {
     eclipse: [
       ['fateSeenCount', 28],
       ['challengeWonCount', 3],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
     galaxy: [['boardsSolved', 300]],
     dragon: [
       ['perfects', 450],
       ['challengeBest', 12],
-      ['masterSolved', 40],
+      ['masterSolved', 75],
     ],
     chrono: [
       ['bestGrade', 5],
@@ -232,14 +232,14 @@ export const PLAN = {
     cuaderno: [['powersUsed', 20]],
     piedra: [['bestStreak', 3]],
     bronce: [['fateCards', 6]],
-    cristal: [['dailyGold', 3]],
+    cristal: [['dailySolved', 6]],
     zafiro: [['challengeBest', 5]],
     lacre: [['pacts', 3]],
-    jade: [['dailySolved', 20]],
+    jade: [['dailySolved', 14]],
     ticket: [['cleanCity', 11]],
     neon: [
       ['fateSeenCount', 14],
-      ['dailyGold', 10],
+      ['dailyGold', 3],
     ],
     forja: [
       ['fateCards', 35],
@@ -261,17 +261,17 @@ export const PLAN = {
     galaxia: [
       ['fateSeenCount', 28],
       ['challengeWonCount', 3],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
     dragon: [
       ['completed', 20],
       ['challengeBest', 14],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     eclipse: [
       ['perfects', 450],
       ['challengeBest', 12],
-      ['masterSolved', 40],
+      ['masterSolved', 75],
     ],
   },
   music: {
@@ -281,15 +281,15 @@ export const PLAN = {
     z4: [['boardsSolved', 45]],
     z3: [['bestStreak', 3]],
     heroes: [['fateCards', 6]],
-    z5: [['dailyGold', 4]],
+    z5: [['dailySolved', 8]],
     s0: [['challengeBest', 5]],
     l0: [['completed', 1]],
-    l2: [['dailySolved', 18]],
+    l2: [['dailySolved', 13]],
     l3: [['hardLevel', 8]],
     v0: [['bestStreak', 10]],
     s1: [
       ['expertLevel', 4],
-      ['dailyGold', 10],
+      ['dailyGold', 3],
     ],
     fate: [
       ['boardsSolved', 400],
@@ -297,7 +297,7 @@ export const PLAN = {
     ],
     v1: [
       ['fateCards', 70],
-      ['dailySolved', 70],
+      ['dailySolved', 50],
     ],
     z6: [
       ['expertDone', 1],
@@ -307,17 +307,17 @@ export const PLAN = {
     s2: [
       ['fateSeenCount', 28],
       ['challengeWonCount', 3],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
     l6: [
       ['completed', 20],
       ['challengeBest', 14],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     v6: [
       ['perfects', 450],
       ['challengeBest', 12],
-      ['masterSolved', 40],
+      ['masterSolved', 75],
     ],
   },
   cover: {
@@ -325,13 +325,13 @@ export const PLAN = {
     descanso: [['dailySolved', 4]],
     mapa: [['challengeBoards', 6]],
     lia: [['powersUsed', 30]],
-    van: [['dailyGold', 3]],
+    van: [['dailySolved', 6]],
     jean: [['completed', 1]],
     'magia-tiempo': [['bestStreak', 8]],
     'magia-engranajes': [['challengeBest', 5]],
     battle: [
       ['hardLevel', 15],
-      ['dailyGold', 10],
+      ['dailyGold', 3],
     ],
     'neon-cibernetico': [
       ['perfects', 75],
@@ -339,7 +339,7 @@ export const PLAN = {
     ],
     'magia-digital': [
       ['expertLevel', 8],
-      ['dailySolved', 40],
+      ['dailySolved', 28],
     ],
     'combate-arcano': [
       ['completed', 6],
@@ -355,7 +355,7 @@ export const PLAN = {
     ],
     'combate-neon': [
       ['perfects', 160],
-      ['dailyGold', 25],
+      ['dailyGold', 7],
     ],
     victory: [
       ['expertDone', 1],
@@ -365,17 +365,17 @@ export const PLAN = {
     'noche-carmesi': [
       ['fateSeenCount', 28],
       ['challengeWonCount', 3],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
     'magia-sangre': [
       ['bestGrade', 5],
       ['challengeBest', 14],
-      ['masterSolved', 40],
+      ['masterSolved', 75],
     ],
     'combate-sombras': [
       ['completed', 20],
       ['challengeBest', 12],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     oro: [
       ['perfects', 450],
@@ -393,12 +393,12 @@ export const PLAN = {
     muralla: [['dailySolved', 4]],
     'puente-otono': [['challengeBoards', 6]],
     'ciudad-blanca': [['boardsSolved', 55]],
-    'ciudad-linternas': [['dailyGold', 4]],
+    'ciudad-linternas': [['dailySolved', 8]],
     'fortaleza-lunar': [['hardLevel', 5]],
     'ciudad-flotante': [['bestStreak', 10]],
     'castillo-rojo': [
       ['perfects', 65],
-      ['dailySolved', 29],
+      ['dailySolved', 21],
     ],
     'calle-cerezos': [
       ['expertLevel', 8],
@@ -406,7 +406,7 @@ export const PLAN = {
     ],
     'torii-gigante': [
       ['completed', 7],
-      ['dailyGold', 18],
+      ['dailyGold', 5],
     ],
     'puente-dragon': [
       ['boardsSolved', 625],
@@ -420,17 +420,17 @@ export const PLAN = {
     'plaza-neon': [
       ['fateSeenCount', 28],
       ['challengeWonCount', 3],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
     'coloso-neon': [
       ['completed', 20],
       ['challengeBest', 14],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     'santuario-carmesi': [
       ['perfects', 450],
       ['challengeBest', 12],
-      ['masterSolved', 40],
+      ['masterSolved', 75],
     ],
   },
   trail: {
@@ -438,13 +438,13 @@ export const PLAN = {
     embers: [['dailySolved', 4]],
     leaves: [['challengeBoards', 6]],
     petals: [['perfects', 12]],
-    bubbles: [['dailyGold', 3]],
+    bubbles: [['dailySolved', 6]],
     ink: [['iceRock', 10]],
     frost: [['bestStreak', 7]],
     sparks: [['challengeBest', 5]],
     lightning: [
       ['powersUsed', 140],
-      ['dailySolved', 29],
+      ['dailySolved', 21],
     ],
     rainbow: [
       ['heavyBoards', 50],
@@ -455,12 +455,12 @@ export const PLAN = {
     phoenix: [
       ['completed', 20],
       ['challengeWonCount', 3],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     eclipse: [
       ['perfects', 450],
       ['challengeBest', 14],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
   },
   fx: {
@@ -468,14 +468,14 @@ export const PLAN = {
     sparks: [['dailySolved', 4]],
     petals: [['challengeBoards', 6]],
     leaves: [['perfects', 12]],
-    ink: [['dailyGold', 3]],
+    ink: [['dailySolved', 6]],
     frost: [['bestRunStreak', 10]],
     stars: [['bestStreak', 6]],
     confetti: [['challengeBest', 5]],
     coins: [['cleanCity', 11]],
     aurora: [
       ['completed', 4],
-      ['dailyGold', 10],
+      ['dailyGold', 3],
     ],
     prism: [
       ['perfects', 100],
@@ -483,7 +483,7 @@ export const PLAN = {
     ],
     lightning: [
       ['boardsSolved', 625],
-      ['dailySolved', 70],
+      ['dailySolved', 50],
     ],
     phoenix: [
       ['expertDone', 1],
@@ -493,7 +493,7 @@ export const PLAN = {
     fireworks: [
       ['perfects', 450],
       ['challengeWonCount', 3],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
   },
   aura: {
@@ -505,7 +505,7 @@ export const PLAN = {
     petals: [['fateCards', 21]],
     snow: [
       ['hardLevel', 15],
-      ['dailyGold', 10],
+      ['dailyGold', 3],
     ],
     ash: [
       ['expertLevel', 11],
@@ -523,7 +523,7 @@ export const PLAN = {
     aurora: [
       ['perfects', 450],
       ['challengeWonCount', 3],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
   },
   ui: {
@@ -533,7 +533,7 @@ export const PLAN = {
     glacier: [['completed', 3]],
     faro: [
       ['powersUsed', 140],
-      ['dailySolved', 29],
+      ['dailySolved', 21],
     ],
     neon: [
       ['fateSeenCount', 24],
@@ -542,7 +542,7 @@ export const PLAN = {
     eclipse: [
       ['completed', 20],
       ['challengeWonCount', 3],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
   },
   outfit: {
@@ -555,7 +555,7 @@ export const PLAN = {
     'lia:mecanica': [['heroBoardsLia', 75]],
     'lia:piloto': [
       ['heroBoardsLia', 100],
-      ['dailySolved', 29],
+      ['dailySolved', 21],
     ],
     'lia:neon': [
       ['heroBoardsLia', 160],
@@ -569,17 +569,17 @@ export const PLAN = {
     'lia:vampira': [
       ['heroBoardsLia', 425],
       ['challengeWonCount', 3],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
     'lia:lunar': [
       ['heroBoardsLia', 525],
       ['challengeBest', 14],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     'lia:guerrera': [
       ['heroBoardsLia', 600],
       ['challengeBest', 12],
-      ['masterSolved', 40],
+      ['masterSolved', 75],
     ],
     'jean:aviador': [['heroBoardsJean', 16]],
     'jean:nomada': [['heroBoardsJean', 20]],
@@ -590,7 +590,7 @@ export const PLAN = {
     'jean:principe': [['heroBoardsJean', 75]],
     'jean:centurion': [
       ['heroBoardsJean', 100],
-      ['dailySolved', 29],
+      ['dailySolved', 21],
     ],
     'jean:astrologo': [
       ['heroBoardsJean', 140],
@@ -605,12 +605,12 @@ export const PLAN = {
     'jean:violeta': [
       ['heroBoardsJean', 525],
       ['challengeWonCount', 3],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     'jean:shogun': [
       ['heroBoardsJean', 600],
       ['challengeBest', 14],
-      ['dailyGold', 40],
+      ['dailyGold', 11],
     ],
     'van:navegante': [['heroBoardsVan', 16]],
     'van:maga': [['heroBoardsVan', 20]],
@@ -621,7 +621,7 @@ export const PLAN = {
     'van:verde': [['heroBoardsVan', 75]],
     'van:cuervo': [
       ['heroBoardsVan', 100],
-      ['dailySolved', 29],
+      ['dailySolved', 21],
     ],
     'van:dama': [
       ['heroBoardsVan', 140],
@@ -643,7 +643,7 @@ export const PLAN = {
     'van:espinas': [
       ['heroBoardsVan', 525],
       ['challengeWonCount', 3],
-      ['dailyGold', 60],
+      ['dailyGold', 17],
     ],
     'van:cuervos': [['heroHardWinVan', 1]],
   },

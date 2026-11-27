@@ -325,7 +325,8 @@ describe('rescates, movimientos y partidas guardadas', () => {
   });
 
   it('el rango de partida (S+, S, A, B, C) es el porcentaje del máximo de su dificultad', () => {
-    const grade = (start, pct) => runRank({ start, score: Math.ceil((maxScoreFor(start) * pct) / 100) }).grade;
+    const grade = (start, pct) =>
+      runRank({ start, relic: 'sun', score: Math.ceil((maxScoreFor(start) * pct) / 100) }).grade;
     for (const start of [1, 50, 75]) {
       const m = RANK_MINS[start];
       expect(grade(start, 100)).toBe('S+');
@@ -363,6 +364,32 @@ describe('rescates, movimientos y partidas guardadas', () => {
     }
     expect(maxScoreFor(1)).toBeLessThan(maxScoreFor(50));
     expect(maxScoreFor(50)).toBeLessThan(maxScoreFor(75));
+  });
+
+  it('el máximo cuenta la dificultad adaptativa: un jugador perfecto no puede pasar del 100 %', () => {
+    // sin ella, una partida perfecta superaba el «máximo» (los tableros reales son 1-2 movimientos más largos)
+    for (const start of [1, 50, 75]) {
+      const { hero, relic, cards } = MAX_SCORE[start];
+      expect(perfectRunScore({ hero, start, relic, cards, adaptive: false })).toBeLessThan(maxScoreFor(start));
+    }
+  });
+
+  it('el máximo de cada héroe también coincide con jugar perfecto con él', () => {
+    for (const start of [1, 50, 75])
+      for (const [hero, { score, relic, cards }] of Object.entries(MAX_SCORE[start].byHero))
+        expect(perfectRunScore({ hero, start, relic, cards }), `camino ${start}, ${hero}`).toBe(score);
+  });
+
+  it('un jugador perfecto puede llegar a S+ con cualquier héroe y reliquia (el máximo se ajusta a ambos)', () => {
+    for (const start of [1, 50, 75])
+      for (const [hero, { cards }] of Object.entries(MAX_SCORE[start].byHero))
+        for (const relic of ['sun', 'purse', 'lantern']) {
+          const score = perfectRunScore({ hero, start, relic, cards });
+          expect(runRank({ start, relic, hero, score }).grade, `camino ${start}, ${hero}, ${relic}`).toBe('S+');
+        }
+    expect(maxScoreFor(1, 'purse')).toBeLessThan(maxScoreFor(1, 'sun'));
+    expect(maxScoreFor(1, 'sun')).toBe(maxScoreFor(1));
+    expect(maxScoreFor(1, 'sun', 'jean')).toBeLessThan(maxScoreFor(1, 'sun', 'lia'));
   });
 
   it('las ayudas y las cartas al azar no superan el máximo de la dificultad', () => {

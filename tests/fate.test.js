@@ -22,6 +22,7 @@ import {
   rerollFate,
   usesFate,
 } from '../src/game/fate.js';
+import { LIA_CARGA_EMBER } from '../src/game/fate.js';
 import { boardPure, liaIntact, runGain } from '../src/game/run-points.js';
 import { LIA_INTACT_POINTS, bonusTurns, canHint, snapshotRescue, spendHint } from '../src/game/heroes.js';
 import { canPaidRevive, payRevive } from '../src/game/shop.js';
@@ -113,7 +114,12 @@ describe('efectos acumulativos', () => {
     expect(fatePoints(run(['fortuna', 'constelacion', 'respiro']))).toBeCloseTo(0.12 + 0.12);
     const greedy = ['juramento', 'vidrio', 'cuerda-floja', 'temerario', 'ofrenda', 'fortuna'];
     expect(fatePoints(run(greedy))).toBe(FATE_POINTS_RANGE[1]);
-    expect(fatePoints(run(['pendulo-roto']))).toBeCloseTo(-0.15);
+    // Juramento + Temerario: las pistas del Juramento no se pueden usar; en su lugar da +1 turno por tablero
+    const plainBoard = { opt: 10, pieces: [] };
+    expect(fateTurns(run(['juramento']), plainBoard)).toBe(0);
+    expect(fateTurns(run(['juramento', 'temerario']), plainBoard)).toBe(1);
+    expect(fateTurns(run(['temerario']), plainBoard)).toBe(0);
+    expect(fatePoints(run(['pendulo-roto']))).toBeCloseTo(-0.08);
     // Gran tablero y Frenesí cuentan desde el nivel 12 en los tres caminos (antes dependían del mínimo y en Difícil/Experto valían siempre)
     expect(fatePoints(run(['long-board']), { opt: 30, n: 11 })).toBe(0);
     expect(fatePoints(run(['long-board']), { opt: 10, n: 12 })).toBeCloseTo(0.22);
@@ -153,11 +159,10 @@ describe('efectos acumulativos', () => {
     expect(fateTurns(run(['respiro', 'holgura', 'pendulo-roto']), icy)).toBe(FATE_TURNS_RANGE[1]);
     expect(fateTurns(run(['cuerda-floja']), plain)).toBe(-2);
     expect(fateTurns(run(['frenesi']), plain)).toBe(-1);
-    expect(fateTurns(run(['carga'], { hero: 'lia' }), plain)).toBe(2);
+    expect(fateTurns(run(['carga'], { hero: 'lia' }), plain), 'Lía: +1 turno y la Brasa más fuerte').toBe(1);
     expect(fateTurns(run(['carga'], { hero: 'jean' }), plain)).toBe(1);
     expect(fateTurns(run(['carga', 'juramento'], { hero: 'jean' }), plain), 'sin poder, Carga no da nada').toBe(0);
-    expect(fateTurns(run(['power-echo'], { hero: 'lia' }), { ...plain, n: 6 })).toBe(1);
-    expect(fateTurns(run(['power-echo'], { hero: 'lia' }), { ...plain, n: 5 })).toBe(1);
+    expect(fateTurns(run(['power-echo'], { hero: 'lia' }), { ...plain, n: 6 }), 'Eco con Lía no da turnos').toBe(0);
     expect(fateTurns(run(['ceniza-tibia']), { ...plain, n: 7 })).toBe(1);
     expect(fateTurns(run(['ceniza-tibia']), { ...plain, n: 8 })).toBe(0);
   });
@@ -193,7 +198,7 @@ describe('pactos: beneficio con costo', () => {
     expect(payRevive(phoenix).ok).toBe(true);
     expect(canPaidRevive(phoenix)).toBe(false);
   });
-  it('Ofrenda cuesta el 15 % de los puntos al tomarla; Bolsillo da 3 pistas', () => {
+  it('Ofrenda cuesta el 10 % de los puntos al tomarla; Bolsillo da 3 pistas', () => {
     const pick = (id) => {
       for (let seed = 1; seed < 50; seed++) {
         const r = run([], { seed });
@@ -207,7 +212,7 @@ describe('pactos: beneficio con costo', () => {
     };
     const o = pick('ofrenda');
     pickFate(o.r, 'ofrenda', o.city);
-    expect(o.r.score).toBe(8500);
+    expect(o.r.score).toBe(9000);
     const p = pick('bolsillo');
     pickFate(p.r, 'bolsillo', p.city);
     expect(p.r.hints).toBe(6);
@@ -260,19 +265,21 @@ describe('pactos: beneficio con costo', () => {
     expect(canPaidRevive(both)).toBe(false);
     expect(fateTurns(r, { opt: 10, pieces: [] })).toBe(-2);
   });
-  it('Impulso da turnos con la racha; Maestría da pistas por Perfecto en tableros largos; Racha firme conserva la mitad', () => {
+  it('Impulso da turnos con la racha; Maestría da pistas por Perfecto desde el nivel 12; Racha firme conserva la mitad', () => {
     const plain = { opt: 10, pieces: [] };
     expect(fateTurns(run(['impulso'], { streak: 1 }), plain)).toBe(0);
     expect(fateTurns(run(['impulso'], { streak: 2 }), plain)).toBe(1);
     expect(fateTurns(run(['impulso'], { streak: 5 }), plain)).toBe(2);
     expect(fateTurns(run(['impulso'], { streak: 12 }), plain)).toBe(3);
     const m = run(['maestria'], { hints: 0, streak: 0, adj: 0 });
-    applyAdventureWin(m, { n: 10, moves: 15, opt: 15 }, { total: 100, eff: 1 });
-    expect(m.hints).toBe(1);
-    applyAdventureWin(m, { n: 11, moves: 14, opt: 14 }, { total: 100, eff: 1 });
-    expect(m.hints, 'tablero corto: no cuenta').toBe(1);
-    applyAdventureWin(m, { n: 13, moves: 17, opt: 15 }, { total: 100, eff: 0.87 });
-    expect(m.hints, 'sin Perfecto: no cuenta').toBe(1);
+    applyAdventureWin(m, { n: 13, moves: 15, opt: 15 }, { total: 100, eff: 1 });
+    expect(m.hints, 'desde el nivel 12, sea cual sea el mínimo').toBe(1);
+    applyAdventureWin(m, { n: 14, moves: 6, opt: 6 }, { total: 100, eff: 1 });
+    expect(m.hints, 'el mínimo del tablero ya no importa').toBe(2);
+    applyAdventureWin(m, { n: 11, moves: 25, opt: 25 }, { total: 100, eff: 1 });
+    expect(m.hints, 'antes del nivel 12 no cuenta, ni en un tablero largo de Experto').toBe(2);
+    applyAdventureWin(m, { n: 15, moves: 17, opt: 15 }, { total: 100, eff: 0.87 });
+    expect(m.hints, 'sin Perfecto: no cuenta').toBe(2);
     const firm = run(['racha-firme'], { streak: 5, adj: 0 });
     applyAdventureWin(firm, { n: 13, moves: 15, opt: 10 }, { total: 100, eff: 0.5 });
     expect(firm.streak).toBe(2);
@@ -292,6 +299,15 @@ describe('pactos: beneficio con costo', () => {
     const ember = runGain(lia, 12, 10, 0, G);
     expect(ember.ember).toBe(true);
     expect(ember.total).toBe(base + Math.round(calcGain(12, 10, 0).total * LIA_INTACT_POINTS));
+    // Carga: la Brasa de Lía da +26 % en vez de +18 %
+    const carga = runGain(run(['carga'], { hero: 'lia' }), 12, 10, 0, G);
+    expect(carga.total).toBe(
+      calcGain(12, 10, 0).total + Math.round(calcGain(12, 10, 0).total * (LIA_INTACT_POINTS + LIA_CARGA_EMBER)),
+    );
+    // Eco del poder: la Brasa aguanta 1 turno de reserva gastado
+    const eco = run(['power-echo'], { hero: 'lia' });
+    expect(liaIntact(eco, G, 31 - reserve)).toBe(true);
+    expect(liaIntact(eco, G, 32 - reserve)).toBe(false);
     const monk = run(['ascetismo'], { hero: 'jean' });
     expect(boardPure(monk, G, 12)).toBe(true);
     expect(boardPure({ ...monk, powerUsedLevel: 5 }, G, 12)).toBe(false);

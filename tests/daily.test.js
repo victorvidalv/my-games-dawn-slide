@@ -85,6 +85,9 @@ describe('desafío diario: 15 tableros (3→17) y 150 turnos exactos', () => {
     const r2 = recordDaily(st, DAILY_CHALLENGE.id, day, { cleared: 15, used: 150 });
     expect(r2).toMatchObject({ cleared: 15, hints: 5, streak: 1, streakUp: false, medal: 'gold' });
     expect(streakHintBonus(st, day)).toBe(5);
+    expect(streakHintBonus(st, day, 50), 'Difícil: sin tope').toBe(5);
+    expect(streakHintBonus(st, day, 75), 'Experto empieza con 1 pista: el Desafío le da como mucho +2').toBe(2);
+    expect(streakHintBonus(13, day, 75)).toBe(1);
     expect(todayResult(st, DAILY_CHALLENGE.id, day).cleared).toBe(15);
 
     const r3 = recordDaily(st, DAILY_CHALLENGE.id, day + 1, { cleared: 14, used: 150 });

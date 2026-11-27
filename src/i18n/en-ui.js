@@ -855,8 +855,8 @@ export const EN_UI = {
   'PUNTAJE OBTENIDO': 'FINAL SCORE',
   'Estás en {g}: te faltan {n} pts para {u}': "You're at {g}: {n} pts to go for {u}",
   'Rango S+: ¡puntaje casi perfecto!': 'Rank S+: a near-perfect score!',
-  'Máximo de este camino: {n} pts (mejor héroe, reliquia y cartas, con todo perfecto).':
-    "This path's maximum: {n} pts (best hero, relic and cards, everything perfect).",
+  'Máximo con tu héroe y tu reliquia: {n} pts (mejores cartas, con todo perfecto).':
+    'Maximum with your hero and relic: {n} pts (best cards, everything perfect).',
   'DEL MÁXIMO POSIBLE': 'OF THE MAXIMUM',
   '{p} % del máximo': '{p} % of the maximum',
   'Te retiraste': 'You retired',
@@ -904,13 +904,16 @@ export const EN_UI = {
   '+35 % de puntos y +1 turno en tableros con maleficio': '+35% points and +1 turn on cursed boards',
   '+2 turnos extra en cada tablero': '+2 extra turns on every board',
   '+3 turnos extra si hay pieza pesada o hielo': '+3 extra turns on heavy or ice boards',
-  'Tu poder nunca descansa y +1 turno en cada tablero (Lía: +2 turnos)':
-    'Your power never rests and +1 turn per board (Lía: +2 turns)',
-  '+1 uso de poder en cada tablero (Lía: +1 turno en cada tablero)':
-    '+1 power use on every board (Lía: +1 turn per board)',
+  'Tu poder nunca descansa y +1 turno en cada tablero (Lía: además su Brasa intacta da +26 % en vez de +18 %)':
+    'Your power never rests and +1 turn per board (Lía: her Intact Ember also gives +26% instead of +18%)',
+  '+1 uso de poder en cada tablero (Lía: la Brasa sigue intacta aunque gastes 1 turno de su reserva)':
+    '+1 power use on every board (Lía: the Ember stays intact even if you spend 1 turn of her reserve)',
   'Al cerrar cada tramo, +80 % de los puntos base de un tablero (incluye el 21)':
     'At each leg end, +80% of one board’s base points (incl. 21)',
-  '+50 % de puntos y +1 pista al cerrar cada tramo': '+50% points and +1 hint at each leg end',
+  '+50 % de puntos y +1 pista al cerrar cada tramo (con Temerario, +1 turno en cada tablero en vez de las pistas)':
+    '+50% points and +1 hint at each leg end (with Daredevil, +1 turn per board instead of the hints)',
+  '+25 % de puntos el resto de la partida': '+25% points for the rest of the run',
+  '−8 % de puntos en cada tablero': '−8% points on every board',
   '+22 % de puntos': '+22% points',
   '+50 % de puntos': '+50% points',
   '+28 % de puntos': '+28% points',
@@ -918,13 +921,14 @@ export const EN_UI = {
   'Pierdes 10 % de tus puntos ahora': 'Lose 10% of your points now',
   '+1 turno por cada {n} de racha al empezar el tablero (máx. +{m})':
     '+1 turn for every {n} streak when a board starts (max +{m})',
-  '+1 pista por cada Perfecto en tableros de {n}+ mov. mínimos':
-    '+1 hint for each Perfect on boards with {n}+ min moves',
+  '+1 pista por cada Perfecto del nivel {n} al 21': '+1 hint for each Perfect from level {n} to 21',
   '+20 % de puntos en tableros sin pista ni poder (Lía: sin tocar la reserva)':
     '+20% points on boards with no hint or power (Lía: without touching the reserve)',
-  'Desbloquea 1 revivir y +2 pistas ahora': 'Unlocks 1 revive and +2 hints now',
+  'Desbloquea 1 revivir y +1 pista ahora': 'Unlocks 1 revive and +1 hint now',
   'Pierdes 1 pista al cerrar cada tramo': 'Lose 1 hint at each leg end',
   '+2 turnos en cada tablero': '+2 turns on every board',
+  '+3 pistas al empezar y +5 % de puntos en tableros sin pista':
+    '+3 hints at the start and +5% points on boards without a hint',
   '+3 pistas al empezar': '+3 hints at the start',
   '+{n} turno en maleficios': '+{n} turn on cursed boards',
   '+1 turno cada {n} de racha': '+1 turn per {n} streak',
