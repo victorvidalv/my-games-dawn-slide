@@ -816,8 +816,8 @@ export const ZH_UI = {
   'PUNTAJE OBTENIDO': '本局得分',
   'Estás en {g}: te faltan {n} pts para {u}': '当前 {g}：距离 {u} 还差 {n} 分',
   'Rango S+: ¡puntaje casi perfecto!': 'S+ 评级：近乎完美的得分！',
-  'Máximo de este camino con tu reliquia: {n} pts (mejor héroe y cartas, con todo perfecto).':
-    '本路线在你的遗物下的最高分：{n} 分（最佳英雄和卡牌，且全部完美）。',
+  'Máximo con tu héroe y tu reliquia: {n} pts (mejores cartas, con todo perfecto).':
+    '你的英雄与遗物下的最高分：{n} 分（最佳卡牌，且全部完美）。',
   'DEL MÁXIMO POSIBLE': '占最高分',
   '{p} % del máximo': '占最高分的 {p} %',
   'Te retiraste': '你已撤退',
@@ -864,24 +864,29 @@ export const ZH_UI = {
   '+35 % de puntos y +1 turno en tableros con maleficio': '诅咒棋盘得分 +35%，并多 1 步',
   '+2 turnos extra en cada tablero': '每个棋盘额外 +2 步',
   '+3 turnos extra si hay pieza pesada o hielo': '有重块或冰块的棋盘额外 +3 步',
-  'Tu poder nunca descansa y +1 turno en cada tablero (Lía: +2 turnos)':
-    '你的能力永不休息，每个棋盘 +1 步（莉娅：+2 步）',
-  '+1 uso de poder en cada tablero (Lía: +1 turno en cada tablero)': '每个棋盘能力使用次数 +1（莉娅：每个棋盘 +1 步）',
+  'Tu poder nunca descansa y +1 turno en cada tablero (Lía: además su Brasa intacta da +26 % en vez de +18 %)':
+    '你的能力永不休息，每个棋盘 +1 步（莉娅：完好余烬额外得分 +26%，而非 +18%）',
+  '+1 uso de poder en cada tablero (Lía: la Brasa sigue intacta aunque gastes 1 turno de su reserva)':
+    '每个棋盘能力使用次数 +1（莉娅：即使动用 1 步储备，余烬仍算完好）',
   'Al cerrar cada tramo, +80 % de los puntos base de un tablero (incluye el 21)':
     '每完成一段，获得一个棋盘 80% 的基础分（含第 21 关）',
-  '+50 % de puntos y +1 pista al cerrar cada tramo': '得分 +50%，每完成一段 +1 次提示',
+  '+50 % de puntos y +1 pista al cerrar cada tramo (con Temerario, +1 turno en cada tablero en vez de las pistas)':
+    '得分 +50%，每完成一段 +1 次提示（有「亡命之徒」时，改为每个棋盘 +1 步）',
+  '+25 % de puntos el resto de la partida': '本局剩余棋盘得分 +25%',
+  '−8 % de puntos en cada tablero': '每个棋盘得分 −8%',
   '+22 % de puntos': '得分 +22%',
   '+50 % de puntos': '得分 +50%',
   '+28 % de puntos': '得分 +28%',
   '+60 % de puntos en los 3 últimos tableros (19–21)': '最后 3 个棋盘（19–21）得分 +60%',
   'Pierdes 10 % de tus puntos ahora': '立即失去 10% 的分数',
   '+1 turno por cada {n} de racha al empezar el tablero (máx. +{m})': '棋盘开始时，每 {n} 连胜 +1 步（最多 +{m}）',
-  '+1 pista por cada Perfecto en tableros de {n}+ mov. mínimos': '在最少步数 {n}+ 的棋盘达成完美，+1 次提示',
+  '+1 pista por cada Perfecto del nivel {n} al 21': '第 {n} 到 21 关每次完美 +1 次提示',
   '+20 % de puntos en tableros sin pista ni poder (Lía: sin tocar la reserva)':
     '不用提示也不用能力的棋盘得分 +20%（莉娅：不动用储备）',
-  'Desbloquea 1 revivir y +2 pistas ahora': '解锁 1 次复活，并立即 +2 次提示',
+  'Desbloquea 1 revivir y +1 pista ahora': '解锁 1 次复活，并立即 +1 次提示',
   'Pierdes 1 pista al cerrar cada tramo': '每完成一段失去 1 次提示',
   '+2 turnos en cada tablero': '每个棋盘 +2 步',
+  '+3 pistas al empezar y +5 % de puntos en tableros sin pista': '开局 +3 次提示，不用提示的棋盘得分 +5%',
   '+3 pistas al empezar': '开局 +3 次提示',
   '+{n} turno en maleficios': '诅咒棋盘 +{n} 步',
   '+1 turno cada {n} de racha': '每 {n} 连胜 +1 步',

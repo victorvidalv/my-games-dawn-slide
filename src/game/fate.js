@@ -18,14 +18,14 @@ export const offerSize = (run) => FATE_OFFER_BY_HERO[run?.hero] ?? FATE_OFFER;
 /** Desde este nivel cuentan Gran tablero y Frenesí (los tableros grandes del final, igual en los tres caminos). */
 export const LATE_LEVEL = 12;
 export const FINAL_LEG_START = 19;
+/** Carga con Lía: puntos extra de la Brasa intacta (+18 % → +26 %). */
+export const LIA_CARGA_EMBER = 0.08;
 /** Límites de la suma de todas las cartas. */
 export const FATE_POINTS_RANGE = [-0.3, 0.9];
 export const FATE_TURNS_RANGE = [-2, 4];
 /** Impulso: +1 turno por cada `STREAK_TURNS_EVERY` de racha, hasta +2. */
 export const STREAK_TURNS_EVERY = 2;
 export const STREAK_TURNS_MAX = 3;
-/** Maestría: un Perfecto en un tablero de al menos este mínimo da una pista. */
-export const MASTERY_MIN = 15;
 
 /**
  * Las 31 cartas (21 bendiciones, 10 pactos). Las nuevas van al final: el código de guardado usa su posición. `hue` son sus dos colores; el arte vive en `ui/fate-art.js`.
@@ -118,17 +118,17 @@ export const FATE_CARDS = [
     id: 'carga',
     kind: 'blessing',
     name: 'Carga',
-    gain: 'Tu poder nunca descansa y +1 turno en cada tablero (Lía: +2 turnos)',
+    gain: 'Tu poder nunca descansa y +1 turno en cada tablero (Lía: además su Brasa intacta da +26 % en vez de +18 %)',
     hue: ['#a77ee0', '#eee0ff'],
-    fx: { powerShare: 1, powerTurns: 1, liaTurns: 2 },
+    fx: { powerShare: 1, powerTurns: 1, liaEmber: LIA_CARGA_EMBER },
   },
   {
     id: 'power-echo',
     kind: 'blessing',
     name: 'Eco del poder',
-    gain: '+1 uso de poder en cada tablero (Lía: +1 turno en cada tablero)',
+    gain: '+1 uso de poder en cada tablero (Lía: la Brasa sigue intacta aunque gastes 1 turno de su reserva)',
     hue: ['#c26fd1', '#f7dcff'],
-    fx: { lastPower: 1, liaLastTurns: 1 },
+    fx: { lastPower: 1, liaSlack: 1 },
   },
   /* ───── Bendiciones: pistas, revivir y cierre ───── */
   {
@@ -184,10 +184,10 @@ export const FATE_CARDS = [
     id: 'juramento',
     kind: 'pact',
     name: 'Juramento',
-    gain: '+50 % de puntos y +1 pista al cerrar cada tramo',
+    gain: '+50 % de puntos y +1 pista al cerrar cada tramo (con Temerario, +1 turno en cada tablero en vez de las pistas)',
     cost: 'Apaga el poder de tu héroe',
     hue: ['#8e3b5f', '#f2c6d8'],
-    fx: { points: 0.5, cityHints: 1, noPower: true },
+    fx: { points: 0.5, cityHints: 1, noPower: true, noHintTurns: 1 },
   },
   {
     id: 'vidrio',
@@ -220,19 +220,19 @@ export const FATE_CARDS = [
     id: 'ofrenda',
     kind: 'pact',
     name: 'Ofrenda',
-    gain: '+18 % de puntos el resto de la partida',
-    cost: 'Pierdes 15 % de tus puntos ahora',
+    gain: '+25 % de puntos el resto de la partida',
+    cost: 'Pierdes 10 % de tus puntos ahora',
     hue: ['#7d4a9e', '#ead6f7'],
-    fx: { points: 0.18, pickScore: -0.15 },
+    fx: { points: 0.25, pickScore: -0.1 },
   },
   {
     id: 'pendulo-roto',
     kind: 'pact',
     name: 'Péndulo roto',
     gain: '+3 turnos extra en cada tablero',
-    cost: '−15 % de puntos en cada tablero',
+    cost: '−8 % de puntos en cada tablero',
     hue: ['#4a7a6a', '#d3efe4'],
-    fx: { turns: 3, points: -0.15 },
+    fx: { turns: 3, points: -0.08 },
   },
   {
     id: 'abismo',
@@ -265,7 +265,7 @@ export const FATE_CARDS = [
     id: 'maestria',
     kind: 'blessing',
     name: 'Maestría',
-    gain: `+1 pista por cada Perfecto en tableros de ${MASTERY_MIN}+ mov. mínimos`,
+    gain: `+1 pista por cada Perfecto del nivel ${LATE_LEVEL} al 21`,
     hue: ['#3f9fd8', '#d8efff'],
     fx: { perfectHints: 1 },
   },
@@ -281,10 +281,10 @@ export const FATE_CARDS = [
     id: 'reencarnacion',
     kind: 'pact',
     name: 'Reencarnación',
-    gain: 'Desbloquea 1 revivir y +2 pistas ahora',
+    gain: 'Desbloquea 1 revivir y +1 pista ahora',
     cost: '−2 turnos en cada tablero',
     hue: ['#c2463f', '#ffd9cf'],
-    fx: { revives: 1, pickHints: 2, turns: -2 },
+    fx: { revives: 1, pickHints: 1, turns: -2 },
   },
   {
     id: 'codicia',
@@ -381,13 +381,14 @@ export function fateTotals(run) {
     streakKeep: 0,
     perfectHints: 0,
     purePoints: 0,
-    liaTurns: 0,
-    liaLastTurns: 0,
+    liaEmber: 0,
+    liaSlack: 0,
     powerShare: 0,
     lastPower: 0,
     revives: 0,
     noPower: false,
     noHints: false,
+    noHintTurns: 0,
     cityHints: 0,
     cityBases: 0,
   };
@@ -429,15 +430,14 @@ export function fatePoints(run, G) {
 /** Turnos extra (o menos) de las cartas en el tablero `G`. Nunca deja el límite por debajo de mínimo + 1 (eso lo hace quien suma). */
 export function fateTurns(run, G) {
   const t = fateTotals(run);
-  const isLia = run?.hero === 'lia' && !t.noPower;
   const known = G && Number.isFinite(G.n);
-  const liaExtra = isLia ? t.liaTurns + (known && echoBoard(G.n) ? t.liaLastTurns : 0) : 0;
   const curse = known && hasCurse(G.n) ? t.curseTurns : 0;
   const streak = t.streakTurns
     ? Math.min(STREAK_TURNS_MAX, Math.floor((run?.streak || 0) / STREAK_TURNS_EVERY)) * t.streakTurns
     : 0;
-  const power = isLia || t.noPower ? 0 : t.powerTurns; // Carga: +1 turno (Lía ya suma los suyos)
-  return clamp(t.turns + (heavyOrIce(G) ? t.heavyIce : 0) + liaExtra + power + curse + streak, FATE_TURNS_RANGE);
+  const power = t.noPower ? 0 : t.powerTurns; // Carga: +1 turno (con Juramento el poder está apagado)
+  const oath = t.noHints ? t.noHintTurns : 0; // Juramento + Temerario: las pistas del Juramento no sirven, así que da un turno
+  return clamp(t.turns + (heavyOrIce(G) ? t.heavyIce : 0) + power + oath + curse + streak, FATE_TURNS_RANGE);
 }
 
 /** Tableros con el uso extra de Eco del poder: todos (se deja la regla aparte por si se quiere acotar). */
@@ -463,9 +463,12 @@ export function nextStreak(run, eff) {
   return Math.floor(streak * fateTotals(run).streakKeep);
 }
 
-/** Pistas que da Maestría al ganar un tablero de mínimo `opt` en `moves` (0 si un Pacto apaga las pistas). */
-export const fatePerfectHints = (run, moves, opt) =>
-  moves <= opt && opt >= MASTERY_MIN && !fateBlocks(run, 'hints') ? fateTotals(run).perfectHints : 0;
+/**
+ * Pistas que da Maestría al ganar el tablero `level` de mínimo `opt` en `moves` (0 si un Pacto apaga las pistas). Cuenta desde el
+ * nivel 12, como Gran tablero y Frenesí: con un mínimo fijo (15) valía desde el nivel 1 en Experto y desde el 13 en Normal.
+ */
+export const fatePerfectHints = (run, moves, opt, level) =>
+  moves <= opt && level >= LATE_LEVEL && !fateBlocks(run, 'hints') ? fateTotals(run).perfectHints : 0;
 
 /** ¿Apaga un Pacto esta ayuda? kind: 'power' | 'hints' */
 export function fateBlocks(run, kind) {

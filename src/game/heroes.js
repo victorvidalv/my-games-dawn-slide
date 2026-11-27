@@ -62,8 +62,8 @@ const isPractice = (mode) => mode === 'p';
  */
 const LIA_TURNS_SHARE = { 1: 0.34, 50: 0.23, 75: 0.21 };
 const LIA_MIN_TURNS = 1;
-/** Brasa intacta: +12 % de puntos en el tablero si Lía lo termina sin entrar en su reserva. */
-export const LIA_INTACT_POINTS = 0.12;
+/** Brasa intacta: +18 % de puntos en el tablero si Lía lo termina sin entrar en su reserva. */
+export const LIA_INTACT_POINTS = 0.18;
 
 /** Turnos extra que da el héroe sobre el límite base (solo Lía): una parte del mínimo `opt` del tablero según el camino. `off` = poder apagado (Juramento). */
 export const bonusTurns = (heroId, opt, start = 1, off = false) => {

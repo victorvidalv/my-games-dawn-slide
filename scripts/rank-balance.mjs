@@ -34,8 +34,9 @@ for (const start of [1, 50, 75]) {
   for (let i = 0; i < N; i++) {
     const skill = pickSkill(rng());
     const relic = RELICS[Math.floor(rng() * 3)];
+    const hero = HEROES[Math.floor(rng() * 3)];
     const r = simulateRun({
-      hero: HEROES[Math.floor(rng() * 3)],
+      hero,
       start,
       skill,
       fate: 3,
@@ -43,7 +44,7 @@ for (const start of [1, 50, 75]) {
       relic,
       seed: hash32(i, start, 4242),
     });
-    const pct = Math.min(100, (100 * r.score) / maxScoreFor(start, relic));
+    const pct = Math.min(100, (100 * r.score) / maxScoreFor(start, relic, hero));
     all.push(pct);
     (bySkill.get(skill) || bySkill.set(skill, []).get(skill)).push(pct);
   }
@@ -92,7 +93,7 @@ for (const pick of ['score', 'survival']) {
         let pctSum = 0;
         for (let i = 0; i < PERFECT_RUNS; i++) {
           const r = simulateRun({ hero, start, skill: 1, fate: 3, pick, relic, seed: hash32(i, start, 777) });
-          const pct = Math.min(100, (100 * r.score) / maxScoreFor(start, relic));
+          const pct = Math.min(100, (100 * r.score) / maxScoreFor(start, relic, hero));
           pctSum += pct;
           const grade = rankFor(pct, start).grade;
           if (grade === 'S+') splus++;

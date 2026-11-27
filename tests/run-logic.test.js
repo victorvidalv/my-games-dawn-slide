@@ -374,19 +374,22 @@ describe('rescates, movimientos y partidas guardadas', () => {
     }
   });
 
-  it('un jugador perfecto puede llegar a S+ con cualquier héroe y reliquia (el máximo se ajusta a la reliquia)', () => {
+  it('el máximo de cada héroe también coincide con jugar perfecto con él', () => {
     for (const start of [1, 50, 75])
-      for (const relic of ['sun', 'purse', 'lantern']) {
-        const best = [];
-        for (const hero of ['lia', 'jean', 'van']) {
-          // la mejor mano para ese héroe es la del máximo del camino (hay cartas que no dependen del héroe)
-          const score = perfectRunScore({ hero, start, relic, cards: MAX_SCORE[start].cards });
-          best.push(runRank({ start, relic, score }).grade);
+      for (const [hero, { score, relic, cards }] of Object.entries(MAX_SCORE[start].byHero))
+        expect(perfectRunScore({ hero, start, relic, cards }), `camino ${start}, ${hero}`).toBe(score);
+  });
+
+  it('un jugador perfecto puede llegar a S+ con cualquier héroe y reliquia (el máximo se ajusta a ambos)', () => {
+    for (const start of [1, 50, 75])
+      for (const [hero, { cards }] of Object.entries(MAX_SCORE[start].byHero))
+        for (const relic of ['sun', 'purse', 'lantern']) {
+          const score = perfectRunScore({ hero, start, relic, cards });
+          expect(runRank({ start, relic, hero, score }).grade, `camino ${start}, ${hero}, ${relic}`).toBe('S+');
         }
-        expect(best, `camino ${start}, ${relic}`).toEqual(['S+', 'S+', 'S+']);
-      }
     expect(maxScoreFor(1, 'purse')).toBeLessThan(maxScoreFor(1, 'sun'));
     expect(maxScoreFor(1, 'sun')).toBe(maxScoreFor(1));
+    expect(maxScoreFor(1, 'sun', 'jean')).toBeLessThan(maxScoreFor(1, 'sun', 'lia'));
   });
 
   it('las ayudas y las cartas al azar no superan el máximo de la dificultad', () => {

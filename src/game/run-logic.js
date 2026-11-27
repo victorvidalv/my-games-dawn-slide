@@ -220,7 +220,7 @@ export function applyAdventureWin(run, G, gain) {
   run.bestStreak = Math.max(run.bestStreak || 0, run.streak);
   run.adj = nextAdj(run.adj, run.level, gain.eff);
   clearRewards(run, G.n);
-  run.hints = (run.hints || 0) + fatePerfectHints(run, G.moves, G.opt); // Maestría
+  run.hints = (run.hints || 0) + fatePerfectHints(run, G.moves, G.opt, G.n); // Maestría
   run.pendingClear = { level: G.n, gain: gain.total, moves: G.moves, opt: G.opt };
 }
 

@@ -23,9 +23,9 @@ import { RELICS } from './relics.js';
  * Jean o Juth y ≈20 % con Lía (con cualquier reliquia): hace falta no fallar y que las cartas acompañen.
  */
 export const RANK_MINS = {
-  1: { 'S+': 76, S: 71, A: 65, B: 50 },
-  50: { 'S+': 76, S: 71, A: 64, B: 47 },
-  75: { 'S+': 75, S: 70, A: 61, B: 42 },
+  1: { 'S+': 77, S: 72, A: 68, B: 53 },
+  50: { 'S+': 77, S: 72, A: 66, B: 50 },
+  75: { 'S+': 76, S: 71, A: 64, B: 45 },
 };
 const GRADES = [
   { grade: 'S+', cls: 'splus' },
@@ -58,8 +58,8 @@ export function nextRank(pct, start = 1) {
  * Escala del rango para mostrarla: cada letra con el porcentaje y los puntos mínimos que pide en la dificultad `start`
  * (de menor a mayor), y el tramo [desde, hasta) de puntos que cubre.
  */
-export function rankScale(start = 1, relic) {
-  const max = maxScoreFor(start, relic);
+export function rankScale(start = 1, relic, hero) {
+  const max = maxScoreFor(start, relic, hero);
   const asc = [...ranksFor(start)].reverse();
   return asc.map((r, i) => ({
     grade: r.grade,
@@ -71,29 +71,32 @@ export function rankScale(start = 1, relic) {
 }
 
 /** Bono de puntos de la mejor reliquia (el Medallón solar): con él se calcula el máximo de cada camino. */
-const TOP_RELIC_POINTS = Math.max(...RELICS.map((r) => r.points || 0));
+const relicPerfectPoints = (r) => (r?.points || 0) + (r?.cleanPoints || 0); // un jugador perfecto no pide pistas
+const TOP_RELIC_POINTS = Math.max(...RELICS.map(relicPerfectPoints));
 
 /**
  * Máximo de puntos del camino `start` (1, 50 o 75) con una partida perfecta. Es el de la mejor combinación (hoy Lía + Medallón
  * solar); con otra reliquia se rebaja lo que ella no suma (el +15 % del Medallón), para que un jugador perfecto pueda llegar a
- * S+ con cualquier reliquia y no solo con la que da más puntos. Sin `relic` es el máximo del camino.
+ * S+ con cualquier reliquia y no solo con la que da más puntos. Con `hero` se usa el máximo de ese héroe (`byHero`: Lía, con su Brasa,
+ * llega más alto que Jean y Juth, y no por eso son peores). Sin `relic` ni `hero` es el máximo del camino.
  */
-export const maxScoreFor = (start = 1, relic) => {
-  const { score } = MAX_SCORE[pathKey(start)];
+export const maxScoreFor = (start = 1, relic, hero) => {
+  const entry = MAX_SCORE[pathKey(start)];
+  const score = entry.byHero?.[hero]?.score ?? entry.score;
   if (relic === undefined) return score;
-  const own = RELICS.find((r) => r.id === relic)?.points || 0;
+  const own = relicPerfectPoints(RELICS.find((r) => r.id === relic));
   return Math.round((score * (1 + own)) / (1 + TOP_RELIC_POINTS));
 };
 
 /** Porcentaje del máximo del camino (0-100, en pasos de 0,5 hacia abajo). */
-export function percentOf(score, start = 1, relic) {
-  const max = maxScoreFor(start, relic);
+export function percentOf(score, start = 1, relic, hero) {
+  const max = maxScoreFor(start, relic, hero);
   return Math.floor(Math.min(100, Math.max(0, (score || 0) / max) * 100) * 2) / 2;
 }
 
 /** Rango de una partida: `{ pct, grade, cls }`. */
 export function runRank(run) {
-  const pct = percentOf(run?.score, run?.start, run?.relic ?? null);
+  const pct = percentOf(run?.score, run?.start, run?.relic ?? null, run?.hero);
   return { pct, ...rankFor(pct, run?.start) };
 }
 
@@ -114,7 +117,7 @@ export function perfectRunScore({ hero, start = 1, relic, cards = [], adaptive =
     const opt = minFor(key, n) + (adaptive ? perfectAdj(n) : 0); // un jugador perfecto sube la dificultad adaptativa hasta el tope
     const G = { n, opt, limit: Infinity, bought: 0, pieces: [] };
     run.score += runGain(run, opt, opt, n - 1, G).total;
-    run.hints += fatePerfectHints(run, opt, opt);
+    run.hints += fatePerfectHints(run, opt, opt, n);
     if (n % FATE_EVERY) continue;
     const city = n / FATE_EVERY;
     fateCityRewards(run, city, opt);

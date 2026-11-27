@@ -109,8 +109,21 @@ export function playBoard(
     if (minimumToContinue > limit)
       return { ok: false, moves, hints: h, spent: 0, boughtTurns: 0, boughtHints: 0, extra: 0 };
   }
-  const intact = hero === 'lia' && reserve > 0 && moves <= limit - reserve;
-  return { ok: true, moves, hints: h, spent: 0, boughtTurns: 0, boughtHints: 0, extra: 0, powerUsed, intact };
+  const free = limit - reserve + (ft?.liaSlack || 0); // movimientos que no tocan la reserva de Lía
+  const intact = hero === 'lia' && reserve > 0 && moves <= free;
+  const emberShare = intact ? 1 : hero === 'lia' && reserve > 0 ? Math.max(0, 1 - (moves - free) / reserve) : 0;
+  return {
+    ok: true,
+    moves,
+    hints: h,
+    spent: 0,
+    boughtTurns: 0,
+    boughtHints: 0,
+    extra: 0,
+    powerUsed,
+    intact,
+    emberShare,
+  };
 }
 
 /**
@@ -127,8 +140,7 @@ export function cardValue(card, hero, city = 1) {
   v += fx.powerShare ? (hero === 'lia' ? 0 : 2.5 + 4 * (fx.powerTurns || 0)) : 0;
   v += fx.lastPower ? (hero === 'jean' ? 1.5 : hero === 'van' ? 0.8 : 0) : 0;
   v += 0.8 * (fx.pickHints || 0) + 0.8 * (fx.cityHints || 0) * left;
-  v += fx.liaTurns && hero === 'lia' ? 4 * fx.liaTurns : 0;
-  v += fx.liaLastTurns && hero === 'lia' ? 4 * fx.liaLastTurns : 0; // Eco del poder da turnos a Lía en vez de usos
+  v += hero === 'lia' ? 12 * (fx.liaEmber || 0) + 1.5 * (fx.liaSlack || 0) : 0; // la Brasa intacta de Lía: más puntos o más fácil de conservar
   v -= (fx.shop || 0) * 6;
   v += 10 * (fx.points || 0) + (fx.pointsPerCard ? 0.2 * left : 0) + (fx.longBoard ? 0.5 : 0);
   v += fx.cursePoints ? 0.6 : 0;
@@ -197,13 +209,14 @@ export function simulateRun({
   force = [],
   relic = null,
   grant = null,
+  bonusHints = 0,
 }) {
   const rng = mulberry32(seed);
   const pickRng = mulberry32(hash32(seed, 0x5eed));
   const rel = RELICS.find((r) => r.id === relic) || null;
   const fateRun = fate ? { mode: 'c', hero, start, seed, score: 0, hints: 0, fate: [], fatePicked: 0 } : null;
   const deck = fate ? fateDeck(seed) : null;
-  let hints = startHintsFor(start) + (rel?.hints || 0);
+  let hints = startHintsFor(start) + (rel?.hints || 0) + bonusHints; // bonusHints: pistas que regala el Desafío diario
   let score = 0;
   let streak = 0;
   let bestStreak = 0;
@@ -281,12 +294,12 @@ export function simulateRun({
     const pure = !usedHint && (noPow || (hero === 'lia' ? res.intact : !res.powerUsed));
     const G = { ...simBoard(level, d), pure };
     const gain = calcGain(res.moves, d, streak, fateRun ? fateRules(fateRun) : undefined);
-    const ember = res.intact && !noPow && !powers.noEmber ? LIA_INTACT_POINTS : 0;
+    const ember = !noPow && !powers.noEmber ? (LIA_INTACT_POINTS + (ft?.liaEmber || 0)) * res.emberShare : 0;
     let total = gain.total + Math.round(gain.total * ((fateRun ? fatePoints({ ...fateRun, hints }, G) : 0) + ember));
-    total += Math.round(total * (rel?.points || 0));
+    total += Math.round(total * ((rel?.points || 0) + (usedHint ? 0 : rel?.cleanPoints || 0)));
     score += total;
     if (res.moves <= d) perfects++;
-    if (fateRun) hints += fatePerfectHints(fateRun, res.moves, d);
+    if (fateRun) hints += fatePerfectHints(fateRun, res.moves, d, level);
     streak = fateRun ? nextStreak({ ...fateRun, streak }, gain.eff) : gain.eff >= 0.9 ? streak + 1 : 0;
     bestStreak = Math.max(bestStreak, streak);
     adj = nextAdj(adj, level, gain.eff);
@@ -325,6 +338,7 @@ export function averageRuns({
   force,
   relic,
   grant,
+  bonusHints,
 }) {
   let cleared = 0;
   let perfects = 0;
@@ -348,6 +362,7 @@ export function averageRuns({
       force,
       relic,
       grant,
+      bonusHints,
       seed: hash32(i, start, Math.round(skill * 100), salt),
     });
     perfects += r.perfects;
