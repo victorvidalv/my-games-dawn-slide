@@ -20,6 +20,7 @@ import {
 } from './fate.js';
 import { RELICS } from './relics.js';
 import { levelPlan } from './mechanics.js';
+import { DAILY_TARGETS, DAILY_TURN_BUDGET } from './daily.js';
 
 /** Tablero mínimo para las reglas de las cartas: nivel, mínimo y si tiene pieza pesada o de hielo (según el plan del nivel). */
 const simBoard = (level, d) => ({
@@ -388,4 +389,43 @@ export function balanceReport({ runs = 300, powers = {} } = {}) {
     }
   }
   return rows;
+}
+
+/**
+ * Simula UN Desafío diario (15 tableros con una reserva compartida de 150 turnos exactos) con el mismo modelo de errores
+ * que la aventura (sin héroe, cartas ni reliquia, y sin pistas). Devuelve cuántos tableros completa. Como la reserva es
+ * exactamente la suma de los mínimos, llegar al 15 (oro) exige no gastar ni un turno de más; al 13 (plata/racha) sobran 33.
+ */
+export function simulateChallenge({ skill, seed }) {
+  const rng = mulberry32(seed);
+  let left = DAILY_TURN_BUDGET;
+  let cleared = 0;
+  for (const need of DAILY_TARGETS) {
+    const err = Math.min(0.85, (1 - skill) * MODEL.err * MODEL.errScale * (1 + need / 25));
+    let moves = 0;
+    for (let step = 0; step < need; step++) {
+      if (rng() < err) {
+        const k = 1 + Math.floor(Math.log(1 - rng()) / Math.log(0.5));
+        for (let j = 0; j < k; j++) {
+          if (rng() < MODEL.slip) moves += 1;
+          else moves += rng() >= MODEL.notice ? MODEL.unnoticedCost : 2;
+        }
+      }
+      moves += 1;
+    }
+    if (moves > left) return cleared;
+    left -= moves;
+    cleared++;
+  }
+  return cleared;
+}
+
+/** Probabilidad de completar al menos 13, 14 y los 15 tableros del Desafío con esa habilidad. */
+export function challengeRates(skill, runs = 4000) {
+  const n = { 13: 0, 14: 0, 15: 0 };
+  for (let i = 0; i < runs; i++) {
+    const c = simulateChallenge({ skill, seed: hash32(i, Math.round(skill * 1000), 150) });
+    for (const k of [13, 14, 15]) if (c >= k) n[k]++;
+  }
+  return { 13: n[13] / runs, 14: n[14] / runs, 15: n[15] / runs };
 }

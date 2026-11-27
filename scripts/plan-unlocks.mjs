@@ -9,6 +9,9 @@
  *       común 1–5 días · rara 6–22 · épica 28–70 (2 condiciones) · legendaria 75–220 (3 condiciones).
  *   · Dentro de una categoría las metas crecen de un objeto al siguiente y no se repite la misma acción en vecinos.
  *
+ * Ojo: el plan versionado se retocó a mano después (atuendos que piden ganar Difícil con su héroe, las estelas del tablero 14/15
+ * del Desafío…), así que volver a generar lo pisa: revisa el diff antes de guardarlo.
+ *
  *   node scripts/plan-unlocks.mjs        → reescribe src/game/unlock-plan.js
  *   node scripts/analyze-unlocks.mjs     → cuándo llegaría cada objeto un jugador casual, regular y dedicado
  */
@@ -40,9 +43,8 @@ const RULE = {
   challengeBoards: { r: [2.5, 170], min: 6 },
   challengeBest: { r: [6, 70], min: 5 },
   dailySolved: { r: [2.5, 160], min: 4 },
-  dailyGold: { r: [5, 190], min: 3 },
+  dailyGold: { r: [25, 190], min: 3 }, // el oro (15 tableros sin un turno de más) sale ≈ 1 de cada 8 días: 3 oros ≈ día 25
   bestStreak: { r: [3, 100], min: 3 },
-  dailyKinds: { r: [4, 10], min: 2 },
   masterSolved: { r: [12, 160], min: 3 },
 };
 /** Mezcla de acciones de cada categoría y modo (en orden de preferencia). */
@@ -60,7 +62,7 @@ const POOL = {
   key: {
     aventura: ['pacts', 'fateCards', 'completed', 'perfects', 'boardsSolved'],
     desafio: ['challengeBoards', 'challengeBest'],
-    diario: ['dailySolved', 'bestStreak', 'dailyKinds', 'dailyGold', 'masterSolved'],
+    diario: ['dailySolved', 'bestStreak', 'dailyGold', 'masterSolved'],
   },
   card: {
     aventura: ['fateCards', 'pacts', 'cleanCity', 'fateSeenCount', 'bestRunStreak', 'powersUsed'],
@@ -98,7 +100,7 @@ const POOL = {
   aura: {
     aventura: ['maxLevel', 'boardsSolved', 'fateCards', 'hardLevel', 'expertLevel', 'completed'],
     desafio: ['challengeBoards', 'challengeBest'],
-    diario: ['bestStreak', 'dailySolved', 'dailyKinds', 'dailyGold'],
+    diario: ['bestStreak', 'dailySolved', 'dailyGold'],
   },
   /* Tema de interfaz: premia la constancia y completar aventuras */
   ui: {
@@ -141,11 +143,11 @@ const FEATS = {
   ],
   diario: [
     ['bestStreak', 14],
-    ['dailyGold', 40],
+    ['dailyGold', 11],
     ['bestStreak', 21],
-    ['masterSolved', 40],
+    ['masterSolved', 75],
     ['bestStreak', 30],
-    ['dailyGold', 60],
+    ['dailyGold', 17],
   ],
 };
 const heroFeats = (H) => ({
@@ -167,10 +169,8 @@ const dayOf = ([stat, goal]) => dayToReach(stat, goal);
 function goalFor(stat, day) {
   const min = RULE[stat].min;
   const v = REGULAR[stat](day);
-  if (['maxLevel', 'hardLevel', 'expertLevel', 'challengeBest', 'bestRunStreak', 'dailyKinds'].includes(stat)) {
-    const cap = { maxLevel: 21, hardLevel: 21, expertLevel: 21, challengeBest: 14, bestRunStreak: 21, dailyKinds: 5 }[
-      stat
-    ];
+  if (['maxLevel', 'hardLevel', 'expertLevel', 'challengeBest', 'bestRunStreak'].includes(stat)) {
+    const cap = { maxLevel: 21, hardLevel: 21, expertLevel: 21, challengeBest: 14, bestRunStreak: 21 }[stat];
     return Math.max(min, Math.min(cap, Math.round(v)));
   }
   if (stat === 'bestStreak') return Math.max(min, Math.round(v));
