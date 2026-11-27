@@ -3,9 +3,6 @@
   .top {
     width: calc(var(--cell) * 6 + 32px);
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 10px;
   }
   .top small {
     display: block;
@@ -15,9 +12,7 @@
     font-weight: 700;
   }
   .lv b {
-    font-size: 34px;
     font-weight: 900;
-    line-height: 1;
     color: var(--gold);
     text-shadow: 0 0 22px #ffcf6b66;
   }
@@ -76,24 +71,14 @@
 
   .meter {
     width: calc(var(--cell) * 6 + 32px);
-    padding: 10px 14px 11px;
-    border-radius: 18px;
-    background: linear-gradient(180deg, #ffffff16, #ffffff08);
-    border: 1px solid #ffffff1e;
-    box-shadow:
-      0 8px 22px #0006,
-      inset 0 1px 0 #ffffff26;
   }
   .mrow {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    font-size: 12px;
     opacity: 0.9;
-    letter-spacing: 0.04em;
   }
   .mrow b {
-    font-size: 22px;
     font-variant-numeric: tabular-nums;
   }
   .mrow span:last-child {
@@ -101,11 +86,6 @@
   }
   .bar {
     position: relative;
-    height: 14px;
-    border-radius: 9px;
-    margin: 7px 0 6px;
-    background: #0007;
-    box-shadow: inset 0 2px 5px #000a;
     overflow: hidden;
   }
   .bar i {
@@ -119,9 +99,6 @@
     transition:
       width 0.35s cubic-bezier(0.3, 1.5, 0.5, 1),
       background 0.35s;
-    box-shadow:
-      0 0 14px currentColor,
-      inset 0 2px 0 #ffffff55;
   }
   .bar u {
     position: absolute;
@@ -204,19 +181,13 @@
     }
   }
   .top {
-    align-items: center;
     gap: 8px;
   }
   .lv {
     flex: none;
-    min-width: 58px;
   }
   .scores {
-    flex: 1;
     min-width: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
   }
   .sc {
     min-width: 0;
@@ -231,8 +202,6 @@
   }
   .sc small {
     display: block;
-    font-size: 9px;
-    letter-spacing: 0.12em;
     opacity: 0.6;
     font-weight: 800;
     white-space: nowrap;
@@ -241,52 +210,35 @@
   }
   .sc b {
     display: block;
-    font-size: 22px;
     line-height: 1.15;
     font-weight: 900;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-    background: linear-gradient(180deg, #fff, #b9c3ff);
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
   }
   .sc.max b {
     background: linear-gradient(180deg, #fff3b0, #ffb300);
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
   }
   .sc.max.broken {
     border-color: #ffd24a;
-    box-shadow:
-      0 0 18px #ffb30088,
-      inset 0 1px 0 #ffffff33;
     animation: glowbox 1.2s ease-in-out infinite alternate;
   }
   .sc.max.broken small {
-    color: #ffd24a;
     opacity: 1;
-  }
-  .sc b.bump {
-    animation: bump 0.5s;
   }
   .menubtn {
     flex: none;
     width: 60px;
     height: 52px;
     padding: 0;
-    border-radius: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 1px;
-    background: linear-gradient(180deg, #ffb35c, #f07a1c);
-    box-shadow:
-      0 5px 0 #8f4509,
-      0 10px 16px #0007,
-      inset 0 1px 0 #fff6;
   }
   .menubtn:active {
     box-shadow:
@@ -294,12 +246,10 @@
       0 4px 8px #0007;
   }
   .menubtn span {
-    font-size: 22px;
     line-height: 1;
   }
   .menubtn em {
     font-style: normal;
-    font-size: 10px;
     letter-spacing: 0.1em;
     font-weight: 900;
     text-transform: uppercase;
@@ -312,7 +262,6 @@
       width: 52px;
     }
     .sc small {
-      font-size: 8px;
       letter-spacing: 0.06em;
     }
   }
@@ -367,27 +316,18 @@
   }
   button.primary {
     border: 2px solid #091118;
-    background: linear-gradient(180deg, #c5745b, #a4533c);
     color: #fff5e3;
-    box-shadow:
-      0 3px 0 #091118,
-      inset 0 1px 0 #ffe6b838;
     text-shadow: 0 1px 0 #09111888;
   }
   .top .sc {
-    background: none;
-    border: 0;
-    box-shadow: none;
     border-radius: 0;
-    padding: 0 9px;
   }
   .scores {
     gap: 0;
   }
   .sc b {
     font-size: 27px;
-    background: none !important;
-    color: #efe7d3 !important;
+    color: #efe7d3;
     text-shadow: 0 2px 0 #091118;
   }
   .sc.max b {
@@ -410,7 +350,6 @@
       0 3px 0 #091118,
       inset 0 1px 0 #d8c49628;
     border: 2px solid #091118;
-    border-radius: 10px;
   }
   .menubtn span {
     font-size: 22px;
@@ -421,11 +360,6 @@
   .meter {
     background: linear-gradient(170deg, #1a2d39eb, #13222cf0);
     border: 2px solid #091118;
-    border-radius: 13px;
-    box-shadow:
-      0 4px 0 #091118,
-      inset 0 0 0 1px #d1bd9233;
-    padding: 10px 12px;
   }
 
   .mrow {
@@ -571,22 +505,10 @@
   #lowBanner {
     position: fixed;
     left: 50%;
-    top: calc(env(safe-area-inset-top) + 12px);
     z-index: var(--z-notice);
     display: none;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 14px;
-    border-radius: 999px;
     pointer-events: none;
-    background: #13232df2;
-    border: 2px solid #091118;
-    box-shadow:
-      0 3px 0 #091118,
-      0 8px 20px #0007,
-      inset 0 0 0 1px #e4a95244;
     transform: translate(-50%, 0);
-    white-space: nowrap;
   }
   #lowBanner i {
     display: grid;
@@ -596,30 +518,14 @@
     color: #f4be66;
   }
   #lowBanner > div {
-    display: flex;
     align-items: baseline;
     gap: 7px;
   }
   #lowBanner b {
     display: block;
-    font: 800 13px/1 var(--font-book);
-    letter-spacing: 0.02em;
-    color: #f5d084;
   }
   #lowBanner span {
     display: block;
-    font:
-      600 11.5px/1 system-ui,
-      sans-serif;
-    color: #d6ceb8;
-    margin-top: 0;
-  }
-  #lowBanner.last {
-    background: #2d1515f5;
-    box-shadow:
-      0 3px 0 #091118,
-      0 8px 20px #0008,
-      inset 0 0 0 1px #ff7b6b55;
   }
   #lowBanner.last i,
   #lowBanner.last b {
@@ -627,12 +533,8 @@
   }
   #lowBanner.show {
     display: flex;
-    animation: low-banner 1.7s ease-out forwards;
   }
   @media (prefers-reduced-motion: reduce) {
-    #lowBanner.show {
-      animation: low-banner-fade 1.6s linear forwards;
-    }
     .meter.low,
     .meter.low-hit {
       animation: none;
@@ -645,8 +547,6 @@
     padding: 0 16px;
   }
   #lowBanner i .ic {
-    width: 15px;
-    height: 15px;
     filter: none;
   }
   .bought .bl .ic {

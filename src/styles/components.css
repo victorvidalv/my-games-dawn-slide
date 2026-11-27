@@ -2,7 +2,6 @@
 @layer components {
   .controls {
     display: flex;
-    gap: 12px;
     width: calc(var(--cell) * 6 + 28px);
     max-width: 100%;
   }
@@ -10,7 +9,6 @@
     flex: 1;
     min-width: 0;
     position: relative;
-    padding: 12px 8px;
     white-space: nowrap;
   }
   .controls em {
@@ -24,16 +22,9 @@
     position: absolute;
     top: -8px;
     right: -6px;
-    background: var(--gold);
-    color: #3a2300;
-    border-radius: 12px;
-    min-width: 24px;
-    height: 24px;
-    font-size: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 6px #0008;
   }
   .modal {
     position: fixed;
@@ -54,15 +45,8 @@
   .card {
     width: 100%;
     max-width: 380px;
-    border-radius: 28px;
     padding: 26px 22px;
     text-align: center;
-    background: linear-gradient(160deg, #2a3170, #161b42);
-    border: 1px solid #ffffff2a;
-    box-shadow:
-      0 30px 80px #000c,
-      inset 0 1px 0 #ffffff33;
-    animation: pop 0.5s cubic-bezier(0.2, 1.5, 0.4, 1);
   }
   .card h2 {
     margin: 0 0 2px;
@@ -76,16 +60,11 @@
     font-weight: 800;
   }
   .logo {
-    font-size: clamp(26px, 9vw, 38px);
     font-weight: 900;
-    letter-spacing: 0.08em;
     white-space: nowrap;
     margin: 0;
-    background: linear-gradient(90deg, #ffe29a, #ff8f6b 50%, #ff5f8f);
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
-    filter: drop-shadow(0 0 24px #ff5f8f55);
   }
   .rules {
     text-align: left;
@@ -149,13 +128,7 @@
     display: inline-block;
     margin: 4px 0;
     padding: 4px 12px;
-    border-radius: 20px;
-    background: linear-gradient(90deg, #ffcf6b, #ff8f6b);
-    color: #3a1a00;
     font-weight: 900;
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    animation: bump 0.8s infinite alternate;
   }
 
   .spin {
@@ -247,12 +220,6 @@
     }
   }
   .card {
-    border-radius: 17px;
-    background: #192935;
-    border: 2.5px solid #091118;
-    box-shadow:
-      0 0 0 1px #d1bb8b44,
-      0 18px 48px #0009;
     animation: quietIn 0.22s ease-out;
   }
   .logo {
@@ -260,8 +227,6 @@
     color: #efe0be;
     filter: none;
     font-family: var(--font-book);
-    letter-spacing: 0.025em;
-    font-size: 34px;
     text-shadow: 0 2px 0 #091118;
   }
   .controls {
@@ -274,10 +239,7 @@
   }
   .badge {
     border-radius: 8px;
-    border: 1.5px solid #091118;
-    background: #dfc48a;
     box-shadow: 0 1px 0 #091118;
-    color: #111e27;
     height: 23px;
     min-width: 23px;
     font-size: 12px;
@@ -291,10 +253,6 @@
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum';
     letter-spacing: 0;
-  }
-  #score {
-    font-size: 30px;
-    color: #f0e7d4;
   }
   #mv {
     font-size: 27px;
@@ -321,7 +279,6 @@
 
   .logo {
     font-size: clamp(25px, 7.3vw, 34px);
-    letter-spacing: 0.005em;
   }
 
   .menu-pick {
@@ -330,7 +287,6 @@
     font: 700 13px/1 var(--font-book);
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: #e9dcc0;
     opacity: 0.85;
   }
   .ic {
@@ -385,10 +341,8 @@
   }
   .card {
     border-radius: var(--wob-a);
-    background: var(--rivets), var(--hatch), var(--ink-panel);
     border: 3px solid #150e0c;
     /* placa de juego: filo de tinta, aro de latón, filo de tinta exterior y sombra desplazada */
-    box-shadow: var(--plate);
   }
 
   .rules,
