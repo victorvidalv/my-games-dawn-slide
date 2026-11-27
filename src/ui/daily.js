@@ -3,6 +3,7 @@
  * Desde el menú principal entra directo a jugar en 1 clic; aquí se pinta el avance en el botón del inicio
  * y la pantalla final con los premios por hitos (13 → +1 pista, 14 → +3 pistas, 15 → +5 pistas).
  */
+import { reducedMotion } from './dom-utils.js';
 import { Music } from '../audio/music.js';
 import { sfx } from '../audio/sound.js';
 import { $ } from '../dom.js';
@@ -22,6 +23,7 @@ import {
 import { leaveDaily, startDaily } from '../game/session.js';
 import { store } from '../state.js';
 import { tr } from '../i18n.js';
+import { openModal } from './modal.js';
 import { checkAchievements } from './achievements.js';
 import { burst, countUp } from './fx.js';
 import { icon } from './icons.js';
@@ -120,17 +122,13 @@ export function showDailyResult(daily, result = {}) {
     }),
   );
 
-  const close = () => {
-    modal.classList.remove('show');
-    Music.duck(1);
-  };
-  modal.classList.add('show');
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) $('dailyEndDelta').textContent = String(cleared);
+  const close = openModal(modal, { onEscape: false, onClose: () => Music.duck(1) });
+  if (reducedMotion()) $('dailyEndDelta').textContent = String(cleared);
   else countUp($('dailyEndDelta'), 0, cleared, 400 + cleared * 70, (v) => String(Math.round(v)));
   if (won) {
     if (cleared >= DAILY_TOTAL_BOARDS) sfx.perfect();
     else sfx.win();
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!reducedMotion()) {
       const r = $('dailyEndMedal').getBoundingClientRect();
       burst(r.left + r.width / 2, r.top + r.height / 2, 40, ['#ffd24a', '#fff6c9', '#e0b04f', '#ffffff'], 8);
     }

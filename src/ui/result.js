@@ -1,14 +1,12 @@
+import { fmtNum, reducedMotion } from './dom-utils.js';
 import { sfx, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { countUp, motes, warmMotes } from './fx.js';
 import { resultRating } from '../engine/scoring.js';
-import { numLocale } from '../i18n.js';
 import { watchFrames } from './perf.js';
 
 const GOLD = ['#ffd76a', '#fff3cf', '#f1ce82', '#fff'];
 warmMotes(GOLD); // halos dorados listos antes del primer «PERFECTO»
-const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-const fmt = (n) => n.toLocaleString(numLocale());
 
 /** Los puntos «vuelan» de la placa al marcador: una estela de motas doradas y el marcador da un salto al recibirlos. */
 function flyToScore(from) {
@@ -60,7 +58,7 @@ export function showResult({ gain, moves, opt, previous, total }) {
       el.style.removeProperty('--ry');
     }
     const perfect = moves <= opt;
-    const ms = reduced() ? 450 : perfect ? 1650 : 1100;
+    const ms = reducedMotion() ? 450 : perfect ? 1650 : 1100;
     el.classList.toggle('perfect', perfect);
     el.dataset.tier = perfect ? 'perfect' : moves - opt <= 2 ? 'near' : 'ok';
     let ring = el.querySelector('.res-ring'); // aro de luz que se abre detrás de la placa
@@ -78,11 +76,11 @@ export function showResult({ gain, moves, opt, previous, total }) {
     el.classList.add('show');
     const countMs = Math.min(460, ms - 200);
     const hasScoreboard = total !== undefined;
-    countUp($('resPts'), 0, gain.total, countMs, (v) => '+' + fmt(Math.round(v)));
+    countUp($('resPts'), 0, gain.total, countMs, (v) => '+' + fmtNum(Math.round(v)));
     const timers = [];
     if (perfect) perfectFx();
-    if (!reduced()) watchFrames(ms); // ¿va justo el móvil? (modo ligero)
-    if (!reduced() && r && r.width > 0) {
+    if (!reducedMotion()) watchFrames(ms); // ¿va justo el móvil? (modo ligero)
+    if (!reducedMotion() && r && r.width > 0) {
       const cx = r.left + r.width / 2,
         cy = r.top + r.height / 2;
       for (let i = 0; i < 6; i++) timers.push(setTimeout(() => sfx.tick(i), 40 + (i * countMs) / 6)); // la cuenta «tintinea» subiendo
@@ -107,7 +105,7 @@ export function showResult({ gain, moves, opt, previous, total }) {
       done = true;
       clearTimeout(timer);
       timers.forEach(clearTimeout);
-      if (hasScoreboard) $('score').textContent = fmt(total); // si se cierra antes, el marcador queda ya en su valor final
+      if (hasScoreboard) $('score').textContent = fmtNum(total); // si se cierra antes, el marcador queda ya en su valor final
       el.removeEventListener('pointerdown', finish);
       el.classList.remove('show');
       resolve();

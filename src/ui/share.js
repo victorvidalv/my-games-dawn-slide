@@ -6,6 +6,7 @@ import { $ } from '../dom.js';
 import { qrSvg } from '../qr.js';
 import { sfx } from '../audio/sound.js';
 import { t } from '../i18n.js';
+import { openModal } from './modal.js';
 
 const gameUrl = () => location.origin + location.pathname;
 const shareData = () => ({
@@ -22,10 +23,10 @@ function open() {
   $('shareUrl').textContent = url.replace(/^https?:\/\//, '');
   $('shareNative').hidden = !canShare();
   $('shareCopy').textContent = 'Copiar enlace';
-  $('share').classList.add('show');
-  $('shareCopy').focus();
+  closeShare = openModal($('share'), { focus: $('shareCopy') });
 }
-const close = () => $('share').classList.remove('show');
+let closeShare = () => {};
+const close = () => closeShare();
 
 async function copy() {
   const url = gameUrl();

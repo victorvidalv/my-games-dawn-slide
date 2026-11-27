@@ -1,3 +1,4 @@
+import { reducedMotion } from './dom-utils.js';
 import { setTensionFx } from '../audio/music.js';
 import { sfx, vib } from '../audio/sound.js';
 import { isLocked, slideRange, snapDrag } from '../engine/board.js';
@@ -140,7 +141,7 @@ export function place(i, x = S.G.pos[i]) {
 /** Estela equipada (Personalizar → Tablero → Estelas): partículas desde el borde trasero de la ficha mientras se mueve. */
 function trailStep(p, from, to, s) {
   const kind = document.body.dataset.trail;
-  if (!kind || kind === 'none' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!kind || kind === 'none' || reducedMotion()) return;
   const colors = rewardById('trail', kind)?.colors;
   if (!colors) return;
   const r = boardEl.getBoundingClientRect(),
@@ -183,7 +184,7 @@ function placeStatic() {
 }
 /** La pieza «aterriza»: rebote, aro de luz y un polvo de luz de su color alrededor (tras el deslizamiento). */
 function landFx(el) {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (reducedMotion()) return;
   setTimeout(() => {
     if (!el.isConnected) return;
     flashEl(el, 'landed', 300);
