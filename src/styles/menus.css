@@ -670,10 +670,6 @@
     height: 4px;
     border: 1px solid #091118aa;
   }
-  .hero-selector {
-    max-width: 750px !important;
-    padding: 23px !important;
-  }
   .hero-selector h2 {
     font-family: var(--font-book);
     font-weight: 500;

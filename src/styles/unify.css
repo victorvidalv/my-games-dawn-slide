@@ -54,11 +54,13 @@
     background: linear-gradient(180deg, #fff7dd, #d8ab52);
     -webkit-background-clip: text;
     background-clip: text;
+    color: transparent;
   }
   .sc.max b {
     background: linear-gradient(180deg, #fff3b0, #ffb300);
     -webkit-background-clip: text;
     background-clip: text;
+    color: transparent;
   }
   .mrow {
     color: var(--surf-dim);
@@ -178,7 +180,7 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
     }
-    .modal {
+    .modal:not(#menu, #heroSelect, #travel, #over) {
       background: #050714ec;
     }
     .ob-fog,

@@ -32,7 +32,6 @@
     /* capas de pantalla (de abajo arriba); los z-index locales 0–15 de cada componente no entran aquí */
     --z-hud: 40;
     --z-stage-fx: 50;
-    --z-power-fx: 54;
     --z-preview: 55;
     --z-toast: 56;
     --z-banner: 57;

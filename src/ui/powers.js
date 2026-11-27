@@ -43,8 +43,6 @@ export async function activatePower() {
   countStat('powersUsed');
   saveRun();
   updateHud();
-  $('powerFxName').textContent = `${h.name} · ${name}`;
-  $('powerStep').textContent = 'Poder activado';
   board.classList.add('power-on', 'jolt', action.kind);
   if (!reduced) motes(0, 0, 60, SPELL[h.id === 'van' ? 'van' : 'jean'], 5, board.getBoundingClientRect());
   board.dataset.hero = h.id;
@@ -72,8 +70,6 @@ export async function activatePower() {
       }
       const piece = G.els[i];
       piece?.classList.add('power-piece');
-      $('powerStep').textContent =
-        `${action.kind === 'rewind' ? 'Pasado' : 'Destino'} · ${n + 1}/${action.steps.length}`;
       layout();
       updateHud();
       saveRun();
@@ -87,8 +83,6 @@ export async function activatePower() {
       }
     }
     if (S.G === G && S.run === run && !G.done) {
-      $('powerStep').textContent =
-        action.kind === 'rewind' ? 'El tiempo vuelve a tus manos' : 'El destino está trazado';
       $('msg').textContent = `${name} usado. Se renueva en el próximo tablero.`;
       sfx.powerEnd(up);
       await wait(reduced ? 40 : 200);
