@@ -12,6 +12,7 @@ import { relicFor } from './relics.js';
 import { canPaidRevive, hasRevive, useFreeRetry, useRevive } from './shop.js';
 import { FATE_EVERY, FATE_PICKS, fateById, fateDeck, fatePerfectHints, nextStreak } from './fate.js';
 import { runRank } from './rank.js';
+import { nextAdj } from './run-points.js';
 
 const copyRows = (rows) => rows.map((p) => p.slice());
 
@@ -217,7 +218,7 @@ export function applyAdventureWin(run, G, gain) {
   if (G.moves <= G.opt) run.perfects = (run.perfects || 0) + 1;
   run.streak = nextStreak(run, gain.eff);
   run.bestStreak = Math.max(run.bestStreak || 0, run.streak);
-  run.adj = Math.max(-2, Math.min(run.level < 10 ? 1 : 2, run.adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
+  run.adj = nextAdj(run.adj, run.level, gain.eff);
   clearRewards(run, G.n);
   run.hints = (run.hints || 0) + fatePerfectHints(run, G.moves, G.opt); // Maestría
   run.pendingClear = { level: G.n, gain: gain.total, moves: G.moves, opt: G.opt };

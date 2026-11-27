@@ -31,3 +31,16 @@ export function runGain(run, moves, opt, streak, G = null) {
   gain.total = relicPoints(run, gain.total);
   return gain;
 }
+
+/**
+ * Dificultad adaptativa: ajuste (−2..+2) que se suma al mínimo calibrado del siguiente tablero. Sube 1 con cada tablero a ≥ 90 % de
+ * eficiencia y baja 1 con uno a < 40 %; hasta el nivel 9 el tope es +1 y desde el 10, +2. Un jugador perfecto juega, pues, tableros
+ * 1 movimiento más largos (niveles 2-10) y 2 más (11-21) que el calendario: `perfectAdj(n)` es ese ajuste en el nivel `n`.
+ */
+export const nextAdj = (adj, level, eff) =>
+  Math.max(-2, Math.min(level < 10 ? 1 : 2, adj + (eff >= 0.9 ? 1 : eff < 0.4 ? -1 : 0)));
+export const perfectAdj = (level) => {
+  let adj = 0;
+  for (let n = 1; n < level; n++) adj = nextAdj(adj, n, 1);
+  return adj;
+};

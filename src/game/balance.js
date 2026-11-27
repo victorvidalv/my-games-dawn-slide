@@ -20,6 +20,7 @@ import {
 } from './fate.js';
 import { RELICS } from './relics.js';
 import { levelPlan } from './mechanics.js';
+import { nextAdj } from './run-points.js';
 import { DAILY_TARGETS, DAILY_TURN_BUDGET } from './daily.js';
 
 /** Tablero mínimo para las reglas de las cartas: nivel, mínimo y si tiene pieza pesada o de hielo (según el plan del nivel). */
@@ -288,7 +289,7 @@ export function simulateRun({
     if (fateRun) hints += fatePerfectHints(fateRun, res.moves, d);
     streak = fateRun ? nextStreak({ ...fateRun, streak }, gain.eff) : gain.eff >= 0.9 ? streak + 1 : 0;
     bestStreak = Math.max(bestStreak, streak);
-    adj = Math.max(-2, Math.min(level < 10 ? 1 : 2, adj + (gain.eff >= 0.9 ? 1 : gain.eff < 0.4 ? -1 : 0)));
+    adj = nextAdj(adj, level, gain.eff);
     const rate = powers.hintMult?.[hero] ?? 1;
     if (Math.floor((level * rate) / hintEvery(start)) > Math.floor(((level - 1) * rate) / hintEvery(start))) hints++;
     if (fateRun && level % FATE_EVERY === 0) {

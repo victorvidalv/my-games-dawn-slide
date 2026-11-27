@@ -8,21 +8,24 @@ import { MAX_LEVEL, pathKey, startHintsFor } from '../engine/difficulty.js';
 import { minFor } from '../engine/calibration.js';
 import { baseScore } from '../engine/scoring.js';
 import { FATE_CARDS, FATE_EVERY, fateCityRewards, fatePerfectHints, pickFate } from './fate.js';
-import { runGain } from './run-points.js';
+import { perfectAdj, runGain } from './run-points.js';
 import { newAdventureRun } from './run-logic.js';
 import { MAX_SCORE } from './rank-max.js';
+import { RELICS } from './relics.js';
 
 /**
  * Tramos del rango: porcentaje mínimo del máximo de cada dificultad para cada letra. Calibrados con
  * `node scripts/rank-balance.mjs` (miles de partidas simuladas de jugadores casuales, medios, buenos y expertos con
  * héroes, reliquias y cartas distintos). Un mismo porcentaje cuesta más en Experto, así que sus tramos son algo más bajos.
- * En una población mixta: B lo alcanza ≈40 % de las partidas, A ≈8 % (posible pero difícil: ≈1 de cada 3 expertos),
- * S ≈0,3 % (casi solo expertos con muy buenas cartas) y S+ es prácticamente la combinación perfecta.
+ * El máximo (100 %) es una partida perfecta con la mejor combinación y la dificultad adaptativa de quien no falla, con la reliquia
+ * del jugador (ver `maxScoreFor`). En una población mixta (con un 12 % de jugadores perfectos): B ≈32 % de las partidas, A ≈6 %,
+ * S ≈2 % y S+ ≈1 %. Un jugador perfecto que elige cartas pensando en el puntaje llega a S+ en ≈10 % de sus partidas con
+ * Jean o Juth y ≈20 % con Lía (con cualquier reliquia): hace falta no fallar y que las cartas acompañen.
  */
 export const RANK_MINS = {
-  1: { 'S+': 90, S: 82, A: 68, B: 50 },
-  50: { 'S+': 90, S: 80, A: 64, B: 46 },
-  75: { 'S+': 90, S: 77, A: 61, B: 42 },
+  1: { 'S+': 76, S: 71, A: 65, B: 50 },
+  50: { 'S+': 76, S: 71, A: 64, B: 47 },
+  75: { 'S+': 75, S: 70, A: 61, B: 42 },
 };
 const GRADES = [
   { grade: 'S+', cls: 'splus' },
@@ -55,8 +58,8 @@ export function nextRank(pct, start = 1) {
  * Escala del rango para mostrarla: cada letra con el porcentaje y los puntos mínimos que pide en la dificultad `start`
  * (de menor a mayor), y el tramo [desde, hasta) de puntos que cubre.
  */
-export function rankScale(start = 1) {
-  const max = maxScoreFor(start);
+export function rankScale(start = 1, relic) {
+  const max = maxScoreFor(start, relic);
   const asc = [...ranksFor(start)].reverse();
   return asc.map((r, i) => ({
     grade: r.grade,
@@ -67,26 +70,39 @@ export function rankScale(start = 1) {
   }));
 }
 
-/** Máximo de puntos del camino `start` (1, 50 o 75). */
-export const maxScoreFor = (start = 1) => MAX_SCORE[pathKey(start)].score;
+/** Bono de puntos de la mejor reliquia (el Medallón solar): con él se calcula el máximo de cada camino. */
+const TOP_RELIC_POINTS = Math.max(...RELICS.map((r) => r.points || 0));
+
+/**
+ * Máximo de puntos del camino `start` (1, 50 o 75) con una partida perfecta. Es el de la mejor combinación (hoy Lía + Medallón
+ * solar); con otra reliquia se rebaja lo que ella no suma (el +15 % del Medallón), para que un jugador perfecto pueda llegar a
+ * S+ con cualquier reliquia y no solo con la que da más puntos. Sin `relic` es el máximo del camino.
+ */
+export const maxScoreFor = (start = 1, relic) => {
+  const { score } = MAX_SCORE[pathKey(start)];
+  if (relic === undefined) return score;
+  const own = RELICS.find((r) => r.id === relic)?.points || 0;
+  return Math.round((score * (1 + own)) / (1 + TOP_RELIC_POINTS));
+};
 
 /** Porcentaje del máximo del camino (0-100, en pasos de 0,5 hacia abajo). */
-export function percentOf(score, start = 1) {
-  const max = maxScoreFor(start);
+export function percentOf(score, start = 1, relic) {
+  const max = maxScoreFor(start, relic);
   return Math.floor(Math.min(100, Math.max(0, (score || 0) / max) * 100) * 2) / 2;
 }
 
 /** Rango de una partida: `{ pct, grade, cls }`. */
 export function runRank(run) {
-  const pct = percentOf(run?.score, run?.start);
+  const pct = percentOf(run?.score, run?.start, run?.relic ?? null);
   return { pct, ...rankFor(pct, run?.start) };
 }
 
 /**
  * Puntaje de una aventura perfecta (los 21 tableros en su mínimo calibrado, racha completa, sin ayudas) con ese héroe,
- * reliquia y 6 cartas en orden (una por tramo). Usa las reglas reales de puntos, cartas y reliquias.
+ * reliquia y 6 cartas en orden (una por tramo). Usa las reglas reales de puntos, cartas y reliquias y, con `adaptive`,
+ * la dificultad adaptativa (+1 en los niveles 2-10 y +2 del 11 al 21), que es lo que de verdad juega quien no falla.
  */
-export function perfectRunScore({ hero, start = 1, relic, cards = [] }) {
+export function perfectRunScore({ hero, start = 1, relic, cards = [], adaptive = true }) {
   const key = pathKey(start);
   const run = newAdventureRun({ seed: 1, start: key, hero, hints: startHintsFor(key), relic });
   // mazo a medida: la carta de cada tramo va la primera de su oferta de 3, el resto se rellena con las demás
@@ -95,7 +111,7 @@ export function perfectRunScore({ hero, start = 1, relic, cards = [] }) {
   for (let city = 0; city < 6; city++) deck.push(cards[city] ?? rest.shift(), rest.shift(), rest.shift());
   run.fateDeck = [...deck, ...rest];
   for (let n = 1; n <= MAX_LEVEL; n++) {
-    const opt = minFor(key, n);
+    const opt = minFor(key, n) + (adaptive ? perfectAdj(n) : 0); // un jugador perfecto sube la dificultad adaptativa hasta el tope
     const G = { n, opt, limit: Infinity, bought: 0, pieces: [] };
     run.score += runGain(run, opt, opt, n - 1, G).total;
     run.hints += fatePerfectHints(run, opt, opt);

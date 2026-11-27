@@ -52,7 +52,7 @@ function renderRankScale(el, snapshot) {
   const nf = new Intl.NumberFormat(numLocale());
   const score = snapshot.score || 0;
   const g = runRank(snapshot);
-  const blocks = rankScale(snapshot.start);
+  const blocks = rankScale(snapshot.start, snapshot.relic ?? null);
   const at = blocks.findIndex((b) => b.grade === g.grade);
   const b = blocks[at];
   const within = b.to > b.from ? Math.min(1, Math.max(0, (score - b.from) / (b.to - b.from))) : 1;
@@ -74,7 +74,7 @@ function renderRankScale(el, snapshot) {
         ? `Estás en ${g.grade}: te faltan ${nf.format(need)} pts para ${up.grade}`
         : 'Rango S+: ¡puntaje casi perfecto!'
     }</p>` +
-    `<p class="rank-scale-max">${`Máximo de este camino: ${nf.format(maxScoreFor(snapshot.start))} pts (mejor héroe, reliquia y cartas, con todo perfecto).`}</p>`;
+    `<p class="rank-scale-max">${`Máximo de este camino con tu reliquia: ${nf.format(maxScoreFor(snapshot.start, snapshot.relic ?? null))} pts (mejor héroe y cartas, con todo perfecto).`}</p>`;
   el.hidden = false;
   el.classList.remove('is-run');
   void el.offsetWidth; // reinicia la animación
@@ -219,7 +219,7 @@ function animateDefeatRank(snapshot) {
     gradeEl = $('overGrade');
   const nf = new Intl.NumberFormat(numLocale());
   const score = Math.max(0, snapshot.score || 0);
-  const blocks = rankScale(snapshot.start);
+  const blocks = rankScale(snapshot.start, snapshot.relic ?? null);
   const final = runRank(snapshot);
   const at = Math.max(
     0,
