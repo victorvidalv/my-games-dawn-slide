@@ -1,8 +1,11 @@
 /* lite — capa «lite» */
 @layer lite {
-  html.lite .hero-power .piece.power-piece,
-  html.lite .hero-power.rewind .piece:not(.power-piece) {
+  html.lite .power-on .piece.power-piece,
+  html.lite .power-on.rewind .piece:not(.power-piece) {
     filter: none;
+  }
+  html.lite .power-on.jolt {
+    animation: none;
   }
   html.lite #board.reviving .piece {
     filter: none;
