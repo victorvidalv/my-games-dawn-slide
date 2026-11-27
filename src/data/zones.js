@@ -20,4 +20,3 @@ export const ZONE_COUNT = ZONES.length;
 export const ZONE_LEVELS = 3;
 export const zoneIdx = (l) => Math.min(ZONE_COUNT - 1, Math.max(0, Math.floor((l - 1) / ZONE_LEVELS)));
 export const zoneStep = (l) => ((Math.max(1, l) - 1) % ZONE_LEVELS) + 1;
-export const zoneOf = (l) => ZONES[zoneIdx(l)];

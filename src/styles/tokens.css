@@ -28,6 +28,27 @@
     --brass-lo: #8a6426;
     --brass-line: #f1ce8266;
     --brass-glow: #f1ce8238;
+
+    /* capas de pantalla (de abajo arriba); los z-index locales 0–15 de cada componente no entran aquí */
+    --z-hud: 40;
+    --z-stage-fx: 50;
+    --z-power-stage: 53;
+    --z-power-fx: 54;
+    --z-preview: 55;
+    --z-toast: 56;
+    --z-banner: 57;
+    --z-notice: 58;
+    --z-journey: 59;
+    --z-fx: 60;
+    --z-hero-select: 61;
+    --z-travel: 62;
+    --z-rescue: 63;
+    --z-end: 64;
+    --z-revive-fx: 66;
+    --z-audio: 67;
+    --z-coach: 70;
+    --z-share: 80;
+    --z-top: 90;
     /* botón principal: ladrillo cálido con filo de latón (el mismo de «Aventura») */
     --cta-a: #c8553a;
     --cta-b: #8c2c22;

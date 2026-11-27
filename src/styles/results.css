@@ -3,7 +3,7 @@
   #perfect {
     position: fixed;
     inset: 0;
-    z-index: 58;
+    z-index: var(--z-notice);
     display: none;
     align-items: center;
     justify-content: center;
@@ -87,7 +87,7 @@
   #journey {
     position: fixed;
     inset: 0;
-    z-index: 59;
+    z-index: var(--z-journey);
     display: none;
     flex-direction: column;
     align-items: center;
@@ -152,7 +152,7 @@
   #crowd {
     position: fixed;
     inset: 0;
-    z-index: 62;
+    z-index: var(--z-travel);
     pointer-events: none;
     overflow: hidden;
   }
@@ -215,7 +215,7 @@
     }
   }
   #rescue {
-    z-index: 63;
+    z-index: var(--z-rescue);
     background: radial-gradient(ellipse, #a9496855, #070d23e8);
   }
   .rescue-card {
@@ -399,7 +399,7 @@
     background: #10182a;
     overflow: hidden;
     backdrop-filter: none;
-    z-index: 63;
+    z-index: var(--z-rescue);
   }
   .revive-stage {
     position: relative;
@@ -642,7 +642,7 @@
     --fx: #68d8bd;
     position: fixed;
     inset: 0;
-    z-index: 66;
+    z-index: var(--z-revive-fx);
     display: none;
     align-items: center;
     justify-content: center;
@@ -690,7 +690,7 @@
   #result {
     position: fixed;
     inset: 0;
-    z-index: 57;
+    z-index: var(--z-banner);
     display: none;
     padding: 20px;
     background: radial-gradient(ellipse at var(--rx, 50%) var(--ry, 50%), #08121a99, #08121a33 60%);
@@ -1016,7 +1016,7 @@
     background: radial-gradient(ellipse 80% 60% at 50% 40%, transparent 30%, #03050b99 100%);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    z-index: 64;
+    z-index: var(--z-end);
   }
   body:has(#dailyEnd.show) #app {
     visibility: hidden;
@@ -1562,7 +1562,7 @@
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     overflow: hidden;
-    z-index: 64;
+    z-index: var(--z-end);
   }
   #over .over-stage {
     position: relative;

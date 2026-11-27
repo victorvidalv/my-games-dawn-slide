@@ -37,7 +37,7 @@
     position: fixed;
     left: 50%;
     bottom: calc(env(safe-area-inset-bottom) + 18px);
-    z-index: 90;
+    z-index: var(--z-top);
     display: flex;
     align-items: center;
     gap: 11px;
@@ -199,8 +199,8 @@
     color: #fff2cf;
   }
   .ach.ready {
-    border-color: #e7b963 !important;
-    background: linear-gradient(155deg, #4a371f, #261e19) !important;
+    border-color: #e7b963;
+    background: linear-gradient(155deg, #4a371f, #261e19);
     box-shadow:
       0 3px 0 #091118,
       0 0 14px #ffd24a30 !important;
@@ -644,7 +644,7 @@
   .look-pv-ov {
     position: fixed;
     inset: 0;
-    z-index: 55; /* bajo el lienzo de partículas (#fx, 60): la celebración se ve encima */
+    z-index: var(--z-preview); /* bajo el lienzo de partículas (#fx, 60): la celebración se ve encima */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -872,7 +872,7 @@
   .outfit-show-ov {
     position: fixed;
     inset: 0;
-    z-index: 90;
+    z-index: var(--z-top);
     display: grid;
     grid-template-rows: 1fr auto;
     overflow: hidden;
@@ -1250,9 +1250,9 @@
   #menu[data-view='lore'],
   #menu[data-view='guide'],
   #menu[data-view='more'] {
-    padding: 0 !important;
+    padding: 0;
     align-items: stretch !important;
-    justify-content: center !important;
+    justify-content: center;
     overflow: hidden;
   }
 
@@ -1268,18 +1268,18 @@
   #menu[data-view='guide'] #menuCard,
   #menu[data-view='more'] #menuCard {
     width: 100% !important;
-    max-width: 1180px !important;
+    max-width: 1180px;
     height: 100dvh;
-    max-height: 100dvh !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
-    border-top: 0 !important;
-    border-bottom: 0 !important;
+    max-height: 100dvh;
+    margin: 0 auto;
+    padding: 0;
+    border-radius: 0;
+    border-top: 0;
+    border-bottom: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: linear-gradient(175deg, rgba(16, 22, 38, 0.96), rgba(9, 13, 24, 0.98)) !important;
+    background: linear-gradient(175deg, rgba(16, 22, 38, 0.96), rgba(9, 13, 24, 0.98));
   }
 
   #menu[data-view='ach'] #menuHead,
@@ -1327,16 +1327,16 @@
   .custom-total {
     flex: 0 0 auto;
     min-width: 150px;
-    margin: 0 !important;
+    margin: 0;
   }
 
   .custom-chips {
-    display: flex !important;
-    flex-wrap: nowrap !important;
+    display: flex;
+    flex-wrap: nowrap;
     gap: 6px;
     overflow-x: auto;
     scrollbar-width: none;
-    margin: 0 !important;
+    margin: 0;
     padding-bottom: 2px;
   }
 
@@ -1358,7 +1358,7 @@
   }
 
   .custom-catalog .ach-shop-grid {
-    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
     gap: 11px;
   }
   .guide-banner-sub {
@@ -1517,7 +1517,7 @@
 
   @media (max-width: 720px) {
     .custom-catalog .ach-shop-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
     }
   }
@@ -1557,7 +1557,7 @@
     gap: 10px;
   }
   #menu .custom-chips {
-    display: grid !important;
+    display: grid;
     grid-auto-flow: column;
     grid-auto-columns: minmax(0, 1fr);
     gap: 4px;
@@ -1636,13 +1636,13 @@
   }
   #menu .custom-catalog .ach-shop-grid,
   #menu .custom-catalog .ach-shop-grid.cols-3 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
   @media (min-width: 560px) {
     #menu .custom-catalog .ach-shop-grid,
     #menu .custom-catalog .ach-shop-grid.cols-3 {
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
     }
   }
   #menu .custom-catalog .ach-shop-card {

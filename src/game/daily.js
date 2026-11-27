@@ -31,7 +31,6 @@ export const DAILY_HINT_MILESTONES = [
   { board: 14, hints: 3 },
   { board: 15, hints: 5 },
 ];
-export const STREAK_HINT_REWARDS = DAILY_HINT_MILESTONES;
 
 /** Pistas de premio según los tableros superados hoy (13 → +1, 14 → +3, 15 → +5). */
 export const dailyHintReward = (cleared = 0) =>
@@ -66,16 +65,12 @@ export const DAILY_CHALLENGE = {
 export const CHALLENGES = [DAILY_CHALLENGE];
 export const challengeById = () => DAILY_CHALLENGE;
 export const challengeTargets = () => DAILY_TARGETS;
-export const todayFamily = (_challenge, _day, index = 0) => DAILY_FAMILIES[index] || 'plain';
 
 /* ───────────── fechas (hora local del jugador) ───────────── */
 
 /** Número de día local (días desde 1970 en el calendario del jugador): cambia exactamente a su medianoche. */
 export const dayNumber = (date = new Date()) =>
   Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
-/** Milisegundos que faltan para la próxima medianoche local. */
-export const msToReset = (date = new Date()) =>
-  new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).getTime() - date.getTime();
 /** «5 h 12 min» / «48 min» / «menos de 1 min». */
 export function resetText(ms) {
   const min = Math.floor(Math.max(0, ms) / 60000),
@@ -88,7 +83,6 @@ export function resetText(ms) {
 
 export const maxLevelReached = (paths = {}) =>
   Object.values(paths || {}).reduce((m, r) => Math.max(m, r?.level || 0), 0);
-export const isUnlocked = () => true;
 
 /* ───────────── el tablero del día ───────────── */
 
@@ -152,7 +146,6 @@ export function buildDaily(challenge, day, { levels, special }, index = 0, remai
 
 /* ───────────── medallas, racha y registro ───────────── */
 
-export const MEDALS = ['bronze', 'silver', 'gold'];
 /** Oro: 15 tableros · Plata: 14 tableros · Bronce: 13 tableros (o menos si no llegó). */
 export function medalFor(clearedOrMoves, opt) {
   if (opt === undefined) {
@@ -176,7 +169,6 @@ export const emptyDaily = () => ({
 });
 /** Racha vigente si se completó el reto hoy o ayer. */
 export const currentStreak = (state, day) => (state && state.last >= day - 1 ? state.streak : 0);
-export const streakEarned = (state, day) => state?.last === day;
 export const todayResult = (state, id = DAILY_CHALLENGE.id, day = dayNumber()) => state?.days?.[day]?.[id] || null;
 
 /**

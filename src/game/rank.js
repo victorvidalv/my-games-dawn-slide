@@ -44,9 +44,6 @@ export function rankFor(pct, start = 1) {
   return { grade: rank.grade, cls: rank.cls };
 }
 
-/** Posición de una letra (0 = C … 4 = S+), para comparar rangos de distintos caminos. */
-export const gradeIndex = (grade) => GRADES.length - 1 - GRADES.findIndex((g) => g.grade === grade);
-
 /** Siguiente letra por encima de `pct`, con su mínimo, o null si ya es la más alta. */
 export function nextRank(pct, start = 1) {
   const p = Number.isFinite(pct) ? pct : 0;

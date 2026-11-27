@@ -5,7 +5,7 @@
     background: #0a151f;
     overflow: hidden;
     backdrop-filter: none;
-    z-index: 62;
+    z-index: var(--z-travel);
   }
   .travel-stage {
     position: relative;
@@ -227,14 +227,14 @@
   .travel-shell {
     position: relative;
     z-index: 3;
-    display: flex !important;
+    display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 14px;
     min-height: 100dvh;
     width: min(100%, 1160px);
     margin: 0 auto;
-    grid-template-columns: none !important;
+    grid-template-columns: none;
     grid-template-rows: none !important;
     padding: calc(env(safe-area-inset-top) + 22px) clamp(16px, 4vw, 36px) calc(env(safe-area-inset-bottom) + 24px);
     padding-left: max(clamp(16px, 4vw, 36px), env(safe-area-inset-left));
@@ -310,7 +310,7 @@
   .hero-choice-name,
   .travel-heading,
   .pemo {
-    font-family: var(--font-title) !important;
+    font-family: var(--font-title);
     font-weight: 700;
     letter-spacing: 0.07em;
   }
@@ -564,8 +564,8 @@
   }
   #travel .travel-shell {
     transition: opacity 0.4s ease;
-    justify-content: center !important;
-    align-items: center !important;
+    justify-content: center;
+    align-items: center;
     gap: clamp(12px, 2.2dvh, 22px);
     text-align: center;
   }
