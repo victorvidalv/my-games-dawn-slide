@@ -8,6 +8,7 @@
     justify-content: center;
     flex-direction: column;
     pointer-events: none;
+    display: none !important;
   }
   #perfect.go {
     display: flex;
@@ -175,9 +176,6 @@
     z-index: var(--z-rescue);
     background: radial-gradient(ellipse, #a9496855, #070d23e8);
   }
-  .rescue-card {
-    max-width: 380px !important;
-  }
   .rescue-portrait {
     width: 115px;
     height: 155px;
@@ -191,6 +189,8 @@
     font-size: 40px;
     margin: -24px auto 10px;
     position: relative;
+    animation: none;
+    text-shadow: none;
   }
   .rescue-card h2 {
     font-size: 26px;
@@ -212,13 +212,17 @@
     margin: -5px 0 15px;
   }
   .ending-portrait {
-    display: block;
     width: 100%;
     height: 230px;
-    object-position: center 35%;
     border-radius: 20px;
     border: 1px solid #f3d39a66;
+    background:
+      linear-gradient(#12203b99, #12203bd9),
+      var(--ending-scene) center/cover;
     box-shadow: 0 8px 22px #0005;
+    object-position: center 35%;
+    object-fit: contain;
+    display: block;
   }
   .ending-seal {
     position: absolute;
@@ -234,16 +238,6 @@
     color: #f1e1bd;
     opacity: 1 !important;
   }
-  .ending-thanks {
-    font-size: 13px;
-    line-height: 1.65;
-    color: #d9e6f1;
-    padding: 13px 15px;
-    border-radius: 13px;
-    border: 1px solid #e7ce9b33;
-    margin: 13px 0 16px;
-    font-style: italic;
-  }
   #finale .card {
     max-width: 450px;
   }
@@ -256,13 +250,6 @@
     .ending-portrait {
       height: 160px;
     }
-  }
-
-  .ending-portrait {
-    object-fit: contain;
-    background:
-      linear-gradient(#12203b99, #12203bd9),
-      var(--ending-scene) center/cover;
   }
 
   @media (min-width: 900px) {
@@ -301,24 +288,23 @@
       font-size: 12px;
     }
   }
-  #perfect {
-    display: none !important;
-  }
   .ending-thanks {
+    font-size: 13px;
+    line-height: 1.65;
+    color: #d9e6f1;
+    padding: 13px 15px;
+    border-radius: 13px;
+    border: 1px solid #e7ce9b33;
+    margin: 13px 0 16px;
+    font-style: italic;
     background: #10212c66;
     border-color: #ac9a7233;
   }
   .ending-portrait {
     border-color: #ad9a6d55;
   }
-  .rescue-card {
-    background: #1d2c37 !important;
-    border-color: #bda17866 !important;
-  }
   .rescue-heart {
-    animation: none;
     color: #bf7967;
-    text-shadow: none;
   }
   .rescue-portrait {
     border-color: #b49c70;
@@ -529,6 +515,8 @@
     }
   }
   .rescue-card {
+    max-width: 380px !important;
+    background: #1d2c37 !important;
     border: 2.5px solid #091118 !important;
     box-shadow:
       0 6px 0 #091118,
@@ -618,11 +606,13 @@
     }
   }
   #result {
-    position: fixed;
-    inset: 0;
     z-index: var(--z-banner);
     display: none;
     padding: 20px;
+    inset: 0;
+    position: fixed;
+    --res-accent: #f5cd6a;
+    --res-glow: rgba(245, 205, 106, 0.3);
   }
   #result.show {
     display: block;
@@ -630,19 +620,18 @@
   }
   .res-card {
     position: fixed;
-    left: var(--rx, 50%);
-    top: var(--ry, 50%);
-    translate: -50% -50%;
     display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 2px;
+    left: var(--rx, 50%);
+    top: var(--ry, 50%);
+    padding: 18px 32px 16px;
+    translate: -50% -50%;
+    flex-direction: column;
     overflow: hidden;
-  }
-  .res-card::before {
-    content: '';
-    position: absolute;
-    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(216, 171, 82, 0.16), transparent 60%),
+      linear-gradient(170deg, rgba(31, 38, 68, 0.95), rgba(16, 20, 38, 0.97));
   }
   .res-card > * {
     position: relative;
@@ -653,20 +642,18 @@
     justify-content: center;
     gap: 10px;
   }
-  .res-crown svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
   .res-prize b {
-    font: 900 clamp(40px, 12vw, 54px)/1 var(--font-book);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
     background: linear-gradient(180deg, #fff3c4, #f1ce82 55%, #c9964a);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     paint-order: stroke fill;
+    white-space: nowrap;
+    font: 900 clamp(40px, 12vw, 54px)/1 var(--font-book);
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-title);
+    font-weight: 700;
+    filter: drop-shadow(0 4px 0 #150e0c) drop-shadow(0 0 14px #f2c45c66);
   }
   .res-crown {
     display: none;
@@ -675,12 +662,6 @@
     margin: -6px 0 -2px;
     filter: drop-shadow(0 2px 0 #091118);
     animation: res-crown 0.7s cubic-bezier(0.2, 1.6, 0.4, 1) 0.15s both;
-  }
-  #resTitle {
-    display: block;
-    font: 900 12px/1 var(--font-book);
-    margin-bottom: 6px;
-    padding-left: 0.34em;
   }
   #result.perfect .res-crown {
     display: block;
@@ -722,24 +703,23 @@
       2px 3px 0 #150e0c,
       0 0 14px #e0b04f55;
   }
-  .res-card {
-    min-width: min(72vw, 250px);
-    padding: 18px 32px 16px;
-  }
   .res-card::before {
+    content: '';
+    position: absolute;
+    pointer-events: none;
     inset: -60%;
     animation: res-spin 14s linear infinite;
+    background: repeating-conic-gradient(from 0deg, #f1ce8216 0 8deg, #f1ce8200 8deg 24deg);
   }
   #result.perfect .res-card::before {
     animation-duration: 9s;
-  }
-  .res-prize b {
-    font-family: var(--font-title);
-    font-weight: 700;
-    -webkit-text-stroke: 2px #150e0c;
-    filter: drop-shadow(0 4px 0 #150e0c) drop-shadow(0 0 14px #f2c45c66);
+    background: repeating-conic-gradient(from 0deg, #ffe6a04d 0 9deg, #f1ce8200 9deg 22deg);
   }
   #resTitle {
+    display: block;
+    font: 900 12px/1 var(--font-book);
+    margin-bottom: 6px;
+    padding-left: 0.34em;
     font-family: var(--font-title);
     font-size: 15px;
     letter-spacing: 0.22em;
@@ -752,13 +732,10 @@
     text-shadow: 0 2px 0 #150e0c;
     transform: rotate(-3deg);
     animation: res-stamp 0.5s cubic-bezier(0.2, 1.8, 0.4, 1) 0.12s both;
-  }
-  #result.perfect .res-card::after {
-    content: '★ ★ ★';
-    order: 9;
-    margin-top: 6px;
-    font-size: 22px;
-    letter-spacing: 8px;
+    box-shadow:
+      inset 0 0 0 1.5px #ffd76a,
+      0 3px 0 #091118,
+      0 0 22px #ffd76a66;
   }
   @media (prefers-reduced-motion: reduce) {
     .res-prize b,
@@ -769,6 +746,7 @@
     }
   }
   .res-card {
+    min-width: min(72vw, 250px);
     max-width: 94vw;
     animation: res-pop2 0.42s cubic-bezier(0.2, 1.6, 0.4, 1) both;
   }
@@ -777,16 +755,11 @@
       res-pop2 0.42s cubic-bezier(0.2, 1.6, 0.4, 1) both,
       res-shake 0.35s ease-out 0.12s;
   }
-  .res-card::before {
-    background: repeating-conic-gradient(from 0deg, #f1ce8216 0 8deg, #f1ce8200 8deg 24deg);
-  }
-  #result.perfect .res-card::before {
-    background: repeating-conic-gradient(from 0deg, #ffe6a04d 0 9deg, #f1ce8200 9deg 22deg);
-  }
   #result:not(.perfect) .res-crown {
     display: none !important;
   }
   .res-prize b {
+    -webkit-text-stroke: 2px #150e0c;
     animation:
       res-bump 0.5s cubic-bezier(0.2, 1.8, 0.4, 1) 0.1s both,
       res-glint 1s ease-in-out 0.5s both;
@@ -794,13 +767,12 @@
       100% 100%,
       260% 100%;
   }
-  #resTitle {
-    box-shadow:
-      inset 0 0 0 1.5px #ffd76a,
-      0 3px 0 #091118,
-      0 0 22px #ffd76a66;
-  }
   #result.perfect .res-card::after {
+    content: '★ ★ ★';
+    order: 9;
+    margin-top: 6px;
+    font-size: 22px;
+    letter-spacing: 8px;
     color: #ffd76a;
     text-shadow:
       0 2px 0 #091118,
@@ -891,17 +863,16 @@
     gap: 6px;
     text-align: center;
   }
-  #dailyEnd .daily-medal {
-    width: clamp(72px, 14dvh, 104px);
-    height: clamp(72px, 14dvh, 104px);
-    margin-bottom: 4px;
-  }
-  #dailyEnd .daily-medal .ic {
+  #dailyEnd .daily-medal .ic,
+  .res-crown svg {
     width: 100%;
     height: 100%;
     display: block;
   }
   #dailyEnd .daily-medal {
+    width: clamp(72px, 14dvh, 104px);
+    height: clamp(72px, 14dvh, 104px);
+    margin-bottom: 4px;
     display: block;
     animation: medal-in 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both;
     filter: drop-shadow(0 5px 0 #150e0c) drop-shadow(0 0 18px #ffd24a66);
@@ -1097,9 +1068,6 @@
   .res-card {
     border: 1.5px solid var(--mp-border-strong);
     border-radius: 18px;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(216, 171, 82, 0.16), transparent 60%),
-      linear-gradient(170deg, rgba(31, 38, 68, 0.95), rgba(16, 20, 38, 0.97));
     box-shadow: var(--mp-shadow);
   }
   .finale-score-box {
@@ -1711,8 +1679,6 @@
     }
   }
   #result {
-    --res-accent: #f5cd6a;
-    --res-glow: rgba(245, 205, 106, 0.3);
     background: radial-gradient(
       ellipse at var(--rx, 50%) var(--ry, 50%),
       rgba(9, 11, 22, 0.72),

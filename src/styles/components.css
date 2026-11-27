@@ -7,9 +7,9 @@
   }
   .controls button {
     flex: 1;
-    min-width: 0;
     position: relative;
     white-space: nowrap;
+    min-width: 0;
   }
   .controls em {
     font-style: normal;
@@ -25,6 +25,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 1px 0 #091118;
   }
   .modal {
     position: fixed;
@@ -47,6 +48,9 @@
     max-width: 380px;
     padding: 26px 22px;
     text-align: center;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    --corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Cg fill='none' stroke='%23f1ce82' stroke-linecap='round'%3E%3Cpath d='M3 31V11Q3 3 11 3H31' stroke-width='2'/%3E%3Cpath d='M8 27V13Q8 8 13 8H27' stroke-width='1' opacity='.6'/%3E%3Cpath d='M3 3 12 12' stroke-width='1.2' opacity='.7'/%3E%3C/g%3E%3Ccircle cx='12.5' cy='12.5' r='2.2' fill='%23f1ce82'/%3E%3C/svg%3E");
   }
   .card h2 {
     margin: 0 0 2px;
@@ -61,10 +65,12 @@
   }
   .logo {
     font-weight: 900;
-    white-space: nowrap;
     margin: 0;
     -webkit-background-clip: text;
     background-clip: text;
+    color: #efe0be;
+    filter: none;
+    white-space: nowrap;
   }
   .rules {
     text-align: left;
@@ -125,10 +131,11 @@
     font-size: 28px;
   }
   .rec {
-    display: inline-block;
     margin: 4px 0;
     padding: 4px 12px;
     font-weight: 900;
+    display: inline-block;
+    color: #243640;
   }
 
   .spin {
@@ -150,8 +157,8 @@
   }
   .card {
     max-height: 94dvh;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    animation: quietIn 0.22s ease-out;
+    position: relative;
   }
   @media (max-height: 740px) {
     .controls button {
@@ -219,13 +226,8 @@
       font-size: 12.5px;
     }
   }
-  .card {
-    animation: quietIn 0.22s ease-out;
-  }
   .logo {
     background: none;
-    color: #efe0be;
-    filter: none;
     font-family: var(--font-book);
     text-shadow: 0 2px 0 #091118;
   }
@@ -239,10 +241,12 @@
   }
   .badge {
     border-radius: 8px;
-    box-shadow: 0 1px 0 #091118;
     height: 23px;
     min-width: 23px;
     font-size: 12px;
+    padding: 0 7px;
+    white-space: nowrap;
+    color: #3a2300;
   }
 
   #score,
@@ -271,7 +275,6 @@
   .rec {
     animation: none;
     background: #c7b382;
-    color: #243640;
     border-radius: 5px;
     font-size: 10px;
     letter-spacing: 0.05em;
@@ -313,11 +316,6 @@
   .controls button .bi {
     margin-right: 2px;
   }
-  .badge {
-    width: auto;
-    padding: 0 7px;
-    white-space: nowrap;
-  }
   #score {
     min-width: 0;
     font-size: var(--score-size, var(--score-base, 32px)) !important;
@@ -342,22 +340,18 @@
     border: 3px solid #150e0c;
     /* placa de juego: filo de tinta, aro de latón, filo de tinta exterior y sombra desplazada */
   }
-
   .rules,
   .stats div {
     border-radius: var(--wob-d);
-  }
-  .rules,
-  .stats div {
     background: var(--paper-grain), #0b151d88;
     box-shadow:
       inset 0 2px 5px #0007,
       inset 0 0 0 1px #e3cd9a14;
   }
   .badge {
+    width: auto;
     background: #f2c45c;
     border: 2px solid #150e0c;
-    color: #3a2300;
   }
   .logo {
     letter-spacing: 0.09em;
@@ -420,10 +414,11 @@
   }
   .lang-switch {
     display: flex;
-    flex: none;
     justify-content: center;
     gap: 12px;
     padding: 2px 0 0;
+    flex: none;
+    flex-wrap: wrap;
   }
   @media (min-aspect-ratio: 13/10) {
     .title-lockup {
@@ -442,8 +437,6 @@
     }
     .title-sub {
       display: block;
-    }
-    .title-sub {
       font-size: 12px;
     }
   }
@@ -458,7 +451,6 @@
     margin-right: 2px;
   }
   .lang-switch {
-    flex-wrap: wrap;
     align-items: center;
   }
   #levelBanner {
@@ -502,7 +494,6 @@
     animation: menu-card 0.32s cubic-bezier(0.2, 1.2, 0.4, 1) both;
   }
   .card {
-    --corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Cg fill='none' stroke='%23f1ce82' stroke-linecap='round'%3E%3Cpath d='M3 31V11Q3 3 11 3H31' stroke-width='2'/%3E%3Cpath d='M8 27V13Q8 8 13 8H27' stroke-width='1' opacity='.6'/%3E%3Cpath d='M3 3 12 12' stroke-width='1.2' opacity='.7'/%3E%3C/g%3E%3Ccircle cx='12.5' cy='12.5' r='2.2' fill='%23f1ce82'/%3E%3C/svg%3E");
     background:
       radial-gradient(ellipse at 50% 0%, #f1ce821f, #0000 55%),
       repeating-linear-gradient(118deg, #fff3d409 0 1px, #0000 1px 7px),
@@ -514,7 +505,6 @@
       0 22px 54px #000b,
       inset 0 0 0 1px #fff3d414,
       inset 0 0 44px #0911188c;
-    position: relative;
   }
   .card::before,
   .card::after {

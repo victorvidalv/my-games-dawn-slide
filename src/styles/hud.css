@@ -77,16 +77,10 @@
     justify-content: space-between;
     align-items: baseline;
     opacity: 0.9;
+    letter-spacing: 0;
   }
   .mrow b {
     font-variant-numeric: tabular-nums;
-  }
-  .mrow span:last-child {
-    opacity: 0.7;
-  }
-  .bar {
-    position: relative;
-    overflow: hidden;
   }
   .bar i {
     position: absolute;
@@ -188,6 +182,7 @@
   }
   .scores {
     min-width: 0;
+    grid-template-columns: none;
   }
   .sc {
     min-width: 0;
@@ -202,51 +197,41 @@
   }
   .sc small {
     display: block;
-    opacity: 0.6;
     font-weight: 800;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    opacity: 0.6;
   }
   .sc b {
-    display: block;
-    line-height: 1.15;
     font-weight: 900;
     font-variant-numeric: tabular-nums;
+    -webkit-background-clip: text;
+    background-clip: text;
+    overflow: hidden;
     white-space: nowrap;
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
-  .sc.max b {
-    background: linear-gradient(180deg, #fff3b0, #ffb300);
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
-  .sc.max.broken {
-    border-color: #ffd24a;
-    animation: glowbox 1.2s ease-in-out infinite alternate;
-  }
-  .sc.max.broken small {
-    opacity: 1;
+    line-height: 1.15;
+    display: block;
   }
   .menubtn {
-    flex: none;
     width: 60px;
     height: 52px;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
+    gap: 1px;
     align-items: center;
     justify-content: center;
-    gap: 1px;
+    display: flex;
+    padding: 0;
+    flex: none;
+    flex-direction: column;
+    box-shadow:
+      0 3px 0 #091118,
+      inset 0 1px 0 #d8c49628;
+    border: 2px solid #091118;
   }
   .menubtn:active {
     box-shadow:
       0 1px 0 #8f4509,
       0 4px 8px #0007;
-  }
-  .menubtn span {
-    line-height: 1;
   }
   .menubtn em {
     font-style: normal;
@@ -260,9 +245,6 @@
     }
     .menubtn {
       width: 52px;
-    }
-    .sc small {
-      letter-spacing: 0.06em;
     }
   }
   @media (min-width: 700px) and (min-height: 700px) {
@@ -292,10 +274,6 @@
     gap: 9px;
     margin-top: -2px;
   }
-
-  .sc b {
-    overflow: hidden;
-  }
   .top small,
   .sc small,
   .pscore small,
@@ -304,6 +282,7 @@
   }
   @media (max-width: 359px) {
     .sc small {
+      letter-spacing: 0.06em;
       font-size: 9.5px;
     }
   }
@@ -321,9 +300,13 @@
   }
   .top .sc {
     border-radius: 0;
+    width: 100%;
+    background: none;
+    padding: 0;
   }
   .scores {
     gap: 0;
+    flex: 1;
   }
   .sc b {
     font-size: 27px;
@@ -331,6 +314,9 @@
     text-shadow: 0 2px 0 #091118;
   }
   .sc.max b {
+    background: linear-gradient(180deg, #fff3b0, #ffb300);
+    -webkit-background-clip: text;
+    background-clip: text;
     color: #b5c0bf;
     font-size: 20px;
   }
@@ -346,12 +332,9 @@
   }
   .menubtn {
     background: linear-gradient(180deg, #2c3e4a, #1f2d37);
-    box-shadow:
-      0 3px 0 #091118,
-      inset 0 1px 0 #d8c49628;
-    border: 2px solid #091118;
   }
   .menubtn span {
+    line-height: 1;
     font-size: 22px;
   }
   .menubtn em {
@@ -361,17 +344,12 @@
     background: linear-gradient(170deg, #1a2d39eb, #13222cf0);
     border: 2px solid #091118;
   }
-
-  .mrow {
-    font-size: 10px;
-  }
   .mrow b {
     font-size: 22px;
   }
-  .mrow span:last-child {
-    font-size: 10px;
-  }
   .bar {
+    position: relative;
+    overflow: hidden;
     height: 9px;
     margin: 7px 0 5px;
     box-shadow: inset 0 2px 4px #0009;
@@ -386,20 +364,25 @@
     animation: none;
   }
   .mrow {
-    letter-spacing: 0;
+    font-size: 10px;
   }
 
   .sc.max.broken {
+    border-color: #ffd24a;
+    animation: glowbox 1.2s ease-in-out infinite alternate;
     box-shadow: none;
     background: none;
     border: 0;
   }
   .sc.max.broken small {
+    opacity: 1;
     color: #ccb78c;
     text-shadow: none;
     animation: none;
   }
   .mrow span:last-child {
+    opacity: 0.7;
+    font-size: 10px;
     white-space: nowrap;
   }
   .bought {
@@ -502,37 +485,29 @@
   .meter.low-hit {
     animation: low-hit 0.55s ease-out;
   }
-  #lowBanner {
-    position: fixed;
-    left: 50%;
-    z-index: var(--z-notice);
-    display: none;
-    pointer-events: none;
-    transform: translate(-50%, 0);
-  }
   #lowBanner i {
     display: grid;
     place-items: center;
     font-style: normal;
     font-size: 15px;
     color: #f4be66;
-  }
-  #lowBanner > div {
-    align-items: baseline;
-    gap: 7px;
+    flex: none;
   }
   #lowBanner b {
     display: block;
+    font: 700 17px/1.15 var(--font-title);
+    letter-spacing: 0.04em;
+    color: #ffe29a;
   }
   #lowBanner span {
     display: block;
+    margin-top: 3px;
+    font: 700 12.5px/1.3 var(--font-ui);
+    color: #f3e5c8;
   }
   #lowBanner.last i,
   #lowBanner.last b {
     color: #ffb3a7;
-  }
-  #lowBanner.show {
-    display: flex;
   }
   @media (prefers-reduced-motion: reduce) {
     .meter.low,
@@ -545,9 +520,6 @@
     align-content: center;
     gap: 10px;
     padding: 0 16px;
-  }
-  #lowBanner i .ic {
-    filter: none;
   }
   .bought .bl .ic {
     width: 1.3em;
@@ -566,17 +538,13 @@
     line-height: 1;
   }
   .scores {
-    flex: 1;
     display: flex;
     justify-content: center;
-    grid-template-columns: none;
   }
   .top .sc {
-    width: 100%;
-    padding: 0;
-    background: none;
     border: 0;
     box-shadow: none;
+    gap: 7px;
   }
   @media (max-aspect-ratio: 13/10) {
     .top {
@@ -594,6 +562,13 @@
   }
   .meter {
     padding: 12px 16px 12px;
+    border-radius: var(--wob-b);
+    box-shadow:
+      inset 0 0 0 1.5px #e0b04f48,
+      inset 0 2px 0 #e3cd9a26,
+      inset 0 -3px 0 #0006,
+      0 0 0 2px #150e0c,
+      4px 7px 0 2px #150e0c;
   }
   .meter .mrow {
     display: flex;
@@ -644,11 +619,6 @@
     filter: drop-shadow(0 2px 0 #091118);
     transition: left 0.35s;
   }
-  .barwrap .crown svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
   .meter.danger .barwrap .crown {
     opacity: 0.55;
   }
@@ -667,7 +637,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
   }
   .score-ico {
     flex: none;
@@ -675,11 +644,6 @@
     height: 28px;
     display: block;
     filter: drop-shadow(0 2px 0 #091118);
-  }
-  .score-ico svg {
-    width: 100%;
-    height: 100%;
-    display: block;
   }
   @media (max-height: 620px) {
     .score-ico {
@@ -700,7 +664,9 @@
     display: block;
     filter: drop-shadow(0 2px 0 #091118);
   }
-  .level-ico svg {
+  .level-ico svg,
+  .score-ico svg,
+  .barwrap .crown svg {
     width: 100%;
     height: 100%;
     display: block;
@@ -714,15 +680,6 @@
   .top .lv .level-ico {
     opacity: 1;
     margin: 0;
-  }
-  .meter {
-    border-radius: var(--wob-b);
-    box-shadow:
-      inset 0 0 0 1.5px #e0b04f48,
-      inset 0 2px 0 #e3cd9a26,
-      inset 0 -3px 0 #0006,
-      0 0 0 2px #150e0c,
-      4px 7px 0 2px #150e0c;
   }
   .menubtn {
     border-radius: var(--wob-d);
@@ -759,6 +716,12 @@
       inset 0 1px 0 #ffe6b838;
   }
   #lowBanner {
+    position: fixed;
+    left: 50%;
+    z-index: var(--z-notice);
+    display: none;
+    pointer-events: none;
+    transform: translate(-50%, 0);
     top: calc(env(safe-area-inset-top) + 10px);
     max-width: min(92vw, 420px);
     width: max-content;
@@ -774,27 +737,19 @@
       4px 6px 0 #150e0c,
       0 14px 30px #000a;
   }
-  #lowBanner i {
-    flex: none;
-  }
   #lowBanner i .ic {
+    filter: none;
     width: 30px;
     height: 30px;
   }
   #lowBanner > div {
+    align-items: baseline;
+    gap: 7px;
     display: block;
     text-align: left;
   }
   #lowBanner b {
-    font: 700 17px/1.15 var(--font-title);
-    letter-spacing: 0.04em;
-    color: #ffe29a;
     text-shadow: 0 2px 0 #150e0c;
-  }
-  #lowBanner span {
-    margin-top: 3px;
-    font: 700 12.5px/1.3 var(--font-ui);
-    color: #f3e5c8;
   }
   #lowBanner.last {
     background: var(--hatch), linear-gradient(170deg, #6a2018, #421009);
@@ -807,6 +762,7 @@
     color: #ffd0c4;
   }
   #lowBanner.show {
+    display: flex;
     animation: low-banner-2 3s cubic-bezier(0.2, 1.2, 0.4, 1) forwards;
   }
   .meter .mrow .left-chip.last {

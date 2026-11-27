@@ -1,11 +1,5 @@
 /* fate — capa «screens» */
 @layer screens {
-  #travel {
-    padding: 0;
-    overflow: hidden;
-    backdrop-filter: none;
-    z-index: var(--z-travel);
-  }
   .travel-stage {
     position: relative;
     width: 100%;
@@ -84,6 +78,7 @@
     width: calc(var(--c) * 2);
     left: 12px;
     background: var(--hatch), var(--red-key-paint);
+    animation: demo-slide 2.6s ease-in-out infinite;
   }
   .mini .mp.blk {
     background: linear-gradient(#7fb4e6, #4a82b8);
@@ -102,9 +97,6 @@
     font-size: 26px;
     animation: finger 2.6s ease-in-out infinite;
   }
-  .mini .mp.red {
-    animation: demo-slide 2.6s ease-in-out infinite;
-  }
   .mini .wall.demo {
     position: absolute;
     right: 46px;
@@ -120,6 +112,10 @@
     animation: bump-demo 2.2s ease-in-out infinite;
   }
   #travel {
+    padding: 0;
+    overflow: hidden;
+    backdrop-filter: none;
+    z-index: var(--z-travel);
     background: #070b18;
     overflow-y: auto;
     align-items: flex-start;
@@ -212,6 +208,12 @@
   .travel-heading {
     margin: 0;
     font: 800 clamp(30px, 8vw, 48px)/1.05 var(--font-book);
+    text-transform: uppercase;
+    text-shadow:
+      0 3px 0 #150e0c,
+      2px 4px 0 #150e0c,
+      0 0 26px #e0b04f55;
+    color: #f6e6bd;
   }
   .travel-bottom {
     width: 100%;
@@ -277,13 +279,7 @@
 
   .travel-heading {
     font-family: var(--font-title);
-    text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #f6e6bd;
-    text-shadow:
-      0 3px 0 #150e0c,
-      2px 4px 0 #150e0c,
-      0 0 26px #e0b04f55;
   }
   #travel.show .travel-hero {
     animation: tr-hero 0.55s cubic-bezier(0.2, 1.2, 0.4, 1) 0.12s both;
@@ -557,8 +553,6 @@
       600 13px/1.35 system-ui,
       sans-serif;
     text-shadow: 0 1px 0 #091118;
-  }
-  .fate-rewards {
     display: inline-block;
     margin-top: 8px;
     padding: 4px 10px;
