@@ -1,0 +1,58 @@
+/* tokens — capa «tokens»: superficies, latón, rangos, tipografía y sombras compartidas por todas las pantallas */
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/cinzel-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('../assets/fonts/cinzel-latin-900-normal.woff2') format('woff2');
+}
+@layer tokens {
+  :root {
+    /* superficies: tinta azulada con un punto cálido, de la más profunda a la más clara */
+    --surf-0: #0d1219;
+    --surf-1: #161c2a;
+    --surf-2: #202636;
+    --surf-3: #2b3346;
+    --surf-line: #ffffff1c;
+    --surf-ink: #e9e2d0;
+    --surf-dim: #aaa690;
+    /* latón: marco, filo y texto de énfasis */
+    --brass-hi: #f6dc9a;
+    --brass-lo: #8a6426;
+    --brass-line: #f1ce8266;
+    --brass-glow: #f1ce8238;
+    /* botón principal: ladrillo cálido con filo de latón (el mismo de «Aventura») */
+    --cta-a: #c8553a;
+    --cta-b: #8c2c22;
+    --cta-edge: #4a120d;
+    /* rangos: gris → acero → esmeralda → oro → brasa; el mismo color en todas partes */
+    --rk-c: #b4a9c4;
+    --rk-c-a: #4b435e;
+    --rk-c-b: #2b2638;
+    --rk-b: #8cc4f2;
+    --rk-b-a: #35679c;
+    --rk-b-b: #1c3a5e;
+    --rk-a: #7ee3c4;
+    --rk-a-a: #2d8a74;
+    --rk-a-b: #175246;
+    --rk-s: #ffe38a;
+    --rk-s-a: #e6b038;
+    --rk-s-b: #9e6514;
+    --rk-sp: #fff0b8;
+    --rk-sp-a: #f5b93a;
+    --rk-sp-b: #c93b2b;
+    /* forma y profundidad */
+    --r-panel: 18px;
+    --sh-panel: 0 10px 26px #0009, inset 0 1px 0 #ffffff22;
+    --sh-btn: 0 3px 0 #091118, inset 0 1px 0 #ffffff22;
+    /* tipografía: Cinzel embebida para rótulos; si no carga, la pila del sistema de siempre */
+    --font-display: 'Cinzel', 'Copperplate', 'Copperplate Gothic Bold', 'Palatino Linotype', Palatino, Georgia, serif;
+  }
+}
