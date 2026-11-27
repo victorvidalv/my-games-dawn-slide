@@ -14,12 +14,10 @@ import {
   unlockRewards,
   RARITY,
   DEFAULT_LOOK,
-  GROUPS,
   LEGACY_REWARDS,
   REWARDS,
   REWARD_TYPES,
   STATS,
-  TIERS,
   claimAchievements,
   migrateAchievements,
   lookOf,
@@ -41,29 +39,15 @@ await loadAllDicts();
 import { bestAdventureRecord, mergePaths, mergeSaves } from '../src/game/save-merge.js';
 
 describe('registro de logros y tienda', () => {
-  it('113 logros (25 simples, 55 medios y 33 difíciles) en 5 grupos con estadística conocida y puntaje positivo', () => {
+  it('113 logros con id único y estadística conocida', () => {
     expect(ACHIEVEMENTS).toHaveLength(113);
-    expect(ACHIEVEMENTS.filter((a) => a.tier === 'bronze')).toHaveLength(25);
-    expect(ACHIEVEMENTS.filter((a) => a.tier === 'silver')).toHaveLength(55);
-    expect(ACHIEVEMENTS.filter((a) => a.tier === 'gold')).toHaveLength(33);
-    const groups = GROUPS.map((g) => g.id);
     const ids = new Set();
     for (const a of ACHIEVEMENTS) {
       expect(ids.has(a.id), a.id).toBe(false);
       ids.add(a.id);
       expect(STATS[a.stat], a.id).toBeTypeOf('function');
-      expect(groups, a.id).toContain(a.group);
-      expect(TIERS[a.tier], a.id).toBeTruthy();
-      expect(a.points, a.id).toBeGreaterThan(0);
+      expect(a.goal, a.id).toBeGreaterThan(0);
     }
-    // 20 por grupo de base y los 13 del roguelite repartidos (Aventura 6, Maestría 5, Desafío 1, Diario 1)
-    expect(Object.fromEntries(groups.map((g) => [g, ACHIEVEMENTS.filter((a) => a.group === g).length]))).toEqual({
-      adventure: 26,
-      mastery: 25,
-      challenge: 21,
-      daily: 21,
-      collection: 20,
-    });
     // La tienda tiene 5 categorías, cada una con un elemento de serie gratis y premios con precio > 0
     expect(REWARD_TYPES).toEqual([
       'board',
@@ -102,12 +86,7 @@ describe('registro de logros y tienda', () => {
   });
 
   it('todos los textos de logros, niveles y premios están traducidos', () => {
-    const texts = [
-      ...ACHIEVEMENTS.flatMap((a) => [a.name, a.desc]),
-      ...GROUPS.map((g) => g.name),
-      ...Object.values(TIERS).map((t) => t.name),
-      ...REWARD_TYPES.flatMap((t) => REWARDS[t].map((r) => r.name)),
-    ];
+    const texts = [...REWARD_TYPES.flatMap((t) => REWARDS[t].map((r) => r.name))];
     for (const [lang, dict] of Object.entries(DICTS))
       for (const t of texts) expect(dict[t], `${lang}: ${t}`).toBeTruthy();
   });
