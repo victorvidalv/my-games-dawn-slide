@@ -755,7 +755,7 @@
     }
   }
   .frame:not([data-rot='0']):not([data-rot='']) {
-    border-color: #26103e !important;
+    border-color: #26103e;
     background:
       repeating-linear-gradient(135deg, #0000 0 9px, #7a1fd81e 9px 10px),
       linear-gradient(145deg, #321654, #170a2b 55%, #261044) !important;

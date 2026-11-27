@@ -33,7 +33,7 @@
     background: radial-gradient(circle, #ff2d4a00 30%, #ff2d4acc);
     animation: flashout 1s forwards;
     pointer-events: none;
-    z-index: 40;
+    z-index: var(--z-hud);
   }
 
   #app {
