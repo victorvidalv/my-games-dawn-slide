@@ -59,7 +59,7 @@ function liaToast(left) {
   document.body.appendChild(t);
   if (!reducedMotion()) {
     const [x, y] = center($('meter'));
-    burst(x, y, 30, ['#68d8bd', '#ffcf6b', '#ff9a4a', '#fff'], 6);
+    burst(x, y, 30, ['#f29f4b', '#ffcf6b', '#ff9a4a', '#fff'], 6);
   }
   vib([15, 25, 15]);
   setTimeout(() => t.remove(), 2400);
@@ -156,7 +156,7 @@ export function playReviveEffect(label = '¡PODER ACTIVADO!', hero = true) {
       x,
       y,
       48,
-      hero ? ['#68d8bd', '#ffe29a', '#ffffff', '#43e0c1'] : ['#ffd98a', '#ff9c66', '#ffffff', '#f5b65c'],
+      hero ? ['#f29f4b', '#ffe29a', '#ffffff', '#f5a85a'] : ['#ffd98a', '#ff9c66', '#ffffff', '#f5b65c'],
       8,
     );
   }

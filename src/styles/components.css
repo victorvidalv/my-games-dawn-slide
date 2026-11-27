@@ -116,7 +116,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: conic-gradient(var(--c, #43e0c1) calc(var(--p) * 1%), #ffffff1a 0);
+    background: conic-gradient(var(--c, #f5a85a) calc(var(--p) * 1%), #ffffff1a 0);
     position: relative;
   }
   .ring::before {
