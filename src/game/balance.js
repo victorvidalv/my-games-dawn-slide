@@ -21,7 +21,7 @@ import {
 import { RELICS } from './relics.js';
 import { levelPlan } from './mechanics.js';
 import { nextAdj } from './run-points.js';
-import { DAILY_TARGETS, DAILY_TURN_BUDGET } from './daily.js';
+import { DAILY_REDO_REFUND, DAILY_TARGETS, DAILY_TURN_BUDGET } from './daily.js';
 
 /** Tablero mínimo para las reglas de las cartas: nivel, mínimo y si tiene pieza pesada o de hielo (según el plan del nivel). */
 const simBoard = (level, d) => ({
@@ -407,40 +407,62 @@ export function balanceReport({ runs = 300, powers = {} } = {}) {
   return rows;
 }
 
+/** Un evento de error del modelo: cuántos turnos de más cuesta (varios fallos encadenados con probabilidad 1/2). */
+function errorCost(rng) {
+  const k = 1 + Math.floor(Math.log(1 - rng()) / Math.log(0.5));
+  let cost = 0;
+  for (let j = 0; j < k; j++) {
+    if (rng() < MODEL.slip) cost += 1;
+    else cost += rng() >= MODEL.notice ? MODEL.unnoticedCost : 2;
+  }
+  return cost;
+}
+
+/** Turnos que gasta un jugador en un tablero de mínimo `need`; con `redo` usa «Rehacer» si le sale a cuenta (devuelve hasta DAILY_REDO_REFUND). */
+function dailyBoardMoves(rng, need, skill, redo) {
+  const err = Math.min(0.85, (1 - skill) * MODEL.err * MODEL.errScale * (1 + need / 25));
+  let moves = 0;
+  for (let step = 0; step < need; step++) {
+    if (rng() < err) {
+      const cost = errorCost(rng);
+      // Rehacer solo compensa si el fallo ocurre en los primeros pasos (se pierde lo gastado por encima del tope devuelto).
+      if (redo && step < DAILY_REDO_REFUND) {
+        const lost = Math.max(0, step + cost - DAILY_REDO_REFUND);
+        return { moves: lost + dailyBoardMoves(rng, need, skill, false).moves, redone: true };
+      }
+      moves += cost;
+    }
+    moves += 1;
+  }
+  return { moves, redone: false };
+}
+
 /**
- * Simula UN Desafío diario (15 tableros con una reserva compartida de 150 turnos exactos) con el mismo modelo de errores
- * que la aventura (sin héroe, cartas ni reliquia, y sin pistas). Devuelve cuántos tableros completa. Como la reserva es
- * exactamente la suma de los mínimos, llegar al 15 (oro) exige no gastar ni un turno de más; al 13 (plata/racha) sobran 33.
+ * Simula UN Desafío diario (15 tableros con una reserva compartida de DAILY_TURN_BUDGET turnos, 2 sobre la suma de los mínimos)
+ * con el mismo modelo de errores que la aventura (sin héroe, cartas ni reliquia, y sin pistas). El jugador usa «Rehacer tablero»
+ * una vez, en el primer tablero donde le compensa. `budget` y `redo` se pueden fijar para comparar reglas.
+ * Devuelve cuántos tableros completa.
  */
-export function simulateChallenge({ skill, seed }) {
+export function simulateChallenge({ skill, seed, budget = DAILY_TURN_BUDGET, redo = true }) {
   const rng = mulberry32(seed);
-  let left = DAILY_TURN_BUDGET;
+  let left = budget;
+  let canRedo = redo;
   let cleared = 0;
   for (const need of DAILY_TARGETS) {
-    const err = Math.min(0.85, (1 - skill) * MODEL.err * MODEL.errScale * (1 + need / 25));
-    let moves = 0;
-    for (let step = 0; step < need; step++) {
-      if (rng() < err) {
-        const k = 1 + Math.floor(Math.log(1 - rng()) / Math.log(0.5));
-        for (let j = 0; j < k; j++) {
-          if (rng() < MODEL.slip) moves += 1;
-          else moves += rng() >= MODEL.notice ? MODEL.unnoticedCost : 2;
-        }
-      }
-      moves += 1;
-    }
-    if (moves > left) return cleared;
-    left -= moves;
+    const board = dailyBoardMoves(rng, need, skill, canRedo);
+    if (board.redone) canRedo = false;
+    if (board.moves > left) return cleared;
+    left -= board.moves;
     cleared++;
   }
   return cleared;
 }
 
 /** Probabilidad de completar al menos 13, 14 y los 15 tableros del Desafío con esa habilidad. */
-export function challengeRates(skill, runs = 4000) {
+export function challengeRates(skill, runs = 4000, rules = {}) {
   const n = { 13: 0, 14: 0, 15: 0 };
   for (let i = 0; i < runs; i++) {
-    const c = simulateChallenge({ skill, seed: hash32(i, Math.round(skill * 1000), 150) });
+    const c = simulateChallenge({ skill, seed: hash32(i, Math.round(skill * 1000), 150), ...rules });
     for (const k of [13, 14, 15]) if (c >= k) n[k]++;
   }
   return { 13: n[13] / runs, 14: n[14] / runs, 15: n[15] / runs };

@@ -30,8 +30,8 @@ El ritmo sale de un jugador **regular** (15-20 minutos al día, casi todos los d
 - Llega al nivel 21 de Aventura en ~10 días; Difícil se completa hacia el día 36 y Experto hacia el día 64.
 - Una aventura entera dura ~40 minutos: ~0,16 aventuras completadas al día desde el día 5.
 - Desafío diario (único): suma **un solo punto al día** a «resueltos» al llegar al tablero 13 (casi seguro) y el **oro** exige los 15
-  tableros sin gastar un turno de más (la reserva es exactamente 150): un jugador de nivel Experto lo logra ≈ 14 % de los días
-  (`node scripts/simulate-challenge.mjs`). El modelo usa 0,85 resueltos y 0,12 oros por día; «Maestro» es el mismo contador que
+  tableros con una reserva de 152 turnos (150 de mínimos + 2 de colchón) y un «Rehacer tablero» por intento: un jugador de nivel Experto lo
+  logra ≈ 34 % de los días con las reglas actuales (era ≈ 14 % con 150 exactos y sin Rehacer; `node scripts/simulate-challenge.mjs`). El modelo usa 0,85 resueltos y 0,12 oros por día; «Maestro» es el mismo contador que
   «resueltos» y «tipos de reto» nunca pasa de 1.
 - El Desafío está abierto desde el principio; las rutas se completan hacia los días 35, 70 y 120.
 - Los otros dos perfiles (casual ≈ 8 min/día, dedicado ≈ 40 min/día) son el mismo modelo a otro ritmo.

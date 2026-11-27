@@ -17,7 +17,7 @@ export const REGULAR = {
   fateCards: (d) => 1.0 * Math.max(0, d - 1), // 6 cartas por aventura
   pacts: (d) => 0.25 * Math.max(0, d - 2),
   cleanCity: (d) => 0.5 * d,
-  // Desafío diario (node scripts/simulate-challenge.mjs): solo suma UNA vez al día y el oro (15 tableros, 150 turnos exactos,
+  // Desafío diario (node scripts/simulate-challenge.mjs): solo suma UNA vez al día y el oro (15 tableros, 152 turnos + Rehacer; con esas reglas el simulador da más, pero se mantiene 0,12 porque los jugadores reales quedan por debajo del modelo,
   // ni uno de más) es el de un jugador que ya domina Experto (habilidad 0,9 ≈ 14 % de los días); llegar a 13 es casi seguro.
   dailySolved: (d) => 0.85 * d, // juega ~85 % de los días y casi siempre llega a 13 tableros
   dailyGold: (d) => 0.12 * d, // 0,85 días jugados × ≈ 14 % de oro

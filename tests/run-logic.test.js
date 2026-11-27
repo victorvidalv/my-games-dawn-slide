@@ -109,9 +109,10 @@ describe('crear partidas', () => {
       seed: 900,
       index: 1,
       used: 0,
-      remaining: 150,
+      remaining: 152,
       boards: [null, null, null],
       attempt: null,
+      redo: false,
     });
   });
 
@@ -231,13 +232,13 @@ describe('victoria', () => {
   });
 
   it('el reto diario descuenta turnos compartidos y termina al completar todos', () => {
-    const d = { index: 0, used: 0, remaining: 150, boards: [null, null], attempt: { index: 0 } };
+    const d = { index: 0, used: 0, remaining: 152, boards: [null, null], attempt: { index: 0 } };
     expect(applyDailyWin(d, board({ moves: 7 }), 50)).toEqual({
       next: 1,
       finished: false,
       cleared: 1,
       used: 7,
-      remaining: 143,
+      remaining: 145,
     });
     expect(d.boards[0]).toEqual({ moves: 7, opt: 6, points: 50 });
     expect(d.attempt).toBeNull();
@@ -247,7 +248,7 @@ describe('victoria', () => {
       finished: true,
       cleared: 2,
       used: 12,
-      remaining: 138,
+      remaining: 140,
     });
   });
 });

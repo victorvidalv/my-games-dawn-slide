@@ -10,6 +10,7 @@ import { startHintsFor } from '../engine/difficulty.js';
 import { buildLevelAsync } from './level-builder.js';
 import {
   DAILY_CHALLENGE,
+  DAILY_HINT_MILESTONES,
   DAILY_TURN_BUDGET,
   challengeById,
   challengeTargets,
@@ -33,6 +34,7 @@ import {
   dailyEntry,
   newAdventureRun,
   newDailyRun,
+  redoDailyBoard,
   resetBoardForRevive,
   resolveFail,
   restoreDailyAttempt,
@@ -97,6 +99,7 @@ export function saveRun() {
         remaining: d.remaining,
         finished: false,
         attempt: d.attempt,
+        redo: !!d.redo,
       });
       persist();
     }
@@ -141,7 +144,7 @@ export async function startRun(start, mode, preset) {
   saveRun();
   await resumeAdventure();
 }
-/** Entra directo al Desafío diario de hoy (15 tableros · 150 turnos exactos), retomando si estaba en curso. */
+/** Entra directo al Desafío diario de hoy (15 tableros · 152 turnos), retomando si estaba en curso. */
 export async function startDaily(opts = {}) {
   const restart = typeof opts === 'object' && opts !== null ? !!opts.restart : false;
   const c = challengeById(DAILY_CHALLENGE.id),
@@ -155,6 +158,23 @@ export async function startDaily(opts = {}) {
   syncFateHud();
   applyZone(zoneIdx(1));
   await startLevel();
+}
+/** «Rehacer tablero» del Desafío: devuelve los turnos gastados (con tope), reinicia el tablero y gasta el único uso del intento. */
+export function redoDaily() {
+  const run = S.run,
+    G = S.G;
+  if (!run?.daily || !G || S.busy) return null;
+  const out = redoDailyBoard(run.daily, G);
+  if (!out) return null;
+  saveRun();
+  layout();
+  updateHud();
+  setMessage(
+    out.charged
+      ? `Tablero reiniciado. Turnos recuperados: ${out.refund}; perdidos: ${out.charged}.`
+      : `Tablero reiniciado. Turnos recuperados: ${out.refund}.`,
+  );
+  return out;
 }
 /** Sale del reto diario sin tocar la partida guardada de la aventura. */
 export function leaveDaily() {
@@ -399,10 +419,18 @@ function winDaily() {
   const gain = calcGain(G.moves, G.opt, 0);
   const { next, finished, cleared, used, remaining } = applyDailyWin(d, G, gain.total);
   const out =
-    finished || cleared >= 13
+    finished || cleared >= DAILY_HINT_MILESTONES[0].board
       ? recordDaily((store.daily ||= emptyDaily()), d.id, d.day, { cleared, used, boards: d.boards.slice() })
       : null;
-  writeDailyProgress(store, d, { seed: d.seed, boards: d.boards.slice(), used, remaining, finished, attempt: null });
+  writeDailyProgress(store, d, {
+    seed: d.seed,
+    boards: d.boards.slice(),
+    used,
+    remaining,
+    finished,
+    attempt: null,
+    redo: !!d.redo,
+  });
   countStat('challengeBoards');
   if (finished) raiseStat('challengePure', 1);
   if (out && finished) raiseStat('dailyBestDay', 1);

@@ -74,7 +74,7 @@
   </div>
 
   <div class="meter" id="meter">
-    <div class="mrow"><span>Hecho <b id="mv">0</b></span><span class="left-chip" id="leftChip" role="status" hidden></span><span>Límite <b id="lim">–</b></span></div>
+    <div class="mrow"><span>Hecho <b id="mv">0</b></span><span class="left-chip" id="leftChip" role="status" hidden></span><span class="margin-chip" id="marginChip" role="status" hidden></span><span>Límite <b id="lim">–</b></span></div>
     <div class="barwrap">
       <div class="bar"><b class="pzone" id="pzone"></b><i id="fill"></i><span id="liaReserve" class="lia-reserve" hidden></span></div>
       <i class="bi crown" id="crown" data-icon="crown" title="Zona perfecta: termina sin pasarte del mínimo"></i>
@@ -94,6 +94,7 @@
   <div class="controls">
     <button id="bUndo" hidden aria-hidden="true" tabindex="-1"></button>
     <button id="bPower" hidden><i class="bi" id="powerIcon"></i><span><b id="powerName"></b><small id="powerNote"></small></span></button>
+    <button id="bRedo" type="button" hidden><i class="bi" data-icon="undo"></i> Rehacer tablero <span class="badge" id="redoN">1</span></button>
     <button id="bHint"><i class="bi" data-icon="hint"></i> Pista <span class="badge" id="hintN">3</span></button>
   </div>
 </div>
@@ -392,6 +393,7 @@
    <small class="de-label">tableros</small>
    <ol class="de-track" id="dailyBoards" aria-hidden="true"></ol>
    <p class="de-line" id="dailyEndReward" hidden></p>
+   <p class="de-seal" id="dailyEndSeal" hidden>Sello · 150 turnos exactos</p>
   </section>
   <div class="de-actions">
    <button type="button" class="primary de-retry" id="dailyRetry">Jugar de nuevo</button>

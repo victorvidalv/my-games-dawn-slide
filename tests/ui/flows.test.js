@@ -263,7 +263,7 @@ describe('interfaz: desafío diario', () => {
     const { dayNumber, emptyDaily } = await import('../../src/game/daily.js');
     const day = dayNumber();
     const app = await bootApp({ save: { daily: { ...emptyDaily(), bestCleared: 9 } } });
-    expect(app.$('homeDailySub').textContent).toBe('15 tableros · 150 turnos');
+    expect(app.$('homeDailySub').textContent).toBe('15 tableros · 152 turnos');
     expect(app.$('homeDailyRecord').hidden).toBe(false);
     expect(app.$('homeDailyBest').textContent).toBe('9/15');
 
@@ -272,13 +272,13 @@ describe('interfaz: desafío diario', () => {
     expect(app.$('homeDailyBest').textContent).toBe('9/15');
   });
 
-  it('entra directo en 1 clic, muestra 1/15 y 150 turnos, sin pistas ni reinicio, y salir no toca la aventura', async () => {
+  it('entra directo en 1 clic, muestra 1/15 y 152 turnos, sin pistas ni reinicio, y salir no toca la aventura', async () => {
     const app = await bootApp({ save: savedRun });
     app.$('tabDaily').click();
     await untilPlayable(app, app.S.G?.n || 1);
     expect(document.body.classList.contains('daily-run')).toBe(true);
     expect(app.$('lvl').textContent).toBe('1/15');
-    expect(app.$('lim').textContent).toBe('150');
+    expect(app.$('lim').textContent).toBe('152');
     expect(app.$('bHint').hidden).toBe(true);
     expect(app.$('bDailyReset')).toBeNull();
     app.session.fail('limit');

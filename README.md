@@ -136,10 +136,12 @@ Pactos con costo), barajado por partida: ninguna se repite y se puede cambiar la
 
 ## Otros modos
 
-**Desafío diario** ([`src/game/daily.js`](src/game/daily.js)): es el único reto diario (cambia a la medianoche local); entrada directa en 1 clic con 15 tableros y 150 turnos
-exactos (mínimos del 3 al 17 sin margen), piezas especiales progresivas, sin pistas ni reinicio, y premios al superar los
-tableros 13 (+1 pista), 14 (+3 pistas y estela) y 15 (+5 pistas y estela) para la siguiente aventura (en Experto, que empieza con
-1 pista, el premio se limita a +2). Suma como mucho un «resuelto» al día; el oro (los 15) no admite ni un turno de más.
+**Desafío diario** ([`src/game/daily.js`](src/game/daily.js)): es el único reto diario (cambia a la medianoche local); entrada directa en 1 clic con 15 tableros y 152 turnos
+(los mínimos del 3 al 17 suman 150, así que sobran 2), piezas especiales progresivas, sin pistas, y premios al superar los
+tableros 10 (+1 pista), 13 (+2) y 15 (+4) para la siguiente aventura (en Experto, que empieza con 1 pista, el premio se limita a +2).
+Un **«Rehacer tablero»** por Desafío reinicia el tablero en curso y devuelve hasta 4 de los turnos gastados en él (protege del dedazo; no
+sirve para explorar). El HUD muestra el **margen** (turnos que sobran sobre los mínimos de lo que falta). Suma como mucho un «resuelto»
+al día (a partir del tablero 13); terminar con 150 turnos o menos da el sello «150 exactos».
 
 **Logros y Canjear** ([`src/game/achievements.js`](src/game/achievements.js)): 113 logros en cinco grupos y cofres
 de colección; sus puntos se canjean por tableros, fichas, llaves, celebraciones, melodías y portadas. Los diseños épicos y
