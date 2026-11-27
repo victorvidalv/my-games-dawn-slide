@@ -120,11 +120,6 @@
   .plate.on i {
     border-style: solid;
     border-color: #f4cf75;
-    background: radial-gradient(circle, #ffd98a66, #0000 70%), linear-gradient(145deg, #334752, #202f38);
-    box-shadow:
-      0 0 0 1.5px #091118,
-      0 0 16px #ffd24a88,
-      inset 0 0 10px #ffd24a66;
   }
   .plate.hint i {
     animation: plate-hint 0.5s ease-in-out 3;
@@ -135,11 +130,9 @@
   .legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 5px;
     justify-content: center;
     width: calc(var(--cell) * 6 + 28px);
     max-width: 100%;
-    margin-top: -4px;
   }
   .legend[hidden] {
     display: none;

@@ -4,7 +4,6 @@
     position: fixed;
     inset: 0;
     z-index: var(--z-notice);
-    display: none;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -83,35 +82,6 @@
   }
   #perfect.go span {
     animation: starsin 2.2s 0.1s ease-out forwards;
-  }
-  #journey {
-    position: fixed;
-    inset: 0;
-    z-index: var(--z-journey);
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 46px);
-    text-align: center;
-    opacity: 0;
-    background:
-      radial-gradient(ellipse at 50% 35%, var(--t1), transparent 65%),
-      radial-gradient(ellipse at 50% 100%, var(--t2), transparent 60%), #070a1a;
-  }
-  #journey.show {
-    display: flex;
-    animation: jin 0.22s ease-out forwards;
-  }
-  #journey.out {
-    animation: jout 0.25s ease-in forwards;
-  }
-  @media (min-aspect-ratio: 13/10) and (max-height: 520px) {
-    #journey {
-      padding-bottom: 30px;
-      gap: 2px;
-    }
   }
   .finale {
     max-width: 400px;
@@ -201,27 +171,12 @@
       gap: 8px;
     }
   }
-  #journey {
-    background:
-      linear-gradient(#071023cf, #071023f2),
-      var(--atlas-scene) center/cover;
-    gap: 12px;
-    padding-top: calc(env(safe-area-inset-top) + 20px);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    #journey.show,
-    #journey.out {
-      animation-duration: 0.01s;
-    }
-  }
   #rescue {
     z-index: var(--z-rescue);
     background: radial-gradient(ellipse, #a9496855, #070d23e8);
   }
   .rescue-card {
     max-width: 380px !important;
-    border-color: #f3acb077 !important;
-    background: linear-gradient(#30304cf5, #151b34f5) !important;
   }
   .rescue-portrait {
     width: 115px;
@@ -230,16 +185,12 @@
     object-position: center top;
     border-radius: 55px 55px 30px 30px;
     border: 2px solid #f4afad;
-    box-shadow: 0 0 35px #ed7b8f55;
   }
   .rescue-heart {
     display: block;
     font-size: 40px;
-    color: #ff9eac;
-    text-shadow: 0 0 25px #ff7c9c;
     margin: -24px auto 10px;
     position: relative;
-    animation: rescueBeat 1.1s ease-in-out infinite;
   }
   .rescue-card h2 {
     font-size: 26px;
@@ -264,7 +215,6 @@
     display: block;
     width: 100%;
     height: 230px;
-    object-fit: cover;
     object-position: center 35%;
     border-radius: 20px;
     border: 1px solid #f3d39a66;
@@ -291,7 +241,6 @@
     padding: 13px 15px;
     border-radius: 13px;
     border: 1px solid #e7ce9b33;
-    background: #0a142c55;
     margin: 13px 0 16px;
     font-style: italic;
   }
@@ -355,18 +304,6 @@
   #perfect {
     display: none !important;
   }
-
-  #journey {
-    padding-top: 20px;
-    gap: 7px;
-    background: #142631f5;
-  }
-  #journey.show {
-    animation-duration: 0.12s;
-  }
-  #journey.out {
-    animation-duration: 0.12s;
-  }
   .ending-thanks {
     background: #10212c66;
     border-color: #ac9a7233;
@@ -386,13 +323,6 @@
   .rescue-portrait {
     border-color: #b49c70;
     box-shadow: none;
-  }
-  #journey[aria-modal='true'] {
-    padding-bottom: calc(env(safe-area-inset-bottom) + 75px);
-  }
-
-  #journey[aria-modal='true'] {
-    background: #142631;
   }
   #reviveOffer {
     padding: 0;
@@ -693,7 +623,6 @@
     z-index: var(--z-banner);
     display: none;
     padding: 20px;
-    background: radial-gradient(ellipse at var(--rx, 50%) var(--ry, 50%), #08121a99, #08121a33 60%);
   }
   #result.show {
     display: block;
@@ -708,34 +637,11 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    min-width: min(68vw, 230px);
-    padding: 14px 30px 16px;
-    border-radius: 18px;
-    background: linear-gradient(180deg, #1d3441f5, #0f1d26f7);
-    border: 2.5px solid #091118;
-    box-shadow:
-      0 5px 0 #091118,
-      0 18px 40px #000a,
-      inset 0 0 0 1.5px #e0c37e66,
-      inset 0 1px 0 #ffffff1a;
     overflow: hidden;
-    animation: res-pop 0.38s cubic-bezier(0.2, 1.5, 0.4, 1) both;
   }
   .res-card::before {
     content: '';
     position: absolute;
-    inset: -40%;
-    background: conic-gradient(
-      from 0deg,
-      #f1ce8200,
-      #f1ce8226,
-      #f1ce8200 25%,
-      #f1ce8226 50%,
-      #f1ce8200 75%,
-      #f1ce8226,
-      #f1ce8200
-    );
-    animation: res-spin 7s linear infinite;
     pointer-events: none;
   }
   .res-card > * {
@@ -760,9 +666,7 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    -webkit-text-stroke: 1.5px #091118;
     paint-order: stroke fill;
-    filter: drop-shadow(0 3px 0 #091118);
   }
   .res-crown {
     display: none;
@@ -775,9 +679,6 @@
   #resTitle {
     display: block;
     font: 900 12px/1 var(--font-book);
-    letter-spacing: 0.34em;
-    color: #f6d586;
-    text-shadow: 0 2px 0 #091118;
     margin-bottom: 6px;
     padding-left: 0.34em;
   }
@@ -797,13 +698,6 @@
     font-size: clamp(18px, 5vw, 26px);
     font-variant-numeric: tabular-nums;
   }
-  #result.perfect .res-card {
-    box-shadow:
-      0 5px 0 #091118,
-      0 0 0 1.5px #f1ce82aa,
-      0 0 36px #f1ce8255,
-      0 18px 40px #000a;
-  }
   @media (prefers-reduced-motion: reduce) {
     .res-card,
     .res-card::before,
@@ -815,11 +709,6 @@
   .ending-seal .ic {
     width: 70%;
     height: 70%;
-  }
-  #journey {
-    background:
-      radial-gradient(ellipse at 50% 35%, var(--t1), transparent 65%),
-      radial-gradient(ellipse at 50% 100%, var(--t2), transparent 60%), #1b1530;
   }
   .logo,
   .card h2,
@@ -833,24 +722,15 @@
       2px 3px 0 #150e0c,
       0 0 14px #e0b04f55;
   }
-  #journey[aria-modal='true'] {
-    background: radial-gradient(ellipse at 50% 30%, #3a2f58, transparent 70%), #1b1530;
-  }
   .res-card {
-    border-radius: var(--wob-a);
-    border: 3px solid #150e0c;
     min-width: min(72vw, 250px);
     padding: 18px 32px 16px;
-    background: var(--rivets), var(--hatch), linear-gradient(165deg, #4a2c44, #2c1d33 62%);
-    box-shadow: var(--plate);
   }
   .res-card::before {
     inset: -60%;
-    background: repeating-conic-gradient(from 0deg, #f2c45c1c 0 8deg, #f2c45c00 8deg 24deg);
     animation: res-spin 14s linear infinite;
   }
   #result.perfect .res-card::before {
-    background: repeating-conic-gradient(from 0deg, #ffe6a03a 0 9deg, #f2c45c00 9deg 22deg);
     animation-duration: 9s;
   }
   .res-prize b {
@@ -858,7 +738,6 @@
     font-weight: 700;
     -webkit-text-stroke: 2px #150e0c;
     filter: drop-shadow(0 4px 0 #150e0c) drop-shadow(0 0 14px #f2c45c66);
-    animation: res-bump 0.5s cubic-bezier(0.2, 1.8, 0.4, 1) 0.1s both;
   }
   #resTitle {
     font-family: var(--font-title);
@@ -870,9 +749,6 @@
     border: 3px solid #150e0c;
     border-radius: var(--wob-d);
     background: var(--hatch), linear-gradient(175deg, #c2402a, #9e2b15);
-    box-shadow:
-      inset 0 0 0 1.5px #f2c45c,
-      3px 5px 0 #150e0c;
     text-shadow: 0 2px 0 #150e0c;
     transform: rotate(-3deg);
     animation: res-stamp 0.5s cubic-bezier(0.2, 1.8, 0.4, 1) 0.12s both;
@@ -883,16 +759,6 @@
     margin-top: 6px;
     font-size: 22px;
     letter-spacing: 8px;
-    color: #f2c45c;
-    text-shadow:
-      0 2px 0 #150e0c,
-      0 0 12px #f2c45c;
-    animation: res-stars 0.7s ease-out 0.35s both;
-  }
-  #result.perfect .res-card {
-    animation:
-      res-pop 0.38s cubic-bezier(0.2, 1.5, 0.4, 1) both,
-      res-shake 0.35s ease-out 0.12s;
   }
   @media (prefers-reduced-motion: reduce) {
     .res-prize b,
@@ -902,47 +768,11 @@
       animation: none;
     }
   }
-  #journey,
-  #journey[aria-modal='true'] {
-    background:
-      radial-gradient(ellipse at 50% 40%, #0b141b99, #0b141bf5 78%),
-      linear-gradient(#0b141bb8, #0b141be6),
-      var(--atlas-scene, none) center/cover,
-      #0b141b;
-  }
-  #journey.show {
-    animation: jin 0.28s ease-out forwards;
-  }
-
-  #journey.show.out {
-    animation: jout 0.15s ease-in forwards;
-  }
-  #result {
-    background: radial-gradient(ellipse at var(--rx, 50%) var(--ry, 50%), #08121ab3, #08121a40 62%);
-  }
   .res-card {
     max-width: 94vw;
-    border-radius: 16px;
-    border: 2.5px solid #091118;
-    background:
-      var(--rivets, none), repeating-linear-gradient(118deg, #fff3d409 0 1px, #0000 1px 7px),
-      radial-gradient(ellipse at 50% 0%, #f1ce8226, #0000 60%), linear-gradient(170deg, #22343f, #15222b 60%, #1b2530);
-    box-shadow:
-      0 0 0 1.5px #f1ce8280,
-      0 0 0 5px #091118,
-      0 0 0 6.5px #f1ce8240,
-      0 22px 54px #000c,
-      inset 0 0 40px #09111899;
     animation: res-pop2 0.42s cubic-bezier(0.2, 1.6, 0.4, 1) both;
   }
   #result.perfect .res-card {
-    box-shadow:
-      0 0 0 2px #ffd76a,
-      0 0 0 5px #091118,
-      0 0 0 7px #ffd76a80,
-      0 0 50px #ffd76a73,
-      0 22px 54px #000c,
-      inset 0 0 40px #09111899;
     animation:
       res-pop2 0.42s cubic-bezier(0.2, 1.6, 0.4, 1) both,
       res-shake 0.35s ease-out 0.12s;

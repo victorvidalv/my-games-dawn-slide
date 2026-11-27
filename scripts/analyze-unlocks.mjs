@@ -63,8 +63,27 @@ for (const p of Object.values(PERSONAS)) {
   console.log();
 }
 
+// Ítems visibles curados a mano (VISIBLE_REWARDS / VISIBLE_OUTFITS en src/ui/achievements.js):
+// objetivos directos y alcanzables (1 condición) a propósito, así que no cuentan como avisos.
+const CURATED = new Set([
+  'Fichas:silk',
+  'Fichas:lava',
+  'Llave:neon',
+  'Llave:galaxy',
+  'Estelas:starlight',
+  'Estelas:comet',
+  'Atuendos lia:ingeniera',
+  'Atuendos lia:brasas',
+  'Atuendos jean:oni',
+  'Atuendos jean:sakura',
+  'Atuendos van:carmesi',
+  'Atuendos van:cuervos',
+]);
+const isCurated = (r) => CURATED.has(`${r.cat}:${r.id}`);
+
 // Comprobaciones
 for (const r of rows) {
+  if (isCurated(r)) continue;
   const [lo, hi] = BAND[r.rarity];
   if (r.day < lo * 0.7 || r.day > hi * 1.3)
     warnings.push(`${r.cat}:${r.id} (${label[r.rarity]}) llega el día ${fmt(r.day)} (ventana ${lo}–${hi})`);
@@ -75,7 +94,7 @@ for (const r of rows) {
     warnings.push(`${r.cat}:${r.id} legendaria sin los tres modos`);
 }
 for (const cat of new Set(rows.map((r) => r.cat))) {
-  const list = rows.filter((r) => r.cat === cat);
+  const list = rows.filter((r) => r.cat === cat && !isCurated(r));
   for (let i = 1; i < list.length; i++) {
     if (RARITY.indexOf(list[i].rarity) > RARITY.indexOf(list[i - 1].rarity) && list[i].day < list[i - 1].day * 0.8)
       warnings.push(
