@@ -215,42 +215,6 @@ export const sfx = {
       });
     }
   },
-  // Poder de héroe: carga (zumbido que sube, chisporroteo) y descarga (trueno seco, golpe grave y acorde de metales)
-  powerCharge: (up) => {
-    noise(1, 0.05, up ? 300 : 2600, 'bandpass', 0, up ? 3600 : -2200);
-    tone(keyHz(0, -1), 1, 'sawtooth', 0.06, 0, up ? 70 : -30, 500);
-    [0, 1, 2, 3, 4, 5, 6, 7].forEach((i) => noise(0.04, 0.035, 5200 + i * 300, 'highpass', 0.1 + i * 0.11));
-  },
-  /**
-   * Descarga de cada poder (suena cuando el círculo mágico actúa sobre el tablero):
-   *   Rebobinar (Jean)      – el tiempo se retuerce: cinta que rebobina (dos barridos que caen), tonos que resbalan hacia abajo,
-   *                           un golpe grave y la campana del reloj al cerrar.
-   *   Trazar destino (Juth) – purificación: ola de aire que sube, acorde de coro luminoso, cascada de cristales y un brillo final.
-   */
-  powerUnleash: (up) => {
-    if (!up) {
-      noise(0.55, 0.12, 4200, 'bandpass', 0, -3800);
-      noise(0.45, 0.08, 2600, 'bandpass', 0.12, -2300);
-      [5, 4, 3, 2, 1, 0].forEach((k, i) =>
-        tone(keyHz(k, 1), 0.26, 'sawtooth', 0.04, i * 0.05, -keyHz(k, 1) * 0.35, 2200),
-      );
-      tone(70, 0.9, 'sine', 0.2, 0.05, -30);
-      noise(0.3, 0.14, 160, 'lowpass', 0.05);
-      tone(keyHz(0, 1), 1.4, 'sine', 0.09, 0.42, 0, 3200);
-      tone(keyHz(0, 1) * 2.76, 0.9, 'sine', 0.025, 0.42, 0, 6000);
-      tone(keyHz(2, 1), 1.2, 'sine', 0.05, 0.48, 0, 3200);
-    } else {
-      noise(0.8, 0.09, 500, 'bandpass', 0, 5200);
-      noise(0.5, 0.05, 5000, 'highpass', 0.15, 3000);
-      [0, 1, 2, 3].forEach((k) => {
-        tone(keyHz(k, 1), 1.5, 'sine', 0.05, 0.06, 4, 3600);
-        tone(keyHz(k, 1) * 1.004, 1.5, 'triangle', 0.03, 0.06, -4, 3000);
-      });
-      [3, 4, 5, 6, 7, 8].forEach((k, i) => tone(keyHz(k, 2), 0.45, 'sine', 0.04, 0.1 + i * 0.05, 0, 8000));
-      tone(keyHz(0, 0), 1.2, 'triangle', 0.1, 0, 0, 700);
-      tone(keyHz(6, 2), 0.9, 'sine', 0.03, 0.5, 0, 9000);
-    }
-  },
   // Pieza deslizante: golpecito de madera (ruido sordo + cuerpo grave) y una nota de la tónica del tema que sube un poco cada vez
   move: () => {
     noise(0.05, 0.12, 700, 'lowpass');
@@ -271,12 +235,16 @@ export const sfx = {
     });
     tone(keyHz(0, 0), 0.9, 'triangle', 0.09, 0, up ? 30 : -20, 500);
   },
-  /** Cada paso del poder: nota del arpegio de la tónica (sube con Destino, baja con Rebobinar) y un tintineo. */
+  /**
+   * Cada pieza movida por el poder: golpe seco y punzante, sin carga previa. Jean (rebobinar): clic metálico de reloj que
+   * baja de tono con cada paso; Juth (destino): chasquido de cristal que sube. Ataque inmediato, cola muy corta.
+   */
   powerStep: (n, up) => {
-    const j = up ? n : Math.max(0, 6 - n);
-    tone(keyHz(j, 1), 0.3, 'sine', 0.07, 0, 0, 3600);
-    tone(keyHz(j + 3, 1), 0.18, 'triangle', 0.03, 0.03, 0, 4200);
-    noise(0.07, 0.03, 5200, 'highpass');
+    const j = up ? n : Math.max(0, 5 - n);
+    noise(0.025, 0.11, up ? 6200 : 3800, 'highpass');
+    tone(keyHz(j, 2), 0.12, 'square', 0.05, 0, up ? 40 : -40, 3800);
+    tone(keyHz(j + 2, 2) * 2, 0.07, 'triangle', 0.035, 0.012, 0, 6500);
+    tone(keyHz(0, -1), 0.07, 'sine', 0.12, 0, -20, 400);
   },
   /* Trueno grave: el golpe de una aparición */
   thunder: () => {

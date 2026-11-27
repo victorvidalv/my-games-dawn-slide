@@ -6,9 +6,7 @@ import { saveRun } from '../game/session.js';
 import { S, heroOf, setBusy } from '../state.js';
 import { afterMove, cancelDrag, layout, updateHud } from './board.js';
 import { motes, warmMotes } from './fx.js';
-import { openPowerStage } from './power-stage.js';
 import { countStat } from './achievements.js';
-import { watchFrames } from './perf.js';
 
 /** Chispas del color del hechizo sobre la pieza que el poder mueve, y una onda que cruza el tablero. */
 function pulse(piece, colors) {
@@ -25,8 +23,6 @@ function pulse(piece, colors) {
 const SPELL = { van: ['#d1b2ec', '#ecd7ff', '#fff'], jean: ['#a5c8ed', '#d8eaff', '#fff'] };
 warmMotes([...new Set([...SPELL.van, ...SPELL.jean])]);
 
-/** Carga del poder antes de la descarga (rótulo y rayos sobre el tablero). */
-const POWER_CHARGE_MS = 850;
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function activatePower() {
@@ -42,13 +38,7 @@ export async function activatePower() {
     h = heroOf();
   const reduced = reducedMotion();
   const board = $('board');
-  // Primero se leen las medidas (tablero) y se abre el escenario, y DESPUÉS se toca el HUD: al revés, cada lectura
-  // obligaba a recalcular la maquetación de toda la página en mitad del frame (≈50 ms de tirón en un móvil lento).
-  const br = board.getBoundingClientRect();
   const name = action.kind === 'rewind' ? 'Rebobinar' : 'Trazar destino';
-  // sin retrato: el poder estalla SOBRE el tablero (rayos, haces de luz y el rótulo «Poder de …») y luego actúa
-  const stage = reduced ? null : openPowerStage(h.id, action.kind, `Poder de ${h.name}`, name);
-  if (!reduced) watchFrames(POWER_CHARGE_MS + 300 + action.steps.length * 360); // ¿va justo el móvil? (modo ligero)
   setBusy(true);
   countStat('powersUsed');
   saveRun();
@@ -56,25 +46,13 @@ export async function activatePower() {
   $('powerFxName').textContent = `${h.name} · ${name}`;
   $('powerStep').textContent = 'Poder activado';
   board.classList.add('hero-power', action.kind);
+  board.dataset.hero = h.id;
   board.setAttribute('aria-busy', 'true');
-  // Sonido de poder: barrido grave + acorde brillante (hacia abajo al rebobinar, hacia arriba al trazar el destino).
+  // Sin introducción: el poder actúa de inmediato. Cada pieza movida lleva su borde de poder y un golpe seco.
   const up = action.kind !== 'rewind';
-  const spell = SPELL[h.id === 'van' ? 'van' : 'jean'],
-    spellColors = spell;
-  sfx.heroSig(h.id);
-  sfx.powerCharge(up); // la firma sonora del héroe + la carga
-  vib([20, 30, 35]);
+  const spellColors = SPELL[h.id === 'van' ? 'van' : 'jean'];
+  vib([25, 20, 40]);
   try {
-    if (!reduced) {
-      await wait(POWER_CHARGE_MS);
-      stage.unleash();
-      sfx.powerUnleash(up);
-      vib([40, 20, 70]);
-      motes(innerWidth / 2, innerHeight / 2, 90, spell, 22);
-      motes(0, 0, 70, spell, 6, br);
-      await wait(300);
-      setTimeout(() => stage.close(), 340);
-    }
     for (let n = 0; n < action.steps.length; n++) {
       if (S.G !== G || S.run !== run || G.done) break;
       let i;
@@ -100,7 +78,7 @@ export async function activatePower() {
       saveRun();
       sfx.powerStep(n, up);
       pulse(piece, spellColors);
-      await wait(reduced ? 35 : 360);
+      await wait(reduced ? 35 : 300);
       piece?.classList.remove('power-piece');
       if (action.kind === 'destiny') {
         afterMove();
@@ -112,11 +90,11 @@ export async function activatePower() {
         action.kind === 'rewind' ? 'El tiempo vuelve a tus manos' : 'El destino está trazado';
       $('msg').textContent = `${name} usado. Se renueva en el próximo tablero.`;
       sfx.powerEnd(up);
-      await wait(reduced ? 40 : 280);
+      await wait(reduced ? 40 : 200);
     }
   } finally {
-    stage?.close();
     board.classList.remove('hero-power', 'rewind', 'destiny');
+    delete board.dataset.hero;
     board.removeAttribute('aria-busy');
     G.els.forEach((el) => el.classList.remove('power-piece'));
     if (S.G === G && S.run === run && !G.done) {
