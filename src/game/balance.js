@@ -16,6 +16,7 @@ import {
   fatePerfectHints,
   nextStreak,
   pickFate,
+  echoBoard,
 } from './fate.js';
 import { RELICS } from './relics.js';
 import { levelPlan } from './mechanics.js';
@@ -37,6 +38,8 @@ const MODEL = {
   notice: 0.7, // probabilidad de darte cuenta de que un movimiento fue un error y deshacerlo enseguida
   hintAware: 0.65, // probabilidad de pedir la pista A TIEMPO (antes de equivocarte): una pista solo ayuda si la pides
   unnoticedCost: 3, // si no te das cuenta, recuperarte cuesta ~3 movimientos
+  slip: 0.35, // probabilidad de que un fallo sea «de +1»: una ficha mal colocada que solo cuesta 1 movimiento extra
+  errScale: 1.25, // los fallos de +1 abaratan el fallo medio (2,3 → 1,85 mov.); se compensa con más fallos para no mover la calibración
   hintMinD: 10,
   startHints: 3,
   shopReserve: 3, // el jugador solo compra una pista si le quedan puntos para 3 más (no se arruina por ella)
@@ -62,11 +65,11 @@ export function playBoard(
   let limit = Math.max(d + 1, moveLimit(d, start, level) + reserve + fateExtra + extraTurns);
   let powerUsed = false;
   const need = d;
-  const err = Math.min(0.85, (1 - skill) * MODEL.err * (1 + need / 25));
+  const err = Math.min(0.85, (1 - skill) * MODEL.err * MODEL.errScale * (1 + need / 25));
   let moves = 0;
   let h = hints;
   const ready = !noPower && powerReady(level, start, hero, ft?.powerShare || 0); // a veces el poder descansa
-  const echo = ft && level % FATE_EVERY === 0 ? ft.lastPower : 0; // Eco del poder: uso extra en el último tablero del tramo
+  const echo = ft && echoBoard(level) ? ft.lastPower : 0; // Eco del poder: un uso extra en cada tablero (como en fate.js)
   let rewind = hero === 'jean' && ready ? powerUses(hero, d, echo) : 0; // una vez por tablero, dos en los largos
   let destiny = hero === 'van' && ready ? powerUses(hero, d, echo) : 0; // Eco del poder suma un uso
   let safe = 0; // pasos protegidos por «Trazar destino»
@@ -86,7 +89,10 @@ export function playBoard(
       } else {
         const k = 1 + Math.floor(Math.log(1 - rng()) / Math.log(0.5)); // 1 + geométrica (media 2)
         let waste = 0;
-        for (let j = 0; j < k; j++) waste += rng() >= MODEL.notice ? MODEL.unnoticedCost : 2;
+        for (let j = 0; j < k; j++) {
+          if (rng() < MODEL.slip) waste += 1; // fallo de +1: cuesta un solo movimiento extra
+          else waste += rng() >= MODEL.notice ? MODEL.unnoticedCost : 2;
+        }
         if (rewind > 0) {
           rewind--;
           powerUsed = true;
@@ -119,6 +125,7 @@ export function cardValue(card, hero, city = 1) {
   v += fx.lastPower ? (hero === 'jean' ? 1.5 : hero === 'van' ? 0.8 : 0) : 0;
   v += 0.8 * (fx.pickHints || 0) + 0.8 * (fx.cityHints || 0) * left;
   v += fx.liaTurns && hero === 'lia' ? 4 * fx.liaTurns : 0;
+  v += fx.liaLastTurns && hero === 'lia' ? 4 * fx.liaLastTurns : 0; // Eco del poder da turnos a Lía en vez de usos
   v -= (fx.shop || 0) * 6;
   v += 10 * (fx.points || 0) + (fx.pointsPerCard ? 0.2 * left : 0) + (fx.longBoard ? 0.5 : 0);
   v += fx.cursePoints ? 0.6 : 0;
@@ -138,24 +145,34 @@ export const pickForSurvival = (offer, hero, city) =>
 /** Estrategias de elección de carta del jugador simulado. */
 const PICKERS = {
   survival: (offer, hero, city) => pickForSurvival(offer, hero, city),
-  score: (offer, hero, city) =>
-    offer.reduce((best, c) => (scoreValue(c, hero, city) > scoreValue(best, hero, city) ? c : best)),
+  score: (offer, hero, city, _rng, have = []) =>
+    offer.reduce((best, c) => (scoreValue(c, hero, city, have) > scoreValue(best, hero, city, have) ? c : best)),
   random: (offer, hero, city, rng) => offer[Math.floor(rng() * offer.length)],
 };
-/** Valor «de puntaje» de una carta (para el jugador que busca récord): puntos primero, pero sin suicidarse. */
-function scoreValue(card, hero, city) {
+/**
+ * Puntos que añade la carta `card` a las que ya lleva el jugador (`have`: ids), medidos con las reglas reales de
+ * `fatePoints` en un tablero del tramo final (nivel 19). Así respeta el tope de +90 %: con la suma casi llena, otra carta
+ * de puntos casi no aporta, y una que resta (Péndulo roto) sí cuesta.
+ */
+const REF_BOARD = { n: 19, pure: false };
+function marginalPoints(card, hero, have) {
+  const base = { mode: 'c', hero, fate: have, hints: 0 };
+  return fatePoints({ ...base, fate: [...have, card.id] }, REF_BOARD) - fatePoints(base, REF_BOARD);
+}
+/**
+ * Valor «de puntaje» de una carta (para el jugador que busca récord): puntos primero (con el tope +90 % de las cartas),
+ * pero sin suicidarse: la supervivencia (`cardValue`) pesa lo mismo que los puntos y los Pactos que apagan ayudas restan.
+ */
+function scoreValue(card, hero, city, have = []) {
   const fx = card.fx;
   const left = FATE_PICKS - city;
-  let v = 25 * (fx.points || 0) + 18 * (fx.longBoard || 0) + 8 * (fx.cursePoints || 0) + 12 * (fx.noHintPoints || 0);
-  v += fx.pointsPerCard ? 3 * (city + 1) * fx.pointsPerCard * 10 : 0;
-  v += fx.pactPoints ? 8 : 0;
-  v += 12 * (fx.purePoints || 0) + (fx.perfectHints ? 2 : 0);
-  v += fx.hintPoints ? 4 : 0;
-  v += fx.finalPoints ? 6 : 0;
+  let v = 60 * marginalPoints(card, hero, have); // 0,5 de puntos ≈ 30; cuenta lo que de verdad suma tras el tope
+  v += fx.pactPoints ? 2 : 0;
+  v += fx.perfectHints ? 2 : 0;
   v += fx.perfect || fx.streakCap || fx.streakEff ? 3 : 0;
   v += fx.cityBases ? 1.2 * left : 0;
-  v += fx.streakBases ? 3 : 0;
-  v += 0.6 * cardValue(card, hero, city);
+  v += fx.pickScore ? 25 * fx.pickScore : 0;
+  v += cardValue(card, hero, city);
   return v;
 }
 
@@ -279,7 +296,7 @@ export function simulateRun({
       if (level < MAX_LEVEL && !grant) {
         const offer = deck.slice((city - 1) * fate, city * fate).map(fateById);
         const forced = offer.find((c) => force.includes(c.id));
-        const card = forced || PICKERS[pick](offer, hero, city, pickRng);
+        const card = forced || PICKERS[pick](offer, hero, city, pickRng, fateRun.fate);
         fateRun.fatePicked = city - 1;
         fateRun.fateDeck = deck;
         pickFate(fateRun, card.id, city, baseScore(d));

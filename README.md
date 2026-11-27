@@ -83,7 +83,7 @@ un BFS desde las posiciones ganadoras, así conoce la **distancia exacta** de ca
 siempre exactos.
 
 **Dificultad.** `src/data/calibration.json` fija el mínimo de movimientos de cada uno de los 21 niveles en cada camino
-(Normal 3 → 22, Difícil 10 → 28, Experto 16 → 32) y qué mecánicas trae cada nivel. `rateAt(camino, nivel)` lo traduce a
+(Normal 3 → 22, Difícil 10 → 30, Experto 17 → 37) y qué mecánicas trae cada nivel. `rateAt(camino, nivel)` lo traduce a
 la dificultad del banco y `buildLevel()` elige el estado inicial con el mínimo exacto (con un ajuste adaptativo de ±2
 según cómo juegues).
 
