@@ -1,3 +1,4 @@
+import { reducedMotion } from './dom-utils.js';
 import { Music } from '../audio/music.js';
 import { tone } from '../audio/sound.js';
 import { $ } from '../dom.js';
@@ -272,7 +273,7 @@ function animateDefeatRank(snapshot) {
     paint(score, true);
     next.hidden = false;
   };
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !score) return finish();
+  if (reducedMotion() || !score) return finish();
   const ms = 1300 + 450 * at,
     t0 = performance.now();
   const step = (t) => {

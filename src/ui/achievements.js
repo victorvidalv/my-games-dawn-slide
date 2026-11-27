@@ -31,10 +31,11 @@ import {
   unlockRewards,
 } from '../game/achievements.js';
 import { HEROES } from '../game/heroes.js';
-import { numLocale } from '../i18n.js';
 import { persist, store } from '../state.js';
 import { trailPath } from './fx.js';
+import { fmtNum, reducedMotion } from './dom-utils.js';
 import { icon } from './icons.js';
+import { openOverlay } from './modal.js';
 import { rarityBackdrop } from './outfit-fx.js';
 
 const TYPE_NAME = {
@@ -74,10 +75,8 @@ const TYPE_HINT = {
   trail: 'Así se verá tu estela al mover fichas',
 };
 
-const fmt = (n) => n.toLocaleString(numLocale());
 const rewardName = (type, id) => rewardById(type, id)?.name || '';
 const rarityOf = (item) => RARITY[item?.rarity] || RARITY.common;
-const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let activeType = 'outfit';
 let feedback = '';
@@ -94,9 +93,6 @@ export function applyLook() {
   Music.setMenuTheme(MENU_THEME);
   return look;
 }
-
-/** Celebración desactivada por ahora (se conserva la firma para `session.js`). */
-export function celebrate() {}
 
 /* ---------- novedades: objetos desbloqueados que aún no has visto ---------- */
 const unseenKeys = () => {
@@ -245,7 +241,7 @@ function reqsHtml(p) {
   const lines = p.reqs
     .map(
       (r) =>
-        `<li class="${r.done ? 'ok' : ''}"><i aria-hidden="true">${icon(r.done ? 'unlock' : 'lock')}</i><span>${r.text}</span><b>${fmt(r.value)}/${fmt(r.goal)}</b></li>`,
+        `<li class="${r.done ? 'ok' : ''}"><i aria-hidden="true">${icon(r.done ? 'unlock' : 'lock')}</i><span>${r.text}</span><b>${fmtNum(r.value)}/${fmtNum(r.goal)}</b></li>`,
     )
     .join('');
   const pct = p.pct ?? (p.goal ? Math.min(100, (p.value / p.goal) * 100) : 0);
@@ -389,17 +385,10 @@ function paintPreview() {
 }
 
 function closePreview() {
-  if (!pv) return;
-  pv.stopDemo?.();
-  const { el, opener } = pv;
-  document.removeEventListener('keydown', pv.onKey);
-  el.remove();
-  pv = null;
-  applyLook();
-  document.querySelector(`[data-open-type="${opener.type}"][data-open-id="${opener.id}"]`)?.focus?.();
+  pv?.close();
 }
 
-export function openPreview(type, id) {
+function openPreview(type, id) {
   const item = rewardById(type, id);
   if (!item || !isVisibleReward(type, id)) return;
   if (pv) closePreview();
@@ -420,22 +409,22 @@ export function openPreview(type, id) {
       <p class="look-pv-note"><b>${TYPE_HINT[type]}</b><span>${rar.note}</span></p>
       <footer class="look-pv-foot"></footer>
     </div>`;
-  document.body.appendChild(el);
   pv = { type, id, el, opener: { type, id } };
+  const closed = () => {
+    const { opener, stopDemo } = pv;
+    stopDemo?.();
+    pv = null;
+    applyLook();
+    document.querySelector(`[data-open-type="${opener.type}"][data-open-id="${opener.id}"]`)?.focus?.();
+  };
+  pv.close = openOverlay(el, {
+    closeSelector: '[data-pv-close]',
+    onClose: closed,
+  });
   if (type === 'pieces' || type === 'key') tryOn(type, id);
   paintPreview();
   // Ejemplo vivo: la llave se desliza hasta la salida (dejando la estela, si es una) para ver el objeto en acción
   if (type === 'trail' || type === 'key') pv.stopDemo = startDemo(el, id);
-  el.addEventListener('click', (e) => {
-    if (e.target === el || e.target.closest('[data-pv-close]')) {
-      sfx.ui();
-      closePreview();
-    }
-  });
-  pv.onKey = (e) => {
-    if (e.key === 'Escape') closePreview();
-  };
-  document.addEventListener('keydown', pv.onKey);
   sfx.ui();
   (el.querySelector('[data-pv-equip]') || el.querySelector('[data-pv-close]'))?.focus?.();
 }
@@ -449,10 +438,7 @@ const POSES = [
 let showcase = null;
 
 function closeShowcase() {
-  if (!showcase) return;
-  document.removeEventListener('keydown', showcase.onKey);
-  showcase.el.remove();
-  showcase = null;
+  showcase?.close();
 }
 
 function openShowcase(hero, id, pose = 'adv') {
@@ -476,8 +462,8 @@ function openShowcase(hero, id, pose = 'adv') {
       <div class="os-poses" role="tablist" aria-label="Pose">${POSES.map(([p, label]) => `<button type="button" role="tab" data-os-pose="${p}">${label}</button>`).join('')}</div>
       <div class="os-foot"></div>
     </div>`;
-  document.body.appendChild(el);
   showcase = { el, hero, id, pose };
+  showcase.close = openOverlay(el, { closeSelector: '[data-os-close]', onClose: () => (showcase = null) });
   const paint = () => {
     const { pose: cur } = showcase;
     el.querySelector('.os-art').src = outfitArt(hero, id, cur);
@@ -512,15 +498,8 @@ function openShowcase(hero, id, pose = 'adv') {
       showcase.pose = pb.dataset.osPose;
       sfx.ui();
       paint();
-    } else if (e.target === el || e.target.closest('[data-os-close]')) {
-      sfx.ui();
-      closeShowcase();
     }
   });
-  showcase.onKey = (e) => {
-    if (e.key === 'Escape') closeShowcase();
-  };
-  document.addEventListener('keydown', showcase.onKey);
   paint();
   sfx.ui();
   el.querySelector('[data-os-close]').focus();

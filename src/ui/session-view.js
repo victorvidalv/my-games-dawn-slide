@@ -7,10 +7,9 @@ import { ZONES, zoneIdx } from '../data/zones.js';
 import { $ } from '../dom.js';
 import { DAILY_TOTAL_BOARDS, DAILY_TURN_BUDGET, challengeById } from '../game/daily.js';
 import { numLocale } from '../i18n.js';
-import { celebrate } from './achievements.js';
 import { boardEl, place } from './board.js';
 
-export const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+export { reducedMotion } from './dom-utils.js';
 
 const TIPS = [
   'Piensa antes de mover: cada movimiento de más resta puntos.',
@@ -79,7 +78,6 @@ export function playKeyExit(G, { party = true } = {}) {
   place(0, 7);
   if (party) {
     boardEl.classList.add('board-win');
-    celebrate(G.els[0]);
   }
 }
 

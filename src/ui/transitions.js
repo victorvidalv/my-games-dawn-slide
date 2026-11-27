@@ -1,10 +1,10 @@
+import { reducedMotion } from './dom-utils.js';
 import { sfx } from '../audio/sound.js';
 
 /* ============================ Transiciones entre escenas ============================
    Un telón de tinta cruza la pantalla en diagonal (con filo dorado), se cambia la escena por detrás y el telón sale
    por el otro lado: así nada «salta». Variantes: 'ink' (entre niveles) y 'gold' (paradas / elegir carta del destino).
    Todo dura décimas de segundo y se omite con «reducir movimiento». */
-const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 let veil = null;
 function node() {
@@ -20,7 +20,7 @@ function node() {
 
 /** Cubre la pantalla. Se resuelve cuando ya está tapada (momento de cambiar la escena). */
 export async function wipeIn(kind = 'ink', label = '') {
-  if (reduced()) return;
+  if (reducedMotion()) return;
   const el = node();
   el.dataset.kind = kind;
   el.querySelector('b').textContent = label;
@@ -46,7 +46,7 @@ export async function wipeOut() {
  */
 export async function boardSwapOut() {
   const board = document.getElementById('board');
-  if (reduced() || !board?.querySelector('.piece')) return;
+  if (reducedMotion() || !board?.querySelector('.piece')) return;
   board.classList.add('board-out');
   await wait(170);
 }
@@ -54,7 +54,7 @@ export const boardSwapDone = () => document.getElementById('board')?.classList.r
 
 /** Deslizamiento breve del paisaje al descubrir el tablero. */
 export function playLevelScenery() {
-  if (reduced() || document.documentElement.classList.contains('lite')) return;
+  if (reducedMotion() || document.documentElement.classList.contains('lite')) return;
   const body = document.body;
   body.classList.remove('level-scenery-in');
   void getComputedStyle(body, '::before').animationName;
@@ -65,7 +65,7 @@ export function playLevelScenery() {
 let banner = null;
 let bannerTimer = 0;
 export function levelBanner(title, sub = '') {
-  if (reduced()) return;
+  if (reducedMotion()) return;
   if (!banner) {
     banner = document.createElement('div');
     banner.id = 'levelBanner';

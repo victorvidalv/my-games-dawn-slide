@@ -1,3 +1,4 @@
+import { reducedMotion } from './dom-utils.js';
 import { sfx, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { beginPower } from '../game/powers.js';
@@ -11,7 +12,7 @@ import { watchFrames } from './perf.js';
 
 /** Chispas del color del hechizo sobre la pieza que el poder mueve, y una onda que cruza el tablero. */
 function pulse(piece, colors) {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !piece) return;
+  if (reducedMotion() || !piece) return;
   const r = piece.getBoundingClientRect();
   motes(0, 0, 22, colors, 3.4, r);
   const board = $('board');
@@ -39,7 +40,7 @@ export async function activatePower() {
   const G = S.G,
     run = S.run,
     h = heroOf();
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduced = reducedMotion();
   const board = $('board');
   // Primero se leen las medidas (tablero) y se abre el escenario, y DESPUÉS se toca el HUD: al revés, cada lectura
   // obligaba a recalcular la maquetación de toda la página en mitad del frame (≈50 ms de tirón en un móvil lento).

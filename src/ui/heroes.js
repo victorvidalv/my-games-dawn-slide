@@ -13,7 +13,8 @@ import { icon } from './icons.js';
 import { playReviveEffect } from './turns.js';
 import { RELICS } from '../game/relics.js';
 import { fateBlocks } from '../game/fate.js';
-import { numLocale } from '../i18n.js';
+import { fmtNum } from './dom-utils.js';
+import { openModal } from './modal.js';
 const HERO_POWER_TAG = { lia: '+ turnos', jean: 'Rebobinar', van: 'Ver destino' };
 const ACTIVE_POWER_GUIDE = {
   jean: {
@@ -68,11 +69,6 @@ export function chooseHero(start, mode) {
           }),
       );
     };
-    const close = (value) => {
-      modal.classList.remove('show');
-      modal.removeEventListener('keydown', keyboard);
-      resolve(value);
-    };
     const keyboard = (e) => {
       if (
         ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key) &&
@@ -83,18 +79,10 @@ export function chooseHero(start, mode) {
         selected = HEROES[(HEROES.findIndex((h) => h.id === selected) + delta + 3) % 3].id;
         render();
         cards.querySelector(`[data-hero="${selected}"]`).focus();
-      } else if (e.key === 'Escape') close(null);
-      else if (e.key === 'Tab') {
-        const bs = [...modal.querySelectorAll('button')].filter((b) => b.tabIndex >= 0);
-        if (e.shiftKey && document.activeElement === bs[0]) {
-          e.preventDefault();
-          bs.at(-1).focus();
-        } else if (!e.shiftKey && document.activeElement === bs.at(-1)) {
-          e.preventDefault();
-          bs[0].focus();
-        }
+        return true;
       }
     };
+    let close;
     $('heroCancel').onclick = () => close(null);
     $('heroConfirm').onclick = () => {
       store.heroChoice = selected;
@@ -102,10 +90,14 @@ export function chooseHero(start, mode) {
       close({ hero: selected, relic: relics.querySelector('input:checked').value });
     };
     render();
-    modal.classList.add('show');
+    close = openModal(modal, {
+      trap: true,
+      onKey: keyboard,
+      onEscape: (c) => c(null),
+      onClose: resolve,
+      focus: cards.querySelector('[aria-checked=true]'),
+    });
     Music.scene('heroes');
-    modal.addEventListener('keydown', keyboard);
-    cards.querySelector('[aria-checked=true]').focus();
   });
 }
 export function updateHeroHud() {
@@ -194,8 +186,7 @@ export function showReviveOffer() {
     now = S.run?.score || 0,
     cost = reviveCost(now, S.run),
     pct = Math.round(reviveShare(S.run) * 100),
-    after = Math.max(0, now - cost),
-    fmt = (n) => n.toLocaleString(numLocale());
+    after = Math.max(0, now - cost);
   // Sus ilustraciones solo se descargan la primera vez que aparece (no al abrir el juego)
   modal.querySelectorAll('img[data-src]').forEach((img) => {
     img.src = img.dataset.src;
@@ -207,29 +198,12 @@ export function showReviveOffer() {
   Music.duck(0.3);
   modal.querySelector('.revive-rule').textContent = `Repite el tablero desde cero a cambio del ${pct} % de tus puntos.`;
   $('reviveCost').previousElementSibling.textContent = `PIERDES (−${pct} %)`;
-  $('reviveNow').textContent = fmt(now);
-  $('reviveCost').textContent = `−${fmt(cost)}`;
-  $('reviveAfter').textContent = fmt(after);
+  $('reviveNow').textContent = fmtNum(now);
+  $('reviveCost').textContent = `−${fmtNum(cost)}`;
+  $('reviveAfter').textContent = fmtNum(after);
   return new Promise((resolve) => {
-    let picked = false;
-    const pick = (yes) => {
-      if (picked) return;
-      picked = true;
-      modal.classList.remove('show');
-      modal.removeEventListener('keydown', onKey);
-      resolve(yes);
-    };
-    const onKey = (e) => {
-      if (e.key === 'Escape') pick(false);
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        (document.activeElement === accept ? end : accept).focus();
-      }
-    };
+    const pick = openModal(modal, { trap: 'cycle', onEscape: (c) => c(false), onClose: resolve, focus: accept });
     accept.onclick = () => pick(true);
     end.onclick = () => pick(false);
-    modal.addEventListener('keydown', onKey);
-    modal.classList.add('show');
-    accept.focus();
   });
 }

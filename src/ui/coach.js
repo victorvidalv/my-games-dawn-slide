@@ -1,5 +1,6 @@
 import { sfx } from '../audio/sound.js';
 import { $ } from '../dom.js';
+import { openModal } from './modal.js';
 import { hintMove } from '../engine/solver.js';
 import { MECHANICS, TUTORIALS } from '../game/mechanics.js';
 import { HERO_TUTORIAL_TALK } from '../data/story.js';
@@ -137,11 +138,10 @@ function show(ids, done) {
   $('coachOk').textContent = ids.length > 1 ? 'Siguiente' : 'Entendido';
   const glow = t.glow ? document.querySelector(t.glow) : null;
   glow?.classList.add('coach-glow');
-  modal.classList.add('show');
+  const close = openModal(modal, { onEscape: false, focus: $('coachOk') });
   sfx.hint();
-  $('coachOk').focus();
   $('coachOk').onclick = () => {
-    modal.classList.remove('show');
+    close();
     glow?.classList.remove('coach-glow');
     store.tips = store.tips || {};
     store.tips[id] = true;

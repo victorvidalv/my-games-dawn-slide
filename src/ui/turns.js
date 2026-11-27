@@ -1,3 +1,4 @@
+import { reducedMotion } from './dom-utils.js';
 import { sfx, tone, vib } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { isLow, isWon, movesLeft } from '../engine/rules.js';
@@ -8,7 +9,6 @@ import { reserveState } from '../game/powers.js';
 import { burst } from './fx.js';
 import { freeRetry } from '../game/shop.js';
 
-const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const center = (el) => {
   const r = el.getBoundingClientRect();
   return [r.left + r.width / 2, r.top + r.height / 2];
@@ -57,7 +57,7 @@ function liaToast(left) {
   t.setAttribute('role', 'status');
   t.innerHTML = `<b>¡Brasa de Lía activada!</b><span>${left} turnos de reserva</span>`;
   document.body.appendChild(t);
-  if (!reduced()) {
+  if (!reducedMotion()) {
     const [x, y] = center($('meter'));
     burst(x, y, 30, ['#68d8bd', '#ffcf6b', '#ff9a4a', '#fff'], 6);
   }
@@ -130,7 +130,7 @@ export function renderTurns() {
     tone(1320, 0.18, 'sine', 0.08, 0, -500);
     tone(660, 0.25, 'triangle', 0.05, 0.08, -200);
     vib([15, 25, 15]);
-    if (!reduced()) {
+    if (!reducedMotion()) {
       const [x, y] = center($('boughtPips'));
       burst(x, y, 14, ['#bfefff', '#7fd8ff', '#ffffff'], 4);
     }
@@ -150,7 +150,7 @@ export function playReviveEffect(label = '¡PODER ACTIVADO!', hero = true) {
   setTimeout(() => board.classList.remove('reviving'), 900);
   sfx.revive();
   vib([25, 35, 50]);
-  if (!reduced()) {
+  if (!reducedMotion()) {
     const [x, y] = center(board);
     burst(
       x,

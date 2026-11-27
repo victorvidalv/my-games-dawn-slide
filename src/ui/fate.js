@@ -4,11 +4,12 @@
  * · openFatePanel: panel con cada carta activa y lo que suman todas juntas.
  * Las reglas viven en `game/fate.js`; aquí solo se pinta.
  */
+import { fmtNum, reducedMotion } from './dom-utils.js';
 import { Music } from '../audio/music.js';
 import { sfx } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { FATE_CARDS, FATE_PICKS, STREAK_TURNS_EVERY, fateMuted, fateSummary, usesFate } from '../game/fate.js';
-import { numLocale } from '../i18n.js';
+import { openModal } from './modal.js';
 import { S, holdBusy } from '../state.js';
 import { fateArt } from './fate-art.js';
 import { burst } from './fx.js';
@@ -16,9 +17,7 @@ import { outfitImg } from './story.js';
 import { wipeIn, wipeOut } from './transitions.js';
 import { mountOutfitFx } from './outfit-fx.js';
 
-const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-const fmt = (n) => n.toLocaleString(numLocale());
-const pct = (x) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${fmt(Math.round(Math.abs(x) * 100))} %`;
+const pct = (x) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${fmtNum(Math.round(Math.abs(x) * 100))} %`;
 const KIND_NAME = { blessing: 'Bendición', pact: 'Pacto' };
 
 /** Número de la carta en el mazo (1..31): se imprime en la esquina, como en una baraja. */
@@ -98,7 +97,7 @@ function totalsHtml(summary) {
   if (t.purePoints) chips.push(['points', `Sin ayuda ${pct(t.purePoints)}`]);
   if (t.streakKeep) chips.push(['good', 'La racha no se pierde entera']);
   if (t.perfect) chips.push(['points', `Perfecto ${pct(t.perfect)}`]);
-  if (t.streakCap) chips.push(['points', `Racha hasta ×${fmt(1 + t.streakCap / 10)}`]);
+  if (t.streakCap) chips.push(['points', `Racha hasta ×${fmtNum(1 + t.streakCap / 10)}`]);
   if (t.cursePoints) chips.push(['points', `Maleficios ${pct(t.cursePoints)}`]);
   if (t.finalPoints) chips.push(['points', `Tramo final ${pct(t.finalPoints)}`]);
   if (t.revives) chips.push(['good', `+${t.revives} revivir`]);
@@ -118,20 +117,14 @@ export function openFatePanel() {
   $('fateTotals').innerHTML = totalsHtml(summary);
   $('fateHand').innerHTML = summary.cards.map((c) => fateMiniHtml(c, fateMuted(run, c.id))).join('');
   $('fateEmpty').hidden = summary.cards.length > 0;
-  const modal = $('fatePanel');
-  const close = () => {
-    modal.classList.remove('show');
-    modal.removeEventListener('keydown', key);
-    release();
-    $('bFate').focus();
-  };
-  const key = (e) => {
-    if (e.key === 'Escape') close();
-  };
-  $('fatePanelClose').onclick = close;
-  modal.addEventListener('keydown', key);
-  modal.classList.add('show');
-  $('fatePanelClose').focus();
+  const close = openModal($('fatePanel'), {
+    focus: $('fatePanelClose'),
+    onClose: () => {
+      release();
+      $('bFate').focus();
+    },
+  });
+  $('fatePanelClose').onclick = () => close();
 }
 $('bFate')?.addEventListener('click', openFatePanel);
 
@@ -148,13 +141,13 @@ function fillStage(hero) {
 function rewardsText(rewards) {
   const parts = [];
   if (rewards?.hints) parts.push(rewards.hints > 1 ? `+${rewards.hints} pistas` : '+1 pista');
-  if (rewards?.score) parts.push(`+${fmt(rewards.score)} pts`);
+  if (rewards?.score) parts.push(`+${fmtNum(rewards.score)} pts`);
   return parts.length ? `Tus cartas te dan: ${parts.join(' · ')}` : '';
 }
 
 /** Chispas con los colores de la carta elegida. */
 function sparkle(el, card) {
-  if (reduced()) return;
+  if (reducedMotion()) return;
   const r = el.getBoundingClientRect();
   burst(r.left + r.width / 2, r.top + r.height / 2, 34, [card.hue[0], card.hue[1], '#fff', '#ffe38a'], 7);
 }
@@ -199,7 +192,7 @@ export function showFateDialog({ run, hero, cards, canReroll = false, rewards, o
           wipeOut();
           resolve();
         },
-        reduced() ? 0 : 1100,
+        reducedMotion() ? 0 : 1100,
       );
     };
     const renderCards = (list) => {
@@ -235,7 +228,7 @@ export function showFateDialog({ run, hero, cards, canReroll = false, rewards, o
             dealtAt = performance.now();
             buttons[0]?.focus({ preventScroll: true });
           },
-          reduced() ? 0 : 80,
+          reducedMotion() ? 0 : 80,
         );
       };
     }
@@ -264,7 +257,7 @@ export function showFateDialog({ run, hero, cards, canReroll = false, rewards, o
           modal.classList.add('fate-dealt');
           dealtAt = performance.now();
         },
-        reduced() ? 0 : 260,
+        reducedMotion() ? 0 : 260,
       );
       buttons[0]?.focus({ preventScroll: true });
     };
@@ -275,7 +268,7 @@ export function showFateDialog({ run, hero, cards, canReroll = false, rewards, o
       modal.addEventListener('pointerdown', deal);
       Music.scene('fate');
       sfx.routePick();
-      introTimer = setTimeout(deal, reduced() ? 0 : 1400);
+      introTimer = setTimeout(deal, reducedMotion() ? 0 : 1400);
       wipeOut();
     });
   });
