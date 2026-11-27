@@ -1,2 +1,0 @@
-/* Orden de las capas: de menor a mayor prioridad. «lite» va siempre la última. */
-@layer tokens, base, layout, world, components, screens, unify, skins, states, lite;

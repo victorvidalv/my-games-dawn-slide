@@ -4,7 +4,6 @@
  * el resto son módulos de interfaz que se comunican mediante el estado compartido de src/state.js.
  */
 import './i18n.js';
-import './styles/layers.css';
 import './styles/tokens.css';
 import './styles/properties.css';
 import './styles/base.css';
