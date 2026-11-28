@@ -217,6 +217,12 @@ export const EN_UI = {
   'Arrastra el bloque que brilla hacia {d}.': 'Drag the glowing block {d}.',
   'Mínimo 5': 'Minimum 5',
   'Límite 10': 'Limit 10',
+  'Las rocas no dejan pasar.': 'Rocks block the way.',
+  'El candado se abre al tapar la placa 🔒.': 'The padlock opens when you cover the 🔒 plate.',
+  'La pesada avanza solo 1 casilla.': 'The heavy piece moves only 1 square.',
+  'El hielo se desliza hasta chocar.': 'Ice slides until it hits something.',
+  Ayuda: 'Help',
+  '¿Dudas? Pulsa aquí': 'Need help? Tap here',
   'Cómo se juega': 'How to play',
 
   /* mapa */

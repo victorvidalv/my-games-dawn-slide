@@ -9,6 +9,7 @@ export const MECHANICS = {
     icon: 'rock',
     name: 'Roca fija',
     chip: 'Roca fija',
+    brief: 'Las rocas no dejan pasar.',
     tip: 'Las rocas no se mueven ni se pueden empujar. Rodéalas para abrirle camino a la llave roja.',
   },
   gate: {
@@ -16,6 +17,7 @@ export const MECHANICS = {
     icon: 'lock',
     name: 'Candado',
     chip: 'Candado: cubre 🔒',
+    brief: 'El candado se abre al tapar la placa 🔒.',
     tip: 'Esta pieza está atrapada. Se libera mientras OTRA pieza cubra la placa 🔒 del suelo. En cuanto la tapes, el candado se abre.',
   },
   heavy: {
@@ -23,6 +25,7 @@ export const MECHANICS = {
     icon: 'weight',
     name: 'Pieza pesada',
     chip: 'Pesada: 1 paso',
+    brief: 'La pesada avanza solo 1 casilla.',
     tip: 'Esta pieza pesa tanto que solo avanza UNA casilla por movimiento. Planifica cada paso.',
   },
   ice: {
@@ -30,6 +33,7 @@ export const MECHANICS = {
     icon: 'ice',
     name: 'Pieza de hielo',
     chip: 'Hielo: hasta el tope',
+    brief: 'El hielo se desliza hasta chocar.',
     tip: 'Resbala sin freno: en cuanto la empujas, patina hasta chocar con otra pieza, una roca o el borde. No puede parar a medias.',
   },
   curse: {

@@ -69,6 +69,7 @@
     <div class="lv" title="Nivel" aria-label="Nivel"><i class="bi level-ico" data-icon="flag" aria-hidden="true"></i><b id="lvl">1</b></div>
     <div class="scores"><div class="sc" title="Puntaje"><i class="bi score-ico" data-icon="trophy" aria-hidden="true"></i><b id="score" aria-label="Puntaje">0</b></div></div>
     <button class="fate-btn" id="bFate" type="button" hidden aria-label="Cartas del destino activas"><span class="fate-btn-stack" id="fateStack" aria-hidden="true"></span><b id="fateCount">0</b></button>
+    <button class="help-btn" id="bHelp" type="button" aria-label="Ayuda" title="Ayuda"><span aria-hidden="true">?</span><em class="help-tip">¿Dudas? Pulsa aquí</em></button>
     <button class="snd-btn snd-hud" type="button"></button>
     <button class="menubtn" id="bMenu" aria-label="Menú y opciones"><span>☰</span><em>Menú</em></button>
   </div>
@@ -361,14 +362,12 @@
  </div>
 </div>
 
-<!-- Guía: avisos de los primeros niveles y de cada pieza nueva -->
-<div class="modal" id="coach" role="dialog" aria-modal="true" aria-labelledby="coachTitle">
-  <div class="card coach-card">
-    <div class="coach-demo" id="coachDemo" aria-hidden="true"></div>
-    <div class="tag" id="coachTag"></div>
-    <h2 id="coachTitle"></h2>
-    <p id="coachText"></p>
-    <button class="primary" id="coachOk">Entendido</button>
+<!-- Ayuda («?»): cómo se juega y las piezas del nivel -->
+<div class="modal" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="card coach-card help-card">
+    <h2 id="helpTitle">Ayuda</h2>
+    <div class="help-list" id="helpList"></div>
+    <button class="primary" id="helpOk">Entendido</button>
   </div>
 </div>
 

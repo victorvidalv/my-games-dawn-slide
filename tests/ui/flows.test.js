@@ -311,13 +311,17 @@ describe('interfaz: desafío diario', () => {
     expect(saved().run.level).toBe(2);
   });
 
-  it('si el jugador nunca jugó, muestra el tutorial de sacar la llave también al entrar en Desafío', async () => {
+  it('sin tutoriales que interrumpan: el botón «?» late la primera vez y abre la ayuda', async () => {
     const app = await bootApp({ save: {} });
     app.$('tabDaily').click();
-    await until(() => shown(app, 'coach'));
-    expect(app.$('coachTitle').textContent).toBe('¡Saca la llave roja!');
-    app.$('coachOk').click();
-    expect(shown(app, 'coach')).toBe(false);
-    expect(saved().tips.drag).toBe(true);
+    await until(() => app.S.G);
+    expect(app.$('bHelp').classList.contains('help-new')).toBe(true);
+    app.$('bHelp').click();
+    expect(shown(app, 'help')).toBe(true);
+    expect(app.$('helpList').textContent).toContain('¡Saca la llave roja!');
+    app.$('helpOk').click();
+    expect(shown(app, 'help')).toBe(false);
+    expect(app.$('bHelp').classList.contains('help-new')).toBe(false);
+    expect(saved().tips.help).toBe(true);
   });
 });
