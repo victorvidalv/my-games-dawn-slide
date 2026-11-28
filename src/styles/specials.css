@@ -150,13 +150,6 @@
     font-style: normal;
     margin-right: 4px;
   }
-  #coach {
-    align-items: flex-end;
-    padding-bottom: 5dvh;
-    background: #050714a8;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
   .coach-card {
     width: min(94vw, 440px);
   }
@@ -592,6 +585,108 @@
   @keyframes tool-bounce {
     50% {
       transform: translateY(-8px);
+    }
+  }
+
+  /* Botón «?» de ayuda: discreto; la primera vez late y muestra una etiqueta */
+  .help-btn {
+    flex: none;
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #1c1208;
+    background: linear-gradient(180deg, #3a2b52, #23193a);
+    color: #ffe3a6;
+    font: 900 19px/1 var(--font-book, Georgia, serif);
+    box-shadow:
+      0 3px 0 #091118,
+      inset 0 1px 0 #ffffff22;
+  }
+  .help-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #091118;
+  }
+  .help-tip {
+    display: none;
+  }
+  .help-btn.help-flash,
+  .help-btn.help-new {
+    animation: help-pulse 1.4s ease-in-out infinite;
+    border-color: #ffd24a;
+  }
+  .help-btn.help-new .help-tip {
+    display: block;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    padding: 5px 10px;
+    border-radius: 10px;
+    background: #091118f2;
+    border: 1.5px solid #ffd24a99;
+    color: #ffe9b8;
+    font:
+      700 12px/1.2 system-ui,
+      sans-serif;
+    font-style: normal;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .help-list {
+    max-height: min(62dvh, 460px);
+    overflow-y: auto;
+    margin: 8px 0 12px;
+    text-align: left;
+  }
+  .help-item {
+    padding: 8px 0 10px;
+    border-top: 1px solid #ffffff1f;
+  }
+  .help-item:first-child {
+    border-top: 0;
+  }
+  .help-item h3 {
+    margin: 2px 0 0;
+    font-size: 15px;
+    text-align: center;
+  }
+  .help-item p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .help-item .coach-demo {
+    height: 84px;
+    margin-bottom: 2px;
+  }
+  .piece-hint {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 100%;
+    padding: 6px 10px;
+    border-radius: 12px;
+    border: 1.5px solid #ffd24a88;
+    background: #091118ee;
+    color: #f4e8cc;
+    font:
+      600 12px/1.35 system-ui,
+      sans-serif;
+    text-align: left;
+  }
+  .piece-hint .coach-demo {
+    flex: none;
+    height: 64px;
+    width: 96px;
+    margin: 0;
+    overflow: hidden;
+  }
+  @keyframes help-pulse {
+    50% {
+      box-shadow:
+        0 0 0 6px #ffd24a44,
+        0 3px 0 #091118;
     }
   }
 }

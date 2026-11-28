@@ -2,16 +2,17 @@ import { sfx } from '../audio/sound.js';
 import { $ } from '../dom.js';
 import { openModal } from './modal.js';
 import { hintMove } from '../engine/solver.js';
-import { MECHANICS, TUTORIALS } from '../game/mechanics.js';
-import { HERO_TUTORIAL_TALK } from '../data/story.js';
+import { MECHANICS } from '../game/mechanics.js';
+import { hasCurse } from '../engine/calibration.js';
 import { outfitImg } from './story.js';
-import { S, heroOf, holdBusy, persist, store } from '../state.js';
+import { S, heroOf, persist, store } from '../state.js';
 import { icon } from './icons.js';
 
 /**
- * Guía del jugador: enseña a jugar en los primeros niveles y explica cada pieza especial la primera vez
- * que aparece. Cada aviso se muestra UNA vez (se recuerda en store.tips) y siempre se puede repasar
- * en «Cómo se juega». Además dibuja la leyenda de piezas bajo el tablero mientras el nivel las tiene.
+ * Ayuda del jugador, sin ventanas que interrumpan: un botón «?» siempre a la vista abre la explicación completa
+ * (cómo jugar, puntos y las piezas del nivel actual). La primera vez el botón late para que se vea, y la primera vez
+ * que aparece una pieza especial se muestra, bajo el tablero, una nota breve con su dibujo que no bloquea el juego.
+ * Además se dibuja la leyenda de piezas bajo el tablero mientras el nivel las tiene (tocarla abre la ayuda).
  */
 
 /** Mecánicas presentes en el tablero actual. */
@@ -54,12 +55,9 @@ const DEMO = {
 
 function tipFor(id) {
   if (MECHANICS[id]) {
-    const h = heroOf(),
-      talk = HERO_TUTORIAL_TALK[h.id]?.[id];
     return {
-      tag: id === 'curse' ? 'MALEFICIO' : 'PIEZA NUEVA',
       title: `${icon(MECHANICS[id].icon)} ${MECHANICS[id].name}`,
-      text: MECHANICS[id].tip + (talk ? `<br><br><i><b>${h.name}:</b> «${talk}»</i>` : ''),
+      text: MECHANICS[id].tip,
       demo: id,
     };
   }
@@ -115,62 +113,84 @@ function tipFor(id) {
   }[id];
 }
 
-let showing = false;
-let guidedFirstBoard = false;
-/** Explicaciones que pueden esperar a otro nivel si en este ya hay algo más importante que enseñar. */
-const CAN_WAIT = ['score', 'hero', 'seal'];
+/** Entradas de la ayuda para el tablero actual: lo básico siempre, y lo que tiene este nivel o esta partida. */
+function helpIds() {
+  const G = S.G;
+  const run = S.run;
+  const ids = ['drag', 'score'];
+  if (G?.seal) ids.push('seal');
+  if (run?.fate?.length) ids.push('fate');
+  if (run && !run.daily && (run.hero === 'jean' || run.hero === 'van')) ids.push(`hero_power_${run.hero}`);
+  if (G) ids.push(...mechanicsPresent(G));
+  if (G && hasCurse(G.n)) ids.push('curse');
+  return ids;
+}
 
-function show(ids, done) {
-  if (!ids.length) {
-    done?.();
-    return;
-  }
-  const id = ids[0];
+const entryHtml = (id) => {
   const t = tipFor(id);
-  const modal = $('coach');
-  $('coachDemo').innerHTML =
+  const demo =
     t.demo === 'hero'
       ? `<img class="hero-demo-img" src="${outfitImg(heroOf().id, 'adv')}" alt="">`
       : DEMO[t.demo] || '';
-  $('coachTag').textContent = t.tag;
-  $('coachTitle').innerHTML = t.title;
-  $('coachText').innerHTML = t.text;
-  $('coachOk').textContent = ids.length > 1 ? 'Siguiente' : 'Entendido';
-  const glow = t.glow ? document.querySelector(t.glow) : null;
-  glow?.classList.add('coach-glow');
-  const close = openModal(modal, { onEscape: false, focus: $('coachOk') });
+  return `<section class="help-item"><div class="coach-demo" aria-hidden="true">${demo}</div><h3>${t.title}</h3><p>${t.text}</p></section>`;
+};
+
+let closeHelp = null;
+/** Abre la ayuda («?»): una sola ventana, con todo lo que hace falta saber para este tablero. */
+export function openHelp() {
+  if (closeHelp) return;
+  $('helpList').innerHTML = helpIds().map(entryHtml).join('');
+  $('helpList').scrollTop = 0;
+  markSeen('help');
+  $('bHelp').classList.remove('help-new');
+  closeHelp = openModal($('help'), {
+    focus: $('helpOk'),
+    trap: 'cycle',
+    onClose: () => {
+      closeHelp = null;
+    },
+  });
+  $('helpOk').onclick = () => closeHelp?.();
   sfx.hint();
-  $('coachOk').onclick = () => {
-    close();
-    glow?.classList.remove('coach-glow');
-    store.tips = store.tips || {};
-    store.tips[id] = true;
-    persist();
-    show(ids.slice(1), done);
-  };
 }
 
-/** Marca el siguiente mejor movimiento con un brillo y lo describe (solo en el nivel de aprendizaje). */
-function pointAtNextMove(prefix = '', custom = null) {
+function markSeen(id) {
+  store.tips = store.tips || {};
+  if (store.tips[id]) return;
+  store.tips[id] = true;
+  persist();
+}
+
+const hintEl = () => $('legend').querySelector('.piece-hint');
+function dismissHint() {
+  const el = hintEl();
+  if (!el) return;
+  if (el.dataset.id) markSeen(el.dataset.id);
+  el.remove();
+  dispatchEvent(new Event('resize'));
+}
+
+/** Nota breve con dibujo la primera vez que aparece una pieza: no bloquea; se va al mover o al tocarla. */
+function showPieceHint(id) {
+  const el = document.createElement('button');
+  el.type = 'button';
+  el.className = 'piece-hint';
+  el.dataset.id = id;
+  el.innerHTML = `<span class="coach-demo" aria-hidden="true">${DEMO[id]}</span><span><b>${icon(MECHANICS[id].icon)} ${MECHANICS[id].name}</b><br>${MECHANICS[id].brief}</span>`;
+  el.onclick = dismissHint;
+  $('legend').prepend(el);
+}
+
+/** Marca el mejor primer movimiento del primer tablero de una partida nueva (solo una vez, sin ventanas). */
+function pointAtFirstMove() {
   const G = S.G;
   if (!G || G.done) return;
   const h = hintMove(G.pieces, G.pos, G.walls);
   if (!h) return;
   const p = G.pieces[h.i];
   const dir = p.o === 'h' ? (h.to > h.from ? 'derecha' : 'izquierda') : h.to > h.from ? 'abajo' : 'arriba';
-  G.els.forEach((e) => e.classList.remove('hint'));
   G.els[h.i].classList.add('hint');
-  $('msg').textContent = custom ?? `${prefix}Arrastra el bloque que brilla hacia ${dir}.`;
-}
-
-/** Guía del nivel de aprendizaje: señala el siguiente movimiento y explica el paso. */
-function guide() {
-  const G = S.G;
-  if (!G || G.done) return;
-  if (G.tutorial && TUTORIALS[G.tutorial]) {
-    const steps = TUTORIALS[G.tutorial].steps;
-    pointAtNextMove('', steps[Math.min(G.moves, steps.length - 1)]);
-  } else if (G.n === 1 && !G.moves && (!S.run?.daily || guidedFirstBoard)) pointAtNextMove();
+  $('msg').textContent = `Arrastra el bloque que brilla hacia ${dir}.`;
 }
 
 /** Se llama al empezar cada nivel. */
@@ -178,47 +198,28 @@ export function startCoach() {
   const G = S.G;
   const run = S.run;
   renderLegend();
-  if (!G || !run || G.done || run.mode === 'p' || showing) return;
+  if (!G || !run || G.done || run.mode === 'p') return;
   store.tips = store.tips || {};
-  guidedFirstBoard = false;
-  const queue = [];
-  if (G.n === 1) queue.push('drag');
-  if (!run.daily) {
-    // en Desafío no se enseñan puntos/ayudas/héroe de Aventura: solo sacar la llave la primera vez y piezas especiales
-    if (run.hero === 'jean' || run.hero === 'van') queue.push(`hero_power_${run.hero}`);
-    if (G.n >= 2) queue.push('score');
-    if (G.n >= 4 && run.hero === 'lia') queue.push('hero');
+  const first = !store.tips.help;
+  $('bHelp').classList.toggle('help-new', first);
+  const id = mechanicsPresent(G).find((m) => !store.tips[m]);
+  if (id) {
+    showPieceHint(id);
+    $('bHelp').classList.add('help-flash'); // destella, sin hacer falta pulsarlo
+    setTimeout(() => $('bHelp').classList.remove('help-flash'), 6000);
   }
-  if (run.fate?.length) queue.push('fate');
-  if (G.seal) queue.push('seal');
-  queue.push(...mechanicsPresent(G).filter((id) => id !== 'curse'));
-  // Una sola explicación general por nivel: lo que hace falta YA para jugar este tablero (arrastrar, piezas nuevas, cartas)
-  // se enseña siempre; las demás (puntos, ayudas, héroe, sellos) esperan su turno si ya hay otra ventana en este nivel.
-  const pending = queue.filter((id) => !store.tips[id]);
-  const urgent = pending.filter((id) => !CAN_WAIT.includes(id));
-  const todo = urgent.length ? urgent : pending.slice(0, 1);
-  if (!todo.length) {
-    guide();
-    return;
-  }
-  if (todo.includes('drag')) guidedFirstBoard = true;
-  showing = true;
-  const release = holdBusy();
-  show(todo, () => {
-    showing = false;
-    release();
-    guide();
-  });
+  if (G.n === 1 && !G.moves && !store.tips.drag) pointAtFirstMove();
 }
 
-/** Tras cada movimiento del nivel 1 se sigue señalando el siguiente (aprendizaje guiado). */
+/** Tras el primer movimiento se quita la nota de pieza nueva y se da por aprendido arrastrar. */
 export function coachOnMove() {
   const G = S.G;
-  if (!G || G.done || S.run?.mode === 'p' || !G.moves || G.pos[0] === 4) return;
-  if (G.tutorial) {
-    guide();
-    return;
-  }
-  if (G.n !== 1 || (S.run?.daily && !guidedFirstBoard)) return;
-  pointAtNextMove('¡Muy bien! ');
+  if (!G || G.done || S.run?.mode === 'p' || !G.moves) return;
+  dismissHint();
+  markSeen('drag');
 }
+
+$('bHelp').addEventListener('click', openHelp);
+$('legend').addEventListener('click', (e) => {
+  if (e.target.closest('.chip')) openHelp();
+});

@@ -74,10 +74,9 @@ export async function until(check, { timeout = 8000, step = 20 } = {}) {
   }
 }
 
-/** Espera a que el tablero `n` esté listo para jugar, cerrando las ventanas de ayuda (coach) que aparezcan. */
+/** Espera a que el tablero `n` esté listo para jugar, . */
 export async function untilPlayable(app, n, opts) {
   return until(() => {
-    if (app.$('coach').classList.contains('show')) app.$('coachOk').click();
     return app.S.G?.n === n && !app.S.G.done && !app.S.busy;
   }, opts);
 }
