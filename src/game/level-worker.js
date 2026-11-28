@@ -13,10 +13,10 @@ self.onmessage = ({ data }) => {
     bankData = data.banks;
     return;
   }
-  const { id, run, tips } = data;
+  const { id, run } = data;
   try {
     if (!bankData) throw new Error('level worker: banks not loaded');
-    const banks = { levels: bankData.levels, special: bankData.special, tips };
+    const banks = { levels: bankData.levels, special: bankData.special };
     const d = run.daily;
     const G = d
       ? buildDaily(challengeById(d.id), d.seed ?? d.day, banks, d.index, d.remaining)

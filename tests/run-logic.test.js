@@ -47,7 +47,6 @@ const board = (over = {}) => ({
   ],
   walls: [[1, 1]],
   plan: {},
-  tutorial: null,
   family: 'base',
   colors: [2, 1],
   seal: null,
@@ -134,7 +133,7 @@ describe('guardado del tablero', () => {
   it('copia el tablero sin compartir referencias', () => {
     const G = board();
     const snap = snapshotBoard(G);
-    expect(snap).toMatchObject({ level: 5, pos: [1, 2], moves: 3, tutorial: null });
+    expect(snap).toMatchObject({ level: 5, pos: [1, 2], moves: 3 });
     expect(snap.timeLeft).toBeUndefined();
     G.pos[0] = 9;
     G.hist[0][0] = 9;

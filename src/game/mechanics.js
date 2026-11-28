@@ -47,7 +47,7 @@ export const MECHANICS = {
 
 /**
  * CALENDARIO DE MECÁNICAS (1..100): lo decide el calibrador (`tools/calibrator`) y lo optimiza `npm run calibrate`
- * (src/data/calibration.json). Cada mecánica llega con su tutorial en un nivel propio, nunca dos novedades a la vez, y después vuelve
+ * (src/data/calibration.json). Cada mecánica llega en un nivel propio, nunca dos novedades a la vez, y después vuelve
  * cada pocos niveles sin repetir la misma mezcla; las mezclas crecen con el nivel hasta usar todas juntas al final.
  */
 const LETTER_MECH = { w: 'wall', h: 'heavy', g: 'gate', i: 'ice' };
@@ -63,7 +63,7 @@ export const lettersOfFamily = (family) => {
   return /^combo_([whgi]+)$/.exec(family)?.[1] ?? null;
 };
 
-/** Niveles donde llega una mecánica nueva (con tutorial aparte): no se les suma otra novedad. */
+/** Niveles donde llega una mecánica nueva : no se les suma otra novedad. */
 export const INTRO_LEVEL_LIST = Object.values(TUTORIAL_LEVELS).sort((a, b) => a - b);
 const INTRO_LEVELS = new Set(INTRO_LEVEL_LIST);
 
@@ -84,56 +84,4 @@ export function levelPlan(level) {
     intro: INTRO_LEVELS.has(level),
     mechanics: mechanicsOfFamily(family),
   };
-}
-
-/**
- * Tableros de aprendizaje hechos a mano: la PRIMERA vez que aparece cada pieza, el nivel tiene un tablero minúsculo
- * (3 movimientos) pensado para entender cómo funciona, con la guía señalando cada movimiento.
- * Formato de los tableros: ver encodeBoard (src/engine/board.js).
- */
-export const TUTORIALS = {
-  wall: {
-    level: TUTORIAL_LEVELS.wall,
-    board: 'h2.2.0 v2.3.2 h2.4.3 #1.3', // la roca (1,3) impide subir el bloque vertical: hay que bajarlo
-    steps: [
-      'Esta roca no se mueve. Rodéala: mueve el bloque que brilla.',
-      'Bien. Ahora el bloque vertical puede bajar.',
-      '¡Hay camino! Saca la llave roja.',
-    ],
-  },
-  heavy: {
-    level: TUTORIAL_LEVELS.heavy,
-    board: 'h2.2.0 v2.3.2p #4.3', // pesada: sube de a una casilla; la roca (4,3) impide bajarla
-    steps: [
-      'Esta pieza es pesada: solo avanza UNA casilla por movimiento. Muévela hacia arriba.',
-      'Una casilla más…',
-      '¡Listo! Saca la llave roja.',
-    ],
-  },
-  gate: {
-    level: TUTORIAL_LEVELS.gate,
-    board: 'h2.2.0 v2.3.1g5.0 h2.5.3', // candado vertical con la placa en (5,0); solo el bloque de abajo llega a ella
-    steps: [
-      'Este bloque tiene candado y está atrapado. Cubre la placa 🔒 con el bloque que brilla.',
-      '¡La placa brilla! El candado se abrió: ahora sí puedes moverlo.',
-      'Camino libre. Saca la llave roja.',
-    ],
-  },
-  ice: {
-    level: TUTORIAL_LEVELS.ice,
-    board: 'h2.2.0 v3.3.0i h2.3.2', // hielo: primero aparta el tope de abajo y luego patina de golpe hasta el fondo
-    steps: [
-      'Esta pieza es de hielo y patina sin parar hasta un tope. Primero aparta el bloque que brilla.',
-      '¡Camino despejado! Empuja la pieza de hielo hacia abajo: patinará hasta el borde.',
-      '¡Patina en un solo movimiento! Ahora saca la llave roja.',
-    ],
-  },
-};
-
-/** ¿Hay un nivel extra de tutorial antes de este nivel (si no se completó ya)? Va ANTES del nivel real: no da puntos ni cuenta como nivel. */
-export function tutorialFor(level, seenTips = {}) {
-  for (const [mech, t] of Object.entries(TUTORIALS)) {
-    if (t.level === level && !seenTips['tut_' + mech]) return { mech, ...t };
-  }
-  return null;
 }

@@ -1,5 +1,4 @@
 import { hash32 } from '../engine/rng.js';
-import { TUTORIALS } from './mechanics.js';
 
 import { TUTORIAL_LEVELS, hasCurse } from '../engine/calibration.js';
 import { MAX_LEVEL } from '../engine/difficulty.js';
@@ -21,8 +20,7 @@ export function rotatedLevels(_seed, max = MAX_LEVEL) {
  * El motor no cambia (la llave sigue saliendo «a la derecha» en sus coordenadas); solo se gira lo que se ve y se traduce el arrastre.
  * Es determinista por partida y nivel, así que al reanudar, reintentar o revivir el tablero se ve igual.
  */
-export function boardRotation(seed, level, tutorial = false) {
-  if (tutorial) return TUTORIALS[tutorial]?.rot ?? 0; // solo el tutorial del maleficio gira
+export function boardRotation(seed, level) {
   if (!hasCurse(level)) return 0;
   return (1 + (hash32(seed ?? 0, level, 90) % 3)) * 90;
 }

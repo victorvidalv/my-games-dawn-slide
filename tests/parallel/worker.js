@@ -269,13 +269,10 @@ const tasks = {
     return { rating, minReach: minReach(rating), rows };
   },
 
-  /** Nivel de Aventura tal como lo arma el juego (con cartas, reliquia y tutoriales vistos), resumido. */
+  /** Nivel de Aventura tal como lo arma el juego (con cartas y reliquia), resumido. */
   adventure({ start, level, parity = 0 }) {
-    const tips = Object.fromEntries(
-      ['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_curse'].map((k) => [k, true]),
-    );
     const run = { seed: 46, hero: 'lia', start, level, mode: 'c', adj: 0, hints: 3, score: 0 };
-    const G = buildAdventureLevel(run, { levels: bank.ratings, special, tips });
+    const G = buildAdventureLevel(run, { levels: bank.ratings, special });
     const walls = G.walls || [];
     const out = {
       start,

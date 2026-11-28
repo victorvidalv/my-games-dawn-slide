@@ -65,7 +65,7 @@ export function buildPieces() {
   boardEl.querySelectorAll('.piece,.wall,.plate,.links,.seal-floor').forEach((e) => e.remove());
   boardEl.dataset.city = zoneIdx(S.G.n);
   boardEl.classList.remove('board-win');
-  S.G.rot = boardRotation(S.run?.seed, S.G.n, S.G.tutorial || false);
+  S.G.rot = boardRotation(S.run?.seed, S.G.n);
   boardEl.parentElement.style.setProperty('--rot', S.G.rot + 'deg');
   boardEl.parentElement.dataset.rot = S.G.rot;
   S.G.gateLocked = {};

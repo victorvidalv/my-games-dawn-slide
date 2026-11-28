@@ -46,11 +46,7 @@ export function renderLevelHud(run, G, heroId) {
   const prac = run.mode === 'p';
   const dailyUsed = run.daily ? (run.daily.used || 0) + G.moves : 0;
   const dailyRem = run.daily ? Math.max(0, DAILY_TURN_BUDGET - dailyUsed) : 0;
-  $('lvl').textContent = run.daily
-    ? `${run.daily.index + 1}/${DAILY_TOTAL_BOARDS}`
-    : G.tutorial
-      ? `${G.n} · TUTORIAL`
-      : G.n;
+  $('lvl').textContent = run.daily ? `${run.daily.index + 1}/${DAILY_TOTAL_BOARDS}` : G.n;
   showScore(run);
   $('lim').textContent = run.daily ? DAILY_TURN_BUDGET : prac ? '∞' : G.limit;
   $('bUndo').disabled = !G.hist.length;
@@ -69,8 +65,7 @@ export function levelBannerText(run, G) {
     const c = challengeById(run.daily.id);
     return [c.name, `Tablero ${run.daily.index + 1} de ${DAILY_TOTAL_BOARDS}`];
   }
-  const title = G.tutorial ? 'Tutorial' : `Nivel ${G.n}`;
-  return [title, ZONES[zoneIdx(G.n)].n];
+  return [`Nivel ${G.n}`, ZONES[zoneIdx(G.n)].n];
 }
 
 /** La llave sale del tablero; con `party` las piezas celebran con una ola de saltos. */

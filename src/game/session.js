@@ -222,7 +222,7 @@ export function surrenderDaily() {
 async function startLevel() {
   setBusy(true);
   const run = S.run;
-  const G = await buildLevelAsync(run, store.tips || {});
+  const G = await buildLevelAsync(run);
   if (S.run !== run) return; // se salió mientras se preparaba
   restoreDailyAttempt(G, run.daily);
   setDailyMode(!!run.daily);
@@ -357,7 +357,6 @@ export function win() {
   if (S.G.done) return;
   haltBoard();
   lockBoard();
-  if (S.G.tutorial) return winTutorial();
   if (S.run.daily) return winDaily();
   const run = S.run,
     G = S.G;
@@ -396,21 +395,6 @@ export function win() {
     },
     reducedMotion() ? 100 : 450,
   );
-}
-/** Nivel extra de tutorial: sin puntos ni avance; después empieza el nivel real. */
-function winTutorial() {
-  store.tips = store.tips || {};
-  store.tips['tut_' + S.G.tutorial] = true;
-  delete S.run.board;
-  persist();
-  setTensionFx(0, false);
-  sfx.success();
-  playKeyExit(S.G, { party: false });
-  setMessage('¡Tutorial superado! Ahora, el nivel de verdad.');
-  setTimeout(() => {
-    setBusy(false);
-    startLevel();
-  }, 1400);
 }
 function winDaily() {
   const run = S.run,

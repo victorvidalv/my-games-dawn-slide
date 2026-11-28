@@ -5,11 +5,10 @@ import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { levelPlan } from '../src/game/mechanics.js';
 import { runPoolCached as runPool } from './parallel/pool.js';
 
-const allTips = Object.fromEntries(['tut_wall', 'tut_heavy', 'tut_gate', 'tut_ice', 'tut_curse'].map((k) => [k, true]));
 const build = (level, start = 1) =>
   buildAdventureLevel(
     { seed: 46, hero: 'lia', start, level, mode: 'c', adj: 0, hints: 3, score: 0 },
-    { levels: levelBank.ratings, special: specialBank, tips: allTips },
+    { levels: levelBank.ratings, special: specialBank },
   );
 
 /** Niveles que se revisan: los 21 de Normal y los cierres de tramo de Experto. */

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { TUTORIALS, tutorialFor, levelPlan } from '../src/game/mechanics.js';
+import { levelPlan } from '../src/game/mechanics.js';
 import { TUTORIAL_LEVELS } from '../src/engine/calibration.js';
 import {
   decodeBoard,
@@ -14,9 +14,17 @@ import {
   encode,
 } from '../src/engine/index.js';
 
+/** Tableros mínimos (3 movimientos) que ejercitan cada pieza: sirven para probar sus reglas. */
+const TUTORIALS = {
+  wall: { level: TUTORIAL_LEVELS.wall, board: 'h2.2.0 v2.3.2 h2.4.3 #1.3' },
+  heavy: { level: TUTORIAL_LEVELS.heavy, board: 'h2.2.0 v2.3.2p #4.3' },
+  gate: { level: TUTORIAL_LEVELS.gate, board: 'h2.2.0 v2.3.1g5.0 h2.5.3' },
+  ice: { level: TUTORIAL_LEVELS.ice, board: 'h2.2.0 v3.3.0i h2.3.2' },
+};
+
 const board = (t) => decodeBoard(t.board);
 
-describe('tableros de aprendizaje', () => {
+describe('tableros mínimos por pieza', () => {
   it('uno por mecánica (cuatro piezas), en el nivel que decide el calibrador, y ese nivel es de esa mecánica', () => {
     expect(Object.keys(TUTORIALS).sort()).toEqual(['gate', 'heavy', 'ice', 'wall']);
     for (const [mech, t] of Object.entries(TUTORIALS)) {
@@ -42,7 +50,6 @@ describe('tableros de aprendizaje', () => {
       if (mech === 'gate') expect(b.pieces.some((p) => p.kind === 'gate')).toBe(true);
       if (mech === 'heavy') expect(b.pieces.some((p) => p.kind === 'heavy')).toBe(true);
       if (mech === 'ice') expect(b.pieces.some((p) => p.kind === 'ice')).toBe(true);
-      expect(t.steps.length, mech).toBe(3);
     }
   });
 
@@ -120,15 +127,6 @@ describe('tableros de aprendizaje', () => {
         expect(moves, `${mech} ${k}`).toBeGreaterThan(0);
         expect(an.dist.get(k), `${mech} ${k}`).not.toBeUndefined();
       }
-    }
-  });
-
-  it('tutorialFor: solo la primera vez que se ve la pieza', () => {
-    for (const mech of Object.keys(TUTORIALS)) {
-      const L = TUTORIAL_LEVELS[mech];
-      expect(tutorialFor(L, {})?.mech, mech).toBe(mech);
-      expect(tutorialFor(L, { ['tut_' + mech]: true }), mech).toBeNull();
-      expect(tutorialFor(L - 1, {})?.mech, `${mech} un nivel antes`).not.toBe(mech);
     }
   });
 });

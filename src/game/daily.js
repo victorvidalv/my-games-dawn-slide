@@ -143,7 +143,6 @@ export function buildDaily(challenge, day, { levels, special }, index = 0, remai
     hist: [],
     bought: 0,
     family: chosenFamily,
-    tutorial: null,
     seal: null,
     done: false,
     els: [],
