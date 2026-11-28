@@ -614,6 +614,12 @@
     color: #2a1a00;
     font: 900 15px/1 var(--font-book, Georgia, serif);
   }
+  .help-btn.help-off {
+    opacity: 0.35;
+    filter: grayscale(1);
+    pointer-events: none;
+  }
+
   .help-btn:active {
     transform: translateY(2px);
     box-shadow: 0 1px 0 #091118;

@@ -113,17 +113,29 @@ function tipFor(id) {
   }[id];
 }
 
-/** Entradas de la ayuda para el tablero actual: lo básico siempre, y lo que tiene este nivel o esta partida. */
+/**
+ * Entradas de la ayuda según el nivel: el 1 solo explica arrastrar, el 2 solo el límite de turnos y de ahí en
+ * adelante solo las piezas que tiene este tablero (rocas, hielo…). Sin nada que explicar, la lista queda vacía.
+ */
 function helpIds() {
   const G = S.G;
-  const run = S.run;
-  const ids = ['drag', 'score'];
-  if (G?.seal) ids.push('seal');
-  if (run?.fate?.length) ids.push('fate');
-  if (run && !run.daily && (run.hero === 'jean' || run.hero === 'van')) ids.push(`hero_power_${run.hero}`);
-  if (G) ids.push(...mechanicsPresent(G));
-  if (G && hasCurse(G.n)) ids.push('curse');
+  if (!G) return [];
+  if (G.n === 1) return ['drag'];
+  if (G.n === 2) return ['score'];
+  const ids = [];
+  if (G.seal) ids.push('seal');
+  ids.push(...mechanicsPresent(G));
+  if (hasCurse(G.n)) ids.push('curse');
   return ids;
+}
+
+/** El botón «?» se desactiva cuando este tablero no tiene nada que explicar. */
+function syncHelpButton() {
+  const none = !helpIds().length;
+  const btn = $('bHelp');
+  btn.disabled = none;
+  btn.classList.toggle('help-off', none);
+  if (none) btn.classList.remove('help-new', 'help-flash');
 }
 
 const entryHtml = (id) => {
@@ -138,7 +150,7 @@ const entryHtml = (id) => {
 let closeHelp = null;
 /** Abre la ayuda («?»): una sola ventana, con todo lo que hace falta saber para este tablero. */
 export function openHelp() {
-  if (closeHelp) return;
+  if (closeHelp || !helpIds().length) return;
   $('helpList').innerHTML = helpIds().map(entryHtml).join('');
   $('helpList').scrollTop = 0;
   markSeen('help');
@@ -198,15 +210,16 @@ export function startCoach() {
   const G = S.G;
   const run = S.run;
   renderLegend();
+  syncHelpButton();
   if (!G || !run || G.done || run.mode === 'p') return;
   store.tips = store.tips || {};
-  const first = !store.tips.help;
+  const first = !store.tips.help && !$('bHelp').disabled;
   $('bHelp').classList.toggle('help-new', first);
   const id = mechanicsPresent(G).find((m) => !store.tips[m]);
   if (id) {
     showPieceHint(id);
     const btn = $('bHelp');
-    btn.classList.add('help-flash'); // destella, sin hacer falta pulsarlo
+    if (!btn.disabled) btn.classList.add('help-flash'); // destella, sin hacer falta pulsarlo
     setTimeout(() => btn.classList.remove('help-flash'), 6000);
   }
   if (G.n === 1 && !G.moves && !store.tips.drag) pointAtFirstMove();
