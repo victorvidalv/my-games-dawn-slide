@@ -89,7 +89,7 @@ según cómo juegues).
 
 **Piezas especiales.** Rocas fijas, candados con placa, piezas pesadas (1 casilla por movimiento) y hielo (se desliza
 hasta chocar). Todas conservan que cada movimiento se puede deshacer, así nunca hay atascos imposibles. Cada pieza nueva
-trae un tablero de tutorial que no se puede perder. Los niveles con **maleficio** giran el tablero 90°, 180° o 270° (la
+se explica con el botón «?» y una nota breve la primera vez que aparece (sin niveles de tutorial). Los niveles con **maleficio** giran el tablero 90°, 180° o 270° (la
 salida queda abajo, a la izquierda o arriba).
 
 **Bancos de tableros.** `generateBoard()` hace escalada de colina determinista. Para que cada nivel cargue al instante,

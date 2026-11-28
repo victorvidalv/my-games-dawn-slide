@@ -33,7 +33,6 @@ import { baseScore, calcGain } from '../src/engine/scoring.js';
 import { moveLimit } from '../src/engine/difficulty.js';
 import { buildAdventureLevel } from '../src/game/build-adventure.js';
 import { applyAdventureWin, newAdventureRun } from '../src/game/run-logic.js';
-import { TUTORIALS } from '../src/game/mechanics.js';
 import { FATE_ART_IDS, fateArt } from '../src/ui/fate-art.js';
 import levelBank from '../src/data/levels.json';
 import special from '../src/data/special.json';
@@ -231,8 +230,7 @@ describe('efectos acumulativos', () => {
     expect(fateTurns(run(['ceniza-tibia']), { ...plain, n: 8 })).toBe(0);
   });
   it('el límite real del tablero incluye las cartas y el Reloj de arena, y nunca baja de mínimo + 1', () => {
-    const tips = Object.fromEntries(Object.keys(TUTORIALS).map((id) => ['tut_' + id, true]));
-    const banks = { levels: levelBank.ratings, special, tips };
+    const banks = { levels: levelBank.ratings, special };
     const base = buildAdventureLevel({ ...run(), level: 14, adj: 0 }, banks);
     const more = buildAdventureLevel({ ...run(['respiro']), level: 14, adj: 0 }, banks);
     const hourglass = buildAdventureLevel({ ...run([], { relic: 'purse' }), level: 14, adj: 0 }, banks);

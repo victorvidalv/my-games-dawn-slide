@@ -205,8 +205,9 @@ export function startCoach() {
   const id = mechanicsPresent(G).find((m) => !store.tips[m]);
   if (id) {
     showPieceHint(id);
-    $('bHelp').classList.add('help-flash'); // destella, sin hacer falta pulsarlo
-    setTimeout(() => $('bHelp').classList.remove('help-flash'), 6000);
+    const btn = $('bHelp');
+    btn.classList.add('help-flash'); // destella, sin hacer falta pulsarlo
+    setTimeout(() => btn.classList.remove('help-flash'), 6000);
   }
   if (G.n === 1 && !G.moves && !store.tips.drag) pointAtFirstMove();
 }

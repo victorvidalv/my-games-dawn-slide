@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);`);
 /** Calendario actual del juego (0 = no, 1 = aparece, 2 = aparece con tutorial aparte) como punto de partida. */
 async function gameDefaults() {
   const src = (p) => import(new URL(`../../src/${p}`, import.meta.url));
-  const { levelPlan, TUTORIALS } = await src('game/mechanics.js');
+  const { levelPlan } = await src('game/mechanics.js');
+  const { TUTORIAL_LEVELS } = await src('engine/calibration.js');
   const { rotatedLevels } = await src('game/orientation.js');
   const { SEAL_LEVELS, requestedSealTier } = await src('game/seals.js');
   const { rateAt, targetFor } = await src('engine/difficulty.js');
@@ -46,7 +47,7 @@ async function gameDefaults() {
     for (const id of MECH_COLS) {
       const seal = id.startsWith('seal') ? +id.slice(4) : 0;
       const present = seal ? SEAL_LEVELS.includes(level) && requestedSealTier(level, 7) === seal : id === 'curse' ? curse.has(level) : p.mechanics.includes(id);
-      const tutorial = seal ? present && level === SEAL_LEVELS[0] : TUTORIALS[id]?.level === level;
+      const tutorial = seal ? present && level === SEAL_LEVELS[0] : TUTORIAL_LEVELS[id] === level;
       r[id] = tutorial ? 2 : present ? 1 : 0;
     }
     [r.min_normal, r.min_hard, r.min_expert] = [1, 50, 75].map((s) => targetFor(rateAt(s, level)));

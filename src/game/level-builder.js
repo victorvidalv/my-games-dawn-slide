@@ -40,9 +40,9 @@ export const warmLevelWorker = () => {
   if (typeof Worker !== 'undefined') (self.requestIdleCallback || ((f) => setTimeout(f, 800)))(() => getWorker());
 };
 
-async function buildHere(run, tips) {
+async function buildHere(run) {
   const { levelBank, specialBank } = await loadBanks();
-  const banks = { levels: levelBank.ratings, special: specialBank, tips };
+  const banks = { levels: levelBank.ratings, special: specialBank };
   const d = run.daily;
   return d
     ? buildDaily(challengeById(d.id), d.seed ?? d.day, banks, d.index, d.remaining)
@@ -54,13 +54,13 @@ const sendBanks = (w) =>
     w.postMessage({ banks: { levels: levelBank.ratings, special: specialBank } });
   }));
 /** Igual que buildAdventureLevel, pero sin bloquear el hilo principal. */
-export async function buildLevelAsync(run, tips = {}) {
+export async function buildLevelAsync(run) {
   const w = typeof Worker !== 'undefined' && getWorker();
   if (w) {
     try {
       await sendBanks(w);
       const id = ++seq,
-        msg = { id, run: JSON.parse(JSON.stringify(run)), tips: JSON.parse(JSON.stringify(tips)) };
+        msg = { id, run: JSON.parse(JSON.stringify(run)) };
       return await new Promise((resolve, reject) => {
         const timer = setTimeout(() => {
           waiting.delete(id);
@@ -82,5 +82,5 @@ export async function buildLevelAsync(run, tips = {}) {
       /* el hilo falló o tardó demasiado: se prepara aquí mismo */
     }
   }
-  return buildHere(run, tips);
+  return buildHere(run);
 }

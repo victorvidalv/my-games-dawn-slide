@@ -30,7 +30,7 @@ export const powerReady = (level = 1, start = 1, hero = 'jean', extra = 0) => {
 export const JEAN_LONG_BOARD = 16;
 /** `extra`: usos extra (carta Eco del poder en el último tablero de cada ciudad). */
 export const powerUses = (hero, opt = 0, extra = 0) => (hero === 'jean' && opt >= JEAN_LONG_BOARD ? 2 : 1) + extra;
-const runUses = (run, G) => powerUses(run?.hero, G?.opt, G?.tutorial ? 0 : fatePowerUses(run, G?.n));
+const runUses = (run, G) => powerUses(run?.hero, G?.opt, fatePowerUses(run, G?.n));
 
 const plans = new WeakMap();
 /** One graph analysis per position, shared by the button and activation; respects all special pieces. */

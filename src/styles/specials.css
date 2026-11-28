@@ -588,50 +588,62 @@
     }
   }
 
-  /* Botón «?» de ayuda: discreto; la primera vez late y muestra una etiqueta */
-  .help-btn {
-    flex: none;
-    position: relative;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+  /* Botón «?» de ayuda, junto a Pista: la primera vez late y una etiqueta lo señala (sin hacer falta pulsarlo) */
+  .controls .help-btn {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 11px 14px;
     border: 2px solid #1c1208;
+    border-radius: 10px;
     background: linear-gradient(180deg, #3a2b52, #23193a);
     color: #ffe3a6;
-    font: 900 19px/1 var(--font-book, Georgia, serif);
+    font-weight: 800;
     box-shadow:
       0 3px 0 #091118,
       inset 0 1px 0 #ffffff22;
   }
+  .help-btn b {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ffd24a;
+    color: #2a1a00;
+    font: 900 15px/1 var(--font-book, Georgia, serif);
+  }
   .help-btn:active {
     transform: translateY(2px);
     box-shadow: 0 1px 0 #091118;
+  }
+  .help-label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.15;
+  }
+  .help-label i {
+    font-style: normal;
   }
   .help-tip {
     display: none;
   }
   .help-btn.help-flash,
   .help-btn.help-new {
-    animation: help-pulse 1.4s ease-in-out infinite;
+    animation: help-pulse 1.1s ease-in-out infinite;
     border-color: #ffd24a;
+    background: linear-gradient(180deg, #5a3f86, #34235a);
   }
-  .help-btn.help-new .help-tip {
+  .help-btn.help-new .help-tip,
+  .help-btn.help-flash .help-tip {
     display: block;
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    padding: 5px 10px;
-    border-radius: 10px;
-    background: #091118f2;
-    border: 1.5px solid #ffd24a99;
-    color: #ffe9b8;
-    font:
-      700 12px/1.2 system-ui,
-      sans-serif;
-    font-style: normal;
-    white-space: nowrap;
-    pointer-events: none;
-    z-index: 5;
+    margin: 0;
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #ffd24a;
+    opacity: 1;
   }
   .help-list {
     max-height: min(62dvh, 460px);
@@ -685,7 +697,8 @@
   @keyframes help-pulse {
     50% {
       box-shadow:
-        0 0 0 6px #ffd24a44,
+        0 0 0 7px #ffd24a66,
+        0 0 22px #ffd24acc,
         0 3px 0 #091118;
     }
   }

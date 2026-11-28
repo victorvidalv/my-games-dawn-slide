@@ -1,9 +1,7 @@
-import { decodeBoard } from '../engine/board.js';
 import { buildLevel, pickBoard, varyBoard } from '../engine/levels.js';
-import { minMoves } from '../engine/solver.js';
 import { hash32, mulberry32 } from '../engine/rng.js';
 import { rateAt } from '../engine/difficulty.js';
-import { levelPlan, tutorialFor } from './mechanics.js';
+import { levelPlan } from './mechanics.js';
 import { heroLimit } from './heroes.js';
 import { fateBlocks, fateTurns } from './fate.js';
 import { relicTurns } from './relics.js';
@@ -16,7 +14,7 @@ export const runLimit = (run, opt, level, pieces = []) =>
   });
 
 /** Shared by the real game and simulator. Saved boards are restored without introducing a new objective. */
-export function buildAdventureLevel(run, { levels, special, tips = {}, withProof = false } = {}) {
+export function buildAdventureLevel(run, { levels, special, withProof = false } = {}) {
   const level = run.level,
     plan = levelPlan(level),
     rate = rateAt(run.start, level);
@@ -38,27 +36,18 @@ export function buildAdventureLevel(run, { levels, special, tips = {}, withProof
       moves: rescue ? 0 : b.moves || 0,
       hist: rescue ? [] : (b.hist || []).map((p) => p.slice()),
       bought: rescue ? 0 : b.bought || 0,
-      tutorial: rescue ? null : b.tutorial || null,
       family: b.family || plan.family,
       colors: saved?.colors?.slice(),
     };
   } else {
-    const tutorial = run.mode === 'p' ? null : tutorialFor(level, tips);
-    let base, built;
-    if (tutorial) {
-      base = decodeBoard(tutorial.board);
-      base.family = plan.family;
-      built = { ...base, opt: minMoves(base.pieces, base.pos, base.walls) };
-    } else {
-      base = pickBoard(levels, rate, run.seed, level, plan.family, special);
-      const board = varyBoard(base, rate, hash32(run.seed, level, 7));
-      built = buildLevel(board, {
-        rating: rate,
-        adj: run.adj,
-        rng: mulberry32(hash32(run.seed, level, 31)),
-        withAnalysis: withProof,
-      });
-    }
+    const base = pickBoard(levels, rate, run.seed, level, plan.family, special);
+    const board = varyBoard(base, rate, hash32(run.seed, level, 7));
+    const built = buildLevel(board, {
+      rating: rate,
+      adj: run.adj,
+      rng: mulberry32(hash32(run.seed, level, 31)),
+      withAnalysis: withProof,
+    });
     G = {
       n: level,
       rate,
@@ -72,9 +61,7 @@ export function buildAdventureLevel(run, { levels, special, tips = {}, withProof
       hist: [],
       bought: 0,
       family: base.family,
-      tutorial: tutorial?.mech || null,
     };
-    if (tutorial) G.limit = built.opt + 40; // el tutorial no se puede perder
     if (withProof) G.analysis = built.analysis;
   }
   return { ...G, done: false, els: [], plan };

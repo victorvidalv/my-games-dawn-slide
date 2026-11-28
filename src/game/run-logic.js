@@ -202,7 +202,6 @@ export function snapshotBoard(G) {
     opt: G.opt,
     limit: G.limit,
     bought: G.bought || 0,
-    tutorial: G.tutorial || null,
     moves: G.moves,
     hist: copyRows(G.hist),
     colors: G.colors?.slice(),
